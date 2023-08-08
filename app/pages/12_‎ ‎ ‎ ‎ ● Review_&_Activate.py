@@ -357,7 +357,7 @@ if SELECTED_CAMPAIGN_KEY in st.session_state:
         }
         
         sheet_chart_id_list = get_chart_id(SHEET_TEMPLATE_ID)
-        page_list =["g1e547d46008_5_2365","g1e547d46008_5_1712","g1e547d46008_5_2348","g1e547d46008_5_2399","g1e547d46008_5_2382","g1e547d46008_5_2288"]
+        page_list = utils_config.SLIDE_PAGE_ID_LIST
 
         service = build('slides', 'v1', credentials=creds)
         img_url="https://images.unsplash.com/photo-1433643667043-663b34a5c052?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2304&q=80"
