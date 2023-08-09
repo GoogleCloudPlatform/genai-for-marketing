@@ -22,7 +22,6 @@ Marketing Insights demonstration:
 
 
 import streamlit as st
-import base64
 import utils_config
 
 st.set_page_config(
@@ -42,17 +41,7 @@ PROJECT_ID = utils_config.get_env_project_id()
 LOCATION = utils_config.LOCATION
 TEXT_MODEL_NAME = utils_config.TEXT_MODEL_NAME
 
-DASHBOARDS = {
-    # Sample Dashboard link
-    'Campaign Performance': 'https://googledemo.looker.com/embed/dashboards/2127?allow_login_screen=true',
-    'Campaign Comparison':'https://googledemo.looker.com/embed/dashboards/2128?allow_login_screen=true',
-    'Product Performance':'https://googledemo.looker.com/embed/dashboards/2135?allow_login_screen=true',
-    'Propensity to Purchase Predictions':'https://googledemo.looker.com/embed/dashboards/2136?allow_login_screen=true',
-    'Customer Lifetime Value':'https://googledemo.looker.com/embed/dashboards/2129?allow_login_screen=true',
-    'Demand Forecasting':'https://googledemo.looker.com/embed/dashboards/2130?allow_login_screen=true',
-    'Sentiment Analysis':'https://googledemo.looker.com/embed/dashboards/2139?allow_login_screen=true'
-}
-
+DASHBOARDS = utils_config.DASHBOARDS
 
 # State variables
 PAGE_KEY_PREFIX = "CampaignPerformance"
@@ -90,8 +79,10 @@ if DASHBOARD_KEY in st.session_state:
 <iframe src="{DASHBOARDS.get(st.session_state[DASHBOARD_KEY])}" frameborder="0" width="100%" height="800px"></iframe>
 {utils_config.INFOBOT}
 """, height=800)
-else:
-    st.components.v1.html(f"""
-<iframe src="https://googledemo.looker.com/embed/dashboards/2127?allow_login_screen=true" frameborder="0" width="100%" height="800px"></iframe>
-{utils_config.INFOBOT}
-""", height=800)
+
+# Uncomment this block if you want to display a default dashboard
+# else:
+#     st.components.v1.html(f"""
+# <iframe src="https://googledemo.looker.com/embed/dashboards/2127?allow_login_screen=true" frameborder="0" width="100%" height="800px"></iframe>
+# {utils_config.INFOBOT}
+# """, height=800)

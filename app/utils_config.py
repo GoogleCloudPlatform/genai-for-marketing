@@ -37,7 +37,7 @@ DASHBOARDS = {
 DATASTORES = {
     # Sample datastore ID
     # 'google-ads-support_1111111111': 'default_config'
-    # '<PASTE THE ID HERE>': 'default_config'
+    # '<UNCOMMENT AND PASTE THE ID HERE>': 'default_config'
 }
 SEARCH_LOCATION = 'global'
 
@@ -63,12 +63,12 @@ LOCATION = 'us-central1'
 # Provide the path to your JSON credential
 # This credential will be used to interact with Workspace
 # This is the path inside the docker image, example: /app/credential.json
-SERVICE_ACCOUNT_JSON_KEY = '<PATH TO YOUR EXPORTED JSON CREDENTIAL KEY>' 
+SERVICE_ACCOUNT_JSON_KEY = '/app/credentials.json'  # Change this path if you copied the file to a different path 
 
 # ID of the templates
+DRIVE_FOLDER_ID = '<DRIVE FOLDER ID>' # example: "1MYB0Ybyo9XZERgIcjsdfeqO0SKqhrkvqMx"
 SLIDES_TEMPLATE_ID = '<SLIDES TEMPLATE ID>' # example: '16uQlLkCJ9YRiMU_IoONHsl-vY-uKeoasnWTPlbZZ1D4'
 DOC_TEMPLATE_ID = '<DOCS TEMPLATE ID>' # example: '1kqvxZLRXIdfM8MVS7css4UoiJ8f0I4dKFj9cP986K4pM'
-DRIVE_FOLDER_ID = '<DRIVE FOLDER ID>' # example: "1MYB0Ybyo9XZERgIcjsdfeqO0SKqhrkvqMx"
 SHEET_TEMPLATE_ID = '<SHEETS TEMPLATE ID>' # example: '1gIaIWLOeKmnjso7-CAAAcqMlPznpoEXDdEue3DNWr7bw'
 SLIDE_PAGE_ID_LIST = '[LIST OF PAGES WHERE YOU WANT TO INSERT CHARTS FROM THE SHEETS]' #example: ["g1e547d46008_5_2365","g1e547d46008_5_1712","g1e547d46008_5_2348","g1e547d46008_5_2399","g1e547d46008_5_2382","g1e547d46008_5_2288"]
 

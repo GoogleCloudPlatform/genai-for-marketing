@@ -14,25 +14,27 @@ The architecture of all the demos that are implemented in this application is as
 .
 ├── app
 └── notebooks
+└── templates
 ```
 
-- [`/app`](https://github.com/leiterenato/genai-demos/tree/main/demo_genai_marketing/app): Source code for demo app.  
-- [`/notebooks`](https://github.com/leiterenato/genai-demos/tree/main/demo_genai_marketing/notebooks): Sample notebooks demonstrating the concepts covered in this demonstration.   
+- [`/app`](/app): Source code for demo app.  
+- [`/notebooks`](/notebooks): Sample notebooks demonstrating the concepts covered in this demonstration.  
+- [`/templates`](/templates): Workspace Slides, Docs and Sheets templates used in the demonstration.
 
 
 ## Demonstrations
 
 In this repository, the following demonstrations are provided:  
 
-**Marketing Insights**: Utilize Looker Dashboards to access and visualize marketing data, enabling the creation of tailored marketing materials such as headlines, product descriptions, email campaigns, and visuals. These features can empower businesses to connect with their target audience more efficiently, thereby improving conversion rates.  
-**Audience and Insight finder**: Conversational interface that translates natural language into SQL queries. By offering precise insights into data, it assists businesses in making more informed decisions.
-**Trendspotting**: Identify emerging trends in the market by analyzing Google Trends data on a Looker Dashboard and summarizing news related to top search terms. This can help businesses to stay ahead of the competition and to develop products and services that meet the needs of their customers.  
-**Content Search**: Improve the search experience for enterprise users with Gen App Builder. This can help businesses to find the information they need more quickly and easily.  
-**Content Generation**: Craft compelling and captivating email content, website articles, social media updates, and assets for PMax, all aimed at achieving specific goals such as boosting sales, gathering leads, or enhancing brand recognition. This encompasses both textual and visual elements.
-**Workspace integration**: Transfer the assets you've generated earlier to Workspace.  
+**- Marketing Insights**: Utilize Looker Dashboards to access and visualize marketing data, enabling the creation of tailored marketing materials such as headlines, product descriptions, email campaigns, and visuals. These features can empower businesses to connect with their target audience more efficiently, thereby improving conversion rates.  
+**- Audience and Insight finder**: Conversational interface that translates natural language into SQL queries. By offering precise insights into data, it assists businesses in making more informed decisions.  
+**- Trendspotting**: Identify emerging trends in the market by analyzing Google Trends data on a Looker Dashboard and summarizing news related to top search terms. This can help businesses to stay ahead of the competition and to develop products and services that meet the needs of their customers.  
+**- Content Search**: Improve the search experience for enterprise users with Gen App Builder. This can help businesses to find the information they need more quickly and easily.  
+**- Content Generation**: Craft compelling and captivating email content, website articles, social media updates, and assets for PMax, all aimed at achieving specific goals such as boosting sales, gathering leads, or enhancing brand recognition. This encompasses both textual and visual elements.  
+**- Workspace integration**: Transfer the assets you've generated earlier to Workspace and visualize in Google Slides, Docs and Sheets.
 
 
-## Notebooks
+## Notebooks and code samples
 
 The notebooks listed below were developed to explain the concepts exposed in this repository:  
 - [Getting Started](/notebooks/1_environment_setup.ipynb) (1_environment_setup.ipynb): This notebook is part of the deployment guide and helps with dataset preparation.
@@ -62,7 +64,8 @@ You will be interacting with the following resources:
 
 ### Select a Google Cloud project
 
-In the Google Cloud Console, on the project selector page, [select or create a Google Cloud project](https://console.cloud.google.com/projectselector2/home/dashboard?_ga=2.77230869.1295546877.1635788229-285875547.1607983197&_gac=1.82770276.1635972813.Cj0KCQjw5oiMBhDtARIsAJi0qk2ZfY-XhuwG8p2raIfWLnuYahsUElT08GH1-tZa28e230L3XSfYewYaAlEMEALw_wcB). **As this is a DEMONSTRATION, you need to be a project owner in order to set up the environment.**
+In the Google Cloud Console, on the project selector page, [select or create a Google Cloud project](https://console.cloud.google.com/projectselector2).  
+> **As this is a DEMONSTRATION, you need to be a project owner in order to set up the environment.**
 
 
 ### Enable the required services
@@ -91,7 +94,12 @@ gcloud services enable \
   storage.googleapis.com \
   datacatalog.googleapis.com \
   appengineflex.googleapis.com \
-  translate.googleapis.com
+  translate.googleapis.com \
+  admin.googleapis.com \
+  docs.googleapis.com \
+  drive.googleapis.com \
+  sheets.googleapis.com \
+  slides.googleapis.com
 ```
 
 **Note**: When you work with Vertex AI user-managed notebooks, be sure that all the services that you're using are enabled and white-listed.
@@ -117,12 +125,12 @@ gcloud notebooks instances create $INSTANCE_NAME \
      --location=$LOCATION
 ```
 
-Vertex AI Workbench creates a user-managed notebook instance based on the properties that you specified and then automatically starts the instance. When the instance is ready to use, Vertex AI Workbench activates an **Open JupyterLab** link next to the instance name in the [Vertex AI Workbench Cloud Console](https://console.cloud.google.com/vertex-ai/workbench/list/instances) page. To connect to your user-managed notebooks instance, click **Open JupyterLab**.
+Vertex AI Workbench creates a user-managed notebook instance based on the properties that you specified and then automatically starts the instance. When the instance is ready to use, Vertex AI Workbench activates an **Open JupyterLab** link next to the instance name in the [Vertex AI Workbench Cloud Console](https://console.cloud.google.com/vertex-ai/workbench/user-managed) page. To connect to your user-managed notebooks instance, click **Open JupyterLab**.
 
-On Jupyterlab `Launcher Page`, click on `Terminal` to start a new terminal by clicking the Terminal icon.  
+On Jupyterlab `Launcher Page`, click on `Terminal` to start a new terminal.  
 Clone the repository to your notebook instance:
 
-> git clone https://github.com/leiterenato/genai-demos.git
+> git clone https://github.com/GoogleCloudPlatform/genai-for-marketing
 
 
 ### Prepare BigQuery and Dataplex
@@ -131,25 +139,32 @@ Open notebook [`/genai-for-marketing/notebooks/1_environment_setup.ipynb`](https
 It will execute the following steps:
  - Install dependecies to run the notebook
  - Create a dataset on BigQuery
- - Load CDP data to BigQuery
+ - Create a synthetic CDP dataset and load it to BigQuery
  - Create Tag Template on Dataplex
- - Tag dataset columns
+ - Tag dataset columns with metadata
  - Test the deployment
 
-Make sure all the steps executed successfully.
+Make sure all the steps are executed successfully and you can retrieve the metadata from Dataplex.  
+The metadata should look like this:
+
+```
+Table: transactions - Column: app_purchase_qnt - Data Type: INT64 - Primary Key: False - Foreing Key: False - Description: The value of the in-app purchase.
+...
+Table: customers - Column: total_value - Data Type: INT64 - Primary Key: False - Foreing Key: False - Description: The total value of all purchases made by the customer.
+```
 
 
 ### Create an Enterprise Search engine for a public website
 
 Follow the steps below to create a search engine for a website using Enterprise Search.
  - Make sure the Enterprise Search APIs are enabled [here](https://cloud.google.com/generative-ai-app-builder/docs/try-enterprise-search#before-you-begin) and you activated Generative AI App Builder [here](https://cloud.google.com/generative-ai-app-builder/docs/try-enterprise-search#activate).
- - Create and preview the website search engine [here](https://cloud.google.com/generative-ai-app-builder/docs/try-enterprise-search#create_a_website_search_engine) and [here](https://cloud.google.com/generative-ai-app-builder/docs/try-enterprise-search#preview_the_website_search_engine).
+ - Create and preview the website search engine as described [here](https://cloud.google.com/generative-ai-app-builder/docs/try-enterprise-search#create_a_website_search_engine) and [here](https://cloud.google.com/generative-ai-app-builder/docs/try-enterprise-search#preview_the_website_search_engine).
 
 After you finished creating the Enterprise Search datastore, navigate back to the [`Apps`](https://console.cloud.google.com/gen-app-builder/engines) page and copy the ID of the datastore you just created.  
 Example:  
 ![Enterprise Search ID](./app/images/es_id.png)
 
-Open this [configuration file - line 33](./app/utils_config.py) and paste the ID of your newly created datastore in the `DATASTORES` dictionary.  
+Open this [configuration file - line 40](/app/utils_config.py) and paste the ID of your newly created datastore in the `DATASTORES` dictionary.  
 The resulting code should look like this:  
 
 ```
@@ -159,7 +174,6 @@ DATASTORES = {
 }
 ```
 
-If you have multiple datastores, you can include them in this dictionary using the same format.  
 **Don't forget to save the configuration file.**
 
 
@@ -167,22 +181,70 @@ If you have multiple datastores, you can include them in this dictionary using t
 
 In order to render your Looker Dashboards in the UI, you need to update a configuration file with the links to them.
 
-Open this [configuration file - line 27](./app/utils_config.py) and paste the name and link of your Looker Dashboards in the `DASHBOARDS` dictionary.  
-The resulting code should look like this: 
+Open the [configuration file - line 33](/app/utils_config.py) and paste the name and link of your Looker Dashboards in the `DASHBOARDS` dictionary.  
+The resulting code should look like this:  
 
 ```
 # Looker Dashboards
 # The link of the looker Dashboard must follow this format:
 # https://<LOOKER INSTANCE URL>/embed/dashboards/<DASHBOARD NUMBER>?allow_login_screen=true
 DASHBOARDS = {
-    # Sample Dashboard link
-    # 'Overview': 'https://mydomain.looker.com/embed/dashboards/2131?allow_login_screen=true'
+    'Overview': 'https://mydomain.looker.com/embed/dashboards/1111?allow_login_screen=true'
 }
 ```
 
 The `allow_login_screen=true` will open the authentication page from Looker to secure the access to your account.
 
 **[Optional]** If you have your Google Ads and Google Analytics 4 accounts in production, you can deploy our [`Marketing Data Engine`](https://github.com/GoogleCloudPlatform/marketing-data-engine/tree/main) solution to your project, build the Dashboards and link them to the demonstration UI.  
+
+
+### Create an Infobot
+
+Next you will create an Infobot that will assist the users to answer questions about Google Ads, etc.
+- Follow the steps described in this [Codelab](https://codelabs.developers.google.com/codelabs/dialogflow-generator#0) to build your own infobot.
+  - Execute these steps in the same project you will deploy this demo.
+  - In step 3 of this Codelab you can provide a different URL to be indexed by the Infobot, for example `support.google.com/google-ads/*`.
+  - [Optional] Use LLMs to generate answers when no answer is found. If you have questions, please refer to this [documentation](https://cloud.google.com/dialogflow/cx/docs/concept/generative-agent).
+- Enable [Dialogflow Messenger integration](https://cloud.google.com/dialogflow/cx/docs/concept/integration/dialogflow-messenger) and copy the HTML code snippet provided by the platform.  
+  - The HTML code snippet looks like this: 
+  ![HTML Code](/app/images/dialogflow-integration.png "HTML Code")
+  - Open the [configuration file - line 47](/app/utils_config.py) and replace the HTML code snipped with the one created in your deployment.
+
+
+### Workspace integration
+
+Follow the steps below to setup the Workspace integration with this demonstration.
+
+#### Create a service account
+- Create a Service Account (SA) in the same project you are deploying the demo and download the JSON API Key. This SA doesn't need any roles / permissions.  
+  - Follow this [documentation](https://cloud.google.com/iam/docs/service-accounts-create) to create the service account. Take note of the service account address; it will look like this: `name-of-the-sa@my-project.iam.gserviceaccount.com`.
+  - Follow this [documentation](https://cloud.google.com/iam/docs/keys-create-delete#creating) to dowload the key JSON file with the service account credentials.  
+  - Rename the JSON file to `credentials.json` and copy it under [/app](/app) folder.
+  - [Optional] If your file has a different name and/or you copied it to a different location, change line 66 in [utils_config.py](/app/utils_config.py) to reflect these changes.
+ - When you deploy the app to AppEngine, the JSON file will be copied inside the docker image.
+ - **IMPORTANT**: For security reasons, DON'T push this credentials to a public Github repository.
+
+#### Google Drive
+ - Navigate to [Google Drive](https://drive.google.com/) and create a folder.  
+   - This folder will be used to host the templates and assets created in the demo.
+ - Share this folder with the service account address you created in the previous step. Give "Editor" rights to the service account. The share will look like this:
+![Share Drive](/app/images/workspace-drive.png "Share Drive")
+ - Take note of the folder ID. Go into the folder you created and you will be able to find the ID in the URL. The URL will look like this:
+ ![Drive ID](/app/images/workspace-drive0.png)
+ - Open the file [utils_config.py - line 69](/app/utils_config.py) and change to your folder ID.
+ - **IMPORTANT**: Share this folder with people who will be using the demonstration.
+
+#### Google Slides, Google Docs and Google Sheets
+ - Copy the content of [templates](/templates) to this newly created folder.
+
+- Create 3 templates 
+  - Google slides template: 
+    - Once you do that, repace SLIDES_TEMPLATE_ID in untils.config with the actual google slide id
+  - Google doc template: 
+    - Once you do that, repace DOC_TEMPLATE_ID in untils.config with the actual google doc id
+  - Create doogle sheet template and some data points and charts in it.
+    - Once you do that, repace SHEET_TEMPLATE_ID in untils.config with the actual google sheet id
+    - Add the slide page ids where you want to insert charts in SLIDE_PAGE_ID_LIST in uitils.config. If the order of the charts is not what you want, feel free to rearrange them in the SLIDE_PAGE_ID_LIST.
 
 
 ### Deploy the demonstration to AppEngine
@@ -209,33 +271,7 @@ You can check the available service accounts by running the following command:
 
 Wait for the application to be deployed and open the link generated by AppEngine.
 
-### Add your infobot
-
-- Please refer to this infobot Colab to build your own infobot and get the html widget code from intgration section
-- https://codelabs.developers.google.com/codelabs/dialogflow-generator#0
-- Please replace the infobot in the utils_config.py with your own infobot
-- We used ads helper websites as our backend data sources and use LLMs to generate answers where there is no answer found
-- If you have quesionts, please refer to this doc https://cloud.google.com/dialogflow/cx/docs/concept/generative-agent
 
 ## Getting help
 
 If you have any questions or if you found any problems with this repository, please report through GitHub issues.
-
-## How to use workspace integration on Review & Activation page
-- Enable the workspace APIs that you need for the project - Drive API, Slides API, Docs API, and Sheets API
-  - You can refer to this doc: https://developers.google.com/workspace/guides/enable-apis
-- Generate an empty Service Account in the project
-  - Follow this doc to generate a service account: https://cloud.google.com/iam/docs/service-accounts-create
-  - Follow this doc to dowload key json of the service account: https://cloud.google.com/iam/docs/keys-create-delete#creating
-  - In utils.config, change SERVICE_ACCOUNT_JSON_KEY to point to your json key
-- Create a Google Drive folder and include this service account as Admin
-  - Once you do that, repace DRIVE_FOLDER_ID in untils.config with the actual google drive id
-- Share this drive with people who need to access the template folder
-- Create 3 templates 
-  - Google slides template: 
-    - Once you do that, repace SLIDES_TEMPLATE_ID in untils.config with the actual google slide id
-  - Google doc template: 
-    - Once you do that, repace DOC_TEMPLATE_ID in untils.config with the actual google doc id
-  - Create doogle sheet template and some data points and charts in it.
-    - Once you do that, repace SHEET_TEMPLATE_ID in untils.config with the actual google sheet id
-    - Add the slide page ids where you want to insert charts in SLIDE_PAGE_ID_LIST in uitils.config. If the order of the charts is not what you want, feel free to rearrange them in the SLIDE_PAGE_ID_LIST.
