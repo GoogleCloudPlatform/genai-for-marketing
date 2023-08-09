@@ -231,21 +231,21 @@ Follow the steps below to setup the Workspace integration with this demonstratio
 ![Share Drive](/app/images/workspace-drive.png "Share Drive")
  - Take note of the folder ID. Go into the folder you created and you will be able to find the ID in the URL. The URL will look like this:
  ![Drive ID](/app/images/workspace-drive0.png)
- - Open the file [utils_config.py - line 69](/app/utils_config.py) and change to your folder ID.
- - **IMPORTANT**: Share this folder with people who will be using the demonstration.
+ - Open the configuration file [utils_config.py - line 69](/app/utils_config.py) and change to your folder ID.
+ - **IMPORTANT**: Also share this folder with people who will be using the demonstration.
 
 #### Google Slides, Google Docs and Google Sheets
  - Copy the content of [templates](/templates) to this newly created folder.
-
-- Create 3 templates 
-  - Google slides template: 
-    - Once you do that, repace SLIDES_TEMPLATE_ID in untils.config with the actual google slide id
-  - Google doc template: 
-    - Once you do that, repace DOC_TEMPLATE_ID in untils.config with the actual google doc id
-  - Create doogle sheet template and some data points and charts in it.
-    - Once you do that, repace SHEET_TEMPLATE_ID in untils.config with the actual google sheet id
-    - Add the slide page ids where you want to insert charts in SLIDE_PAGE_ID_LIST in uitils.config. If the order of the charts is not what you want, feel free to rearrange them in the SLIDE_PAGE_ID_LIST.
-
+ - For the Google Slides template (`[template] Marketing Assets`): 
+   - From the Google Drive folder, open the Google Slides and take note of the Slides ID from the URL.
+   - Open the configuration file [utils_config.py - line 70](/app/utils_config.py) and change to your Slides ID.
+ - For the Google Docs template (`[template] Gen AI for Marketing Google Doc Template`): 
+   - From the Google Drive folder, open the Google Docs and take note of the Docs ID from the URL.
+   - Open the configuration file [utils_config.py - line 71](/app/utils_config.py) and change to your Docs ID.
+ - For the Google Sheets template (`[template] GenAI for Marketing`):  
+   - From the Google Drive folder, open the Google Sheets and take note of the Sheets ID from the URL.
+   - Open the configuration file [utils_config.py - line 72](/app/utils_config.py) and change to your Sheets ID.
+ 
 
 ### Deploy the demonstration to AppEngine
 
