@@ -249,7 +249,7 @@ Follow the steps below to setup the Workspace integration with this demonstratio
 
 ### Deploy the demonstration to AppEngine
 
- - On Jupyterlab `Launcher Page`, click on `Terminal` to start a new terminal by clicking the Terminal icon.  
+ - On Jupyterlab `Launcher Page` (in the Workbench managed instance), click on `Terminal` to start a new terminal by clicking the Terminal icon.  
  - Navigate to `demo_genai_marketing` folder  
 
 > cd demo_genai_marketing
