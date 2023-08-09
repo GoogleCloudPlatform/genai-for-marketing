@@ -1,11 +1,11 @@
 # Generative AI for Marketing using Google Cloud
 
-This repository contains the deployment guide for a demonstration of how to use generative AI from Google Cloud in marketing use cases. It provides step-by-step instructions on how to set up and use the generative AI tools, as well as examples of how they can be used to create marketing content, such as blog posts and social media posts.  
+This repository includes a deployment guide showcasing the application of Google Cloud's generative AI for marketing scenarios. It offers detailed, step-by-step guidance for setting up and utilizing the generative AI tools, including examples of their use in crafting marketing materials like blog posts and social media content.
 
-Supplementary Jupyter notebooks are also provided for reference purposes, to help users understand the concepts covered in the demo.
+Additionally, supplementary Jupyter notebooks are provided to aid users in grasping the concepts explored in the demonstration.
 
-The following is the architecture of all the demos implemented in this application.  
-![Architecture](/images/architecture.png "Architecture")
+The architecture of all the demos that are implemented in this application is as follows.    
+![Architecture](/app/images/architecture.png "Architecture")
 
 
 ## Repository structure
@@ -17,30 +17,28 @@ The following is the architecture of all the demos implemented in this applicati
 ```
 
 - [`/app`](https://github.com/leiterenato/genai-demos/tree/main/demo_genai_marketing/app): Source code for demo app.  
-- [`/notebooks`](https://github.com/leiterenato/genai-demos/tree/main/demo_genai_marketing/notebooks): Sample notebooks demonstrating the concepts covered in this demonstration.  
+- [`/notebooks`](https://github.com/leiterenato/genai-demos/tree/main/demo_genai_marketing/notebooks): Sample notebooks demonstrating the concepts covered in this demonstration.   
 
 
 ## Demonstrations
 
-The following demonstrations are provided in this repository:
+In this repository, the following demonstrations are provided:  
 
-**1. Marketing Insights**: Visualize Looker Dashboards with marketing data and create personalized marketing materials such as headlines, product descriptions, email campaigns, visuals, etc. This can help businesses to reach their target audience more effectively and improve their conversion rates.  
-**2. Email Copy Generation**: Generate persuasive and engaging email messages that are designed to drive a desired outcome, such as increasing sales, generating leads, or building brand awareness. These emails include text and visuals.  
-**3. Blog post generation**: Automatically create blog posts on a wide range of topics and in a variety of styles. These articles include text and visuals.  
-**4. Trendspotting**: Identify emerging trends in the market by analyzing Google Trends data on a Looker Dashboard and summarizing news related to top search terms. This can help businesses to stay ahead of the competition and to develop products and services that meet the needs of their customers.  
-**5. Audience and Insight finder**: Create a conversational interface with data by translating from natural language to SQL queries. This can help businesses to make better decisions by providing them with insights into their data accurately.  
-**6. Content Search**: Improve the search experience for enterprise users with Gen App Builder. This can help businesses to find the information they need more quickly and easily.  
-**7. Image Generation**: Create realistic images from text descriptions. This can be used for a variety of purposes, such as creating product mockups, generating marketing materials, or creating custom artwork.  
-**8. Text Generation**: Create a variety of text content, such as blog posts, articles, and product descriptions. This can help businesses to save time and money on content creation, and it can also help them to produce higher-quality content.
+**Marketing Insights**: Utilize Looker Dashboards to access and visualize marketing data, enabling the creation of tailored marketing materials such as headlines, product descriptions, email campaigns, and visuals. These features can empower businesses to connect with their target audience more efficiently, thereby improving conversion rates.  
+**Audience and Insight finder**: Conversational interface that translates natural language into SQL queries. By offering precise insights into data, it assists businesses in making more informed decisions.
+**Trendspotting**: Identify emerging trends in the market by analyzing Google Trends data on a Looker Dashboard and summarizing news related to top search terms. This can help businesses to stay ahead of the competition and to develop products and services that meet the needs of their customers.  
+**Content Search**: Improve the search experience for enterprise users with Gen App Builder. This can help businesses to find the information they need more quickly and easily.  
+**Content Generation**: Craft compelling and captivating email content, website articles, social media updates, and assets for PMax, all aimed at achieving specific goals such as boosting sales, gathering leads, or enhancing brand recognition. This encompasses both textual and visual elements.
+**Workspace integration**: Transfer the assets you've generated earlier to Workspace.  
 
 
 ## Notebooks
 
-The following notebooks were created to elucidate the concepts discussed in the demonstration from this repository:
-- [Getting Started](https://github.com/leiterenato/genai-demos/blob/main/demo_genai_marketing/notebooks/1_environment_setup.ipynb) (1_environment_setup.ipynb): This notebook is part of the deployment guide and helps with dataset preparation.
-- [Data Q&A with PaLM API (Codey) and GoogleSQL](https://github.com/leiterenato/genai-demos/blob/main/demo_genai_marketing/notebooks/data_qa_with_sql.ipynb) (data_qa_with_sql.ipynb): Translate questions using natural language to GoogleSQL to interact with BigQuery.
-- [News summarization with LangChain agents and Vertex AI PaLM text models](https://github.com/leiterenato/genai-demos/blob/main/demo_genai_marketing/notebooks/news_summarization_langchain_palm.ipynb) (news_summarization_langchain_palm.ipynb): Summarize news articles related to top search terms using LangChain agents and the ReAct concept.
-- [News summarization with PaLM API](https://github.com/leiterenato/genai-demos/blob/main/demo_genai_marketing/notebooks/simple_news_summarization.ipynb) (simple_news_summarization.ipynb): News summarization related to top search terms using the PaLM API.
+The notebooks listed below were developed to explain the concepts exposed in this repository:  
+- [Getting Started](/notebooks/1_environment_setup.ipynb) (1_environment_setup.ipynb): This notebook is part of the deployment guide and helps with dataset preparation.
+- [Data Q&A with PaLM API and GoogleSQL](/notebooks/data_qa_with_sql.ipynb) (data_qa_with_sql.ipynb): Translate questions using natural language to GoogleSQL to interact with BigQuery.
+- [News summarization with LangChain agents and Vertex AI PaLM text models](/notebooks/news_summarization_langchain_palm.ipynb) (news_summarization_langchain_palm.ipynb): Summarize news articles related to top search terms using LangChain agents and the ReAct concept.
+- [News summarization with PaLM API](/notebooks/simple_news_summarization.ipynb) (simple_news_summarization.ipynb): News summarization related to top search terms using the PaLM API.
 
 
 The following additional (external) notebooks provide supplementary information on the concepts discussed in this repository:
@@ -52,13 +50,14 @@ The following additional (external) notebooks provide supplementary information 
 - [Getting Started with LangChain and Vertex AI PaLM API](https://github.com/GoogleCloudPlatform/generative-ai/blob/main/language/examples/langchain-intro/intro_langchain_palm_api.ipynb): Use LangChain and Vertex AI PaLM API to generate text.
 
 
-## Environment Setup
+# Environment Setup
 
 This section outlines the steps to configure the Google Cloud environment that is required in order to run the notebooks and demonstration provided in this repository.  
-
- - You use a user-managed instance of Vertex AI Workbench as your development environment and the primary interface to Vertex AI services.
- - You use BigQuery to store data from Marketing Platforms and Dataplex to store their metadata.
- - You use Enterprise Search (GenApp Builder) to create a search engine for an external website.
+You will be interacting with the following resources:
+ - A user-managed instance of Vertex AI Workbench serves as your development setting and the main interface to Vertex AI services.  
+ - BigQuery is utilized to house data from Marketing Platforms, while Dataplex is employed to keep their metadata.  
+ - Enterprise Search and Infobot (GenApp Builder) are used to construct a search engine for an external website.  
+ - Workspace (Google Slides, Google Docs and Google Sheets) are used to visualized the resources generated by you.
 
 
 ### Select a Google Cloud project
