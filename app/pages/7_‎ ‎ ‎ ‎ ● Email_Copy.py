@@ -198,8 +198,7 @@ if flag_new:
     rng = np.random.default_rng(
         abs(hash(audience_dataframe.at[0,'email']) % (10 ** 8)))
     audience_dataframe['first_name'] = rng.choice(
-        MALE_NAMES, len(audience_dataframe['email']))
-        # FEMALE_NAMES+MALE_NAMES, len(audience_dataframe['email']))
+        FEMALE_NAMES+MALE_NAMES, len(audience_dataframe['email']))
     audience_dataframe['language'] = rng.choice(
         languageS, len(audience_dataframe['email']))
     audience_dataframe['age_group'] = rng.choice(
