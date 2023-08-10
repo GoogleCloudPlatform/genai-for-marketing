@@ -250,9 +250,9 @@ Follow the steps below to setup the Workspace integration with this demonstratio
 ### Deploy the demonstration to AppEngine
 
  - On Jupyterlab `Launcher Page` (in the Workbench managed instance), click on `Terminal` to start a new terminal by clicking the Terminal icon.  
- - Navigate to `demo_genai_marketing` folder  
+ - Navigate to `genai-for-marketing` folder  
 
-> cd demo_genai_marketing
+> cd genai-for-marketing
 
  - Open the [`app.yaml`](./app.yaml) configuration file and include your service account (Compute Engine default service account) in line 19:
 
@@ -262,7 +262,7 @@ Follow the steps below to setup the Workspace integration with this demonstratio
 
 The service account has the following format: `PROJECT_NUMBER-compute@developer.gserviceaccount.com`
 
-You can check the available service accounts by running the following command:  
+You can check the available service accounts in your project by running the following command:  
 > gcloud iam service-accounts list
 
  - Deploy the solution to AppEngine
