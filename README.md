@@ -135,7 +135,7 @@ Clone the repository to your notebook instance:
 
 ### Prepare BigQuery and Dataplex
 
-Open notebook [`/genai-for-marketing/notebooks/1_environment_setup.ipynb`](https://github.com/leiterenato/genai-demos/blob/main/demo_genai_marketing/notebooks/1_environment_setup.ipynb) and follow the instructions in it.  
+Open notebook [`/genai-for-marketing/notebooks/1_environment_setup.ipynb`](/notebooks/1_environment_setup.ipynb) and follow the instructions in it.  
 It will execute the following steps:
  - Install dependecies to run the notebook
  - Create a dataset on BigQuery
