@@ -5,7 +5,7 @@ This repository includes a deployment guide showcasing the application of Google
 Additionally, supplementary Jupyter notebooks are provided to aid users in grasping the concepts explored in the demonstration.
 
 The architecture of all the demos that are implemented in this application is as follows.    
-![Architecture](/app/images/architecture_diagram.png "Architecture")
+![Architecture](/app/images/architecture.png "Architecture")
 
 
 ## Repository structure
