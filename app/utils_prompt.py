@@ -179,7 +179,7 @@ def render_marketing_prompt_design(
         prompt_title: str="Text Generation",
         prompt_label: str="Create and submit your prompt.",
         prompt_example: str="", 
-        model_name: str='text-bison@001',
+        model_name: str='text-bison',
         translate: bool=False,
         text_area_height: int = 400
 ):

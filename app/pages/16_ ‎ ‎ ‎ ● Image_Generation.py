@@ -20,9 +20,8 @@ Image Generation:
 
 
 import streamlit as st
-import utils_image
 import utils_config
-from utils_streamlit import reset_page_state
+import utils_standalone_image_gen
 
 
 st.set_page_config(
@@ -59,22 +58,21 @@ PRE_POPULATED_PROMPTS = [
     'Studio photo of a purple handbag, natural lighting, 4k'
 ]
 
+import utils_styles
+utils_styles.sidebar_apply_style(
+    style=utils_styles.style_sidebar,
+    image_path='/app/images/menu_icon_2.png')
+
 cols = st.columns([13, 87])
 with cols[0]:
     st.image('/app/images/favicon.png')
 with cols[1]:
     st.title('Image Generation')
 
-st.write(
-    """
-    Create prompts to generate image using Vertex AI PaLM 2 API.
-    """
-)
-
 # Generate image
 st.subheader('Image Generation')
 st.write('Create a prompt to generate images.')
-utils_image.render_image_generation_and_edition_ui(
+utils_standalone_image_gen.render_image_generation_and_edition_ui(
     image_text_prompt_key=IMAGE_GENERATION_TEXT_PROMPT_KEY,
     generated_images_key=GENERATED_IMAGES_KEY,
     edit_image_prompt_key=EDIT_GENERATED_IMAGE_PROMPT_KEY,
@@ -88,10 +86,10 @@ utils_image.render_image_generation_and_edition_ui(
     download_button=True)
 
 st.subheader('Image Editing')
-st.write('Create a prompt to edit an image.')
+st.write('Upload and edit an image with a text prompt.')
 
 # Edit image
-utils_image.render_image_edit_prompt(
+utils_standalone_image_gen.render_image_edit_prompt(
     edited_images_key=EDITED_IMAGES_KEY,
     edit_image_prompt_key=IMAGE_TO_EDIT_PROMPT_KEY,
     upload_file=True,

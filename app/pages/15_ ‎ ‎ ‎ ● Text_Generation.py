@@ -53,7 +53,7 @@ st.write(
     """)
 
 # Prompt engineering for text generation
-utils_prompt.render_email_prompt_design(
+utils_prompt.render_marketing_prompt_design(
     project_id=PROJECT_ID,
     location=LOCATION,
     state_key=GENERATED_TEXT_KEY,
