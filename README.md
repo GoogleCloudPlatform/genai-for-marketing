@@ -1,6 +1,6 @@
 # Generative AI for Marketing using Google Cloud
 
-This repository includes a deployment guide showcasing the application of Google Cloud's generative AI for marketing scenarios. It offers detailed, step-by-step guidance for setting up and utilizing the generative AI tools, including examples of their use in crafting marketing materials like blog posts and social media content.
+This repository provides a deployment guide showcasing the application of Google Cloud's Generative AI for marketing scenarios. It offers detailed, step-by-step guidance for setting up and utilizing the Generative AI tools, including examples of their use in crafting marketing materials like blog posts and social media content.
 
 Additionally, supplementary Jupyter notebooks are provided to aid users in grasping the concepts explored in the demonstration.
 
@@ -26,12 +26,12 @@ The architecture of all the demos that are implemented in this application is as
 
 In this repository, the following demonstrations are provided:  
 
-**- Marketing Insights**: Utilize Looker Dashboards to access and visualize marketing data, enabling the creation of tailored marketing materials such as headlines, product descriptions, email campaigns, and visuals. These features can empower businesses to connect with their target audience more efficiently, thereby improving conversion rates.  
-**- Audience and Insight finder**: Conversational interface that translates natural language into SQL queries. By offering precise insights into data, it assists businesses in making more informed decisions.  
-**- Trendspotting**: Identify emerging trends in the market by analyzing Google Trends data on a Looker Dashboard and summarizing news related to top search terms. This can help businesses to stay ahead of the competition and to develop products and services that meet the needs of their customers.  
-**- Content Search**: Improve the search experience for enterprise users with Gen App Builder. This can help businesses to find the information they need more quickly and easily.  
-**- Content Generation**: Craft compelling and captivating email content, website articles, social media updates, and assets for PMax, all aimed at achieving specific goals such as boosting sales, gathering leads, or enhancing brand recognition. This encompasses both textual and visual elements.  
-**- Workspace integration**: Transfer the assets you've generated earlier to Workspace and visualize in Google Slides, Docs and Sheets.
+* **Marketing Insights**: Utilize Looker Dashboards to access and visualize marketing data, powered by Looker dashboards, marketers can access and visualize marketing data to build data driven marketing campaigns. These features can empower businesses to connect with their target audience more efficiently, thereby improving conversion rates.  
+* **Audience and Insight finder**: Conversational interface that translates natural language into SQL queries. This democratizes access to data for non-SQL users removing any bottleneck for marketing teams.  
+* **Trendspotting**: Identify emerging trends in the market by analyzing Google Trends data on a Looker dashboard and summarize news related to top search terms. This can help businesses to stay ahead of the competition and to develop products and services that meet the needs and interests of their customers.  
+* **Content Search**: Improve search experience for internal or external content with Vertex AI Search for business users.  
+* **Content Generation**: Reduce time for content generation with Vertex Foundation Models. Generate compelling and captivating email copy, website articles, social media posts, and assets for PMax. All aimed at achieving specific goals such as boosting sales, generating leads, or enhancing brand awareness. This encompasses both textual and visual elements using Vertex language & vision models.  
+* **Workspace integration**: Transfer the insights and assets you've generated earlier to Workspace and visualize in Google Slides, Docs and Sheets.
 
 
 ## Notebooks and code samples
@@ -44,12 +44,12 @@ The notebooks listed below were developed to explain the concepts exposed in thi
 
 
 The following additional (external) notebooks provide supplementary information on the concepts discussed in this repository:
-- [Tuning and deploy a foundation model](https://github.com/GoogleCloudPlatform/generative-ai/blob/main/language/examples/tuning/getting_started_tuning.ipynb): This notebook demonstrates how to tune a model with your dataset to improve the model's response. This is useful for brand voice because it allows you to ensure that the model is generating text that is consistent with your brand's tone and style.
-- [Document summarization techniques](https://github.com/GoogleCloudPlatform/generative-ai/blob/main/language/examples/document-summarization/README.md): Two notebooks explaining different techniques to summarize large documents.
-- [Document Q&A](https://github.com/GoogleCloudPlatform/generative-ai/blob/main/language/examples/document-qa/README.md): Two notebooks explaining different techniques to do document Q&A on a large amount of documents.
-- [GenApp Builder - Web search](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/gen-app-builder/search-web-app): This demo illustrates how to search through a corpus of documents using Enterprise Search on Generative AI App Builder. Additional features include how to search the public Cloud Knowledge Graph using the Enterprise Knowledge Graph API.
-- [GenApp Builder - Document search](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/gen-app-builder/retrieval-augmented-generation): This demo illustrates how Enterprise Search and the Vertex AI PaLM API help ensure that generated content is grounded in validated, relevant and up-to-date information.
-- [Getting Started with LangChain and Vertex AI PaLM API](https://github.com/GoogleCloudPlatform/generative-ai/blob/main/language/examples/langchain-intro/intro_langchain_palm_api.ipynb): Use LangChain and Vertex AI PaLM API to generate text.
+- [Tuning and deploy a foundation model](https://github.com/GoogleCloudPlatform/generative-ai/blob/main/language/tuning/getting_started_tuning.ipynb): This notebook demonstrates how to tune a model with your dataset to improve the model's response. This is useful for brand voice because it allows you to ensure that the model is generating text that is consistent with your brand's tone and style.
+- [Document summarization techniques](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/language/use-cases/document-summarization): Two notebooks explaining different techniques to summarize large documents.
+- [Document Q&A](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/language/use-cases/document-qa): Two notebooks explaining different techniques to do document Q&A on a large amount of documents.
+- [Vertex AI Search - Web search](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/gen-app-builder/search-web-app): This demo illustrates how to search through a corpus of documents using Enterprise Search on Vertex AI Search. Additional features include how to search the public Cloud Knowledge Graph using the Enterprise Knowledge Graph API.
+- [Vertex AI Search - Document search](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/gen-app-builder/retrieval-augmented-generation): This demo illustrates how Enterprise Search and the Vertex AI PaLM API help ensure that generated content is grounded in validated, relevant and up-to-date information.
+- [Getting Started with LangChain and Vertex AI PaLM API](https://github.com/GoogleCloudPlatform/generative-ai/blob/main/language/orchestration/langchain/intro_langchain_palm_api.ipynb): Use LangChain and Vertex AI PaLM API to generate text.
 
 
 # Environment Setup
@@ -58,7 +58,7 @@ This section outlines the steps to configure the Google Cloud environment that i
 You will be interacting with the following resources:
  - A user-managed instance of Vertex AI Workbench serves as your development setting and the main interface to Vertex AI services.  
  - BigQuery is utilized to house data from Marketing Platforms, while Dataplex is employed to keep their metadata.  
- - Enterprise Search and Infobot (GenApp Builder) are used to construct a search engine for an external website.  
+ - Vertex AI Search & Conversation - Enterprise Search and Generative AI Agent - are used to construct a search engine for an external website.  
  - Workspace (Google Slides, Google Docs and Google Sheets) are used to visualized the resources generated by you.
 
 
@@ -70,10 +70,10 @@ In the Google Cloud Console, on the project selector page, [select or create a G
 
 ### Enable the required services
 
-From [Cloud Shell](https://cloud.google.com/shell/docs/using-cloud-shelld.google.com/shell/docs/using-cloud-shell), run the following commands to enable the required Cloud APIs:
+From [Cloud Shell](https://cloud.google.com/shell/docs/using-cloud-shell), run the following commands to enable the required Cloud APIs:
 
 ```bash
-export PROJECT_ID=<YOUR_PROJECT_ID>
+export PROJECT_ID=$(gcloud info --format='value(config.project)')
  
 gcloud config set project $PROJECT_ID
  
@@ -86,7 +86,9 @@ gcloud services enable \
   cloudapis.googleapis.com \
   cloudtrace.googleapis.com \
   containerregistry.googleapis.com \
-  iamcredentials.googleapis.com \
+  iamcredentials.googleapis.com
+
+gcloud services enable \
   monitoring.googleapis.com \
   logging.googleapis.com \
   notebooks.googleapis.com \
@@ -198,12 +200,12 @@ The `allow_login_screen=true` will open the authentication page from Looker to s
 **[Optional]** If you have your Google Ads and Google Analytics 4 accounts in production, you can deploy our [`Marketing Data Engine`](https://github.com/GoogleCloudPlatform/marketing-data-engine/tree/main) solution to your project, build the Dashboards and link them to the demonstration UI.  
 
 
-### Create an Infobot
+### Create a Generative AI Agent
 
-Next you will create an Infobot that will assist the users to answer questions about Google Ads, etc.
-- Follow the steps described in this [Codelab](https://codelabs.developers.google.com/codelabs/dialogflow-generator#0) to build your own infobot.
+Next you will create a Generative AI Agent that will assist the users to answer questions about Google Ads, etc.
+- Follow the steps described in this [Codelab](https://codelabs.developers.google.com/codelabs/dialogflow-generator#0) to build your own Generative AI Agent.
   - Execute these steps in the same project you will deploy this demo.
-  - In step 3 of this Codelab you can provide a different URL to be indexed by the Infobot, for example `support.google.com/google-ads/*`.
+  - In step 3 of this Codelab you can provide a different URL to be indexed by the Generative AI Agent, for example `support.google.com/google-ads/*`.
   - [Optional] Use LLMs to generate answers when no answer is found. If you have questions, please refer to this [documentation](https://cloud.google.com/dialogflow/cx/docs/concept/generative-agent).
 - Enable [Dialogflow Messenger integration](https://cloud.google.com/dialogflow/cx/docs/concept/integration/dialogflow-messenger) and copy the HTML code snippet provided by the platform.  
   - The HTML code snippet looks like this: 
