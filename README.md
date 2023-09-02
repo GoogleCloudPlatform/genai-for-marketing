@@ -160,7 +160,7 @@ Table: customers - Column: total_value - Data Type: INT64 - Primary Key: False -
 
 Follow the steps below to create a search engine for a website using Enterprise Search.
  - Make sure the Enterprise Search APIs are enabled [here](https://cloud.google.com/generative-ai-app-builder/docs/try-enterprise-search#before-you-begin) and you activated Generative AI App Builder [here](https://cloud.google.com/generative-ai-app-builder/docs/try-enterprise-search#activate).
- - Create and preview the website search engine as described [here](https://cloud.google.com/generative-ai-app-builder/docs/try-enterprise-search#create_a_website_search_engine) and [here](https://cloud.google.com/generative-ai-app-builder/docs/try-enterprise-search#preview_the_website_search_engine).
+ - Create and preview the website search engine as described [here](https://cloud.google.com/generative-ai-app-builder/docs/try-enterprise-search#create_a_search_app_for_website_data) and [here](https://cloud.google.com/generative-ai-app-builder/docs/try-enterprise-search#preview_your_app_for_website_data).
 
 After you finished creating the Enterprise Search datastore, navigate back to the [`Apps`](https://console.cloud.google.com/gen-app-builder/engines) page and copy the ID of the datastore you just created.  
 Example:  
