@@ -17,184 +17,29 @@
 Utility module for Codey releated demo.
 """
 
-
-from typing import Optional
 from functools import partial
+import pandas as pd
 import streamlit as st
+import tomllib
+from typing import Optional
 
-from google.cloud import datacatalog_v1
 from google.cloud import bigquery
+from google.cloud import datacatalog_v1
+from google.cloud import translate_v2 as translate
 from pandas import DataFrame
-
-from google.cloud.exceptions import NotFound
-from google.cloud.exceptions import BadRequest
+from utils_streamlit import reset_page_state
 from vertexai.preview.language_models import TextGenerationModel
 
-from google.cloud import translate_v2 as translate
-from utils_config import TRANSLATE_LANGUAGES
-from utils_config import CODE_MODEL_NAME
-from utils_config import TEXT_MODEL_NAME
 
-import pandas as pd
-import utils_default_image_text
+# Load configuration file
+with open("./app_config.toml", "rb") as f:
+    data = tomllib.load(f)
 
-from utils_streamlit import reset_page_state
+TEXT_MODEL_NAME = data["models"]["text"]["text_model_name"]
+TRANSLATE_LANGUAGES = data["translate_api"]
 
 translate_client = translate.Client()
-prompt = '''This is a task converting text into GoogleSQL statement. We will first given the dataset schema and then ask a question in text. You are asked to generate SQL statement.
-Here is an example: Convert text to SQL:
-[SCHEMA details for table `rl-llm-dev.cdp_dataset.customers`]
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: cart_total - Data Type: FLOAT64 - Primary Key: False - foreign Key: False - Description: The value of the items in the customer's shopping cart.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: channel - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The channel through which the customer was acquired.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: city - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The city where the customer lives.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: customer_id - Data Type: INT64 - Primary Key: True - foreign Key: False - Description: A unique identifier of the customer.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: email - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The customer's email address.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: is_media_follower - Data Type: BOOL - Primary Key: False - foreign Key: False - Description: Whether the customer is a social media follower.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: last_activity_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date of the customer's last account activity.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: last_purchase_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date the customer made their last purchase.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: last_sign_up_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date the customer signed up.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: loyalty_score - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: A score that measures the customer's engagement with the company.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: state - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The state where the customer lives.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: total_emails - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The total number of emails opened by the customer.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: total_purchases - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The total number of purchases made by the customer.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: total_value - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The total value of all purchases made by the customer.
-[SCHEMA details for table `rl-llm-dev.cdp_dataset.transactions`]
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: app_purchase_qnt - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The value of the in-app purchase.
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: customer_id - Data Type: INT64 - Primary Key: False - foreign Key: True - Description: A unique identifier of the customer.
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: product_id - Data Type: INT64 - Primary Key: False - foreign Key: True - Description: The code of the inventory item that was purchased.
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: product_name - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The name of the product that was purchased.
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: transaction_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date the transaction was made.
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: transaction_id - Data Type: INT64 - Primary Key: True - foreign Key: False - Description: A unique identifier for the transaction.
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: transaction_value - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The total value of the transaction.
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: transation_qnt - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The quantity of items purchased in the transaction.
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: transation_type - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The type of transaction (e.g., purchase, refund, etc.).
-[SCHEMA details for table `rl-llm-dev.cdp_dataset.events`]:
-Full table name: `rl-llm-dev.cdp_dataset.events` - Column: customer_id - Data Type: INT64 - Primary Key: False - foreign Key: True - Description: A unique identifier of the customer.
-Full table name: `rl-llm-dev.cdp_dataset.events` - Column: event_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date of the event.
-Full table name: `rl-llm-dev.cdp_dataset.events` - Column: event_id - Data Type: INT64 - Primary Key: True - foreign Key: False - Description: A unique identifier for the event.
-Full table name: `rl-llm-dev.cdp_dataset.events` - Column: event_type - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The type of event.
-[Q]: What is the city and state with the most customer transactions?
-[SQL]: SELECT c.city, c.state, SUM(t.transaction_qnt) as total_transactions
-FROM `rl-llm-dev.cdp_dataset.customers` AS c
-JOIN `rl-llm-dev.cdp_dataset.transactions` as t
-ON c.customer_id = t.customer_id
-GROUP BY c.city, c.state
-ORDER BY total_transactions DESC
-
-Here is an example: Convert text to SQL:
-[SCHEMA details for table `rl-llm-dev.cdp_dataset.customers`]
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: cart_total - Data Type: FLOAT64 - Primary Key: False - foreign Key: False - Description: The value of the items in the customer's shopping cart.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: channel - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The channel through which the customer was acquired.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: city - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The city where the customer lives.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: customer_id - Data Type: INT64 - Primary Key: True - foreign Key: False - Description: A unique identifier of the customer.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: email - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The customer's email address.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: is_media_follower - Data Type: BOOL - Primary Key: False - foreign Key: False - Description: Whether the customer is a social media follower.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: last_activity_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date of the customer's last account activity.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: last_purchase_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date the customer made their last purchase.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: last_sign_up_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date the customer signed up.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: loyalty_score - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: A score that measures the customer's engagement with the company.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: state - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The state where the customer lives.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: total_emails - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The total number of emails opened by the customer.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: total_purchases - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The total number of purchases made by the customer.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: total_value - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The total value of all purchases made by the customer.
-[SCHEMA details for table `rl-llm-dev.cdp_dataset.transactions`]
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: app_purchase_qnt - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The value of the in-app purchase.
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: customer_id - Data Type: INT64 - Primary Key: False - foreign Key: True - Description: A unique identifier of the customer.
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: product_id - Data Type: INT64 - Primary Key: False - foreign Key: True - Description: The code of the inventory item that was purchased.
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: product_name - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The name of the product that was purchased.
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: transaction_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date the transaction was made.
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: transaction_id - Data Type: INT64 - Primary Key: True - foreign Key: False - Description: A unique identifier for the transaction.
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: transaction_value - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The total value of the transaction.
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: transation_qnt - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The quantity of items purchased in the transaction.
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: transation_type - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The type of transaction (e.g., purchase, refund, etc.).
-[SCHEMA details for table `rl-llm-dev.cdp_dataset.events`]:
-Full table name: `rl-llm-dev.cdp_dataset.events` - Column: customer_id - Data Type: INT64 - Primary Key: False - foreign Key: True - Description: A unique identifier of the customer.
-Full table name: `rl-llm-dev.cdp_dataset.events` - Column: event_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date of the event.
-Full table name: `rl-llm-dev.cdp_dataset.events` - Column: event_id - Data Type: INT64 - Primary Key: True - foreign Key: False - Description: A unique identifier for the event.
-Full table name: `rl-llm-dev.cdp_dataset.events` - Column: event_type - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The type of event.
-[Q]: What are the customer emails ordered by the quantity of purchases by the customer in the city of Atlanta and the state of Georgia?
-[SQL]: SELECT c.email, c.total_purchases 
-FROM `rl-llm-dev.cdp_dataset.customers` as c
-WHERE c.city = "Atlanta" AND c.state = "Georgia"
-ORDER BY c.total_purchases DESC
-
-Here is an example: Convert text to SQL:
-[SCHEMA details for table `rl-llm-dev.cdp_dataset.customers`]
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: cart_total - Data Type: FLOAT64 - Primary Key: False - foreign Key: False - Description: The value of the items in the customer's shopping cart.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: channel - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The channel through which the customer was acquired.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: city - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The city where the customer lives.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: customer_id - Data Type: INT64 - Primary Key: True - foreign Key: False - Description: A unique identifier of the customer.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: email - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The customer's email address.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: is_media_follower - Data Type: BOOL - Primary Key: False - foreign Key: False - Description: Whether the customer is a social media follower.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: last_activity_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date of the customer's last account activity.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: last_purchase_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date the customer made their last purchase.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: last_sign_up_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date the customer signed up.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: loyalty_score - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: A score that measures the customer's engagement with the company.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: state - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The state where the customer lives.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: total_emails - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The total number of emails opened by the customer.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: total_purchases - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The total number of purchases made by the customer.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: total_value - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The total value of all purchases made by the customer.
-[SCHEMA details for table `rl-llm-dev.cdp_dataset.transactions`]
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: app_purchase_qnt - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The value of the in-app purchase.
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: customer_id - Data Type: INT64 - Primary Key: False - foreign Key: True - Description: A unique identifier of the customer.
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: product_id - Data Type: INT64 - Primary Key: False - foreign Key: True - Description: The code of the inventory item that was purchased.
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: product_name - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The name of the product that was purchased.
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: transaction_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date the transaction was made.
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: transaction_id - Data Type: INT64 - Primary Key: True - foreign Key: False - Description: A unique identifier for the transaction.
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: transaction_value - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The total value of the transaction.
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: transation_qnt - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The quantity of items purchased in the transaction.
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: transation_type - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The type of transaction (e.g., purchase, refund, etc.).
-[SCHEMA details for table `rl-llm-dev.cdp_dataset.events`]:
-Full table name: `rl-llm-dev.cdp_dataset.events` - Column: customer_id - Data Type: INT64 - Primary Key: False - foreign Key: True - Description: A unique identifier of the customer.
-Full table name: `rl-llm-dev.cdp_dataset.events` - Column: event_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date of the event.
-Full table name: `rl-llm-dev.cdp_dataset.events` - Column: event_id - Data Type: INT64 - Primary Key: True - foreign Key: False - Description: A unique identifier for the event.
-Full table name: `rl-llm-dev.cdp_dataset.events` - Column: event_type - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The type of event.
-[Q]: What are the customer emails ordered by the total transactions in app by the customer in the city of Atlanta and the state of Georgia?
-[SQL]: SELECT c.email, SUM(t.app_purchase_qnt) as total_app_purchase
-FROM `rl-llm-dev.cdp_dataset.customers` as c
-JOIN `rl-llm-dev.cdp_dataset.transactions` as t
-ON c.customer_id = t.customer_id
-WHERE c.city = "Atlanta" AND c.state = "Georgia"
-GROUP BY c.email, c.city, c.state
-ORDER BY total_app_purchase DESC
-
-Here is an example: Convert text to SQL:
-[SCHEMA details for table `rl-llm-dev.cdp_dataset.customers`]
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: cart_total - Data Type: FLOAT64 - Primary Key: False - foreign Key: False - Description: The value of the items in the customer's shopping cart.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: channel - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The channel through which the customer was acquired.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: city - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The city where the customer lives.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: customer_id - Data Type: INT64 - Primary Key: True - foreign Key: False - Description: A unique identifier of the customer.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: email - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The customer's email address.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: is_media_follower - Data Type: BOOL - Primary Key: False - foreign Key: False - Description: Whether the customer is a social media follower.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: last_activity_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date of the customer's last account activity.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: last_purchase_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date the customer made their last purchase.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: last_sign_up_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date the customer signed up.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: loyalty_score - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: A score that measures the customer's engagement with the company.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: state - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The state where the customer lives.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: total_emails - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The total number of emails opened by the customer.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: total_purchases - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The total number of purchases made by the customer.
-Full table name: `rl-llm-dev.cdp_dataset.customers` - Column: total_value - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The total value of all purchases made by the customer.
-[SCHEMA details for table `rl-llm-dev.cdp_dataset.transactions`]
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: app_purchase_qnt - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The value of the in-app purchase.
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: customer_id - Data Type: INT64 - Primary Key: False - foreign Key: True - Description: A unique identifier of the customer.
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: product_id - Data Type: INT64 - Primary Key: False - foreign Key: True - Description: The code of the inventory item that was purchased.
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: product_name - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The name of the product that was purchased.
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: transaction_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date the transaction was made.
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: transaction_id - Data Type: INT64 - Primary Key: True - foreign Key: False - Description: A unique identifier for the transaction.
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: transaction_value - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The total value of the transaction.
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: transation_qnt - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The quantity of items purchased in the transaction.
-Full table name: `rl-llm-dev.cdp_dataset.transactions` - Column: transation_type - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The type of transaction (e.g., purchase, refund, etc.).
-[SCHEMA details for table `rl-llm-dev.cdp_dataset.events`]:
-Full table name: `rl-llm-dev.cdp_dataset.events` - Column: customer_id - Data Type: INT64 - Primary Key: False - foreign Key: True - Description: A unique identifier of the customer.
-Full table name: `rl-llm-dev.cdp_dataset.events` - Column: event_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date of the event.
-Full table name: `rl-llm-dev.cdp_dataset.events` - Column: event_id - Data Type: INT64 - Primary Key: True - foreign Key: False - Description: A unique identifier for the event.
-Full table name: `rl-llm-dev.cdp_dataset.events` - Column: event_type - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The type of event.
-[Q]: Retrieve top 10 customer emails ordered by loyalty score
-[SQL]: SELECT c.email
-FROM `rl-llm-dev.cdp_dataset.customers` as c
-ORDER BY c.loyalty_score DESC 
-
-Here is an example: Convert text to SQL:'''
+prompt = data["pages"]["3_audiences"]["prompt_nl_sql"]
 
 
 def get_tags_from_table(
@@ -446,11 +291,14 @@ def generate_sql_and_query(
                     result_query.result()
                 except:
                     if state_key == "TalkToData_insight":
-                        st.session_state[f"{state_key}_Result_Final_Query"] = pd.DataFrame(utils_default_image_text.AUDIENCE_RESULT_0)
+                        st.session_state[f"{state_key}_Result_Final_Query"] = pd.DataFrame(
+                            data["pages"]["3_audiences"]["example_result_0"])
                     elif state_key == "TalkToData_audience":
-                        st.session_state[f"{state_key}_Result_Final_Query"] = pd.DataFrame(utils_default_image_text.AUDIENCE_RESULT_1)
+                        st.session_state[f"{state_key}_Result_Final_Query"] = pd.DataFrame(
+                            data["pages"]["3_audiences"]["example_result_1"])
                     elif state_key == "TalkToData_followup":
-                        st.session_state[f"{state_key}_Result_Final_Query"] = pd.DataFrame(utils_default_image_text.AUDIENCE_RESULT_2)
+                        st.session_state[f"{state_key}_Result_Final_Query"] = pd.DataFrame(
+                            data["pages"]["3_audiences"]["example_result_2"])
                 else:
                     st.session_state[
                         f"{state_key}_Result_Final_Query"] = result_query.to_dataframe()

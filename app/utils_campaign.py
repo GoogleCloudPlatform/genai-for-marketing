@@ -22,8 +22,14 @@ import streamlit as st
 import uuid
 import pandas as pd
 from typing import Dict
+import tomllib
 
-CAMPAIGNS_KEY = "Campaigns"
+
+# Load configuration file
+with open("./app_config.toml", "rb") as f:
+    data = tomllib.load(f)
+
+CAMPAIGNS_KEY = data["pages"]["campaigns"]["campaigns_key"]
 
 @dataclass
 class Campaign:

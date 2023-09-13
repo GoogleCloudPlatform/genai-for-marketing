@@ -16,31 +16,6 @@
 Configuration variables to be used by the streamlit app.
 """
 
-
-import os
-import requests
-
-# Model versions
-TEXT_MODEL_NAME = 'text-bison'
-IMAGE_MODEL_NAME = 'imagegeneration'
-CODE_MODEL_NAME = 'code-bison'
-
-# Looker Dashboards
-# The link of the looker Dashboard must follow this format:
-# https://<LOOKER INSTANCE URL>/embed/dashboards/<DASHBOARD NUMBER>?allow_login_screen=true
-DASHBOARDS = {
-    # Sample Dashboard link
-    # 'Overview': 'https://mydomain.looker.com/embed/dashboards/1111?allow_login_screen=true'
-}
-
-# Enterprise Search datastores and location
-DATASTORES = {
-    # Sample datastore ID
-    # 'google-ads-support_1111111111': 'default_config'
-    # '<UNCOMMENT AND PASTE THE ID HERE>': 'default_config'
-}
-SEARCH_LOCATION = 'global'
-
 # Infobot version
 # Change with the code snippet provided by your Infobot deployment
 # The code is similar to the one commented below
@@ -55,8 +30,6 @@ INFOBOT = (
 #     '''
 )
 
-# Location
-LOCATION = 'us-central1'
 
 # Workspace default variables --------------------
 
@@ -219,17 +192,3 @@ TRANSLATE_LANGUAGES = {
     "Yoruba": "yo",
     "Zulu": "zu"
 }
-
-
-# Get project ID from metadata
-def get_env_project_id() -> str:
-    """Returns the Project ID from GAE or Cloud Run"""
-    project_id = os.getenv('GOOGLE_CLOUD_PROJECT')
-    
-    if not project_id:
-        project_id = requests.get(
-            "http://metadata.google.internal/computeMetadata/v1/project/project-id", 
-            headers={"Metadata-Flavor":"Google"}
-        ).text
-
-    return project_id

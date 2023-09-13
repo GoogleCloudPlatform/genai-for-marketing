@@ -12,25 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 """
 Content Search: 
 - Improve the search experience for enterprise users with Gen App Builder.
 """
 
-
 import streamlit as st
-import base64
+import tomllib
 
-import utils_config
-from utils_streamlit import reset_page_state
-from utils_enterprise_search import search, complete_query
 from google.cloud import discoveryengine
+from utils_enterprise_search import search
+
+
+# Load configuration file
+with open("./app_config.toml", "rb") as f:
+    data = tomllib.load(f)
 
 # Set project parameters
-PROJECT_ID = utils_config.get_env_project_id()
-LOCATION = utils_config.SEARCH_LOCATION
-DATASTORES = utils_config.DATASTORES
+PROJECT_ID = data["global"]["project_id"]
+LOCATION = data["pages"]["5_consumer_insights"]["search_location"]
+DATASTORES = data["pages"]["5_consumer_insights"]["datastores"]
 
 search_client = discoveryengine.SearchServiceClient()
 complete_client = discoveryengine.CompletionServiceClient()
@@ -43,29 +44,27 @@ AUTOCOMPLETE_KEY = f"{PAGE_KEY_PREFIX}_Autocomplete"
 
 
 st.set_page_config(
-    page_title="Consumer Insights", 
-    page_icon='/app/images/favicon.png')
+    page_title=data["pages"]["5_consumer_insights"]["page_title"], 
+    page_icon=data["pages"]["5_consumer_insights"]["page_icon"])
 
 import utils_styles
 utils_styles.sidebar_apply_style(
     style=utils_styles.style_sidebar,
-    image_path='/app/images/menu_icon_2.png'
+    image_path=data["pages"]["5_consumer_insights"]["sidebar_image_path"]
 )
 
 
 cols = st.columns([15, 85])
 with cols[0]:
-    st.image('/app/images/consumer_icon.png')
+    st.image(data["pages"]["5_consumer_insights"]["page_title_image"])
 with cols[1]:
-    st.title('Consumer Insights')
+    st.title(data["pages"]["5_consumer_insights"]["page_title"])
 
 st.write(
     """
-    This page demonstrates how to use GenApp Builder to find marketing assets. 
+    This page demonstrates how to use Enterprise Search to find marketing assets. 
     """
 )
-
-st.write('Search for assets using Enterprise Search')
 
 if DATASTORES:
     with st.form(key=f"{PAGE_KEY_PREFIX}_form"):
@@ -124,4 +123,3 @@ if RESULTS_KEY in st.session_state:
         st.write(result["link"])
         st.write(result["html_snippet"], unsafe_allow_html=True)
         st.divider()
-

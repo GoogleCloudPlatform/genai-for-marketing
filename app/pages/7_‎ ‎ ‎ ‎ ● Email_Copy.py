@@ -18,41 +18,47 @@ Email Copy Generation:
 - Generate email messages that are designed to drive a desired outcome.
 - These emails include text and visuals.
 """
+
 import asyncio
 import base64
 import functools
-import streamlit as st
-from utils_campaign import CAMPAIGNS_KEY, generate_names_uuid_dict
-import utils_config
 import numpy as np
 import pandas as pd
+import streamlit as st
+import tomllib
 import vertexai
-from vertexai.preview.language_models import TextGenerationModel
+
 from google.cloud import translate_v2 as translate
-import utils_default_image_text
-
+from utils_campaign import generate_names_uuid_dict
 from utils_image import IMAGEN_API_ENDPOINT, IMAGEN_ENDPOINT, predict_large_language_model_sample
+from vertexai.preview.language_models import TextGenerationModel
 
-translate_client = translate.Client()
 
+# Load configuration file
+with open("./app_config.toml", "rb") as f:
+    data = tomllib.load(f)
 
-vertexai.init(
-    project=utils_config.get_env_project_id(),
-    location=utils_config.LOCATION)
-llm = TextGenerationModel.from_pretrained("text-bison")
-
-st.set_page_config(page_title="Email Copy",
-                   page_icon="/app/images/favicon.png")
+st.set_page_config(page_title=data["pages"]["7_email_copy"]["page_title"],
+                   page_icon=data["pages"]["7_email_copy"]["page_icon"])
 
 import utils_styles
 utils_styles.sidebar_apply_style(
     style=utils_styles.style_sidebar,
-    image_path='/app/images/menu_icon_2.png'
+    image_path=data["pages"]["7_email_copy"]["sidebar_image_path"]
 )
 
 # Set project parameters
-PROJECT_ID = utils_config.get_env_project_id()
-LOCATION = utils_config.LOCATION
+PROJECT_ID = data["global"]["project_id"]
+LOCATION = data["global"]["location"]
+
+vertexai.init(
+    project=PROJECT_ID,
+    location=LOCATION)
+llm = TextGenerationModel.from_pretrained(data["models"]["text"]["text_model_name"])
+translate_client = translate.Client()
+
+# Default Campaign key
+CAMPAIGNS_KEY = data["pages"]["campaigns"]["campaigns_key"]
 
 # External states
 EMAIL_AUDIENCE_KEY = "TalkToData_insight_Result_Final_Query"
@@ -63,107 +69,22 @@ AUDIENCE_DATAFRAME_KEY = f"{PAGE_KEY_PREFIX}_Audience_Dataframe"
 SAMPLE_EMAILS_KEY = f"{PAGE_KEY_PREFIX}_Sample_Emails"
 GENERATED_EMAILS_KEY = f"{PAGE_KEY_PREFIX}_Generated_Emails"
 
-EMAIL_TEXT_PROMPT = (
-    "User information: {data}\n"
-    "Theme: {theme}\n"
-    "Using the user information, "
-    "generate a personalized email "
-    "with the theme mentioned above for the user") 
-
-IMAGE_GENERATION_PROMPT = "Generate an image for an email copy for {theme}"
-
-THEMES_FOR_PROMPTS = [
-    "sales of new women's handbags at Cymbal",
-    "introducing a new line of men's leather shoes",
-    "new opening of Cymbal concept shoe store in NYC",
-    "Cymbal shoes retail brand in NYC"]
-
-SAMPLE_EMAILS = [
-"user36410@sample_user36410.sample",
-"user39537@sample_user39537.sample",
-"user42905@sample_user42905.sample",
-"user16185@sample_user16185.sample",
-"user27153@sample_user27153.sample",
-"user38115@sample_user38115.sample",
-"user10294@sample_user10294.sample",
-"user14325@sample_user14325.sample",
-"user11798@sample_user11798.sample",
-"user3917@sample_user3917.sample",
-"user7486@sample_user7486.sample",	
-"user654@sample_user654.sample",	
-"user8239@sample_user8239.sample",	
-"user27383@sample_user27383.sample",	
-"user16127@sample_user16127.sample",	
-"user6385@sample_user6385.sample",	
-"user14330@sample_user14330.sample",	
-"user17562@sample_user17562.sample",	
-"user40714@sample_user40714.sample",	
-"user25908@sample_user25908.sample",	
-"user22574@sample_user22574.sample"]
-
-AGE_BUCKET = ['young adult', 'middle-aged', 'senior']
-
-MALE_NAMES = [
-"James",
-"Robert",
-"John",
-"Michael",
-"David",
-"William",
-"Richard",
-"Joseph",
-"Thomas",
-"Christopher",
-"Charles",
-"Daniel",
-"Matthew",
-"Anthony",
-"Mark",
-"Donald",
-"Steven",
-"Andrew",
-"Paul",
-"Joshua"]
-
-FEMALE_NAMES = [
-"Mary",
-"Patricia",
-"Jennifer",
-"Linda",
-"Elizabeth",
-"Barbara",
-"Susan",
-"Jessica",
-"Sarah",
-"Karen",
-"Lisa",
-"Nancy",
-"Betty",
-"Sandra",
-"Margaret",
-"Ashley",
-"Kimberly",
-"Emily",
-"Carol",
-"Michelle"]
-
-languageS =  ( 
-    "es",
-    "zh",
-    "cs",
-    "da",
-    "fr",
-    "el",
-    "it",
-    "ja",
-    "pt")
+# Default values
+EMAIL_TEXT_PROMPT = data["pages"]["7_email_copy"]["prompt_email_text"]
+IMAGE_GENERATION_PROMPT = data["pages"]["7_email_copy"]["prompt_image_generation"]
+THEMES_FOR_PROMPTS = data["pages"]["7_email_copy"]["prompt_themes"]
+SAMPLE_EMAILS = data["pages"]["7_email_copy"]["sample_emails"]
+AGE_BUCKET = data["pages"]["7_email_copy"]["age_bucket"]
+MALE_NAMES = data["pages"]["7_email_copy"]["male_names"]
+FEMALE_NAMES = data["pages"]["7_email_copy"]["female_names"]
+LANGUAGES = data["pages"]["7_email_copy"]["languages"]
 
 
 cols = st.columns([15, 85])
 with cols[0]:
-    st.image('/app/images/email_icon.png')
+    st.image(data["pages"]["7_email_copy"]["page_title_image"])
 with cols[1]:
-    st.title('Email Copy')
+    st.title(data["pages"]["7_email_copy"]["page_title"])
 
 st.write(
     """
@@ -200,7 +121,7 @@ if flag_new:
     audience_dataframe['first_name'] = rng.choice(
         FEMALE_NAMES+MALE_NAMES, len(audience_dataframe['email']))
     audience_dataframe['language'] = rng.choice(
-        languageS, len(audience_dataframe['email']))
+        LANGUAGES, len(audience_dataframe['email']))
     audience_dataframe['age_group'] = rng.choice(
         AGE_BUCKET, len(audience_dataframe['email']))
     audience_dataframe['gender'] = audience_dataframe['first_name'].map(
@@ -230,25 +151,25 @@ async def email_generate(row: pd.Series, theme: str) -> pd.Series:
             ))
     except:
         if theme == THEMES_FOR_PROMPTS[0]:
-            generated_text = utils_default_image_text.EMAIL_COPY_TEXT_0
+            generated_text = data["pages"]["7_email_copy"]["defalt_email_copy_0"]
         elif theme == THEMES_FOR_PROMPTS[1]:
-            generated_text = utils_default_image_text.EMAIL_COPY_TEXT_1
+            generated_text = data["pages"]["7_email_copy"]["defalt_email_copy_1"]
         elif theme == THEMES_FOR_PROMPTS[2]:
-            generated_text = utils_default_image_text.EMAIL_COPY_TEXT_2
+            generated_text = data["pages"]["7_email_copy"]["defalt_email_copy_2"]
         elif theme == THEMES_FOR_PROMPTS[3]:
-            generated_text = utils_default_image_text.EMAIL_COPY_TEXT_3
+            generated_text = data["pages"]["7_email_copy"]["defalt_email_copy_3"]
     else:
         if generated_response and generated_response.text:
             generated_text = generated_response.text
         else:
             if theme == THEMES_FOR_PROMPTS[0]:
-                generated_text = utils_default_image_text.EMAIL_COPY_TEXT_0
+                generated_text = data["pages"]["7_email_copy"]["defalt_email_copy_0"]
             elif theme == THEMES_FOR_PROMPTS[1]:
-                generated_text = utils_default_image_text.EMAIL_COPY_TEXT_1
+                generated_text = data["pages"]["7_email_copy"]["defalt_email_copy_1"]
             elif theme == THEMES_FOR_PROMPTS[2]:
-                generated_text = utils_default_image_text.EMAIL_COPY_TEXT_2
+                generated_text = data["pages"]["7_email_copy"]["defalt_email_copy_2"]
             elif theme == THEMES_FOR_PROMPTS[3]:
-                generated_text = utils_default_image_text.EMAIL_COPY_TEXT_3
+                generated_text = data["pages"]["7_email_copy"]["defalt_email_copy_3"]
 
     email_bar.progress(0.3, text=f'Generating email image for {prompt_row_no_lan.first_name}')
 
@@ -270,19 +191,19 @@ async def email_generate(row: pd.Series, theme: str) -> pd.Series:
             }))
     except:
         if theme == THEMES_FOR_PROMPTS[0]:
-            with open('/app/images/email_image_0.png', 'rb') as fp:
+            with open(data["pages"]["7_email_copy"]["default_email_image_0"], 'rb') as fp:
                 imageb64 = base64.b64encode(fp.read()).decode('utf-8')
                 imageb64 = "data:image/png;base64,"+imageb64
         elif theme == THEMES_FOR_PROMPTS[1]:
-            with open('/app/images/email_image_1.png', 'rb') as fp:
+            with open(data["pages"]["7_email_copy"]["default_email_image_1"], 'rb') as fp:
                 imageb64 = base64.b64encode(fp.read()).decode('utf-8')
                 imageb64 = "data:image/png;base64,"+imageb64
         elif theme == THEMES_FOR_PROMPTS[2]:
-            with open('/app/images/email_image_2.png', 'rb') as fp:
+            with open(data["pages"]["7_email_copy"]["default_email_image_2"], 'rb') as fp:
                 imageb64 = base64.b64encode(fp.read()).decode('utf-8')
                 imageb64 = "data:image/png;base64,"+imageb64
         elif theme == THEMES_FOR_PROMPTS[3]:
-            with open('/app/images/email_image_3.png', 'rb') as fp:
+            with open(data["pages"]["7_email_copy"]["default_email_image_3"], 'rb') as fp:
                 imageb64 = base64.b64encode(fp.read()).decode('utf-8')
                 imageb64 = "data:image/png;base64,"+imageb64
     else:
@@ -290,19 +211,19 @@ async def email_generate(row: pd.Series, theme: str) -> pd.Series:
             imageb64 = "data:image/png;base64,"+image_response[0]["bytesBase64Encoded"]
         else:
             if theme == THEMES_FOR_PROMPTS[0]:
-                with open('/app/images/email_image_0.png', 'rb') as fp:
+                with open(data["pages"]["7_email_copy"]["default_email_image_0"], 'rb') as fp:
                     imageb64 = base64.b64encode(fp.read()).decode('utf-8')
                     imageb64 = "data:image/png;base64,"+imageb64
             elif theme == THEMES_FOR_PROMPTS[1]:
-                with open('/app/images/email_image_1.png', 'rb') as fp:
+                with open(data["pages"]["7_email_copy"]["default_email_image_1"], 'rb') as fp:
                     imageb64 = base64.b64encode(fp.read()).decode('utf-8')
                     imageb64 = "data:image/png;base64,"+imageb64
             elif theme == THEMES_FOR_PROMPTS[2]:
-                with open('/app/images/email_image_2.png', 'rb') as fp:
+                with open(data["pages"]["7_email_copy"]["default_email_image_2"], 'rb') as fp:
                     imageb64 = base64.b64encode(fp.read()).decode('utf-8')
                     imageb64 = "data:image/png;base64,"+imageb64
             elif theme == THEMES_FOR_PROMPTS[3]:
-                with open('/app/images/email_image_3.png', 'rb') as fp:
+                with open(data["pages"]["7_email_copy"]["default_email_image_3"], 'rb') as fp:
                     imageb64 = base64.b64encode(fp.read()).decode('utf-8')
                     imageb64 = "data:image/png;base64,"+imageb64
 

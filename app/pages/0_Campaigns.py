@@ -16,30 +16,39 @@
 Initial page with an overview architecture and a description of each demo page.
 """
 
+
 import streamlit as st
-from utils_campaign import CAMPAIGNS_KEY, add_new_campaign
+import tomllib
 
-import utils_config
 from vertexai.preview.language_models import TextGenerationModel
-from utils_campaign import CAMPAIGNS_KEY
+from utils_campaign import add_new_campaign
 
+
+# Load configuration file
+with open("./app_config.toml", "rb") as f:
+    data = tomllib.load(f)
 
 st.set_page_config(
-    page_title="Campaigns",
-    page_icon='/app/images/favicon.png'
+    page_title=data["pages"]["campaigns"]["page_title"],
+    page_icon=data["pages"]["campaigns"]["page_icon"]
 )
 
 import utils_styles
 utils_styles.sidebar_apply_style(
     style=utils_styles.style_sidebar,
-    image_path='/app/images/menu_icon_2.png'
+    image_path=data["pages"]["campaigns"]["sidebar_image_path"]
 )
 
+# Campaigns unique key
+CAMPAIGNS_KEY = data["pages"]["campaigns"]["campaigns_key"]
+
 # Set project parameters 
-PROJECT_ID = utils_config.get_env_project_id()
-LOCATION = utils_config.LOCATION
-TEXT_MODEL_NAME = utils_config.TEXT_MODEL_NAME
-IMAGE_MODEL_NAME = utils_config.IMAGE_MODEL_NAME
+PROJECT_ID = data["global"]["project_id"]
+LOCATION = data["global"]["location"]
+
+# Model configuration
+TEXT_MODEL_NAME = data["models"]["text"]["text_model_name"]
+IMAGE_MODEL_NAME = data["models"]["image"]["image_model_name"]
 
 # State variables for image and text generation
 PAGE_KEY_PREFIX = "CreativeBrief"
@@ -48,73 +57,23 @@ PRIMARY_MSG_KEY = f'{PAGE_KEY_PREFIX}_primary_msg'
 COMMS_CHANNEL_KEY = f'{PAGE_KEY_PREFIX}_comms_channels'
 THEMES_FOR_PROMPTS_KEY = f'{PAGE_KEY_PREFIX}_theme'
 
-CYMBAL_OVERVIEW = """Cymbal brand information:
-1. Brand Name:Cymbal
-2. Vision: Elevate every step and statement with our curated ensemble of footwear and handbags.
-3. Mission: To seamlessly blend comfort and style, Cymbal aims to provide a harmonious collection of shoes and handbags, resonating with modern elegance and timeless charm.
-4. Products: 
-Shoes: From the bustling city streets to quiet evening outings, our shoes are tailored to fit every scenario with unmatched style and comfort.
-Handbags: Crafted for the modern individual, our range spans from spacious totes for daily grind to chic clutches for those nights to remember.
-5. Unique Selling Proposition (USP): A symphony of style. At Cymbal, we believe in orchestrating the perfect balance between trendsetting designs and unparalleled quality.
-6. Target Audience: Style-savvy individuals aged 20-50 who have an ear for quality and an eye for timeless elegance, seeking the perfect accessories to accompany their ever-evolving lifestyles.
-7. Brand Personality: Harmonious, chic, and captivating. Cymbal echoes the rhythm of contemporary fashion with a hint of classic allure.
-8. Core Values: Quality First: Every product at Cymbal resonates with a promise of durability and excellence.
-Listening to the Beat: We constantly tune into our customer's needs and desires, shaping our collections to mirror the world's evolving fashion pulse.
-Echoing Sustainability: Cymbal strikes a chord with the environment, ensuring eco-friendly practices and sustainable choices are at the forefront.
-9. Brand Tagline: "Echo Your Elegance."
-10. Competitive Landscape: The fashion industry reverberates with many brands, but Cymbal stands distinct with its commitment to harmonizing quality, trend, and sustainability.
-11. Future Outlook: Cymbal aspires to expand its resonance in the global market, infusing more sustainable materials into its products, and initiating special editions through designer partnerships, creating exclusive, melodious collections.
-Cymbal is not just a brand; it's an experience. Recognizing the rhythm of life and the melodies of fashion, we ensure every piece adds a note of sophistication to our customer's ensemble. Every choice at Cymbal is a step toward a more stylish tomorrow.
-"""
-
-
 # Prompt templates
-BRAND_STATEMENT_PROMPT_TEMPLATE = """Using the Cymbal brand information below as your context, create a brand statement for a campaign targeting {gender_theme} at age range {age_theme} with {objective_theme} as objective.
-{cymbal_overview}
+CYMBAL_OVERVIEW = data["pages"]["campaigns"]["prompt_cymbal_brand_overview"]
+BRAND_STATEMENT_PROMPT_TEMPLATE = data["pages"]["campaigns"]["prompt_brand_statement_template"]
+PRIMARY_MSG_PROMPT_TEMPLATE = data["pages"]["campaigns"]["prompt_primary_msg_template"]
+COMMS_CHANNEL_PROMPT_TEMPLATE = data["pages"]["campaigns"]["prompt_comms_channel_template"]
+BUSINESS_NAME = data["pages"]["campaigns"]["prompt_business_name"]
+GENDER_FOR_PROMPTS = data["pages"]["campaigns"]["prompt_genders"]
+AGEGROUP_FOR_PROMPTS = data["pages"]["campaigns"]["prompt_age_groups"]
+OBJECTIVES_FOR_PROMPTS = data["pages"]["campaigns"]["prompt_objectives"]
+COMPETITORS_FOR_PROMPTS = data["pages"]["campaigns"]["prompt_competitors"]
 
-Brand statement: """
-
-PRIMARY_MSG_PROMPT_TEMPLATE = """You are working to create a creative brief for Cymbal brand, a document that outlines the creative approach and deliverables for a new project, such as a marketing or advertising campaign. 
-It's a short document that summarizes the project's mission, goals, challenges, demographics, messaging, and other key details. 
-Generate a creative brief for Cymbal's brand for a campaign targeting {gender_theme} at age range {age_theme} with {objective_theme} as objective and {competitor_theme} as main competitor.
-The creative brief must include the primary message, mission, goals, challenges, demographics and any other relevant details for a clear and concise creative brief. Use the context below to extract any information that you need. 
-{cymbal_overview}
-
-Creative brief: """
-
-COMMS_CHANNEL_PROMPT_TEMPLATE = """I want you to act as a marketing specialist who knows how to create awesome marketing assets. Suggest the best marketing channels for an ads campaign for a new women clothing line."""
-
-BUSINESS_NAME = 'Cymbal'
-
-GENDER_FOR_PROMPTS =[
-    'Women',
-    'Men'
-]
-
-AGEGROUP_FOR_PROMPTS =[
-    '20-30',
-    '30-40',
-    '40-50'
-]
-
-OBJECTIVES_FOR_PROMPTS = [
-    'Drive Awareness',
-    'Increasing Traffic',
-    'Increasing Engagement',
-    'Increasing Sales'
-]
-
-COMPETITORS_FOR_PROMPTS = [
-    'Fashion Forward',
-    'Style Setter',
-    'Wardrobe Wonder'
-]
 
 cols = st.columns([13, 87])
 with cols[0]:
-    st.image('/app/images/logo.png')
+    st.image(data["pages"]["campaigns"]["page_title_icon"])
 with cols[1]:
-    st.title('Generative AI for Marketing')
+    st.title(data["pages"]["campaigns"]["page_title"])
 
 st.write('''Campaign and creative brief generation.''')
 
@@ -209,9 +168,8 @@ if create_campaign_button:
                 st.session_state[CAMPAIGNS_KEY][generated_uuid].brief.update({'comm_channels': st.session_state[COMMS_CHANNEL_KEY]})
 
 
-if CAMPAIGNS_KEY not in st.session_state: # and st.session_state[CAMPAIGNS_KEY].keys():
+if CAMPAIGNS_KEY not in st.session_state:
     st.info('No campaigns created yet, start by creating one.')
-
 elif CAMPAIGNS_KEY in st.session_state and st.session_state[CAMPAIGNS_KEY].keys():
     campaigns = st.session_state[CAMPAIGNS_KEY].values()
     campaign_names = {campaign.name : str(campaign.unique_uuid) for campaign in campaigns}

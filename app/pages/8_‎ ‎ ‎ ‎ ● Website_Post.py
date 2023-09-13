@@ -19,31 +19,36 @@ Blog post generation:
 - These articles include text and visuals
 """
 
-
-import io
 import base64
 import streamlit as st
-import utils_image
-import utils_config
-from vertexai.preview.language_models import TextGenerationModel
-import vertexai
+import tomllib
 import utils_default_image_text
+import utils_image
+import vertexai
 
+from vertexai.preview.language_models import TextGenerationModel
 from utils_campaign import CAMPAIGNS_KEY, generate_names_uuid_dict
 
-st.set_page_config(page_title="Website Post",
-                   page_icon="/app/images/favicon.png")
 
+# Load configuration file
+with open("./app_config.toml", "rb") as f:
+    data = tomllib.load(f)
+
+st.set_page_config(page_title=data["pages"]["8_website_post"]["page_title"],
+                   page_icon=data["pages"]["8_website_post"]["page_icon"])
 
 import utils_styles
 utils_styles.sidebar_apply_style(
     style=utils_styles.style_sidebar,
-    image_path='/app/images/menu_icon_2.png'
+    image_path=data["pages"]["8_website_post"]["sidebar_image_path"]
 )
 
 # Set project parameters
-PROJECT_ID = utils_config.get_env_project_id()
-LOCATION = utils_config.LOCATION
+PROJECT_ID = data["global"]["project_id"]
+LOCATION = data["global"]["location"]
+
+TEXT_MODEL_NAME = data["models"]["text"]["text_model_name"]
+CAMPAIGNS_KEY = data["pages"]["campaigns"]["campaigns_key"]
 
 # State variables for email generation (text and image)
 PAGE_KEY_PREFIX = "BlogPost"
@@ -66,6 +71,7 @@ IMAGE_GENERATION_TEXT_PROMPT_KEY = f"{PAGE_KEY_PREFIX}_Text_Prompt_Images_Genera
 EDIT_GENERATED_IMAGE_PROMPT_KEY = f"{PAGE_KEY_PREFIX}_Edit_Text_Prompt_Images_Generation"
 DEFAULT_IMAGE_PROMPT_KEY = f"{PAGE_KEY_PREFIX}_Image_Prompt"
 
+
 EMAIL_PROMPT_TEMPLATE = """I want you to act as a senior content creator who knows how to create awesome website content. 
 You are working to create a blog post for an informational website. 
 It presents information in reverse chronological order and it's written in an informal or conversational style.
@@ -74,12 +80,13 @@ Generate a blog post for {theme}.
 
 IMAGE_PROMPT_TAMPLATE = """Generate an image for {theme}"""
 
+THEMES_FOR_PROMPTS = data["pages"]["8_website_post"]["prompt_themes"]
 
 cols = st.columns([15, 85])
 with cols[0]:
-    st.image('/app/images/website_icon.png')
+    st.image(data["pages"]["8_website_post"]["page_title_image"])
 with cols[1]:
-    st.title('Website Post')
+    st.title(data["pages"]["8_website_post"]["page_title"])
 
 st.write(
     """
@@ -88,13 +95,6 @@ st.write(
 )
 
 st.subheader('Post Generation')
-
-THEMES_FOR_PROMPTS = [
-    "sales of new women's handbags at Cymbal",
-    "introducing a new line of men's leather shoes",
-    "new opening of Cymbal concept shoe store in NYC",
-    "Cymbal shoes retail brand in NYC"
-]
 
 FLAG_NEW = False
 
@@ -129,7 +129,7 @@ if submit_button:
     with st.spinner('Generating website post ...'):
         try:
             vertexai.init(project=PROJECT_ID, location=LOCATION)
-            llm = TextGenerationModel.from_pretrained(utils_config.TEXT_MODEL_NAME)
+            llm = TextGenerationModel.from_pretrained(TEXT_MODEL_NAME)
             response = llm.predict(
                     prompt=EMAIL_PROMPT_TEMPLATE.format(theme=selected_prompt),
                     max_output_tokens=1024,

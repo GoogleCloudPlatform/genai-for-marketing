@@ -22,24 +22,29 @@ Marketing Insights demonstration:
 
 
 import streamlit as st
-import utils_config
+import tomllib
+
+
+# Load configuration file
+with open("./app_config.toml", "rb") as f:
+    data = tomllib.load(f)
 
 st.set_page_config(
-    page_title="Marketing Insights", 
-    page_icon='/app/images/favicon.png',
+    page_title=data["pages"]["2_marketing_insights"]["page_title"], 
+    page_icon=data["pages"]["2_marketing_insights"]["page_icon"],
     layout='wide'
 )
 
 import utils_styles
 utils_styles.sidebar_apply_style(
     style=utils_styles.style_sidebar,
-    image_path='/app/images/menu_icon_2.png'
+    image_path=data["pages"]["2_marketing_insights"]["sidebar_image_path"]
 )
 
 # Set project parameters 
-PROJECT_ID = utils_config.get_env_project_id()
-LOCATION = utils_config.LOCATION
-TEXT_MODEL_NAME = utils_config.TEXT_MODEL_NAME
+PROJECT_ID = data["global"]["project_id"]
+LOCATION = data["global"]["location"]
+TEXT_MODEL_NAME = data["global"]["location"]
 
 # State variables for image and text generation
 PAGE_KEY_PREFIX = "MarketingPlatforms"
@@ -58,11 +63,11 @@ MASK_IMAGE_KEY = f"{PAGE_KEY_PREFIX}_Mask_Image"
 DASHBOARD_KEY = f"{PAGE_KEY_PREFIX}_Dashboard"
 FILE_UPLOADER_KEY = f"{PAGE_KEY_PREFIX}_File_Uploader"
 IMAGE_TO_EDIT_PROMPT_KEY = f"{PAGE_KEY_PREFIX}_Edit_Prompt_key"
-PRE_POPULATED_PROMPTS = [
-    'A photo of a handbag on a kitchen counter, natural lighting, 4k',
-    'A photo of a handbag on the beach, natural lighting, 4k',
-    'Studio photo of a purple handbag, natural lighting, 4k'
-]
+
+# Prompt setup
+PRE_POPULATED_PROMPTS = data["pages"]["2_marketing_insights"]["pre_populated_prompts"]
+
+DASHBOARDS = data["pages"]["2_marketing_insights"]["dashboards"]
 
 
 cols = st.columns([15,70,15])
@@ -70,9 +75,9 @@ cols = st.columns([15,70,15])
 with cols[1]:
     cols = st.columns([15, 85])
     with cols[0]:
-        st.image('/app/images/marketing_analytics_icon.png')
+        st.image(data["pages"]["2_marketing_insights"]["page_title_image"])
     with cols[1]:
-        st.title('Marketing Insights')
+        st.title(data["pages"]["2_marketing_insights"]["page_title"])
 
     st.write(
         """
@@ -80,11 +85,11 @@ with cols[1]:
         """
     )
 
-    if utils_config.DASHBOARDS:
+    if DASHBOARDS:
         with st.form(key='generate_marketing_dashboard'):
             option = st.selectbox(
                 'Select a dashboard to be displayed',
-                tuple(utils_config.DASHBOARDS.keys()))
+                tuple(DASHBOARDS.keys()))
 
             submit_button = st.form_submit_button(label='Generate Dashboard')
 
@@ -95,13 +100,13 @@ with cols[1]:
 
 if DASHBOARD_KEY in st.session_state:
     st.components.v1.iframe(
-        src=utils_config.DASHBOARDS.get(st.session_state[DASHBOARD_KEY]), 
+        src=DASHBOARDS.get(st.session_state[DASHBOARD_KEY]), 
         height=800, 
         scrolling=False
     )
 else:
     st.components.v1.iframe(
-        src=utils_config.DASHBOARDS['Overview'],
+        src=DASHBOARDS['Overview'],
         height=800, 
         scrolling=False
     )

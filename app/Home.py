@@ -16,22 +16,29 @@
 Initial page with an overview architecture and a description of each demo page.
 """
 
-import streamlit as st
 import base64
+import streamlit as st
+import tomllib
+
+
+# Load configuration file
+with open("./app_config.toml", "rb") as f:
+    data = tomllib.load(f)
+
 
 st.set_page_config(
-    page_title="Gen AI for Marketing", 
-    page_icon='/app/images/favicon.png'
+    page_title=data["pages"]["home"]["page_title"], 
+    page_icon=data["pages"]["home"]["page_icon"]
 )
 
 import utils_styles
 utils_styles.sidebar_apply_style(
     style=utils_styles.style_sidebar,
-    image_path='/app/images/menu_icon_2.png'
+    image_path=data["pages"]["home"]["sidebar_image_path"]
 )
 
-file_name_1 = "/app/images/intro_home_1.png"
-file_name_2 = "/app/images/intro_home_2.png"
+file_name_1 = data["pages"]["home"]["file_name_1"]
+file_name_2 = data["pages"]["home"]["file_name_2"]
 
 with open(file_name_1, "rb") as fp:
     contents = fp.read()

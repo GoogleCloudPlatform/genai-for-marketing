@@ -20,39 +20,40 @@ Trendspotting:
 - Generate a social media post for tweeter using summarized information.
 """
 
+import streamlit as st
+import tomllib
+import vertexai
 
 from datetime import date, timedelta, datetime
-import streamlit as st
-import vertexai
-import base64
-
+from google.cloud import bigquery
 from utils_trendspotting import GDELTRetriever
 from utils_trendspotting import GoogleTrends
 from utils_trendspotting import summarize_news_article
-import utils_config
-from utils_streamlit import reset_page_state
-
-from google.cloud import bigquery
 from vertexai.preview.language_models import TextGenerationModel
 
+
+# Load configuration file
+with open("./app_config.toml", "rb") as f:
+    data = tomllib.load(f)
+
 st.set_page_config(
-    page_title="Trendspotting", 
-    page_icon='/app/images/favicon.png',
+    page_title=data["pages"]["4_trendspotting"]["page_title"], 
+    page_icon=data["pages"]["4_trendspotting"]["page_icon"],
     layout='wide')
 
 import utils_styles
 utils_styles.sidebar_apply_style(
     style=utils_styles.style_sidebar,
-    image_path='/app/images/menu_icon_2.png'
+    image_path=data["pages"]["4_trendspotting"]["sidebar_image_path"]
 )
 
 # Set project parameters
-PROJECT_ID = utils_config.get_env_project_id()
-LOCATION = utils_config.LOCATION
+PROJECT_ID = data["global"]["project_id"]
+LOCATION = data["global"]["location"]
 
 bq_client = bigquery.Client(project=PROJECT_ID)
 vertexai.init(project=PROJECT_ID, location=LOCATION)
-llm = TextGenerationModel.from_pretrained("text-bison@001")
+llm = TextGenerationModel.from_pretrained(data["models"]["text"]["text_model_name"])
 
 default_date_value = date.today() - timedelta(2)
 max_date_value = date.today() - timedelta(2)
@@ -72,9 +73,9 @@ cols_page = st.columns([14,72,14])
 with cols_page[1]:
     cols = st.columns([15, 85])
     with cols[0]:
-        st.image('/app/images/trend_icon.png')
+        st.image(data["pages"]["4_trendspotting"]["page_title_image"])
     with cols[1]:
-        st.title('Trendspotting')
+        st.title(data["pages"]["4_trendspotting"]["page_title"])
 
     st.write(
         """

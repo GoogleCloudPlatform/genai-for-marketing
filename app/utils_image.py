@@ -25,22 +25,26 @@ Utility module to:
 import io
 import base64
 import math
-from typing import List
-
-import utils_config
+import tomllib
 import utils_edit_image
 
-from PIL import Image
 from google.cloud import aiplatform
 from google.protobuf import json_format
 from google.protobuf.struct_pb2 import Value
+from PIL import Image
 import streamlit as st
+from typing import List
 
+
+# Load configuration file
+with open("./app_config.toml", "rb") as f:
+    data = tomllib.load(f)
 
 # Confoguration variables for Vertex AI
-PROJECT_ID = utils_config.get_env_project_id()
-LOCATION = utils_config.LOCATION
-MODEL_NAME = utils_config.IMAGE_MODEL_NAME
+PROJECT_ID = data["global"]["project_id"]
+LOCATION = data["global"]["location"]
+MODEL_NAME = data["models"]["image"]["image_model_name"]
+
 IMAGEN_API_ENDPOINT = f'{LOCATION}-aiplatform.googleapis.com'
 IMAGEN_ENDPOINT = f'projects/{PROJECT_ID}/locations/{LOCATION}/publishers/google/models/{MODEL_NAME}'
 IMAGE_UPLOAD_BYTES_LIMIT = 10 ** 7

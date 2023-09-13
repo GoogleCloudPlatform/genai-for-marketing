@@ -19,30 +19,33 @@ Audience and Insight finder:
 """
 
 import streamlit as st
+import tomllib
+import utils_codey
+import vertexai
 
 from google.cloud import bigquery
-
-import utils_codey
-import utils_config
 from vertexai.preview.language_models import TextGenerationModel
-import vertexai
-import utils_default_image_text
+
+
+# Load configuration file
+with open("./app_config.toml", "rb") as f:
+    data = tomllib.load(f)
 
 
 # Set project parameters
-PROJECT_ID = utils_config.get_env_project_id()
-LOCATION = utils_config.LOCATION
-MODEL_NAME = utils_config.CODE_MODEL_NAME
+PROJECT_ID = data["global"]["project_id"]
+LOCATION = data["global"]["location"]
+TEXT_MODEL_NAME = data["models"]["text"]["text_model_name"]
 
-DATASET_ID = 'cdp_dataset'
-TAG_NAME = 'llmcdptemplate'
+DATASET_ID = data["pages"]["3_audiences"]["dataset_id"]
+TAG_NAME = data["pages"]["3_audiences"]["tag_name"]
 
 TAG_TEMPLATE_NAME = f'projects/{PROJECT_ID}/locations/{LOCATION}/tagTemplates/{TAG_NAME}'
 QUERY = f'SELECT * FROM `{PROJECT_ID}.{DATASET_ID}.INFORMATION_SCHEMA.TABLES` WHERE table_name NOT LIKE "%metadata%"'
 
 bqclient = bigquery.Client(project=PROJECT_ID)
 vertexai.init(project=PROJECT_ID, location=LOCATION)
-llm = TextGenerationModel.from_pretrained(utils_config.TEXT_MODEL_NAME)
+llm = TextGenerationModel.from_pretrained(TEXT_MODEL_NAME)
 
 # State variables for code generation and data preview
 PAGE_KEY_PREFIX = "TalkToData"
@@ -53,20 +56,21 @@ GENCODE_KEY = f"{PAGE_KEY_PREFIX}_Gen_Code"
 PROMPT_TEMPLATE_KEY = f"{PAGE_KEY_PREFIX}_Prompt_Template"
 DATASET_METADATA_KEY = f"{PAGE_KEY_PREFIX}_Dataset_Metadata"
 
-st.set_page_config(page_title="Audiences", 
-                   page_icon='/app/images/favicon.png')
+
+st.set_page_config(page_title=data["pages"]["3_audiences"]["page_title"], 
+                   page_icon=data["pages"]["3_audiences"]["page_icon"])
 
 import utils_styles
 utils_styles.sidebar_apply_style(
     style=utils_styles.style_sidebar,
-    image_path='/app/images/menu_icon_2.png'
+    image_path=data["pages"]["3_audiences"]["sidebar_image_path"]
 )
 
 cols = st.columns([15, 85])
 with cols[0]:
-    st.image('/app/images/audience_icon.png')
+    st.image(data["pages"]["3_audiences"]["page_title_image"])
 with cols[1]:
-    st.title('Audiences')
+    st.title(data["pages"]["3_audiences"]["page_title"])
 
 st.write(
     """
@@ -122,8 +126,8 @@ with insight_tab:
         dataset_id=DATASET_ID,
         tag_template_name=TAG_TEMPLATE_NAME,
         bqclient=bqclient,
-        prompt_example="What are the customer emails ordered by the sum of transactions value by customers in New York City?",
-        fallback_query=utils_default_image_text.AUDIENCE_QUERY_0
+        prompt_example=data["pages"]["3_audiences"]["prompt_example_0"],
+        fallback_query=data["pages"]["3_audiences"]["audience_query_0"]
     )
 
 with audience_tab:
@@ -135,8 +139,8 @@ with audience_tab:
         dataset_id=DATASET_ID,
         tag_template_name=TAG_TEMPLATE_NAME,
         bqclient=bqclient,
-        prompt_example="What is the city and state with the most quantity of customers transactions?",
-        fallback_query=utils_default_image_text.AUDIENCE_QUERY_1
+        prompt_example=data["pages"]["3_audiences"]["prompt_example_1"],
+        fallback_query=data["pages"]["3_audiences"]["audience_query_1"]
     )
 
 with followup_tab:
@@ -148,7 +152,6 @@ with followup_tab:
         dataset_id=DATASET_ID,
         tag_template_name=TAG_TEMPLATE_NAME,
         bqclient=bqclient,
-        prompt_example="What are the top 50 customer emails ordered by loyalty score?",
-        text_model=llm,
-        fallback_query=utils_default_image_text.AUDIENCE_QUERY_2
+        prompt_example=data["pages"]["3_audiences"]["prompt_example_2"],
+        fallback_query=data["pages"]["3_audiences"]["audience_query_2"]
     )

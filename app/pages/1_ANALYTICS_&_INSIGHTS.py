@@ -17,20 +17,26 @@ Initial page with an overview architecture and a description of each demo page.
 """
 
 import streamlit as st
+import tomllib
 import base64
 
+
+# Load configuration file
+with open("./app_config.toml", "rb") as f:
+    data = tomllib.load(f)
+
 st.set_page_config(
-    page_title="Analytics and Insights", 
-    page_icon='/app/images/favicon.png'
+    page_title=data["pages"]["1_analytics_insights"]["page_title"],
+    page_icon=data["pages"]["1_analytics_insights"]["page_icon"]
 )
 
 import utils_styles
 utils_styles.sidebar_apply_style(
     style=utils_styles.style_sidebar,
-    image_path='/app/images/menu_icon_2.png'
+    image_path=data["pages"]["1_analytics_insights"]["sidebar_image_path"]
 )
 
-file_name = "/app/images/page_1.png"
+file_name = data["pages"]["1_analytics_insights"]["file_name"]
 
 with open(file_name, "rb") as fp:
     contents = fp.read()
