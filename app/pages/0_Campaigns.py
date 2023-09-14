@@ -17,6 +17,8 @@ Initial page with an overview architecture and a description of each demo page.
 """
 
 
+import asyncio
+import functools
 import streamlit as st
 import tomllib
 
@@ -106,73 +108,102 @@ with st.form(CAMPAIGNS_KEY+"_Creation_Form"):
 
     create_campaign_button = st.form_submit_button()
 
+
+campaign_uuid = None
 if create_campaign_button:
     llm = TextGenerationModel.from_pretrained(TEXT_MODEL_NAME)
-    generated_uuid = None
     is_allowed_to_create_campaign = False
 
-    if CAMPAIGNS_KEY in st.session_state and st.session_state[CAMPAIGNS_KEY].keys():
+    if (CAMPAIGNS_KEY in st.session_state and 
+        st.session_state[CAMPAIGNS_KEY].keys()):
+
         campaigns = st.session_state[CAMPAIGNS_KEY].values()
-        campaign_names = {campaign.name : str(campaign.unique_uuid) for campaign in campaigns}
+        campaign_names = {
+            campaign.name : str(campaign.unique_uuid) for campaign in campaigns
+        }
 
         if campaign_name in campaign_names:
-            st.info(f"Campaign with name '{campaign_name}' already created. Provide a unique name.")
+            st.info(f"Campaign with name '{campaign_name}' already created. "
+                     "Provide a unique name.")
         else:
             is_allowed_to_create_campaign = True
     else:
         is_allowed_to_create_campaign = True
 
     if is_allowed_to_create_campaign:
-        with st.spinner('Generating creative brief ...'):
-            try:
-                st.session_state[BRAND_STATEMENT_KEY] = llm.predict(
+        async def async_predict(prompt: str, name: str)-> str:
+            loop = asyncio.get_running_loop()
+            with st.spinner(f"Generating {name}"):
+                generated_response = await loop.run_in_executor(
+                    None,
+                    functools.partial(
+                        llm.predict,
+                            prompt=prompt, 
+                            temperature=0.2, 
+                            max_output_tokens=1024, 
+                            top_k=40, top_p=0.8))
+            if generated_response and generated_response.text:
+                return generated_response.text
+            return ""
+        async def generate_campaign() -> tuple:
+            return await asyncio.gather(
+                async_predict(
                     BRAND_STATEMENT_PROMPT_TEMPLATE.format(
                         gender_theme=gender_select_theme, 
                         age_theme=age_select_theme,
                         objective_theme=objective_select_theme,
                         competitor_theme=competitor_select_theme,
                         cymbal_overview=CYMBAL_OVERVIEW),
-                        max_output_tokens=1024
-                ).text
-
-                st.session_state[PRIMARY_MSG_KEY] = llm.predict(
+                    "Brand Statement"),
+                async_predict(
                     PRIMARY_MSG_PROMPT_TEMPLATE.format(
                         gender_theme=gender_select_theme, 
                         age_theme=age_select_theme,
                         objective_theme=objective_select_theme,
                         competitor_theme=competitor_select_theme,
                         cymbal_overview=CYMBAL_OVERVIEW),
-                        max_output_tokens=1024
-                ).text
-
-                st.session_state[COMMS_CHANNEL_KEY] = llm.predict(
+                    "Brand Strategy"),
+                async_predict(
                     COMMS_CHANNEL_PROMPT_TEMPLATE.format(
                         gender_theme=gender_select_theme, 
                         age_theme=age_select_theme,
                         objective_theme=objective_select_theme,
                         competitor_theme=competitor_select_theme),
-                        max_output_tokens=1024
-                ).text
-
-                st.session_state[THEMES_FOR_PROMPTS_KEY] = f'Targeting gender: {gender_select_theme}, Age group: {age_select_theme}, Campaign objective: {objective_select_theme}, Competitor: {competitor_select_theme}'
-            except:
-                st.info('Something went wrong with your prompt. Try again.')
-            else:
-                generated_uuid = add_new_campaign(campaign_name)
-                # Store generated assets
-                st.session_state[CAMPAIGNS_KEY][generated_uuid].brief = {'business_name': BUSINESS_NAME}
-                st.session_state[CAMPAIGNS_KEY][generated_uuid].brief.update({'campaign_name': campaign_name})
-                st.session_state[CAMPAIGNS_KEY][generated_uuid].brief.update({'brief_scenario': st.session_state[THEMES_FOR_PROMPTS_KEY]})
-                st.session_state[CAMPAIGNS_KEY][generated_uuid].brief.update({'brand_statement': st.session_state[BRAND_STATEMENT_KEY]})
-                st.session_state[CAMPAIGNS_KEY][generated_uuid].brief.update({'primary_message': st.session_state[PRIMARY_MSG_KEY]})
-                st.session_state[CAMPAIGNS_KEY][generated_uuid].brief.update({'comm_channels': st.session_state[COMMS_CHANNEL_KEY]})
+                    "Communication channels")) 
+        try:
+            generated_tuple = asyncio.run(generate_campaign())
+            st.session_state[BRAND_STATEMENT_KEY] = generated_tuple[0] 
+            st.session_state[PRIMARY_MSG_KEY] = generated_tuple[1]
+            st.session_state[COMMS_CHANNEL_KEY] = generated_tuple[2]
+            st.session_state[THEMES_FOR_PROMPTS_KEY] = (
+                f'Targeting gender: {gender_select_theme}, '
+                f'Age group: {age_select_theme}, '
+                f'Campaign objective: {objective_select_theme}, '
+                f'Competitor: {competitor_select_theme}')
+        except:
+            st.info('Something went wrong with your prompt. Try again.')
+        else:
+            campaign_uuid = add_new_campaign(campaign_name)
+            st.success(f"Campaign '{campaign_name}' generated "
+                       f"with the uuid '{campaign_uuid}'")
+            # Store generated assets
+            st.session_state[CAMPAIGNS_KEY][campaign_uuid].brief = {
+                'business_name': BUSINESS_NAME,
+                'campaign_name': campaign_name,
+                'brief_scenario': st.session_state[THEMES_FOR_PROMPTS_KEY],
+                'brand_statement': st.session_state[BRAND_STATEMENT_KEY],
+                'primary_message': st.session_state[PRIMARY_MSG_KEY],
+                'comm_channels': st.session_state[COMMS_CHANNEL_KEY]
+            }
 
 
 if CAMPAIGNS_KEY not in st.session_state:
     st.info('No campaigns created yet, start by creating one.')
-elif CAMPAIGNS_KEY in st.session_state and st.session_state[CAMPAIGNS_KEY].keys():
+elif (CAMPAIGNS_KEY in st.session_state and 
+      st.session_state[CAMPAIGNS_KEY].keys()):
     campaigns = st.session_state[CAMPAIGNS_KEY].values()
-    campaign_names = {campaign.name : str(campaign.unique_uuid) for campaign in campaigns}
+    campaign_names = {
+        campaign.name : str(campaign.unique_uuid) for campaign in campaigns}
 
     if not create_campaign_button:
         campaigns_list_menu = list(campaign_names.keys())
@@ -184,71 +215,26 @@ elif CAMPAIGNS_KEY in st.session_state and st.session_state[CAMPAIGNS_KEY].keys(
     
     with st.form('list_brief_campaigns'):
         st.write("**Active Campaigns**")
-        campaign_list_name = st.selectbox('Select a campaign to display its brief', campaigns_list_menu)
+        campaign_list_name = st.selectbox(
+            'Select a campaign to display its brief', campaigns_list_menu)
         retrieve_brief_button = st.form_submit_button('Retrieve Brief')
 
     if retrieve_brief_button:
         campaign_uuid = campaign_names[campaign_list_name]
-        st.subheader(f'Creative Brief for campaign: {st.session_state[CAMPAIGNS_KEY][campaign_uuid].brief["campaign_name"]}')
+
+if campaign_uuid:
+    brief = st.session_state[CAMPAIGNS_KEY][campaign_uuid].brief
+    st.subheader(
+        f'Creative Brief for campaign: {brief["campaign_name"]}')
+    def bi_column(title:str, content:str):
         col1, col2 = st.columns([28,72])
         with col1:
-            st.write('**Business name:**')
+            st.write(f'**{title}:**')
         with col2:
-            st.write(st.session_state[CAMPAIGNS_KEY][campaign_uuid].brief['business_name'])
-        col3, col4 = st.columns([28,72])
-        with col3:
-            st.write('**Scenario:**')
-        with col4:
-            st.write(st.session_state[CAMPAIGNS_KEY][campaign_uuid].brief['brief_scenario'])
+            st.write(content)
+    bi_column("Business name", brief["business_name"])
+    bi_column("Scenario", brief["brief_scenario"])
+    bi_column("Brand Statement", brief["brand_statement"])
+    bi_column("Brand Strategy", brief["primary_message"])
+    bi_column("Communication Channels", brief["comm_channels"])
 
-        col5, col6 = st.columns([28,72])
-        with col5:
-            st.write('**Brand Statement:**')
-        with col6:
-            st.write(st.session_state[CAMPAIGNS_KEY][campaign_uuid].brief['brand_statement'])
-        
-        col7, col8 = st.columns([28,72])
-        with col7:
-            st.write('**Brand Strategy:**')
-        with col8:
-            st.write(st.session_state[CAMPAIGNS_KEY][campaign_uuid].brief['primary_message'])
-        
-        col9, col10 = st.columns([28,72])
-        with col9:
-            st.write('**Communication Channels:**')
-        with col10:
-            st.write(st.session_state[CAMPAIGNS_KEY][campaign_uuid].brief['comm_channels'])
-
-if create_campaign_button:
-    if generated_uuid:
-        st.success(f"Campaign '{campaign_name}' generated with the uuid '{generated_uuid}'")
-        # Render the generated brief
-        st.subheader(f'Creative Brief for campaign: {campaign_name}')
-        col1, col2 = st.columns([28,72])
-        with col1:
-            st.write('**Business name:**')
-        with col2:
-            st.write(BUSINESS_NAME)
-        col3, col4 = st.columns([28,72])
-        with col3:
-            st.write('**Scenario:**')
-        with col4:
-            st.write(st.session_state[THEMES_FOR_PROMPTS_KEY])
-
-        col5, col6 = st.columns([28,72])
-        with col5:
-            st.write('**Brand Statement:**')
-        with col6:
-            st.write(f'{st.session_state[BRAND_STATEMENT_KEY]}')
-        
-        col7, col8 = st.columns([28,72])
-        with col7:
-            st.write('**Brand Strategy:**')
-        with col8:
-            st.write(f'{st.session_state[PRIMARY_MSG_KEY]}')
-        
-        col9, col10 = st.columns([28,72])
-        with col9:
-            st.write('**Communication Channels:**')
-        with col10:
-            st.write(f'{st.session_state[COMMS_CHANNEL_KEY]}')

@@ -32,6 +32,7 @@ RUN pip install pillow
 RUN pip install streamlit-drawable-canvas==0.9.1
 RUN pip install google-cloud-discoveryengine
 RUN pip install google-cloud-translate
+RUN pip install cloudpickle
 
 # Copy local code to the container image.
 WORKDIR /app
