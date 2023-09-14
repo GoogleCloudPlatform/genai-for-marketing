@@ -18,71 +18,61 @@ Social Media Ads
 
 import base64
 import streamlit as st
+import tomllib
 import vertexai
+import utils_default_image_text
+import utils_image
+
 from vertexai.preview.language_models import TextGenerationModel
-from utils_campaign import CAMPAIGNS_KEY, generate_names_uuid_dict
-import utils_config
+from utils_campaign import generate_names_uuid_dict
 from utils_image import render_image_generation_and_edition_ui
 from utils_streamlit import reset_page_state
-import utils_image
-import utils_default_image_text
+
+
+# Load configuration file
+with open("./app_config.toml", "rb") as f:
+    data = tomllib.load(f)
+
+PROJECT_ID = data["global"]["project_id"]
+LOCATION = data["global"]["location"]
+TEXT_MODEL_NAME = data["models"]["text"]["text_model_name"]
+CAMPAIGNS_KEY = data["pages"]["campaigns"]["campaigns_key"]
+
 
 PAGE_KEY_PREFIX = "Social_Media_Ads"
 TWITTER_PREFIX = f"{PAGE_KEY_PREFIX}_Twitter"
 INSTAGRAM_PREFIX = f"{PAGE_KEY_PREFIX}_Instagram"
 THREADS_PREFIX = f"{PAGE_KEY_PREFIX}_Threads"
 
-TWITTER_AGE_SEGMENTS = [
-    "21-34",
-    "21-49",
-    "21-54",
-    "21+",
-    "25-49",
-    "25-54",
-    "25+",
-    "35-49",
-    "35-54",
-    "35+",
-    "50+"
-]
-TWITTER_GENDER_OPTIONS = ["All", "Male", "Female"]
-TWITTER_CHAR_LIMIT = 250
+TWITTER_AGE_SEGMENTS = data["pages"]["9_social_media"]["twitter_age_segments"]
+TWITTER_GENDER_OPTIONS = data["pages"]["9_social_media"]["twitter_gender_options"]
+TWITTER_CHAR_LIMIT = data["pages"]["9_social_media"]["twitter_char_limit"]
 
-INSTAGRAM_GENDER_OPTIONS = ["All", "Men", "Women"]
-INSTAGRAM_CHAR_LIMIT = 2200
+INSTAGRAM_GENDER_OPTIONS = data["pages"]["9_social_media"]["instagram_gender_options"]
+INSTAGRAM_CHAR_LIMIT = data["pages"]["9_social_media"]["instagram_char_limit"]
 
-THREADS_CHAR_LIMIT = 500
+THREADS_CHAR_LIMIT = data["pages"]["9_social_media"]["threads_char_limit"]
 
-AD_PROMPT_TEMPLATE = """I want you to act as a senior social media ads content creator who knows how to create awesome social media content. 
-You are working to create an ad for {platform}. Use {limit} characters to write this ad.
-The ad is for people in age range of {age_range} and of the gender {gender}.
-Generate a social media ad for {theme}: """
-
-IMAGE_PROMPT_TEMPLATE = """Generate an image for {theme}."""
-
-THEMES_FOR_PROMPTS = [
-    "sales of new handbags at Cymbal",
-    "introducing a new line of men's leather shoes",
-    "new opening of Cymbal concept shoe store in NYC",
-    "Cymbal shoes retail brand in NYC"
-]
+AD_PROMPT_TEMPLATE = data["pages"]["9_social_media"]["ad_prompt_template"]
+IMAGE_PROMPT_TEMPLATE = data["pages"]["9_social_media"]["image_prompt_template"]
+THEMES_FOR_PROMPTS = data["pages"]["9_social_media"]["themes_for_prompts"]
 
 st.set_page_config(
-    page_title="Social Media", 
-    page_icon='/app/images/favicon.png'
+    page_title=data["pages"]["9_social_media"]["page_title"],
+    page_icon=data["pages"]["9_social_media"]["page_icon"]
 )
 
 import utils_styles
 utils_styles.sidebar_apply_style(
     style=utils_styles.style_sidebar,
-    image_path='/app/images/menu_icon_2.png'
+    image_path=data["pages"]["9_social_media"]["sidebar_image_path"]
 )
 
 cols = st.columns([17, 83])
 with cols[0]:
-    st.image('/app/images/social_icon.png')
+    st.image(data["pages"]["9_social_media"]["page_title_image"])
 with cols[1]:
-    st.title('Social Media')
+    st.title(data["pages"]["9_social_media"]["page_title"])
 
 def generate_ad(
         theme, 
@@ -100,8 +90,8 @@ def generate_ad(
     try:
         # Initialize variables
         with st.spinner(f'Generating {platform} text ...'):
-            vertexai.init(project=utils_config.get_env_project_id(), location=utils_config.LOCATION)
-            llm = TextGenerationModel.from_pretrained("text-bison@001")
+            vertexai.init(project=PROJECT_ID, location=LOCATION)
+            llm = TextGenerationModel.from_pretrained(TEXT_MODEL_NAME)
             response = llm.predict(
                     prompt=AD_PROMPT_TEMPLATE.format(
                         theme=theme,
@@ -117,43 +107,43 @@ def generate_ad(
     except:
         if platform == 'Threads':
             if theme == THEMES_FOR_PROMPTS[0]:
-                st.session_state[key_prefix+"_Text"] = utils_default_image_text.SOCIAL_THREADS_0
+                st.session_state[key_prefix+"_Text"] = data["pages"]["9_social_media"]["social_threads_0"]
             elif theme == THEMES_FOR_PROMPTS[1]:
-                st.session_state[key_prefix+"_Text"] = utils_default_image_text.SOCIAL_THREADS_1
+                st.session_state[key_prefix+"_Text"] = data["pages"]["9_social_media"]["social_threads_1"]
             elif theme == THEMES_FOR_PROMPTS[2]:
-                st.session_state[key_prefix+"_Text"] = utils_default_image_text.SOCIAL_THREADS_2
+                st.session_state[key_prefix+"_Text"] = data["pages"]["9_social_media"]["social_threads_2"]
             elif theme == THEMES_FOR_PROMPTS[3]:
-                st.session_state[key_prefix+"_Text"] = utils_default_image_text.SOCIAL_THREADS_3
+                st.session_state[key_prefix+"_Text"] = data["pages"]["9_social_media"]["social_threads_3"]
         elif platform == "Instagram":
             if theme == THEMES_FOR_PROMPTS[0]:
-                st.session_state[key_prefix+"_Text"] = utils_default_image_text.SOCIAL_INSTAGRAM_0
+                st.session_state[key_prefix+"_Text"] = data["pages"]["9_social_media"]["social_instagram_0"]
             elif theme == THEMES_FOR_PROMPTS[1]:
-                st.session_state[key_prefix+"_Text"] = utils_default_image_text.SOCIAL_INSTAGRAM_1
+                st.session_state[key_prefix+"_Text"] = data["pages"]["9_social_media"]["social_instagram_1"]
             elif theme == THEMES_FOR_PROMPTS[2]:
-                st.session_state[key_prefix+"_Text"] = utils_default_image_text.SOCIAL_INSTAGRAM_2
+                st.session_state[key_prefix+"_Text"] = data["pages"]["9_social_media"]["social_instagram_2"]
             elif theme == THEMES_FOR_PROMPTS[3]:
-                st.session_state[key_prefix+"_Text"] = utils_default_image_text.SOCIAL_INSTAGRAM_3
+                st.session_state[key_prefix+"_Text"] = data["pages"]["9_social_media"]["social_instagram_3"]
     else:
         st.session_state[key_prefix+"_Text"] = response
         if not response:
             if platform == 'Threads':
                 if theme == THEMES_FOR_PROMPTS[0]:
-                    st.session_state[key_prefix+"_Text"] = utils_default_image_text.SOCIAL_THREADS_0
+                    st.session_state[key_prefix+"_Text"] = data["pages"]["9_social_media"]["social_threads_0"]
                 elif theme == THEMES_FOR_PROMPTS[1]:
-                    st.session_state[key_prefix+"_Text"] = utils_default_image_text.SOCIAL_THREADS_1
+                    st.session_state[key_prefix+"_Text"] = data["pages"]["9_social_media"]["social_threads_1"]
                 elif theme == THEMES_FOR_PROMPTS[2]:
-                    st.session_state[key_prefix+"_Text"] = utils_default_image_text.SOCIAL_THREADS_2
+                    st.session_state[key_prefix+"_Text"] = data["pages"]["9_social_media"]["social_threads_2"]
                 elif theme == THEMES_FOR_PROMPTS[3]:
-                    st.session_state[key_prefix+"_Text"] = utils_default_image_text.SOCIAL_THREADS_3
+                    st.session_state[key_prefix+"_Text"] = data["pages"]["9_social_media"]["social_threads_3"]
             elif platform == "Instagram":
                 if theme == THEMES_FOR_PROMPTS[0]:
-                    st.session_state[key_prefix+"_Text"] = utils_default_image_text.SOCIAL_INSTAGRAM_0
+                    st.session_state[key_prefix+"_Text"] = data["pages"]["9_social_media"]["social_instagram_0"]
                 elif theme == THEMES_FOR_PROMPTS[1]:
-                    st.session_state[key_prefix+"_Text"] = utils_default_image_text.SOCIAL_INSTAGRAM_1
+                    st.session_state[key_prefix+"_Text"] = data["pages"]["9_social_media"]["social_instagram_1"]
                 elif theme == THEMES_FOR_PROMPTS[2]:
-                    st.session_state[key_prefix+"_Text"] = utils_default_image_text.SOCIAL_INSTAGRAM_2
+                    st.session_state[key_prefix+"_Text"] = data["pages"]["9_social_media"]["social_instagram_2"]
                 elif theme == THEMES_FOR_PROMPTS[3]:
-                    st.session_state[key_prefix+"_Text"] = utils_default_image_text.SOCIAL_INSTAGRAM_3
+                    st.session_state[key_prefix+"_Text"] = data["pages"]["9_social_media"]["social_instagram_3"]
     
     if st.session_state[key_prefix+'_Has_Image_Flag'] and key_prefix+"_Text" in st.session_state:
         prompt_image = IMAGE_PROMPT_TEMPLATE.format(
@@ -211,29 +201,29 @@ def render_ad(
                 if platform == "Instagram":
                     if theme == THEMES_FOR_PROMPTS[0]:
                         utils_default_image_text.get_default_image_bytesio(
-                            '/app/images/social_instagram_0.png', key_prefix+"_Selected_Image")
+                            data["pages"]["9_social_media"]["default_image_instagram_0"], key_prefix+"_Selected_Image")
                     elif theme == THEMES_FOR_PROMPTS[1]:
                         utils_default_image_text.get_default_image_bytesio(
-                            '/app/images/social_instagram_1.png', key_prefix+"_Selected_Image")
+                            data["pages"]["9_social_media"]["default_image_instagram_1"], key_prefix+"_Selected_Image")
                     elif theme == THEMES_FOR_PROMPTS[2]:
                         utils_default_image_text.get_default_image_bytesio(
-                            '/app/images/social_instagram_2.png', key_prefix+"_Selected_Image")
+                            data["pages"]["9_social_media"]["default_image_instagram_2"], key_prefix+"_Selected_Image")
                     elif theme == THEMES_FOR_PROMPTS[3]:
                         utils_default_image_text.get_default_image_bytesio(
-                            '/app/images/social_instagram_3.png', key_prefix+"_Selected_Image")
+                            data["pages"]["9_social_media"]["default_image_instagram_3"], key_prefix+"_Selected_Image")
                 else:
                     if theme == THEMES_FOR_PROMPTS[0]:
                         utils_default_image_text.get_default_image_bytesio(
-                            '/app/images/social_threads_0.png', key_prefix+"_Selected_Image")
+                            data["pages"]["9_social_media"]["default_image_threads_0"], key_prefix+"_Selected_Image")
                     elif theme == THEMES_FOR_PROMPTS[1]:
                         utils_default_image_text.get_default_image_bytesio(
-                            '/app/images/social_threads_1.png', key_prefix+"_Selected_Image")
+                            data["pages"]["9_social_media"]["default_image_threads_1"], key_prefix+"_Selected_Image")
                     elif theme == THEMES_FOR_PROMPTS[2]:
                         utils_default_image_text.get_default_image_bytesio(
-                            '/app/images/social_threads_2.png', key_prefix+"_Selected_Image")
+                            data["pages"]["9_social_media"]["default_image_threads_2"], key_prefix+"_Selected_Image")
                     elif theme == THEMES_FOR_PROMPTS[3]:
                         utils_default_image_text.get_default_image_bytesio(
-                            '/app/images/social_threads_3.png', key_prefix+"_Selected_Image")
+                            data["pages"]["9_social_media"]["default_image_threads_3"], key_prefix+"_Selected_Image")
         else:
             if key_prefix+"_Generated_Images" in st.session_state:
                 if not st.session_state[key_prefix+"_Generated_Images"]:
@@ -243,29 +233,29 @@ def render_ad(
                         if platform == "Instagram":
                             if theme == THEMES_FOR_PROMPTS[0]:
                                 utils_default_image_text.get_default_image_bytesio(
-                                    '/app/images/social_instagram_0.png', key_prefix+"_Selected_Image")
+                                    data["pages"]["9_social_media"]["default_image_instagram_0"], key_prefix+"_Selected_Image")
                             elif theme == THEMES_FOR_PROMPTS[1]:
                                 utils_default_image_text.get_default_image_bytesio(
-                                    '/app/images/social_instagram_1.png', key_prefix+"_Selected_Image")
+                                    data["pages"]["9_social_media"]["default_image_instagram_1"], key_prefix+"_Selected_Image")
                             elif theme == THEMES_FOR_PROMPTS[2]:
                                 utils_default_image_text.get_default_image_bytesio(
-                                    '/app/images/social_instagram_2.png', key_prefix+"_Selected_Image")
+                                    data["pages"]["9_social_media"]["default_image_instagram_2"], key_prefix+"_Selected_Image")
                             elif theme == THEMES_FOR_PROMPTS[3]:
                                 utils_default_image_text.get_default_image_bytesio(
-                                    '/app/images/social_instagram_3.png', key_prefix+"_Selected_Image")
+                                    data["pages"]["9_social_media"]["default_image_instagram_3"], key_prefix+"_Selected_Image")
                         else:
                             if theme == THEMES_FOR_PROMPTS[0]:
                                 utils_default_image_text.get_default_image_bytesio(
-                                    '/app/images/social_threads_0.png', key_prefix+"_Selected_Image")
+                                    data["pages"]["9_social_media"]["default_image_threads_0"], key_prefix+"_Selected_Image")
                             elif theme == THEMES_FOR_PROMPTS[1]:
                                 utils_default_image_text.get_default_image_bytesio(
-                                    '/app/images/social_threads_1.png', key_prefix+"_Selected_Image")
+                                    data["pages"]["9_social_media"]["default_image_threads_1"], key_prefix+"_Selected_Image")
                             elif theme == THEMES_FOR_PROMPTS[2]:
                                 utils_default_image_text.get_default_image_bytesio(
-                                    '/app/images/social_threads_2.png', key_prefix+"_Selected_Image")
+                                    data["pages"]["9_social_media"]["default_image_threads_2"], key_prefix+"_Selected_Image")
                             elif theme == THEMES_FOR_PROMPTS[3]:
                                 utils_default_image_text.get_default_image_bytesio(
-                                    '/app/images/social_threads_3.png', key_prefix+"_Selected_Image")
+                                    data["pages"]["9_social_media"]["default_image_threads_3"], key_prefix+"_Selected_Image")
 
     if key_prefix+"_Selected_Image" in st.session_state:
         st.image(st.session_state[key_prefix+"_Selected_Image"])

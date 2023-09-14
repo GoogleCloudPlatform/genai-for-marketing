@@ -46,7 +46,6 @@ utils_styles.sidebar_apply_style(
 # Set project parameters
 PROJECT_ID = data["global"]["project_id"]
 LOCATION = data["global"]["location"]
-
 TEXT_MODEL_NAME = data["models"]["text"]["text_model_name"]
 CAMPAIGNS_KEY = data["pages"]["campaigns"]["campaigns_key"]
 
@@ -71,16 +70,11 @@ IMAGE_GENERATION_TEXT_PROMPT_KEY = f"{PAGE_KEY_PREFIX}_Text_Prompt_Images_Genera
 EDIT_GENERATED_IMAGE_PROMPT_KEY = f"{PAGE_KEY_PREFIX}_Edit_Text_Prompt_Images_Generation"
 DEFAULT_IMAGE_PROMPT_KEY = f"{PAGE_KEY_PREFIX}_Image_Prompt"
 
-
-EMAIL_PROMPT_TEMPLATE = """I want you to act as a senior content creator who knows how to create awesome website content. 
-You are working to create a blog post for an informational website. 
-It presents information in reverse chronological order and it's written in an informal or conversational style.
-Generate a blog post for {theme}.
-"""
-
-IMAGE_PROMPT_TAMPLATE = """Generate an image for {theme}"""
-
+# Templates
+EMAIL_PROMPT_TEMPLATE = data["pages"]["8_website_post"]["prompt_email_template"]
+IMAGE_PROMPT_TAMPLATE = data["pages"]["8_website_post"]["prompt_image_template"]
 THEMES_FOR_PROMPTS = data["pages"]["8_website_post"]["prompt_themes"]
+
 
 cols = st.columns([15, 85])
 with cols[0]:
@@ -136,24 +130,24 @@ if submit_button:
                 ).text
         except:
             if selected_prompt == THEMES_FOR_PROMPTS[0]:
-                st.session_state[GENERATED_TEXT_KEY] = utils_default_image_text.WEBSITE_TEXT_WOMEN_HANDBAG
+                st.session_state[GENERATED_TEXT_KEY] = data["pages"]["8_website_post"]["prompt_website_text_women_handbag"]
             elif selected_prompt == THEMES_FOR_PROMPTS[1]:
-                st.session_state[GENERATED_TEXT_KEY] = utils_default_image_text.WEBSITE_TEXT_MEN_SHOES
+                st.session_state[GENERATED_TEXT_KEY] = data["pages"]["8_website_post"]["prompt_website_text_man_shoes"]
             elif selected_prompt == THEMES_FOR_PROMPTS[2]:
-                st.session_state[GENERATED_TEXT_KEY] = utils_default_image_text.WEBSITE_TEXT_CONCEPT_STORE
+                st.session_state[GENERATED_TEXT_KEY] = data["pages"]["8_website_post"]["prompt_website_text_concept_store"]
             elif selected_prompt == THEMES_FOR_PROMPTS[3]:
-                st.session_state[GENERATED_TEXT_KEY] = utils_default_image_text.WEBSITE_TEXT_BRAND
+                st.session_state[GENERATED_TEXT_KEY] = data["pages"]["8_website_post"]["prompt_website_text_brand"]
         else:
             if response:
                 st.session_state[GENERATED_TEXT_KEY] = response
             elif selected_prompt == THEMES_FOR_PROMPTS[0]:
-                st.session_state[GENERATED_TEXT_KEY] = utils_default_image_text.WEBSITE_TEXT_WOMEN_HANDBAG
+                st.session_state[GENERATED_TEXT_KEY] = data["pages"]["8_website_post"]["prompt_website_text_women_handbag"]
             elif selected_prompt == THEMES_FOR_PROMPTS[1]:
-                st.session_state[GENERATED_TEXT_KEY] = utils_default_image_text.WEBSITE_TEXT_MEN_SHOES
+                st.session_state[GENERATED_TEXT_KEY] = data["pages"]["8_website_post"]["prompt_website_text_man_shoes"]
             elif selected_prompt == THEMES_FOR_PROMPTS[2]:
-                st.session_state[GENERATED_TEXT_KEY] = utils_default_image_text.WEBSITE_TEXT_CONCEPT_STORE
+                st.session_state[GENERATED_TEXT_KEY] = data["pages"]["8_website_post"]["prompt_website_text_concept_store"]
             elif selected_prompt == THEMES_FOR_PROMPTS[3]:
-                st.session_state[GENERATED_TEXT_KEY] = utils_default_image_text.WEBSITE_TEXT_BRAND
+                st.session_state[GENERATED_TEXT_KEY] = data["pages"]["8_website_post"]["prompt_website_text_brand"]
 
     st.write('**Generated text**')
     st.write(st.session_state[GENERATED_TEXT_KEY])
@@ -191,31 +185,31 @@ if submit_button:
     except:
         if selected_prompt == THEMES_FOR_PROMPTS[0]:
             utils_default_image_text.get_default_image_bytesio(
-                '/app/images/website_1.png', SELECTED_IMAGE_KEY, True)
+                data["pages"]["8_website_post"]["default_image_0"], SELECTED_IMAGE_KEY, True)
         elif selected_prompt == THEMES_FOR_PROMPTS[1]:
             utils_default_image_text.get_default_image_bytesio(
-                '/app/images/website_2.png', SELECTED_IMAGE_KEY, True)
+                data["pages"]["8_website_post"]["default_image_1"], SELECTED_IMAGE_KEY, True)
         elif selected_prompt == THEMES_FOR_PROMPTS[2]:
             utils_default_image_text.get_default_image_bytesio(
-                '/app/images/website_3.png', SELECTED_IMAGE_KEY, True)
+                data["pages"]["8_website_post"]["default_image_2"], SELECTED_IMAGE_KEY, True)
         elif selected_prompt == THEMES_FOR_PROMPTS[3]:
             utils_default_image_text.get_default_image_bytesio(
-                '/app/images/website_4.png', SELECTED_IMAGE_KEY, True)
+                data["pages"]["8_website_post"]["default_image_3"], SELECTED_IMAGE_KEY, True)
     else:
         if not upload_image:
             if not st.session_state[GENERATED_IMAGES_KEY]:
                 if selected_prompt == THEMES_FOR_PROMPTS[0]:
                     utils_default_image_text.get_default_image_bytesio(
-                        '/app/images/website_1.png', SELECTED_IMAGE_KEY, True)
+                        data["pages"]["8_website_post"]["default_image_0"], SELECTED_IMAGE_KEY, True)
                 elif selected_prompt == THEMES_FOR_PROMPTS[1]:
                     utils_default_image_text.get_default_image_bytesio(
-                        '/app/images/website_2.png', SELECTED_IMAGE_KEY, True)
+                        data["pages"]["8_website_post"]["default_image_1"], SELECTED_IMAGE_KEY, True)
                 elif selected_prompt == THEMES_FOR_PROMPTS[2]:
                     utils_default_image_text.get_default_image_bytesio(
-                        '/app/images/website_3.png', SELECTED_IMAGE_KEY, True)
+                        data["pages"]["8_website_post"]["default_image_2"], SELECTED_IMAGE_KEY, True)
                 elif selected_prompt == THEMES_FOR_PROMPTS[3]:
                     utils_default_image_text.get_default_image_bytesio(
-                        '/app/images/website_4.png', SELECTED_IMAGE_KEY, True)
+                        data["pages"]["8_website_post"]["default_image_3"], SELECTED_IMAGE_KEY, True)
 
 
 if GENERATED_TEXT_KEY in st.session_state and not FLAG_NEW:

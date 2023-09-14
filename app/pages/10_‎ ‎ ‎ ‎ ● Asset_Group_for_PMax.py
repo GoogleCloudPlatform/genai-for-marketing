@@ -20,34 +20,39 @@ Marketing Insights demonstration:
 - Translate content
 """
 
-import streamlit as st
-import utils_image
-import utils_config
-from vertexai.preview.language_models import TextGenerationModel
-import pandas as pd
 import base64
-
+import pandas as pd
 import random
+import streamlit as st
+import tomllib
 import utils_default_image_text
+import utils_image
 
-from utils_campaign import CAMPAIGNS_KEY, generate_names_uuid_dict
+from utils_campaign import generate_names_uuid_dict
+from vertexai.preview.language_models import TextGenerationModel
+
+
+# Load configuration file
+with open("./app_config.toml", "rb") as f:
+    data = tomllib.load(f)
 
 st.set_page_config(
-    page_title="Asset Group for PMax", 
-    page_icon='/app/images/favicon.png'
+    page_title=data["pages"]["10_asset_group"]["page_title"], 
+    page_icon=data["pages"]["10_asset_group"]["page_icon"]
 )
 
 import utils_styles
 utils_styles.sidebar_apply_style(
     style=utils_styles.style_sidebar,
-    image_path='/app/images/menu_icon_2.png'
+    image_path=data["pages"]["10_asset_group"]["sidebar_image_path"]
 )
 
 # Set project parameters 
-PROJECT_ID = utils_config.get_env_project_id()
-LOCATION = utils_config.LOCATION
-TEXT_MODEL_NAME = utils_config.TEXT_MODEL_NAME
-IMAGE_MODEL_NAME = utils_config.IMAGE_MODEL_NAME
+PROJECT_ID = data["global"]["project_id"]
+LOCATION = data["global"]["location"]
+TEXT_MODEL_NAME = data["models"]["text"]["text_model_name"]
+IMAGE_MODEL_NAME = data["models"]["image"]["image_model_name"]
+CAMPAIGNS_KEY = data["pages"]["campaigns"]["campaigns_key"]
 
 # State variables for image and text generation
 PAGE_KEY_PREFIX = "AssetGroupPmax"
@@ -66,75 +71,25 @@ MASK_IMAGE_KEY = f"{PAGE_KEY_PREFIX}_Mask_Image"
 EDITED_IMAGES_KEY = f"{PAGE_KEY_PREFIX}_Edited_Images"
 IMAGE_PROMPT_KEY = f"{PAGE_KEY_PREFIX}_Image_Prompt"
 
-GENERATED_IMAGES_KEY = f'{PAGE_KEY_PREFIX}_generated_images'
-# EDIT_GENERATED_IMAGE_PROMPT_KEY = f'{PAGE_KEY_PREFIX}_edit_generated_image_prompt'
-# SELECTED_IMAGE_KEY = f'{PAGE_KEY_PREFIX}_selected_image'
-# IMAGE_TO_EDIT_KEY = f'{PAGE_KEY_PREFIX}_image_to_edit'
-# MASK_IMAGE_KEY = f'{PAGE_KEY_PREFIX}_mask_image'
-# EDITED_IMAGES_KEY = f'{PAGE_KEY_PREFIX}_edited_images'
+GENERATED_IMAGES_KEY = f"{PAGE_KEY_PREFIX}_generated_images"
 
-IMAGE_GENERATION_PROMPT = "Generate an image for {theme}"
-
-
-CYMBAL_OVERVIEW = """Cymbal brand information:
-1. Brand Name:Cymbal
-2. Vision: Elevate every step and statement with our curated ensemble of footwear and handbags.
-3. Mission: To seamlessly blend comfort and style, Cymbal aims to provide a harmonious collection of shoes and handbags, resonating with modern elegance and timeless charm.
-4. Products: 
-Shoes: From the bustling city streets to quiet evening outings, our shoes are tailored to fit every scenario with unmatched style and comfort.
-Handbags: Crafted for the modern individual, our range spans from spacious totes for daily grind to chic clutches for those nights to remember.
-5. Unique Selling Proposition (USP): A symphony of style. At Cymbal, we believe in orchestrating the perfect balance between trendsetting designs and unparalleled quality.
-6. Target Audience: Style-savvy individuals aged 20-50 who have an ear for quality and an eye for timeless elegance, seeking the perfect accessories to accompany their ever-evolving lifestyles.
-7. Brand Personality: Harmonious, chic, and captivating. Cymbal echoes the rhythm of contemporary fashion with a hint of classic allure.
-8. Core Values: Quality First: Every product at Cymbal resonates with a promise of durability and excellence.
-Listening to the Beat: We constantly tune into our customer's needs and desires, shaping our collections to mirror the world's evolving fashion pulse.
-Echoing Sustainability: Cymbal strikes a chord with the environment, ensuring eco-friendly practices and sustainable choices are at the forefront.
-9. Brand Tagline: "Echo Your Elegance."
-10. Competitive Landscape: The fashion industry reverberates with many brands, but Cymbal stands distinct with its commitment to harmonizing quality, trend, and sustainability.
-11. Future Outlook: Cymbal aspires to expand its resonance in the global market, infusing more sustainable materials into its products, and initiating special editions through designer partnerships, creating exclusive, melodious collections.
-Cymbal is not just a brand; it's an experience. Recognizing the rhythm of life and the melodies of fashion, we ensure every piece adds a note of sophistication to our customer's ensemble. Every choice at Cymbal is a step toward a more stylish tomorrow.
-"""
-
+IMAGE_GENERATION_PROMPT = data["pages"]["10_asset_group"]["image_generation_prompt"]
+CYMBAL_OVERVIEW = data["pages"]["10_asset_group"]["cymbal_overview"]
 
 # Prompt templates
-HEADLINE_PROMPT_TEMPLATE = """Using the Cymbal brand information below as your context, create 5 headlines for a campaign with {theme} as objective, under 30 characters each headline.
-{cymbal_overview}
+HEADLINE_PROMPT_TEMPLATE = data["pages"]["10_asset_group"]["headline_prompt_template"]
+LONG_HEADLINE_PROMPT_TEMPLATE = data["pages"]["10_asset_group"]["load_headline_prompt_template"]
+DESCRIPTION_PROMPT_TEMPLATE = data["pages"]["10_asset_group"]["description_prompt_template"]
+BUSINESS_NAME = data["pages"]["10_asset_group"]["business_name"]
+CALL_TO_ACTION = data["pages"]["10_asset_group"]["call_to_action"]
+THEMES_FOR_PROMPTS = data["pages"]["10_asset_group"]["themes_for_prompts"]
 
-Headlines: """
-
-LONG_HEADLINE_PROMPT_TEMPLATE = """Using the Cymbal brand information below as your context, create 5 long headlines (90 characters each) for a campaign with {theme} as objective. Be creative and use all the 90 characters for the long headline.
-{cymbal_overview}
-Long headlines: """
-
-DESCRIPTION_PROMPT_TEMPLATE = """Using the Cymbal brand information below as your context, create a product description (90 characters) for {theme}. Be creative and use all the 90 characters for the long headline.
-{cymbal_overview}
-Product description: """
-
-BUSINESS_NAME = 'Cymbal'
-
-CALL_TO_ACTION = [
-"Book Now",
-"Contact Us",
-"Download",
-"Learn More",
-"Visit Site",
-"Shop Now",
-"Sign Up",
-"Subscribe",
-"See More"]
-
-THEMES_FOR_PROMPTS = [
-    "sales of new women's handbags at Cymbal",
-    "introducing a new line of men's leather shoes",
-    "new opening of Cymbal concept shoe store in NYC",
-    "Cymbal shoes retail brand in NYC"
-]
 
 cols = st.columns([15, 85])
 with cols[0]:
-    st.image('/app/images/asset_icon.png')
+    st.image(data["pages"]["10_asset_group"]["page_title_image"])
 with cols[1]:
-    st.title('Asset Group for PMax')
+    st.title(data["pages"]["10_asset_group"]["page_title"])
 
 st.write("""Generate an asset group for PMax using Vertex AI PaLM 2 API.""")
 
@@ -173,10 +128,10 @@ if is_button:
                     cymbal_overview=CYMBAL_OVERVIEW)
             ).text
         except:
-            st.session_state[HEADLINE_KEY] = utils_default_image_text.ASSET_GROUP_HEADLINES
+            st.session_state[HEADLINE_KEY] = data["pages"]["10_asset_group"]["asset_group_headlines"]
         else:
             if not st.session_state[HEADLINE_KEY]:
-                st.session_state[HEADLINE_KEY] = utils_default_image_text.ASSET_GROUP_HEADLINES
+                st.session_state[HEADLINE_KEY] = data["pages"]["10_asset_group"]["asset_group_headlines"]
 
         try:
             st.session_state[LONG_HEADLINE_KEY] = llm.predict(
@@ -186,10 +141,10 @@ if is_button:
                 max_output_tokens=1024
             ).text
         except:
-            st.session_state[HEADLINE_KEY] = utils_default_image_text.ASSET_GROUP_LONG_HEADLINES
+            st.session_state[HEADLINE_KEY] = data["pages"]["10_asset_group"]["asset_group_long_headlines"]
         else:
             if not st.session_state[HEADLINE_KEY]:
-                st.session_state[HEADLINE_KEY] = utils_default_image_text.ASSET_GROUP_LONG_HEADLINES
+                st.session_state[HEADLINE_KEY] = data["pages"]["10_asset_group"]["asset_group_long_headlines"]
 
         try:
             st.session_state[DESCRIPTION_KEY] = llm.predict(
@@ -199,10 +154,10 @@ if is_button:
                 max_output_tokens=1024
             ).text
         except:
-            st.session_state[HEADLINE_KEY] = utils_default_image_text.ASSET_GROUP_DESCRIPTION
+            st.session_state[HEADLINE_KEY] = data["pages"]["10_asset_group"]["asset_group_description"]
         else:
             if not st.session_state[HEADLINE_KEY]:
-                st.session_state[HEADLINE_KEY] = utils_default_image_text.ASSET_GROUP_DESCRIPTION
+                st.session_state[HEADLINE_KEY] = data["pages"]["10_asset_group"]["asset_group_description"]
 
         st.session_state[CALL_TO_ACTION_KEY] = random.choice(CALL_TO_ACTION)
         st.session_state[THEMES_FOR_PROMPTS_KEY] = select_theme
@@ -260,54 +215,54 @@ if is_button:
     except:
         st.session_state[GENERATED_IMAGES_KEY] = []
         if select_theme == THEMES_FOR_PROMPTS[0]:
-            with open("/app/images/asset_group_0_0.png", "rb") as fp:
+            with open(data["pages"]["10_asset_group"]["default_image_asset_0_0"], "rb") as fp:
                 st.session_state[GENERATED_IMAGES_KEY].append({"bytesBase64Encoded":base64.b64encode(fp.read()).decode('utf-8')})
-            with open("/app/images/asset_group_0_1.png", "rb") as fp:
+            with open(data["pages"]["10_asset_group"]["default_image_asset_0_1"], "rb") as fp:
                 st.session_state[GENERATED_IMAGES_KEY].append({"bytesBase64Encoded":base64.b64encode(fp.read()).decode('utf-8')})
             
         elif select_theme == THEMES_FOR_PROMPTS[1]:
-            with open("/app/images/asset_group_1_0.png", "rb") as fp:
+            with open(data["pages"]["10_asset_group"]["default_image_asset_1_0"], "rb") as fp:
                 st.session_state[GENERATED_IMAGES_KEY].append({"bytesBase64Encoded":base64.b64encode(fp.read()).decode('utf-8')})
-            with open("/app/images/asset_group_1_1.png", "rb") as fp:
+            with open(data["pages"]["10_asset_group"]["default_image_asset_1_1"], "rb") as fp:
                 st.session_state[GENERATED_IMAGES_KEY].append({"bytesBase64Encoded":base64.b64encode(fp.read()).decode('utf-8')})
             
         elif select_theme == THEMES_FOR_PROMPTS[2]:
-            with open("/app/images/asset_group_2_0.png", "rb") as fp:
+            with open(data["pages"]["10_asset_group"]["default_image_asset_2_0"], "rb") as fp:
                 st.session_state[GENERATED_IMAGES_KEY].append({"bytesBase64Encoded":base64.b64encode(fp.read()).decode('utf-8')})
-            with open("/app/images/asset_group_2_1.png", "rb") as fp:
+            with open(data["pages"]["10_asset_group"]["default_image_asset_2_1"], "rb") as fp:
                 st.session_state[GENERATED_IMAGES_KEY].append({"bytesBase64Encoded":base64.b64encode(fp.read()).decode('utf-8')})
             
         elif select_theme == THEMES_FOR_PROMPTS[3]:
-            with open("/app/images/asset_group_3_0.png", "rb") as fp:
+            with open(data["pages"]["10_asset_group"]["default_image_asset_3_0"], "rb") as fp:
                 st.session_state[GENERATED_IMAGES_KEY].append({"bytesBase64Encoded":base64.b64encode(fp.read()).decode('utf-8')})
-            with open("/app/images/asset_group_3_1.png", "rb") as fp:
+            with open(data["pages"]["10_asset_group"]["default_image_asset_3_1"], "rb") as fp:
                 st.session_state[GENERATED_IMAGES_KEY].append({"bytesBase64Encoded":base64.b64encode(fp.read()).decode('utf-8')})
     else:
         if GENERATED_IMAGES_KEY in st.session_state:
             if not st.session_state[GENERATED_IMAGES_KEY]:
                 st.session_state[GENERATED_IMAGES_KEY] = []
                 if select_theme == THEMES_FOR_PROMPTS[0]:
-                    with open("/app/images/asset_group_0_0.png", "rb") as fp:
+                    with open(data["pages"]["10_asset_group"]["default_image_asset_0_0"], "rb") as fp:
                         st.session_state[GENERATED_IMAGES_KEY].append({"bytesBase64Encoded":base64.b64encode(fp.read()).decode('utf-8')})
-                    with open("/app/images/asset_group_0_1.png", "rb") as fp:
+                    with open(data["pages"]["10_asset_group"]["default_image_asset_0_1"], "rb") as fp:
                         st.session_state[GENERATED_IMAGES_KEY].append({"bytesBase64Encoded":base64.b64encode(fp.read()).decode('utf-8')})
                     
                 elif select_theme == THEMES_FOR_PROMPTS[1]:
-                    with open("/app/images/asset_group_1_0.png", "rb") as fp:
+                    with open(data["pages"]["10_asset_group"]["default_image_asset_1_0"], "rb") as fp:
                         st.session_state[GENERATED_IMAGES_KEY].append({"bytesBase64Encoded":base64.b64encode(fp.read()).decode('utf-8')})
-                    with open("/app/images/asset_group_1_1.png", "rb") as fp:
+                    with open(data["pages"]["10_asset_group"]["default_image_asset_1_1"], "rb") as fp:
                         st.session_state[GENERATED_IMAGES_KEY].append({"bytesBase64Encoded":base64.b64encode(fp.read()).decode('utf-8')})
                     
                 elif select_theme == THEMES_FOR_PROMPTS[2]:
-                    with open("/app/images/asset_group_2_0.png", "rb") as fp:
+                    with open(data["pages"]["10_asset_group"]["default_image_asset_2_0"], "rb") as fp:
                         st.session_state[GENERATED_IMAGES_KEY].append({"bytesBase64Encoded":base64.b64encode(fp.read()).decode('utf-8')})
-                    with open("/app/images/asset_group_2_1.png", "rb") as fp:
+                    with open(data["pages"]["10_asset_group"]["default_image_asset_2_1"], "rb") as fp:
                         st.session_state[GENERATED_IMAGES_KEY].append({"bytesBase64Encoded":base64.b64encode(fp.read()).decode('utf-8')})
                     
                 elif select_theme == THEMES_FOR_PROMPTS[3]:
-                    with open("/app/images/asset_group_3_0.png", "rb") as fp:
+                    with open(data["pages"]["10_asset_group"]["default_image_asset_3_0"], "rb") as fp:
                         st.session_state[GENERATED_IMAGES_KEY].append({"bytesBase64Encoded":base64.b64encode(fp.read()).decode('utf-8')})
-                    with open("/app/images/asset_group_3_1.png", "rb") as fp:
+                    with open(data["pages"]["10_asset_group"]["default_image_asset_3_1"], "rb") as fp:
                         st.session_state[GENERATED_IMAGES_KEY].append({"bytesBase64Encoded":base64.b64encode(fp.read()).decode('utf-8')})
     
     if GENERATED_IMAGES_KEY in st.session_state:
