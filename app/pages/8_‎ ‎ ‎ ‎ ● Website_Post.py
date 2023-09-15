@@ -22,7 +22,6 @@ Blog post generation:
 import base64
 import streamlit as st
 import tomllib
-import utils_default_image_text
 import utils_image
 import vertexai
 
@@ -184,31 +183,31 @@ if submit_button:
             )
     except:
         if selected_prompt == THEMES_FOR_PROMPTS[0]:
-            utils_default_image_text.get_default_image_bytesio(
+            utils_image.get_default_image_bytesio(
                 data["pages"]["8_website_post"]["default_image_0"], SELECTED_IMAGE_KEY, True)
         elif selected_prompt == THEMES_FOR_PROMPTS[1]:
-            utils_default_image_text.get_default_image_bytesio(
+            utils_image.get_default_image_bytesio(
                 data["pages"]["8_website_post"]["default_image_1"], SELECTED_IMAGE_KEY, True)
         elif selected_prompt == THEMES_FOR_PROMPTS[2]:
-            utils_default_image_text.get_default_image_bytesio(
+            utils_image.get_default_image_bytesio(
                 data["pages"]["8_website_post"]["default_image_2"], SELECTED_IMAGE_KEY, True)
         elif selected_prompt == THEMES_FOR_PROMPTS[3]:
-            utils_default_image_text.get_default_image_bytesio(
+            utils_image.get_default_image_bytesio(
                 data["pages"]["8_website_post"]["default_image_3"], SELECTED_IMAGE_KEY, True)
     else:
         if not upload_image:
             if not st.session_state[GENERATED_IMAGES_KEY]:
                 if selected_prompt == THEMES_FOR_PROMPTS[0]:
-                    utils_default_image_text.get_default_image_bytesio(
+                    utils_image.get_default_image_bytesio(
                         data["pages"]["8_website_post"]["default_image_0"], SELECTED_IMAGE_KEY, True)
                 elif selected_prompt == THEMES_FOR_PROMPTS[1]:
-                    utils_default_image_text.get_default_image_bytesio(
+                    utils_image.get_default_image_bytesio(
                         data["pages"]["8_website_post"]["default_image_1"], SELECTED_IMAGE_KEY, True)
                 elif selected_prompt == THEMES_FOR_PROMPTS[2]:
-                    utils_default_image_text.get_default_image_bytesio(
+                    utils_image.get_default_image_bytesio(
                         data["pages"]["8_website_post"]["default_image_2"], SELECTED_IMAGE_KEY, True)
                 elif selected_prompt == THEMES_FOR_PROMPTS[3]:
-                    utils_default_image_text.get_default_image_bytesio(
+                    utils_image.get_default_image_bytesio(
                         data["pages"]["8_website_post"]["default_image_3"], SELECTED_IMAGE_KEY, True)
 
 

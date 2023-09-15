@@ -20,7 +20,6 @@ import base64
 import streamlit as st
 import tomllib
 import vertexai
-import utils_default_image_text
 import utils_image
 
 from vertexai.preview.language_models import TextGenerationModel
@@ -200,29 +199,29 @@ def render_ad(
             else:
                 if platform == "Instagram":
                     if theme == THEMES_FOR_PROMPTS[0]:
-                        utils_default_image_text.get_default_image_bytesio(
+                        utils_image.get_default_image_bytesio(
                             data["pages"]["9_social_media"]["default_image_instagram_0"], key_prefix+"_Selected_Image")
                     elif theme == THEMES_FOR_PROMPTS[1]:
-                        utils_default_image_text.get_default_image_bytesio(
+                        utils_image.get_default_image_bytesio(
                             data["pages"]["9_social_media"]["default_image_instagram_1"], key_prefix+"_Selected_Image")
                     elif theme == THEMES_FOR_PROMPTS[2]:
-                        utils_default_image_text.get_default_image_bytesio(
+                        utils_image.get_default_image_bytesio(
                             data["pages"]["9_social_media"]["default_image_instagram_2"], key_prefix+"_Selected_Image")
                     elif theme == THEMES_FOR_PROMPTS[3]:
-                        utils_default_image_text.get_default_image_bytesio(
+                        utils_image.get_default_image_bytesio(
                             data["pages"]["9_social_media"]["default_image_instagram_3"], key_prefix+"_Selected_Image")
                 else:
                     if theme == THEMES_FOR_PROMPTS[0]:
-                        utils_default_image_text.get_default_image_bytesio(
+                        utils_image.get_default_image_bytesio(
                             data["pages"]["9_social_media"]["default_image_threads_0"], key_prefix+"_Selected_Image")
                     elif theme == THEMES_FOR_PROMPTS[1]:
-                        utils_default_image_text.get_default_image_bytesio(
+                        utils_image.get_default_image_bytesio(
                             data["pages"]["9_social_media"]["default_image_threads_1"], key_prefix+"_Selected_Image")
                     elif theme == THEMES_FOR_PROMPTS[2]:
-                        utils_default_image_text.get_default_image_bytesio(
+                        utils_image.get_default_image_bytesio(
                             data["pages"]["9_social_media"]["default_image_threads_2"], key_prefix+"_Selected_Image")
                     elif theme == THEMES_FOR_PROMPTS[3]:
-                        utils_default_image_text.get_default_image_bytesio(
+                        utils_image.get_default_image_bytesio(
                             data["pages"]["9_social_media"]["default_image_threads_3"], key_prefix+"_Selected_Image")
         else:
             if key_prefix+"_Generated_Images" in st.session_state:
@@ -232,29 +231,29 @@ def render_ad(
                     else:
                         if platform == "Instagram":
                             if theme == THEMES_FOR_PROMPTS[0]:
-                                utils_default_image_text.get_default_image_bytesio(
+                                utils_image.get_default_image_bytesio(
                                     data["pages"]["9_social_media"]["default_image_instagram_0"], key_prefix+"_Selected_Image")
                             elif theme == THEMES_FOR_PROMPTS[1]:
-                                utils_default_image_text.get_default_image_bytesio(
+                                utils_image.get_default_image_bytesio(
                                     data["pages"]["9_social_media"]["default_image_instagram_1"], key_prefix+"_Selected_Image")
                             elif theme == THEMES_FOR_PROMPTS[2]:
-                                utils_default_image_text.get_default_image_bytesio(
+                                utils_image.get_default_image_bytesio(
                                     data["pages"]["9_social_media"]["default_image_instagram_2"], key_prefix+"_Selected_Image")
                             elif theme == THEMES_FOR_PROMPTS[3]:
-                                utils_default_image_text.get_default_image_bytesio(
+                                utils_image.get_default_image_bytesio(
                                     data["pages"]["9_social_media"]["default_image_instagram_3"], key_prefix+"_Selected_Image")
                         else:
                             if theme == THEMES_FOR_PROMPTS[0]:
-                                utils_default_image_text.get_default_image_bytesio(
+                                utils_image.get_default_image_bytesio(
                                     data["pages"]["9_social_media"]["default_image_threads_0"], key_prefix+"_Selected_Image")
                             elif theme == THEMES_FOR_PROMPTS[1]:
-                                utils_default_image_text.get_default_image_bytesio(
+                                utils_image.get_default_image_bytesio(
                                     data["pages"]["9_social_media"]["default_image_threads_1"], key_prefix+"_Selected_Image")
                             elif theme == THEMES_FOR_PROMPTS[2]:
-                                utils_default_image_text.get_default_image_bytesio(
+                                utils_image.get_default_image_bytesio(
                                     data["pages"]["9_social_media"]["default_image_threads_2"], key_prefix+"_Selected_Image")
                             elif theme == THEMES_FOR_PROMPTS[3]:
-                                utils_default_image_text.get_default_image_bytesio(
+                                utils_image.get_default_image_bytesio(
                                     data["pages"]["9_social_media"]["default_image_threads_3"], key_prefix+"_Selected_Image")
 
     if key_prefix+"_Selected_Image" in st.session_state:

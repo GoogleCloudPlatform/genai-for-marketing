@@ -31,6 +31,7 @@ import utils_edit_image
 from google.cloud import aiplatform
 from google.protobuf import json_format
 from google.protobuf.struct_pb2 import Value
+from io import BytesIO
 from PIL import Image
 import streamlit as st
 from typing import List
@@ -48,6 +49,18 @@ MODEL_NAME = data["models"]["image"]["image_model_name"]
 IMAGEN_API_ENDPOINT = f'{LOCATION}-aiplatform.googleapis.com'
 IMAGEN_ENDPOINT = f'projects/{PROJECT_ID}/locations/{LOCATION}/publishers/google/models/{MODEL_NAME}'
 IMAGE_UPLOAD_BYTES_LIMIT = 10 ** 7
+
+
+def get_default_image_bytesio(
+        image_path: str,
+        selected_image_key: str,
+        display_image: bool = False) -> BytesIO:
+    with open(image_path, 'rb') as fp:
+        image = io.BytesIO(fp.read())
+    st.session_state[selected_image_key] = image
+    if display_image:
+        st.write("**Currently select image:**")
+        st.image(image)
 
 
 def resize_image_bytes(
