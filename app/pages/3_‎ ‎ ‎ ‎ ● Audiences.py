@@ -15,7 +15,8 @@
 
 """
 Audience and Insight finder: 
-- Create a conversational interface with data by translating from natural language to SQL queries.
+- Create a conversational interface with data 
+  by translating from natural language to SQL queries.
 """
 
 import streamlit as st
@@ -41,7 +42,9 @@ DATASET_ID = data["pages"]["3_audiences"]["dataset_id"]
 TAG_NAME = data["pages"]["3_audiences"]["tag_name"]
 
 TAG_TEMPLATE_NAME = f'projects/{PROJECT_ID}/locations/{LOCATION}/tagTemplates/{TAG_NAME}'
-QUERY = f'SELECT * FROM `{PROJECT_ID}.{DATASET_ID}.INFORMATION_SCHEMA.TABLES` WHERE table_name NOT LIKE "%metadata%"'
+QUERY = (
+    f'SELECT * FROM `{PROJECT_ID}.{DATASET_ID}.INFORMATION_SCHEMA.TABLES`'
+    ' WHERE table_name NOT LIKE "%metadata%"')
 
 bqclient = bigquery.Client(project=PROJECT_ID)
 vertexai.init(project=PROJECT_ID, location=LOCATION)
@@ -73,12 +76,12 @@ with cols[1]:
     st.title(data["pages"]["3_audiences"]["page_title"])
 
 st.write(
-    """
-    This page provides instructions on how to extract data from BigQuery using natural language and the PaLM API. 
-    PaLM is a large language model from Google AI that can understand and respond to natural language queries. 
-    By using PaLM, you can ask questions about your data in plain English, and PaLM will generate the 
-    SQL queries necessary to retrieve the data.
-    """
+    "This page provides instructions on how to extract data from BigQuery"  
+    "using natural language and the PaLM API. "
+    "PaLM is a large language model from Google AI that can understand "
+    "and respond to natural language queries. " 
+    "By using PaLM, you can ask questions about your data in plain English, "
+    "and PaLM will generate the SQL queries necessary to retrieve the data."
 )
 
 # =========================== Data preview =====================================
@@ -91,19 +94,22 @@ if preview_button:
     if PREVIEW_TABLES_KEY in st.session_state:
         del st.session_state[PREVIEW_TABLES_KEY]
     else:
-        st.session_state[PREVIEW_TABLES_KEY] = [
-            {'query': f'SELECT * FROM `{PROJECT_ID}.{DATASET_ID}.customers` LIMIT 3', 'name': 'customers'},
-            {'query': f'SELECT * FROM `{PROJECT_ID}.{DATASET_ID}.events` LIMIT 3', 'name': 'events'},
-            {'query': f'SELECT * FROM `{PROJECT_ID}.{DATASET_ID}.transactions` LIMIT 3', 'name': 'transactions'}]
+        dataset_path = f"{PROJECT_ID}.{DATASET_ID}"
+        query_template = f"SELECT * FROM `{dataset_path}.""{table}` LIMIT 3"
+        table_names = ["customers", "events", "transactions"] 
+        st.session_state[PREVIEW_TABLES_KEY] = [{
+            'query': query_template.format(table=table_name),
+            'name': table_name
+        } for table_name in table_names]
 
 if PREVIEW_TABLES_KEY in st.session_state:
     if RESULT_PREVIEW_QUERY_KEY not in st.session_state:
         result_query = []
         with st.spinner('Querying BigQuery...'):
-            for preview_table in st.session_state[PREVIEW_TABLES_KEY]:
+            for table in st.session_state[PREVIEW_TABLES_KEY]:
                 result_query.append({
-                    "name": preview_table['name'],
-                    "dataframe": bqclient.query(preview_table['query']).to_dataframe()
+                    "name": table['name'],
+                    "dataframe": bqclient.query(table['query']).to_dataframe()
                 })
         st.session_state[RESULT_PREVIEW_QUERY_KEY] = result_query
     
