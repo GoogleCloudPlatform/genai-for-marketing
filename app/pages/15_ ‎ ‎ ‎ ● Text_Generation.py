@@ -20,32 +20,37 @@ Text Generation:
 
 
 import streamlit as st
+import tomllib
 import utils_prompt
-import utils_config
 
+
+# Load configuration file
+with open("./app_config.toml", "rb") as f:
+    data = tomllib.load(f)
 
 # Set project parameters
-PROJECT_ID = utils_config.get_env_project_id()
-LOCATION = utils_config.LOCATION
+PROJECT_ID = data["global"]["project_id"]
+LOCATION = data["global"]["location"]
+TEXT_MODEL_NAME = data["models"]["text"]["text_model_name"]
 
 # State variables for text generation
 PAGE_KEY_PREFIX = "TextGeneration"
 GENERATED_TEXT_KEY = f"{PAGE_KEY_PREFIX}_Generated_Text"
 
 st.set_page_config(
-    page_title="Text Generation with PaLM", 
-    page_icon='/app/images/favicon.png')
+    page_title=data["pages"]["15_text_generation"]["page_title"],
+    page_icon=data["pages"]["15_text_generation"]["page_icon"])
 
 import utils_styles
 utils_styles.sidebar_apply_style(
     style=utils_styles.style_sidebar,
-    image_path='/app/images/menu_icon_2.png')
+    image_path=data["pages"]["15_text_generation"]["sidebar_image_path"])
 
 cols = st.columns([13, 87])
 with cols[0]:
-    st.image('/app/images/favicon.png')
+    st.image(data["pages"]["15_text_generation"]["page_title_icon"])
 with cols[1]:
-    st.title('Text Generation')
+    st.title(data["pages"]["15_text_generation"]["page_title"])
 
 st.write(
     """

@@ -982,3 +982,23 @@ sidebar_image_path = "/app/images/menu_icon_2.png"
 file_name = "/app/images/favicon.png"
 
 
+[pages.15_text_generation] # Configurations for 15_Text_Generation.py page =============================================
+page_title = "Text Generation with PaLM"
+page_icon = "/app/images/favicon.png"
+sidebar_image_path = "/app/images/menu_icon_2.png"
+page_title_icon = "/app/images/favicon.png"
+
+
+[pages.16_image_generation] # Configurations for 16_Image_Generation.py page =============================================
+page_title = "Image Generation"
+page_icon = "/app/images/favicon.png"
+sidebar_image_path = "/app/images/menu_icon_2.png"
+page_title_icon = "/app/images/favicon.png"
+
+pre_populated_prompts = [
+    'A photo of a handbag on a kitchen counter, natural lighting, 4k',
+    'A photo of a handbag on the beach, natural lighting, 4k',
+    'Studio photo of a purple handbag, natural lighting, 4k'
+]
+
+image_upload_bytes_limit = 1e7
