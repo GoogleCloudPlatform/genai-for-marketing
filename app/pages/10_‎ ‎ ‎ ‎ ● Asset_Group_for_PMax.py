@@ -25,7 +25,6 @@ import pandas as pd
 import random
 import streamlit as st
 import tomllib
-import utils_default_image_text
 import utils_image
 
 from utils_campaign import generate_names_uuid_dict

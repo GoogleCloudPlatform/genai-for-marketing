@@ -22,26 +22,33 @@ Marketing Insights demonstration:
 
 
 import streamlit as st
-import utils_config
+import tomllib
+
+
+# Load configuration file
+with open("./app_config.toml", "rb") as f:
+    data = tomllib.load(f)
 
 st.set_page_config(
-    page_title="Campaign Performance", 
-    page_icon='/app/images/favicon.png',
+    page_title=data["pages"]["13_campaign_performance"]["page_title"], 
+    page_icon=data["pages"]["13_campaign_performance"]["page_icon"],
     layout='wide'
 )
 
 import utils_styles
 utils_styles.sidebar_apply_style(
     style=utils_styles.style_sidebar,
-    image_path='/app/images/menu_icon_2.png'
+    image_path=data["pages"]["13_campaign_performance"]["sidebar_image_path"]
 )
 
 # Set project parameters 
-PROJECT_ID = utils_config.get_env_project_id()
-LOCATION = utils_config.LOCATION
-TEXT_MODEL_NAME = utils_config.TEXT_MODEL_NAME
+PROJECT_ID = data["global"]["project_id"]
+LOCATION = data["global"]["location"]
+TEXT_MODEL_NAME = data["models"]["text"]["text_model_name"]
+IMAGE_MODEL_NAME = data["models"]["image"]["image_model_name"]
 
-DASHBOARDS = utils_config.DASHBOARDS
+DASHBOARDS = data["pages"]["13_campaign_performance"]["dashboards"]
+INFOBOT = data["pages"]["13_campaign_performance"]["infobot"]
 
 # State variables
 PAGE_KEY_PREFIX = "CampaignPerformance"
@@ -61,7 +68,7 @@ with cols[1]:
         """
     )
 
-    if utils_config.DASHBOARDS:
+    if DASHBOARDS:
         with st.form(key='generate_marketing_dashboard'):
             option = st.selectbox(
                 'Select a dashboard to be displayed',
@@ -77,12 +84,5 @@ with cols[1]:
 if DASHBOARD_KEY in st.session_state:
     st.components.v1.html(f"""
 <iframe src="{DASHBOARDS.get(st.session_state[DASHBOARD_KEY])}" frameborder="0" width="100%" height="800px"></iframe>
-{utils_config.INFOBOT}
+{INFOBOT}
 """, height=800)
-
-# Uncomment this block if you want to display a default dashboard
-# else:
-#     st.components.v1.html(f"""
-# <iframe src="https://googledemo.looker.com/embed/dashboards/2127?allow_login_screen=true" frameborder="0" width="100%" height="800px"></iframe>
-# {utils_config.INFOBOT}
-# """, height=800)

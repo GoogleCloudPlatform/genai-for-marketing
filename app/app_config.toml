@@ -906,3 +906,79 @@ default_image_asset_2_1 = "/app/images/asset_group_2_1.png"
 
 default_image_asset_3_0 = "/app/images/asset_group_3_0.png"
 default_image_asset_3_1 = "/app/images/asset_group_3_1.png"
+
+
+[pages.11_activation_optimization] # Configurations for 11_Activation_Optimization.py page =============================================
+page_title = "Activation & Optimization"
+page_icon = "/app/images/favicon.png"
+sidebar_image_path = "/app/images/menu_icon_2.png"
+file_name = "/app/images/page_3.png"
+
+
+[pages.12_review_activate] # Configurations for 12_Review_Activate.py page =============================================
+page_title = "Review and Activate"
+page_icon = "/app/images/favicon.png"
+sidebar_image_path = "/app/images/menu_icon_2.png"
+page_title_icon = "/app/images/activate_icon.png"
+
+# Workspace default variables --------------------
+
+# Provide the path to your JSON credential
+# This credential will be used to interact with Workspace
+# This is the path inside the docker image, example: /app/credential.json
+service_account_json_key = '/credentials/rl-llm-dev.json'  # Change this path if you copied the file to a different path 
+
+# ID of the templates
+drive_folder_id = '<DRIVE FOLDER ID>' # example: "1MYB0Ybyo9XZERgIcjsdfeqO0SKqhrkvqMx"
+slides_template_id = '<SLIDES TEMPLATE ID>' # example: '16uQlLkCJ9YRiMU_IoONHsl-vY-uKeoasnWTPlbZZ1D4'
+doc_template_id = '<DOCS TEMPLATE ID>' # example: '1kqvxZLRXIdfM8MVS7css4UoiJ8f0I4dKFj9cP986K4pM'
+sheet_template_id = '<SHEETS TEMPLATE ID>' # example: '1gIaIWLOeKmnjso7-CAAAcqMlPznpoEXDdEue3DNWr7bw'
+slide_page_id_list = ["p3","p4","p5","p6","p7","p8"] # LIST OF PAGES WHERE YOU WANT TO INSERT CHARTS FROM THE SHEETS
+
+# Scope for the Workspace API - don't change
+workspace_scopes = [
+    'https://www.googleapis.com/auth/presentations',
+    'https://www.googleapis.com/auth/spreadsheets',
+    'https://www.googleapis.com/auth/drive.file',
+    'https://www.googleapis.com/auth/drive',
+    'https://www.googleapis.com/auth/drive.resource',
+    'https://www.googleapis.com/auth/documents']
+
+
+[pages.13_campaign_performance] # Configurations for 13_Campaign_Performance.py page =============================================
+page_title = "Campaign Performance"
+page_icon = "/app/images/favicon.png"
+sidebar_image_path = "/app/images/menu_icon_2.png"
+page_title_icon = "/app/images/opt_icon.png"
+
+# Infobot version
+# Change with the code snippet provided by your Infobot deployment
+# The code is similar to the one commented below
+infobot = """<script src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js"></script>
+<df-messenger
+  project-id="gen-app-builder-infobot-demo"
+  agent-id="ba8721e5-2aba-487e-b766-efc1fdf70e21"
+  language-code="en">
+  <df-messenger-chat-bubble
+   chat-title="infobot-ads-help">
+  </df-messenger-chat-bubble>
+</df-messenger>
+<style>
+  df-messenger {
+    z-index: 999;
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+  }
+</style>"""
+
+dashboards.Overview = 'https://googledemo.looker.com/embed/dashboards/2131?allow_login_screen=true'
+
+
+[pages.14_vertex_ai] # Configurations for 14_Vertex_AI_APIs.py page =============================================
+page_title = "Vertex AI APIs"
+page_icon = "/app/images/favicon.png"
+sidebar_image_path = "/app/images/menu_icon_2.png"
+file_name = "/app/images/favicon.png"
+
+

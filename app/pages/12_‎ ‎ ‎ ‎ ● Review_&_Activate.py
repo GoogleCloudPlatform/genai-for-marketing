@@ -16,27 +16,44 @@
 Content Activation:
 """
 
-import time
 import base64
-from io import BytesIO
+import io
+import pandas as pd
 import re
 import streamlit as st
-import pandas as pd
-from utils_campaign import CAMPAIGNS_KEY, Campaign, generate_names_uuid_dict 
-import zipfile
-import streamlit as st 
+import time
+import tomllib
 import uuid
-import pandas as pd
-from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
-from googleapiclient import discovery
-import streamlit as st
-import base64
-from google.oauth2 import service_account
-from googleapiclient.http import MediaIoBaseUpload
-import io
+import zipfile
 
-import utils_config
+from googleapiclient import discovery
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaIoBaseUpload
+from google.oauth2 import service_account
+from io import BytesIO
+from utils_campaign import Campaign, generate_names_uuid_dict 
+
+
+# Load configuration file
+with open("./app_config.toml", "rb") as f:
+    data = tomllib.load(f)
+
+# Set project parameters 
+PROJECT_ID = data["global"]["project_id"]
+LOCATION = data["global"]["location"]
+TEXT_MODEL_NAME = data["models"]["text"]["text_model_name"]
+IMAGE_MODEL_NAME = data["models"]["image"]["image_model_name"]
+CAMPAIGNS_KEY = data["pages"]["campaigns"]["campaigns_key"]
+
+# Variables for Workspace integration
+SCOPES = data["pages"]["12_review_activate"]["workspace_scopes"]
+SLIDES_TEMPLATE_ID = data["pages"]["12_review_activate"]["slides_template_id"]
+DOC_TEMPLATE_ID = data["pages"]["12_review_activate"]["doc_template_id"]
+DRIVE_FOLDER_ID = data["pages"]["12_review_activate"]["drive_folder_id"]
+SHEET_TEMPLATE_ID = data["pages"]["12_review_activate"]["sheet_template_id"]
+service_account_json_key = data["pages"]["12_review_activate"]["service_account_json_key"]
+creds = service_account.Credentials.from_service_account_file(filename=service_account_json_key, scopes=SCOPES)
+new_folder_id = DRIVE_FOLDER_ID
 
 
 PAGE_PREFIX_KEY = "Content_Activation"
@@ -48,20 +65,20 @@ NEW_FOLDER_KEY = f"{PAGE_PREFIX_KEY}_new_folder_id_key"
 
 
 st.set_page_config(
-    page_title="Review and Activate", 
-    page_icon='/app/images/favicon.png')
+    page_title=data["pages"]["12_review_activate"]["page_title"], 
+    page_icon=data["pages"]["12_review_activate"]["page_icon"])
 
 import utils_styles
 utils_styles.sidebar_apply_style(
     utils_styles.style_sidebar,
-    '/app/images/menu_icon_2.png'
+    data["pages"]["12_review_activate"]["sidebar_image_path"]
 )
 
 cols = st.columns([15, 85])
 with cols[0]:
-    st.image('/app/images/activate_icon.png')
+    st.image(data["pages"]["12_review_activate"]["page_title_icon"])
 with cols[1]:
-    st.title('Review and Activation')
+    st.title(data["pages"]["12_review_activate"]["page_title"])
 
 
 def render_openlink_button(link:str, button_text:str):
@@ -357,7 +374,7 @@ if SELECTED_CAMPAIGN_KEY in st.session_state:
         }
         
         sheet_chart_id_list = get_chart_id(SHEET_TEMPLATE_ID)
-        page_list = utils_config.SLIDE_PAGE_ID_LIST
+        page_list = data["pages"]["12_review_activate"]["slide_page_id_list"]
 
         service = build('slides', 'v1', credentials=creds)
         img_url="https://images.unsplash.com/photo-1433643667043-663b34a5c052?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2304&q=80"
@@ -573,17 +590,6 @@ if SELECTED_CAMPAIGN_KEY in st.session_state:
                     'role': 'writer'}
         service = build('drive', 'v3', credentials=creds)
         return service.permissions().create(fileId=file_id,sendNotificationEmail=False,body=permission).execute()
-
-    SCOPES = utils_config.WORKSPACE_SCOPES
-
-    # The ID of a sample presentation.
-    SLIDES_TEMPLATE_ID = utils_config.SLIDES_TEMPLATE_ID
-    DOC_TEMPLATE_ID = utils_config.DOC_TEMPLATE_ID
-    DRIVE_FOLDER_ID = utils_config.DRIVE_FOLDER_ID
-    SHEET_TEMPLATE_ID = utils_config.SHEET_TEMPLATE_ID
-    service_account_json_key = utils_config.SERVICE_ACCOUNT_JSON_KEY
-    creds = service_account.Credentials.from_service_account_file(filename=service_account_json_key, scopes=SCOPES)
-    new_folder_id = DRIVE_FOLDER_ID 
     
     if NEW_FOLDER_KEY in st.session_state and st.session_state[NEW_FOLDER_KEY]:
         new_folder_id = st.session_state[NEW_FOLDER_KEY]
