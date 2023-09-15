@@ -16,12 +16,11 @@
 """
 Marketing Insights demonstration: 
 - Render Looker Dashboards with marketing data
-- Create personalized headlines and images for marketing campaigns
-- Translate content
 """
 
 
 import streamlit as st
+import streamlit.components.v1 as components
 import tomllib
 
 
@@ -29,16 +28,17 @@ import tomllib
 with open("./app_config.toml", "rb") as f:
     data = tomllib.load(f)
 
+page_cfg = data["pages"]["2_marketing_insights"]
 st.set_page_config(
-    page_title=data["pages"]["2_marketing_insights"]["page_title"], 
-    page_icon=data["pages"]["2_marketing_insights"]["page_icon"],
+    page_title=page_cfg["page_title"], 
+    page_icon=page_cfg["page_icon"],
     layout='wide'
 )
 
 import utils_styles
 utils_styles.sidebar_apply_style(
     style=utils_styles.style_sidebar,
-    image_path=data["pages"]["2_marketing_insights"]["sidebar_image_path"]
+    image_path=page_cfg["sidebar_image_path"]
 )
 
 # Set project parameters 
@@ -48,26 +48,9 @@ TEXT_MODEL_NAME = data["global"]["location"]
 
 # State variables for image and text generation
 PAGE_KEY_PREFIX = "MarketingPlatforms"
-GENERATED_TEXT_KEY = f"{PAGE_KEY_PREFIX}_Generated_Text"
-GENERATED_IMAGES_KEY = f"{PAGE_KEY_PREFIX}_Generated_Images"
-IMAGE_TO_EDIT_GENERATION_KEY = f"{PAGE_KEY_PREFIX}_Image_to_Edit_Generation"
-MASK_IMAGE_GENERATION_KEY = f"{PAGE_KEY_PREFIX}_Mask_Image_Generation"
-EDITED_IMAGES_GENERATION_KEY = f"{PAGE_KEY_PREFIX}_Edited_Images_Generation"
-IMAGE_GENERATION_TEXT_PROMPT_KEY = f"{PAGE_KEY_PREFIX}_Text_Prompt_Images_Generation"
-EDIT_GENERATED_IMAGE_PROMPT_KEY = f"{PAGE_KEY_PREFIX}_Edit_Text_Prompt_Images_Generation"
-
-# State variables for image editing 
-IMAGE_TO_EDIT_KEY = f"{PAGE_KEY_PREFIX}_Image_to_Edit"
-EDITED_IMAGES_KEY = f"{PAGE_KEY_PREFIX}_Edited_Images"
-MASK_IMAGE_KEY = f"{PAGE_KEY_PREFIX}_Mask_Image"
 DASHBOARD_KEY = f"{PAGE_KEY_PREFIX}_Dashboard"
-FILE_UPLOADER_KEY = f"{PAGE_KEY_PREFIX}_File_Uploader"
-IMAGE_TO_EDIT_PROMPT_KEY = f"{PAGE_KEY_PREFIX}_Edit_Prompt_key"
 
-# Prompt setup
-PRE_POPULATED_PROMPTS = data["pages"]["2_marketing_insights"]["pre_populated_prompts"]
-
-DASHBOARDS = data["pages"]["2_marketing_insights"]["dashboards"]
+DASHBOARDS = page_cfg["dashboards"]
 
 
 cols = st.columns([15,70,15])
@@ -75,15 +58,12 @@ cols = st.columns([15,70,15])
 with cols[1]:
     cols = st.columns([15, 85])
     with cols[0]:
-        st.image(data["pages"]["2_marketing_insights"]["page_title_image"])
+        st.image(page_cfg["page_title_image"])
     with cols[1]:
-        st.title(data["pages"]["2_marketing_insights"]["page_title"])
+        st.title(page_cfg["page_title"])
 
-    st.write(
-        """
-        This page presents visualizations of marketing data in the form of Looker Dashboards.
-        """
-    )
+    st.write("This page presents visualizations of marketing data"
+             " in the form of Looker Dashboards.")
 
     if DASHBOARDS:
         with st.form(key='generate_marketing_dashboard'):
@@ -99,13 +79,13 @@ with cols[1]:
         st.info('Dashboards not available.')
 
 if DASHBOARD_KEY in st.session_state:
-    st.components.v1.iframe(
+    components.iframe(
         src=DASHBOARDS.get(st.session_state[DASHBOARD_KEY]), 
         height=800, 
         scrolling=False
     )
 else:
-    st.components.v1.iframe(
+    components.iframe(
         src=DASHBOARDS['Overview'],
         height=800, 
         scrolling=False
