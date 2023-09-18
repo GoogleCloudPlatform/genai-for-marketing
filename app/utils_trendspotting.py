@@ -80,7 +80,7 @@ class GDELTRetriever:
         self.source_lang: str = 'english'
         
         if tone == 'positive':
-            self.tone = 'tone>5'
+            self.tone = 'tone>10'
         elif tone == 'negative':
             self.tone = 'tone<-5'
 
@@ -198,9 +198,9 @@ def summarize_news_article(document: Dict, llm):
             `page_content`: The original text of the news article.
             `summary`: A one-sentence summary of the news article.
     """
-    prompt_template = f"""Write a one sentence summary of the following article delimited by triple backticks:
-
-    ```{document['page_content']}```
+    prompt_template = f"""Write a one sentence summary of the news article below:
+    input: {document['page_content']}
+    output:
     """
     document['summary'] = llm.predict(prompt_template).text
     return document

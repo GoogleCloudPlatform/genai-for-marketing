@@ -137,7 +137,7 @@ with cols_page[1]:
     )
     with st.form(key='form_summarize'):
         st.write('**Summarize News**')
-        col1, col2 = st.columns([50,50])
+        col1, col2, col3 = st.columns([50,50,50])
 
         with col1:
             max_records = st.number_input(
@@ -145,11 +145,6 @@ with cols_page[1]:
                 min_value=1,
                 max_value=20,
                 value=5, step=1)
-            
-        with col2:
-            tone = st.radio(
-                'Tone',
-                ('positive', 'negative'))
 
         col_keyword_1, col_keyword_2, col_keyword_3 = st.columns([33, 33, 33])
         with col_keyword_1:
@@ -170,7 +165,7 @@ with cols_page[1]:
         st.session_state[SUMMARIZATION_TERM_KEY] = [keyword_1, keyword_2, keyword_3]
 
         with st.spinner('Summarizing news...'):        
-            retriever = GDELTRetriever(max_records=max_records, tone=tone)
+            retriever = GDELTRetriever(max_records=max_records)
             today_date = datetime.now()
             start_date = today_date - timedelta(5)
 
@@ -192,12 +187,12 @@ with cols_page[1]:
                 for i, doc in enumerate(documents):
                     summary = summarize_news_article(doc, llm)['summary']
                     summaries.append(f"""
-                    - **Title**: {doc["title"]}.\n
-                    **Summary**: {summary}
-                    """)
+                    **Original Headline**: {doc["title"]}.\n
+                    **Summary**: {summary}""")
                 st.session_state[SUMMARIZATION_SUMMARIES_KEY] = summaries
         
     if SUMMARIZATION_SUMMARIES_KEY in st.session_state:
         for summary in st.session_state[SUMMARIZATION_SUMMARIES_KEY]:
             st.write(summary)
+            st.divider()
     ##########################################
