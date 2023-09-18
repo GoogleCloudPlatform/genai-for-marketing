@@ -14,7 +14,7 @@
 
 
 """
-Utility module for Enterprise Search API
+Utility module for Vertex AI Search API
 """
 
 
