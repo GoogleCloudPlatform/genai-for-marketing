@@ -60,7 +60,8 @@ COMMS_CHANNEL_KEY = f'{PAGE_KEY_PREFIX}_comms_channels'
 THEMES_FOR_PROMPTS_KEY = f'{PAGE_KEY_PREFIX}_theme'
 
 # Prompt templates
-CYMBAL_OVERVIEW = data["pages"]["campaigns"]["prompt_cymbal_brand_overview"]
+BRAND_OVERVIEW = data["pages"]["campaigns"].get("prompt_brand_overview", "")
+
 BRAND_STATEMENT_PROMPT_TEMPLATE = data["pages"]["campaigns"]["prompt_brand_statement_template"]
 PRIMARY_MSG_PROMPT_TEMPLATE = data["pages"]["campaigns"]["prompt_primary_msg_template"]
 COMMS_CHANNEL_PROMPT_TEMPLATE = data["pages"]["campaigns"]["prompt_comms_channel_template"]
@@ -149,26 +150,26 @@ if create_campaign_button:
             return await asyncio.gather(
                 async_predict(
                     BRAND_STATEMENT_PROMPT_TEMPLATE.format(
-                        gender_theme=gender_select_theme, 
-                        age_theme=age_select_theme,
-                        objective_theme=objective_select_theme,
-                        competitor_theme=competitor_select_theme,
-                        cymbal_overview=CYMBAL_OVERVIEW),
+                        gender_select_theme, 
+                        age_select_theme,
+                        objective_select_theme,
+                        competitor_select_theme,
+                        BRAND_OVERVIEW),
                     "Brand Statement"),
                 async_predict(
                     PRIMARY_MSG_PROMPT_TEMPLATE.format(
-                        gender_theme=gender_select_theme, 
-                        age_theme=age_select_theme,
-                        objective_theme=objective_select_theme,
-                        competitor_theme=competitor_select_theme,
-                        cymbal_overview=CYMBAL_OVERVIEW),
+                        gender_select_theme, 
+                        age_select_theme,
+                        objective_select_theme,
+                        competitor_select_theme,
+                        BRAND_OVERVIEW),
                     "Brand Strategy"),
                 async_predict(
                     COMMS_CHANNEL_PROMPT_TEMPLATE.format(
-                        gender_theme=gender_select_theme, 
-                        age_theme=age_select_theme,
-                        objective_theme=objective_select_theme,
-                        competitor_theme=competitor_select_theme),
+                        gender_select_theme, 
+                        age_select_theme,
+                        objective_select_theme,
+                        competitor_select_theme),
                     "Communication channels")) 
         try:
             generated_tuple = asyncio.run(generate_campaign())

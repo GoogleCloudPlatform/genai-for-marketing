@@ -135,7 +135,7 @@ st.dataframe(audience_dataframe.head(sample_size))
 async def email_generate(row: pd.Series, theme: str) -> pd.Series:
     prompt_row_no_lan = row.drop('language')
 
-    email_prompt = EMAIL_TEXT_PROMPT.format(data=prompt_row_no_lan.to_string(), theme=theme)
+    email_prompt = EMAIL_TEXT_PROMPT.format(prompt_row_no_lan.to_string(), theme)
     loop = asyncio.get_running_loop()
     progress_text = f"Generating email text for {prompt_row_no_lan.first_name}"
     email_bar = st.progress(0, text=progress_text)
@@ -173,7 +173,7 @@ async def email_generate(row: pd.Series, theme: str) -> pd.Series:
 
     email_bar.progress(0.3, text=f'Generating email image for {prompt_row_no_lan.first_name}')
 
-    image_prompt = IMAGE_GENERATION_PROMPT.format(theme=theme)
+    image_prompt = IMAGE_GENERATION_PROMPT.format(theme)
     email_bar.progress(0.6, text=f'Generating email image for {prompt_row_no_lan.first_name}')
 
     try:

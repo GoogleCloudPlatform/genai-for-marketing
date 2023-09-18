@@ -43,10 +43,6 @@ TWITTER_PREFIX = f"{PAGE_KEY_PREFIX}_Twitter"
 INSTAGRAM_PREFIX = f"{PAGE_KEY_PREFIX}_Instagram"
 THREADS_PREFIX = f"{PAGE_KEY_PREFIX}_Threads"
 
-TWITTER_AGE_SEGMENTS = data["pages"]["9_social_media"]["twitter_age_segments"]
-TWITTER_GENDER_OPTIONS = data["pages"]["9_social_media"]["twitter_gender_options"]
-TWITTER_CHAR_LIMIT = data["pages"]["9_social_media"]["twitter_char_limit"]
-
 INSTAGRAM_GENDER_OPTIONS = data["pages"]["9_social_media"]["instagram_gender_options"]
 INSTAGRAM_CHAR_LIMIT = data["pages"]["9_social_media"]["instagram_char_limit"]
 
@@ -93,11 +89,11 @@ def generate_ad(
             llm = TextGenerationModel.from_pretrained(TEXT_MODEL_NAME)
             response = llm.predict(
                     prompt=AD_PROMPT_TEMPLATE.format(
-                        theme=theme,
-                        platform=platform,
-                        age_range=age_range, 
-                        gender=gender,
-                        limit=limit),
+                        platform,
+                        limit,
+                        age_range, 
+                        gender,
+                        theme),
                     temperature=0.2,
                     max_output_tokens=limit//4, # 4 chars per token
                     top_k = 40,
@@ -145,9 +141,7 @@ def generate_ad(
                     st.session_state[key_prefix+"_Text"] = data["pages"]["9_social_media"]["social_instagram_3"]
     
     if st.session_state[key_prefix+'_Has_Image_Flag'] and key_prefix+"_Text" in st.session_state:
-        prompt_image = IMAGE_PROMPT_TEMPLATE.format(
-            theme=theme,
-            platform=platform)
+        prompt_image = IMAGE_PROMPT_TEMPLATE.format(theme)
         st.session_state[key_prefix+"_Generated_Image_Prompt"] = prompt_image
 
 

@@ -14,8 +14,8 @@
 
 
 """
-Blog post generation: 
-- Automatically create blog posts on a wide range of topics and in a variety of styles. 
+Website post generation: 
+- Automatically create website posts on a wide range of topics and in a variety of styles. 
 - These articles include text and visuals
 """
 
@@ -48,8 +48,8 @@ LOCATION = data["global"]["location"]
 TEXT_MODEL_NAME = data["models"]["text"]["text_model_name"]
 CAMPAIGNS_KEY = data["pages"]["campaigns"]["campaigns_key"]
 
-# State variables for email generation (text and image)
-PAGE_KEY_PREFIX = "BlogPost"
+# State variables for Website post generation (text and image)
+PAGE_KEY_PREFIX = "WebsitePost"
 GENERATED_TEXT_KEY = f"{PAGE_KEY_PREFIX}_Generated_Text"
 GENERATED_IMAGES_KEY = f"{PAGE_KEY_PREFIX}_Generated_Image"
 SELECTED_IMAGE_KEY = f"{PAGE_KEY_PREFIX}_Selected_Image"
@@ -70,7 +70,7 @@ EDIT_GENERATED_IMAGE_PROMPT_KEY = f"{PAGE_KEY_PREFIX}_Edit_Text_Prompt_Images_Ge
 DEFAULT_IMAGE_PROMPT_KEY = f"{PAGE_KEY_PREFIX}_Image_Prompt"
 
 # Templates
-EMAIL_PROMPT_TEMPLATE = data["pages"]["8_website_post"]["prompt_email_template"]
+WEBSITE_PROMPT_TEMPLATE = data["pages"]["8_website_post"]["prompt_website_template"]
 IMAGE_PROMPT_TAMPLATE = data["pages"]["8_website_post"]["prompt_image_template"]
 THEMES_FOR_PROMPTS = data["pages"]["8_website_post"]["prompt_themes"]
 
@@ -124,7 +124,7 @@ if submit_button:
             vertexai.init(project=PROJECT_ID, location=LOCATION)
             llm = TextGenerationModel.from_pretrained(TEXT_MODEL_NAME)
             response = llm.predict(
-                    prompt=EMAIL_PROMPT_TEMPLATE.format(theme=selected_prompt),
+                    prompt=WEBSITE_PROMPT_TEMPLATE.format(selected_prompt),
                     max_output_tokens=1024,
                 ).text
         except:
@@ -169,7 +169,7 @@ if submit_button:
                 image_text_prompt_key=IMAGE_GENERATION_TEXT_PROMPT_KEY,
                 generated_images_key=GENERATED_IMAGES_KEY,
                 edit_image_prompt_key=EDIT_GENERATED_IMAGE_PROMPT_KEY,
-                pre_populated_prompts=[IMAGE_PROMPT_TAMPLATE.format(theme=selected_prompt)],
+                pre_populated_prompts=[IMAGE_PROMPT_TAMPLATE.format(selected_prompt)],
                 select_button=True,
                 selected_image_key=SELECTED_IMAGE_KEY,
                 edit_button=True,
@@ -233,7 +233,7 @@ if GENERATED_TEXT_KEY in st.session_state and not FLAG_NEW:
                 image_text_prompt_key=IMAGE_GENERATION_TEXT_PROMPT_KEY,
                 generated_images_key=GENERATED_IMAGES_KEY,
                 edit_image_prompt_key=EDIT_GENERATED_IMAGE_PROMPT_KEY,
-                pre_populated_prompts=[IMAGE_PROMPT_TAMPLATE.format(theme=st.session_state[SELECTED_PROMPT_KEY])],
+                pre_populated_prompts=[IMAGE_PROMPT_TAMPLATE.format(st.session_state[SELECTED_PROMPT_KEY])],
                 select_button=True,
                 selected_image_key=SELECTED_IMAGE_KEY,
                 edit_button=True,

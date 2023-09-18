@@ -73,7 +73,7 @@ IMAGE_PROMPT_KEY = f"{PAGE_KEY_PREFIX}_Image_Prompt"
 GENERATED_IMAGES_KEY = f"{PAGE_KEY_PREFIX}_generated_images"
 
 IMAGE_GENERATION_PROMPT = data["pages"]["10_asset_group"]["image_generation_prompt"]
-CYMBAL_OVERVIEW = data["pages"]["10_asset_group"]["cymbal_overview"]
+BRAND_OVERVIEW = data["pages"]["10_asset_group"]["brand_overview"]
 
 # Prompt templates
 HEADLINE_PROMPT_TEMPLATE = data["pages"]["10_asset_group"]["headline_prompt_template"]
@@ -123,8 +123,8 @@ if is_button:
         try:
             st.session_state[HEADLINE_KEY] = llm.predict(
                 HEADLINE_PROMPT_TEMPLATE.format(
-                    theme=select_theme,
-                    cymbal_overview=CYMBAL_OVERVIEW)
+                    select_theme,
+                    BRAND_OVERVIEW)
             ).text
         except:
             st.session_state[HEADLINE_KEY] = data["pages"]["10_asset_group"]["asset_group_headlines"]
@@ -135,8 +135,8 @@ if is_button:
         try:
             st.session_state[LONG_HEADLINE_KEY] = llm.predict(
                 LONG_HEADLINE_PROMPT_TEMPLATE.format(
-                    theme=select_theme,
-                    cymbal_overview=CYMBAL_OVERVIEW),
+                    select_theme,
+                    BRAND_OVERVIEW),
                 max_output_tokens=1024
             ).text
         except:
@@ -148,8 +148,8 @@ if is_button:
         try:
             st.session_state[DESCRIPTION_KEY] = llm.predict(
                 DESCRIPTION_PROMPT_TEMPLATE.format(
-                    theme=select_theme,
-                    cymbal_overview=CYMBAL_OVERVIEW),
+                    select_theme,
+                    BRAND_OVERVIEW),
                 max_output_tokens=1024
             ).text
         except:
@@ -206,7 +206,7 @@ if is_button:
         else:
             with st.spinner('Generating images...'):
                 utils_image.image_generation(
-                    IMAGE_GENERATION_PROMPT.format(theme=st.session_state[THEMES_FOR_PROMPTS_KEY]),
+                    IMAGE_GENERATION_PROMPT.format(st.session_state[THEMES_FOR_PROMPTS_KEY]),
                     8,
                     256,
                     '1:1',

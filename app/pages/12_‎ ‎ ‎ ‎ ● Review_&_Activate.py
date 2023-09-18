@@ -51,7 +51,7 @@ SLIDES_TEMPLATE_ID = data["pages"]["12_review_activate"]["slides_template_id"]
 DOC_TEMPLATE_ID = data["pages"]["12_review_activate"]["doc_template_id"]
 DRIVE_FOLDER_ID = data["pages"]["12_review_activate"]["drive_folder_id"]
 SHEET_TEMPLATE_ID = data["pages"]["12_review_activate"]["sheet_template_id"]
-service_account_json_key = data["pages"]["12_review_activate"]["service_account_json_key"]
+service_account_json_key = data["global"]["service_account_json_key"]
 creds = service_account.Credentials.from_service_account_file(filename=service_account_json_key, scopes=SCOPES)
 new_folder_id = DRIVE_FOLDER_ID
 
