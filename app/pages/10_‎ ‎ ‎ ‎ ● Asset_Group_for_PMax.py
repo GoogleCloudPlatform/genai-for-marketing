@@ -36,15 +36,17 @@ from vertexai.preview.language_models import TextGenerationModel
 with open("./app_config.toml", "rb") as f:
     data = tomllib.load(f)
 
+page_cfg = data["pages"]["10_asset_group"]
+
 st.set_page_config(
-    page_title=data["pages"]["10_asset_group"]["page_title"], 
-    page_icon=data["pages"]["10_asset_group"]["page_icon"]
+    page_title=page_cfg["page_title"], 
+    page_icon=page_cfg["page_icon"]
 )
 
 import utils_styles
 utils_styles.sidebar_apply_style(
     style=utils_styles.style_sidebar,
-    image_path=data["pages"]["10_asset_group"]["sidebar_image_path"]
+    image_path=page_cfg["sidebar_image_path"]
 )
 
 # Set project parameters 
@@ -62,7 +64,7 @@ DESCRIPTION_KEY = f'{PAGE_KEY_PREFIX}_description'
 CALL_TO_ACTION_KEY = f'{PAGE_KEY_PREFIX}_call_to_action'
 THEMES_FOR_PROMPTS_KEY = f'{PAGE_KEY_PREFIX}_theme'
 
-IMAGE_UPLOAD_CHECKBOX = f"{PAGE_KEY_PREFIX}_Image_Upload_Checkbox"
+IMAGE_OPTION = f"{PAGE_KEY_PREFIX}_Image_Upload_Checkbox"
 FILE_UPLOADER_KEY = f"{PAGE_KEY_PREFIX}_File_Uploader"
 IMAGE_TO_EDIT_PROMPT_KEY = f"{PAGE_KEY_PREFIX}_Edit_Prompt_key"
 
@@ -73,23 +75,23 @@ IMAGE_PROMPT_KEY = f"{PAGE_KEY_PREFIX}_Image_Prompt"
 
 GENERATED_IMAGES_KEY = f"{PAGE_KEY_PREFIX}_generated_images"
 
-IMAGE_GENERATION_PROMPT = data["pages"]["10_asset_group"]["image_generation_prompt"]
-BRAND_OVERVIEW = data["pages"]["10_asset_group"]["brand_overview"]
+IMAGE_GENERATION_PROMPT = page_cfg["image_generation_prompt"]
+BRAND_OVERVIEW = data["pages"]["campaigns"].get("prompt_brand_overview", "")
 
 # Prompt templates
-HEADLINE_PROMPT_TEMPLATE = data["pages"]["10_asset_group"]["headline_prompt_template"]
-LONG_HEADLINE_PROMPT_TEMPLATE = data["pages"]["10_asset_group"]["load_headline_prompt_template"]
-DESCRIPTION_PROMPT_TEMPLATE = data["pages"]["10_asset_group"]["description_prompt_template"]
-BUSINESS_NAME = data["pages"]["10_asset_group"]["business_name"]
-CALL_TO_ACTION = data["pages"]["10_asset_group"]["call_to_action"]
-THEMES_FOR_PROMPTS = data["pages"]["10_asset_group"]["themes_for_prompts"]
+HEADLINE_PROMPT_TEMPLATE = page_cfg["headline_prompt_template"]
+LONG_HEADLINE_PROMPT_TEMPLATE = page_cfg["load_headline_prompt_template"]
+DESCRIPTION_PROMPT_TEMPLATE = page_cfg["description_prompt_template"]
+BUSINESS_NAME = page_cfg["business_name"]
+CALL_TO_ACTION = page_cfg["call_to_action"]
+THEMES_FOR_PROMPTS = page_cfg["themes_for_prompts"]
 
 
 cols = st.columns([15, 85])
 with cols[0]:
-    st.image(data["pages"]["10_asset_group"]["page_title_image"])
+    st.image(page_cfg["page_title_image"])
 with cols[1]:
-    st.title(data["pages"]["10_asset_group"]["page_title"])
+    st.title(page_cfg["page_title"])
 
 st.write("""Generate an asset group for PMax using Vertex AI PaLM 2 API.""")
 
@@ -98,7 +100,11 @@ with st.form(key='form_theme'):
     select_theme = st.selectbox(
         'Select the scenario to generate an asset group for PMax.',
         options=THEMES_FOR_PROMPTS)
-    upload_image = st.checkbox('Upload Image')
+    image_option = st.radio(label="Choose an option for the image:",
+             options=["uploaded", "generated"],
+             format_func=lambda x: f"{x.capitalize()} Image")
+
+
 
     is_button = st.form_submit_button('Generate Asset Group')
 
@@ -116,11 +122,12 @@ if is_button:
         del st.session_state[FILE_UPLOADER_KEY]
 
     is_new_asset = True
-    st.session_state[IMAGE_UPLOAD_CHECKBOX] = upload_image
+    st.session_state[IMAGE_OPTION] = image_option
 
     llm = TextGenerationModel.from_pretrained(TEXT_MODEL_NAME)
 
-    with st.spinner('Generating headlines, long headlines, description and call to action...'):
+    with st.spinner('Generating headlines, long headlines, '
+                    'description and call to action...'):
         try:
             st.session_state[HEADLINE_KEY] = llm.predict(
                 HEADLINE_PROMPT_TEMPLATE.format(
@@ -128,10 +135,11 @@ if is_button:
                     BRAND_OVERVIEW)
             ).text
         except:
-            st.session_state[HEADLINE_KEY] = data["pages"]["10_asset_group"]["asset_group_headlines"]
+            st.session_state[HEADLINE_KEY] = page_cfg["asset_group_headlines"]
         else:
             if not st.session_state[HEADLINE_KEY]:
-                st.session_state[HEADLINE_KEY] = data["pages"]["10_asset_group"]["asset_group_headlines"]
+                st.session_state[HEADLINE_KEY] = page_cfg[
+                    "asset_group_headlines"]
 
         try:
             st.session_state[LONG_HEADLINE_KEY] = llm.predict(
@@ -141,10 +149,11 @@ if is_button:
                 max_output_tokens=1024
             ).text
         except:
-            st.session_state[HEADLINE_KEY] = data["pages"]["10_asset_group"]["asset_group_long_headlines"]
-        else:
-            if not st.session_state[HEADLINE_KEY]:
-                st.session_state[HEADLINE_KEY] = data["pages"]["10_asset_group"]["asset_group_long_headlines"]
+            pass
+
+        if not st.session_state[HEADLINE_KEY]:
+            st.session_state[HEADLINE_KEY] = page_cfg[
+                "asset_group_long_headlines"]
 
         try:
             st.session_state[DESCRIPTION_KEY] = llm.predict(
@@ -154,10 +163,10 @@ if is_button:
                 max_output_tokens=1024
             ).text
         except:
-            st.session_state[HEADLINE_KEY] = data["pages"]["10_asset_group"]["asset_group_description"]
-        else:
-            if not st.session_state[HEADLINE_KEY]:
-                st.session_state[HEADLINE_KEY] = data["pages"]["10_asset_group"]["asset_group_description"]
+            pass
+        if not st.session_state[HEADLINE_KEY]:
+            st.session_state[HEADLINE_KEY] = page_cfg[
+               "asset_group_description"]
 
         st.session_state[CALL_TO_ACTION_KEY] = random.choice(CALL_TO_ACTION)
         st.session_state[THEMES_FOR_PROMPTS_KEY] = select_theme
@@ -193,7 +202,7 @@ if is_button:
 
     # ------------------------------------ First generate images
     try:
-        if upload_image:
+        if image_option == "uploaded":
             utils_image.render_image_edit_prompt(
                 edited_images_key=GENERATED_IMAGES_KEY,
                 edit_image_prompt_key=IMAGE_TO_EDIT_PROMPT_KEY,
@@ -207,64 +216,29 @@ if is_button:
         else:
             with st.spinner('Generating images...'):
                 utils_image.image_generation(
-                    IMAGE_GENERATION_PROMPT.format(st.session_state[THEMES_FOR_PROMPTS_KEY]),
+                    IMAGE_GENERATION_PROMPT.format(
+                        st.session_state[THEMES_FOR_PROMPTS_KEY]),
                     8,
                     256,
                     '1:1',
                     GENERATED_IMAGES_KEY)
     except:
-        st.session_state[GENERATED_IMAGES_KEY] = []
-        if select_theme == THEMES_FOR_PROMPTS[0]:
-            with open(data["pages"]["10_asset_group"]["default_image_asset_0_0"], "rb") as fp:
-                st.session_state[GENERATED_IMAGES_KEY].append({"bytesBase64Encoded":base64.b64encode(fp.read()).decode('utf-8')})
-            with open(data["pages"]["10_asset_group"]["default_image_asset_0_1"], "rb") as fp:
-                st.session_state[GENERATED_IMAGES_KEY].append({"bytesBase64Encoded":base64.b64encode(fp.read()).decode('utf-8')})
-            
-        elif select_theme == THEMES_FOR_PROMPTS[1]:
-            with open(data["pages"]["10_asset_group"]["default_image_asset_1_0"], "rb") as fp:
-                st.session_state[GENERATED_IMAGES_KEY].append({"bytesBase64Encoded":base64.b64encode(fp.read()).decode('utf-8')})
-            with open(data["pages"]["10_asset_group"]["default_image_asset_1_1"], "rb") as fp:
-                st.session_state[GENERATED_IMAGES_KEY].append({"bytesBase64Encoded":base64.b64encode(fp.read()).decode('utf-8')})
-            
-        elif select_theme == THEMES_FOR_PROMPTS[2]:
-            with open(data["pages"]["10_asset_group"]["default_image_asset_2_0"], "rb") as fp:
-                st.session_state[GENERATED_IMAGES_KEY].append({"bytesBase64Encoded":base64.b64encode(fp.read()).decode('utf-8')})
-            with open(data["pages"]["10_asset_group"]["default_image_asset_2_1"], "rb") as fp:
-                st.session_state[GENERATED_IMAGES_KEY].append({"bytesBase64Encoded":base64.b64encode(fp.read()).decode('utf-8')})
-            
-        elif select_theme == THEMES_FOR_PROMPTS[3]:
-            with open(data["pages"]["10_asset_group"]["default_image_asset_3_0"], "rb") as fp:
-                st.session_state[GENERATED_IMAGES_KEY].append({"bytesBase64Encoded":base64.b64encode(fp.read()).decode('utf-8')})
-            with open(data["pages"]["10_asset_group"]["default_image_asset_3_1"], "rb") as fp:
-                st.session_state[GENERATED_IMAGES_KEY].append({"bytesBase64Encoded":base64.b64encode(fp.read()).decode('utf-8')})
-    else:
-        if GENERATED_IMAGES_KEY in st.session_state:
-            if not st.session_state[GENERATED_IMAGES_KEY]:
-                st.session_state[GENERATED_IMAGES_KEY] = []
-                if select_theme == THEMES_FOR_PROMPTS[0]:
-                    with open(data["pages"]["10_asset_group"]["default_image_asset_0_0"], "rb") as fp:
-                        st.session_state[GENERATED_IMAGES_KEY].append({"bytesBase64Encoded":base64.b64encode(fp.read()).decode('utf-8')})
-                    with open(data["pages"]["10_asset_group"]["default_image_asset_0_1"], "rb") as fp:
-                        st.session_state[GENERATED_IMAGES_KEY].append({"bytesBase64Encoded":base64.b64encode(fp.read()).decode('utf-8')})
-                    
-                elif select_theme == THEMES_FOR_PROMPTS[1]:
-                    with open(data["pages"]["10_asset_group"]["default_image_asset_1_0"], "rb") as fp:
-                        st.session_state[GENERATED_IMAGES_KEY].append({"bytesBase64Encoded":base64.b64encode(fp.read()).decode('utf-8')})
-                    with open(data["pages"]["10_asset_group"]["default_image_asset_1_1"], "rb") as fp:
-                        st.session_state[GENERATED_IMAGES_KEY].append({"bytesBase64Encoded":base64.b64encode(fp.read()).decode('utf-8')})
-                    
-                elif select_theme == THEMES_FOR_PROMPTS[2]:
-                    with open(data["pages"]["10_asset_group"]["default_image_asset_2_0"], "rb") as fp:
-                        st.session_state[GENERATED_IMAGES_KEY].append({"bytesBase64Encoded":base64.b64encode(fp.read()).decode('utf-8')})
-                    with open(data["pages"]["10_asset_group"]["default_image_asset_2_1"], "rb") as fp:
-                        st.session_state[GENERATED_IMAGES_KEY].append({"bytesBase64Encoded":base64.b64encode(fp.read()).decode('utf-8')})
-                    
-                elif select_theme == THEMES_FOR_PROMPTS[3]:
-                    with open(data["pages"]["10_asset_group"]["default_image_asset_3_0"], "rb") as fp:
-                        st.session_state[GENERATED_IMAGES_KEY].append({"bytesBase64Encoded":base64.b64encode(fp.read()).decode('utf-8')})
-                    with open(data["pages"]["10_asset_group"]["default_image_asset_3_1"], "rb") as fp:
-                        st.session_state[GENERATED_IMAGES_KEY].append({"bytesBase64Encoded":base64.b64encode(fp.read()).decode('utf-8')})
+        pass
     
+    if (GENERATED_IMAGES_KEY in st.session_state and
+        not st.session_state[GENERATED_IMAGES_KEY]):
+        st.session_state[GENERATED_IMAGES_KEY] = []
+        if select_theme in THEMES_FOR_PROMPTS:
+            index = THEMES_FOR_PROMPTS.index(select_theme)
+            with open(page_cfg["default_image_asset"][index][0], "rb") as fp:
+                st.session_state[GENERATED_IMAGES_KEY].append(
+                    {"bytesBase64Encoded":base64.b64encode(
+                        fp.read()).decode('utf-8')})
+            with open(page_cfg["default_image_asset"][index][1], "rb") as fp:
+                st.session_state[GENERATED_IMAGES_KEY].append(
+                    {"bytesBase64Encoded":base64.b64encode(
+                        fp.read()).decode('utf-8')})
+            
     if GENERATED_IMAGES_KEY in st.session_state:
         st.write('**Generated images**')
         utils_image.generate_image_columns(
@@ -301,7 +275,7 @@ if THEMES_FOR_PROMPTS_KEY in st.session_state and not is_new_asset:
     with col2:
         st.write(f'{st.session_state[CALL_TO_ACTION_KEY]}')
 
-    if st.session_state[IMAGE_UPLOAD_CHECKBOX]:
+    if st.session_state[IMAGE_OPTION]:
         try:
             utils_image.render_image_edit_prompt(
                 edited_images_key=GENERATED_IMAGES_KEY,
@@ -314,20 +288,24 @@ if THEMES_FOR_PROMPTS_KEY in st.session_state and not is_new_asset:
                 file_uploader_key=FILE_UPLOADER_KEY,
                 select_button=False)
         except:
-            st.info("Could not generate image due to policy restrictions. Please provide a different prompt.")
+            st.info("Could not generate image due to policy restrictions. "
+                    "Please provide a different prompt.")
         else:
             if GENERATED_IMAGES_KEY in st.session_state:
                 if not st.session_state[GENERATED_IMAGES_KEY]:
-                    st.info("Could not generate image due to policy restrictions. Please provide a different prompt.")
+                    st.info("Could not generate image due "
+                            "to policy restrictions. "
+                            "Please provide a different prompt.")
         
         if GENERATED_IMAGES_KEY in st.session_state:
             st.write('**Generated images**')
-            utils_image.generate_image_columns(GENERATED_IMAGES_KEY, download_button=False)
+            utils_image.generate_image_columns(GENERATED_IMAGES_KEY,
+                                               download_button=False)
     else:
         if GENERATED_IMAGES_KEY in st.session_state:
             st.write('**Generated images**')
-            utils_image.generate_image_columns(
-                    GENERATED_IMAGES_KEY, download_button=False)
+            utils_image.generate_image_columns(GENERATED_IMAGES_KEY,
+                                               download_button=False)
 
 
 if (HEADLINE_KEY in st.session_state and 
@@ -344,11 +322,15 @@ if (HEADLINE_KEY in st.session_state and
 
         assets_group_dict = {}
         assets_group_dict.update({'business_name': BUSINESS_NAME})
-        assets_group_dict.update({'scenario':st.session_state[THEMES_FOR_PROMPTS_KEY]})
+        assets_group_dict.update(
+            {'scenario':st.session_state[THEMES_FOR_PROMPTS_KEY]})
         assets_group_dict.update({'headline':st.session_state[HEADLINE_KEY]})
-        assets_group_dict.update({'long_headline':st.session_state[LONG_HEADLINE_KEY]})
-        assets_group_dict.update({'description':st.session_state[DESCRIPTION_KEY]})
-        assets_group_dict.update({'call_to_action':st.session_state[CALL_TO_ACTION_KEY]})
+        assets_group_dict.update(
+            {'long_headline':st.session_state[LONG_HEADLINE_KEY]})
+        assets_group_dict.update(
+            {'description':st.session_state[DESCRIPTION_KEY]})
+        assets_group_dict.update(
+            {'call_to_action':st.session_state[CALL_TO_ACTION_KEY]})
 
         assets_text_pd = pd.DataFrame().from_dict(
             assets_group_dict,
@@ -356,7 +338,8 @@ if (HEADLINE_KEY in st.session_state and
             columns=['text_assets']
         )
 
-        st.session_state[CAMPAIGNS_KEY][selected_uuid].asset_classes_text = assets_text_pd
+        st.session_state[CAMPAIGNS_KEY][
+                         selected_uuid].asset_classes_text = assets_text_pd
 
         assets_images_pd = pd.DataFrame()
         for i, value in enumerate(st.session_state[GENERATED_IMAGES_KEY]):
@@ -366,7 +349,8 @@ if (HEADLINE_KEY in st.session_state and
                 value=np.array(
                     ["data:image/png;base64,"+value["bytesBase64Encoded"]]))
 
-        st.session_state[CAMPAIGNS_KEY][selected_uuid].asset_classes_images = assets_images_pd
+        st.session_state[CAMPAIGNS_KEY][
+                         selected_uuid].asset_classes_images = assets_images_pd
         st.success(f"Asset group linked to campaign {selected_name}")
 
 if (HEADLINE_KEY in st.session_state and 
@@ -385,11 +369,15 @@ if (HEADLINE_KEY in st.session_state and
 
         assets_group_dict = {}
         assets_group_dict.update({'business_name': BUSINESS_NAME})
-        assets_group_dict.update({'scenario':st.session_state[THEMES_FOR_PROMPTS_KEY]})
+        assets_group_dict.update(
+            {'scenario':st.session_state[THEMES_FOR_PROMPTS_KEY]})
         assets_group_dict.update({'headline':st.session_state[HEADLINE_KEY]})
-        assets_group_dict.update({'long_headline':st.session_state[LONG_HEADLINE_KEY]})
-        assets_group_dict.update({'description':st.session_state[DESCRIPTION_KEY]})
-        assets_group_dict.update({'call_to_action':st.session_state[CALL_TO_ACTION_KEY]})
+        assets_group_dict.update(
+            {'long_headline':st.session_state[LONG_HEADLINE_KEY]})
+        assets_group_dict.update(
+            {'description':st.session_state[DESCRIPTION_KEY]})
+        assets_group_dict.update(
+            {'call_to_action':st.session_state[CALL_TO_ACTION_KEY]})
 
         assets_text_pd = pd.DataFrame().from_dict(
             assets_group_dict,
@@ -397,7 +385,8 @@ if (HEADLINE_KEY in st.session_state and
             columns=['text_assets']
         )
 
-        st.session_state[CAMPAIGNS_KEY][selected_uuid].asset_classes_text = assets_text_pd
+        st.session_state[CAMPAIGNS_KEY][
+                         selected_uuid].asset_classes_text = assets_text_pd
 
         assets_images_pd = pd.DataFrame()
         assets_images_pd.insert(
@@ -406,5 +395,6 @@ if (HEADLINE_KEY in st.session_state and
             value=np.array(["data:image/png;base64,"+base64.b64encode(
                 st.session_state[IMAGE_TO_EDIT_KEY]).decode('utf-8')]))
 
-        st.session_state[CAMPAIGNS_KEY][selected_uuid].asset_classes_images = assets_images_pd
+        st.session_state[CAMPAIGNS_KEY][
+                         selected_uuid].asset_classes_images = assets_images_pd
         st.success(f"Asset group linked to campaign {selected_name}")

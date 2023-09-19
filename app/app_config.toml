@@ -1052,17 +1052,7 @@ Cymbal: A new season, a new you. Shop our latest collection of women's handbags 
 
 asset_group_description = "Cymbal's new collection of women's handbags is a symphony of style, featuring a harmonious blend of trendsetting designs and unparalleled quality."
 
-default_image_asset_0_0 = "/app/images/asset_group_0_0.png"
-default_image_asset_0_1 = "/app/images/asset_group_0_1.png"
-
-default_image_asset_1_0 = "/app/images/asset_group_1_0.png"
-default_image_asset_1_1 = "/app/images/asset_group_1_1.png"
-
-default_image_asset_2_0 = "/app/images/asset_group_2_0.png"
-default_image_asset_2_1 = "/app/images/asset_group_2_1.png"
-
-default_image_asset_3_0 = "/app/images/asset_group_3_0.png"
-default_image_asset_3_1 = "/app/images/asset_group_3_1.png"
+default_image_asset = [["/app/images/asset_group_0_0.png","/app/images/asset_group_0_1.png"], ["/app/images/asset_group_1_0.png", "/app/images/asset_group_1_1.png"], ["/app/images/asset_group_2_0.png", "/app/images/asset_group_2_1.png"], ["/app/images/asset_group_3_0.png", "/app/images/asset_group_3_1.png"]]
 
 
 # -----------------------------------------------------------------------------
