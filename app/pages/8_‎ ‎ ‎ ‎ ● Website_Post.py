@@ -15,7 +15,8 @@
 
 """
 Website post generation: 
-- Automatically create website posts on a wide range of topics and in a variety of styles. 
+- Automatically create website posts on a wide range of topics 
+  and in a variety of styles. 
 - These articles include text and visuals
 """
 
@@ -33,13 +34,14 @@ from utils_campaign import CAMPAIGNS_KEY, generate_names_uuid_dict
 with open("./app_config.toml", "rb") as f:
     data = tomllib.load(f)
 
-st.set_page_config(page_title=data["pages"]["8_website_post"]["page_title"],
-                   page_icon=data["pages"]["8_website_post"]["page_icon"])
+page_cfg = data["pages"]["8_website_post"]
+st.set_page_config(page_title=page_cfg["page_title"],
+                   page_icon=page_cfg["page_icon"])
 
 import utils_styles
 utils_styles.sidebar_apply_style(
     style=utils_styles.style_sidebar,
-    image_path=data["pages"]["8_website_post"]["sidebar_image_path"]
+    image_path=page_cfg["sidebar_image_path"]
 )
 
 # Set project parameters
@@ -58,44 +60,45 @@ MASK_IMAGE_KEY = f"{PAGE_KEY_PREFIX}_Mask_Image"
 EDITED_IMAGES_KEY = f"{PAGE_KEY_PREFIX}_Edited_Images"
 IMAGE_PROMPT_KEY = f"{PAGE_KEY_PREFIX}_Image_Prompt"
 
-IMAGE_UPLOAD_CHECKBOX = f"{PAGE_KEY_PREFIX}_Image_Upload_Checkbox"
+IMAGE_OPTION = f"{PAGE_KEY_PREFIX}_Image_Upload_Checkbox"
 FILE_UPLOADER_KEY = f"{PAGE_KEY_PREFIX}_File_Uploader"
 IMAGE_TO_EDIT_PROMPT_KEY = f"{PAGE_KEY_PREFIX}_Edit_Prompt_key"
 
 SELECTED_PROMPT_KEY = f"{PAGE_KEY_PREFIX}_Selected_Prompt"
 
 # State variables for image generation
-IMAGE_GENERATION_TEXT_PROMPT_KEY = f"{PAGE_KEY_PREFIX}_Text_Prompt_Images_Generation"
-EDIT_GENERATED_IMAGE_PROMPT_KEY = f"{PAGE_KEY_PREFIX}_Edit_Text_Prompt_Images_Generation"
+IMAGE_GENERATION_TEXT_PROMPT_KEY = (
+        f"{PAGE_KEY_PREFIX}_Text_Prompt_Images_Generation")
+EDIT_GENERATED_IMAGE_PROMPT_KEY = (
+        f"{PAGE_KEY_PREFIX}_Edit_Text_Prompt_Images_Generation")
 DEFAULT_IMAGE_PROMPT_KEY = f"{PAGE_KEY_PREFIX}_Image_Prompt"
 
 # Templates
-WEBSITE_PROMPT_TEMPLATE = data["pages"]["8_website_post"]["prompt_website_template"]
-IMAGE_PROMPT_TAMPLATE = data["pages"]["8_website_post"]["prompt_image_template"]
-THEMES_FOR_PROMPTS = data["pages"]["8_website_post"]["prompt_themes"]
+WEBSITE_PROMPT_TEMPLATE = page_cfg["prompt_website_template"]
+IMAGE_PROMPT_TAMPLATE = page_cfg["prompt_image_template"]
+THEMES_FOR_PROMPTS = page_cfg["prompt_themes"]
 
 
 cols = st.columns([15, 85])
 with cols[0]:
-    st.image(data["pages"]["8_website_post"]["page_title_image"])
+    st.image(page_cfg["page_title_image"])
 with cols[1]:
-    st.title(data["pages"]["8_website_post"]["page_title"])
+    st.title(page_cfg["page_title"])
 
 st.write(
-    """
-    This page provides a step-by-step guide to generating a website post.
-    """
-)
+    "This page provides a step-by-step guide to generating a website post.")
 
 st.subheader('Post Generation')
 
-FLAG_NEW = False
+flag_new = False
 
 with st.form(key='form_post_generation'):
     selected_prompt = st.selectbox(
         label='Select a scenario to generate the website post',
         options=THEMES_FOR_PROMPTS)
-    upload_image = st.checkbox('Upload Image')
+    image_option = st.radio(label="Choose an option for the post image:",
+             options=["uploaded", "generated"],
+             format_func=lambda x: f"{x.capitalize()} Image")
 
     st.session_state[SELECTED_PROMPT_KEY] = selected_prompt
 
@@ -116,8 +119,8 @@ if submit_button:
     if FILE_UPLOADER_KEY in st.session_state:
         del st.session_state[FILE_UPLOADER_KEY]
     
-    st.session_state[IMAGE_UPLOAD_CHECKBOX] = upload_image
-    FLAG_NEW = True
+    st.session_state[IMAGE_OPTION] = image_option 
+    flag_new = True
 
     with st.spinner('Generating website post ...'):
         try:
@@ -128,31 +131,19 @@ if submit_button:
                     max_output_tokens=1024,
                 ).text
         except:
-            if selected_prompt == THEMES_FOR_PROMPTS[0]:
-                st.session_state[GENERATED_TEXT_KEY] = data["pages"]["8_website_post"]["prompt_website_text_women_handbag"]
-            elif selected_prompt == THEMES_FOR_PROMPTS[1]:
-                st.session_state[GENERATED_TEXT_KEY] = data["pages"]["8_website_post"]["prompt_website_text_man_shoes"]
-            elif selected_prompt == THEMES_FOR_PROMPTS[2]:
-                st.session_state[GENERATED_TEXT_KEY] = data["pages"]["8_website_post"]["prompt_website_text_concept_store"]
-            elif selected_prompt == THEMES_FOR_PROMPTS[3]:
-                st.session_state[GENERATED_TEXT_KEY] = data["pages"]["8_website_post"]["prompt_website_text_brand"]
-        else:
-            if response:
-                st.session_state[GENERATED_TEXT_KEY] = response
-            elif selected_prompt == THEMES_FOR_PROMPTS[0]:
-                st.session_state[GENERATED_TEXT_KEY] = data["pages"]["8_website_post"]["prompt_website_text_women_handbag"]
-            elif selected_prompt == THEMES_FOR_PROMPTS[1]:
-                st.session_state[GENERATED_TEXT_KEY] = data["pages"]["8_website_post"]["prompt_website_text_man_shoes"]
-            elif selected_prompt == THEMES_FOR_PROMPTS[2]:
-                st.session_state[GENERATED_TEXT_KEY] = data["pages"]["8_website_post"]["prompt_website_text_concept_store"]
-            elif selected_prompt == THEMES_FOR_PROMPTS[3]:
-                st.session_state[GENERATED_TEXT_KEY] = data["pages"]["8_website_post"]["prompt_website_text_brand"]
+            response = ""
+        if not response:
+            if selected_prompt in THEMES_FOR_PROMPTS:
+                index = THEMES_FOR_PROMPTS.index(selected_prompt)
+                response = page_cfg["prompt_default_responses"][index]
+        st.session_state[GENERATED_TEXT_KEY] = response
 
     st.write('**Generated text**')
     st.write(st.session_state[GENERATED_TEXT_KEY])
+    error = False
 
     try:
-        if upload_image:
+        if image_option == "uploaded":
             utils_image.render_image_edit_prompt(
                 edited_images_key=EDITED_IMAGES_KEY,
                 edit_image_prompt_key=IMAGE_TO_EDIT_PROMPT_KEY,
@@ -169,7 +160,8 @@ if submit_button:
                 image_text_prompt_key=IMAGE_GENERATION_TEXT_PROMPT_KEY,
                 generated_images_key=GENERATED_IMAGES_KEY,
                 edit_image_prompt_key=EDIT_GENERATED_IMAGE_PROMPT_KEY,
-                pre_populated_prompts=[IMAGE_PROMPT_TAMPLATE.format(selected_prompt)],
+                pre_populated_prompts=[
+                    IMAGE_PROMPT_TAMPLATE.format(selected_prompt)],
                 select_button=True,
                 selected_image_key=SELECTED_IMAGE_KEY,
                 edit_button=True,
@@ -181,41 +173,31 @@ if submit_button:
                 auto_submit_first_pre_populated=True
             )
     except:
-        if selected_prompt == THEMES_FOR_PROMPTS[0]:
-            utils_image.get_default_image_bytesio(
-                data["pages"]["8_website_post"]["default_image_0"], SELECTED_IMAGE_KEY, True)
-        elif selected_prompt == THEMES_FOR_PROMPTS[1]:
-            utils_image.get_default_image_bytesio(
-                data["pages"]["8_website_post"]["default_image_1"], SELECTED_IMAGE_KEY, True)
-        elif selected_prompt == THEMES_FOR_PROMPTS[2]:
-            utils_image.get_default_image_bytesio(
-                data["pages"]["8_website_post"]["default_image_2"], SELECTED_IMAGE_KEY, True)
-        elif selected_prompt == THEMES_FOR_PROMPTS[3]:
-            utils_image.get_default_image_bytesio(
-                data["pages"]["8_website_post"]["default_image_3"], SELECTED_IMAGE_KEY, True)
-    else:
-        if not upload_image:
-            if not st.session_state[GENERATED_IMAGES_KEY]:
-                if selected_prompt == THEMES_FOR_PROMPTS[0]:
-                    utils_image.get_default_image_bytesio(
-                        data["pages"]["8_website_post"]["default_image_0"], SELECTED_IMAGE_KEY, True)
-                elif selected_prompt == THEMES_FOR_PROMPTS[1]:
-                    utils_image.get_default_image_bytesio(
-                        data["pages"]["8_website_post"]["default_image_1"], SELECTED_IMAGE_KEY, True)
-                elif selected_prompt == THEMES_FOR_PROMPTS[2]:
-                    utils_image.get_default_image_bytesio(
-                        data["pages"]["8_website_post"]["default_image_2"], SELECTED_IMAGE_KEY, True)
-                elif selected_prompt == THEMES_FOR_PROMPTS[3]:
-                    utils_image.get_default_image_bytesio(
-                        data["pages"]["8_website_post"]["default_image_3"], SELECTED_IMAGE_KEY, True)
+        error = True
+
+    if (error or 
+        (image_option == "generated" and 
+         not st.session_state[GENERATED_IMAGES_KEY])):
+            if selected_prompt == THEMES_FOR_PROMPTS[0]:
+                utils_image.get_default_image_bytesio(
+                    page_cfg["default_image_0"], SELECTED_IMAGE_KEY, True)
+            elif selected_prompt == THEMES_FOR_PROMPTS[1]:
+                utils_image.get_default_image_bytesio(
+                    page_cfg["default_image_1"], SELECTED_IMAGE_KEY, True)
+            elif selected_prompt == THEMES_FOR_PROMPTS[2]:
+                utils_image.get_default_image_bytesio(
+                    page_cfg["default_image_2"], SELECTED_IMAGE_KEY, True)
+            elif selected_prompt == THEMES_FOR_PROMPTS[3]:
+                utils_image.get_default_image_bytesio(
+                    page_cfg["default_image_3"], SELECTED_IMAGE_KEY, True)
 
 
-if GENERATED_TEXT_KEY in st.session_state and not FLAG_NEW:
+if GENERATED_TEXT_KEY in st.session_state and not flag_new:
     st.write('**Generated text**')
     st.write(st.session_state[GENERATED_TEXT_KEY])
 
     try:
-        if st.session_state[IMAGE_UPLOAD_CHECKBOX]:
+        if st.session_state[IMAGE_OPTION] == "uploaded":
             utils_image.render_image_edit_prompt(
                 edited_images_key=EDITED_IMAGES_KEY,
                 edit_image_prompt_key=IMAGE_TO_EDIT_PROMPT_KEY,
@@ -232,7 +214,9 @@ if GENERATED_TEXT_KEY in st.session_state and not FLAG_NEW:
                 image_text_prompt_key=IMAGE_GENERATION_TEXT_PROMPT_KEY,
                 generated_images_key=GENERATED_IMAGES_KEY,
                 edit_image_prompt_key=EDIT_GENERATED_IMAGE_PROMPT_KEY,
-                pre_populated_prompts=[IMAGE_PROMPT_TAMPLATE.format(st.session_state[SELECTED_PROMPT_KEY])],
+                pre_populated_prompts=[
+                    IMAGE_PROMPT_TAMPLATE.format(
+                        st.session_state[SELECTED_PROMPT_KEY])],
                 select_button=True,
                 selected_image_key=SELECTED_IMAGE_KEY,
                 edit_button=True,
@@ -243,11 +227,13 @@ if GENERATED_TEXT_KEY in st.session_state and not FLAG_NEW:
                 download_button=False,
                 auto_submit_first_pre_populated=False)
     except:
-        st.info('Could not generate image due to policy restrictions. Please provide a different prompt.')
+        st.info('Could not generate image due to policy restrictions. '
+                'Please provide a different prompt.')
     else:
         if EDITED_IMAGES_KEY in st.session_state:
             if not st.session_state[EDITED_IMAGES_KEY]:
-                st.info('Could not generate image due to policy restrictions. Please provide a different prompt.')
+                st.info('Could not generate image due to policy restrictions. '
+                        'Please provide a different prompt.')
 
     if SELECTED_IMAGE_KEY in st.session_state:
         with st.container():
@@ -265,10 +251,13 @@ if (GENERATED_TEXT_KEY in st.session_state and
         link_to_campaign_button = st.form_submit_button()
 
     if link_to_campaign_button:
-        image = "data:image/png;base64,"+base64.b64encode(st.session_state[SELECTED_IMAGE_KEY].getvalue()).decode("utf-8")
+        image = "data:image/png;base64,"+base64.b64encode(
+            st.session_state[SELECTED_IMAGE_KEY].getvalue()).decode("utf-8")
         selected_uuid = generate_names_uuid_dict()[selected_name]
-        st.session_state[CAMPAIGNS_KEY][selected_uuid].website_post = {'website_text': st.session_state[GENERATED_TEXT_KEY]}
-        st.session_state[CAMPAIGNS_KEY][selected_uuid].website_post.update({'website_image': image})
+        st.session_state[CAMPAIGNS_KEY][selected_uuid].website_post = {
+            'website_text': st.session_state[GENERATED_TEXT_KEY]}
+        st.session_state[CAMPAIGNS_KEY][selected_uuid].website_post.update(
+            {'website_image': image})
         st.success(f"Post linked to campaign {selected_name}")
 
 
@@ -284,8 +273,11 @@ if (GENERATED_TEXT_KEY in st.session_state and
         link_to_campaign_button = st.form_submit_button()
 
     if link_to_campaign_button:
-        image = "data:image/png;base64,"+base64.b64encode(st.session_state[IMAGE_TO_EDIT_KEY]).decode("utf-8")
+        image = "data:image/png;base64,"+base64.b64encode(
+            st.session_state[IMAGE_TO_EDIT_KEY]).decode("utf-8")
         selected_uuid = generate_names_uuid_dict()[selected_name]
-        st.session_state[CAMPAIGNS_KEY][selected_uuid].website_post = {'website_text': st.session_state[GENERATED_TEXT_KEY]}
-        st.session_state[CAMPAIGNS_KEY][selected_uuid].website_post.update({'website_image': image})
+        st.session_state[CAMPAIGNS_KEY][selected_uuid].website_post = {
+            'website_text': st.session_state[GENERATED_TEXT_KEY]}
+        st.session_state[CAMPAIGNS_KEY][selected_uuid].website_post.update(
+            {'website_image': image})
         st.success(f"Post linked to campaign {selected_name}")

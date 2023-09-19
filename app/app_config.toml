@@ -812,7 +812,7 @@ prompt_image_template = """Generate an image for {}"""
 # The following variables are default / fallback website posts and images.
 # They are used in case the model doesn't return anything.
 # Change this defaults if needed.
-prompt_website_text_women_handbag = """New Women's Handbags on Sale at Cymbal\n
+prompt_default_responses = ["""New Women's Handbags on Sale at Cymbal\n
 Cymbal is excited to announce the arrival of our new collection of women's handbags. These stylish and functional bags are perfect for any occasion, from a night out on the town to a day at the office.\n
 Our new handbags come in a variety of styles, colors, and sizes to suit your individual needs. Whether you're looking for a small crossbody bag to carry your essentials or a large tote bag for work, we have something for you.\n
 In addition to our wide selection of styles, our new handbags are also made from high-quality materials that will last for years to come. We use only the finest leathers and fabrics, so you can be sure that your new bag will look and feel great for years to come.\n
@@ -822,9 +822,9 @@ Here are some of our top picks from the new collection:\n
 The Cymbal Tote Bag is a stylish and spacious bag that's perfect for everyday use. It features a roomy interior with multiple compartments, so you can keep your belongings organized. The Cymbal Tote Bag is also made from durable leather that will last for years to come.\n
 The Cymbal Crossbody Bag is a chic and compact bag that's perfect for a night out on the town. It features a stylish design and a comfortable crossbody strap, so you can wear it all day long. The Cymbal Crossbody Bag is also made from lightweight leather that won't weigh you down.\n
 The Cymbal Satchel Bag is a versatile and stylish bag that can be dressed up or down. It features a sleek design and a spacious interior, so you can carry everything you need. The Cymbal Satchel Bag is also made from durable leather that will last for years to come.\n
-These are just a few of our top picks from the new collection of women's handbags at Cymbal. Shop our entire collection today and find the perfect bag to complete your look."""
+These are just a few of our top picks from the new collection of women's handbags at Cymbal. Shop our entire collection today and find the perfect bag to complete your look.""",
 
-prompt_website_text_man_shoes = """Introducing the New Line of Men's Shoes at Cymbal\n
+"""Introducing the New Line of Men's Shoes at Cymbal\n
 We're excited to announce the launch of our new line of men's shoes! We've been working hard to create a collection that is stylish, comfortable, and durable, and we think you're going to love it.\n
 Our new line features a variety of styles to suit every man's needs. Whether you're looking for a pair of dress shoes for work, casual shoes for everyday wear, or athletic shoes for your next workout, we have something for you.\n
 We've also used only the finest materials in our construction, so you can be sure that our shoes will last. And because we know that life happens, all of our shoes come with a 90-day warranty.\n
@@ -843,9 +843,9 @@ Here are some of the styles that are available in our new line of men's shoes:\n
  - Sandals\n
 We have something for every man, so be sure to check out our entire collection today!\n
 We're also offering a special discount of 20% off your first purchase. Just use the code NEWLINE at checkout.\n
-So what are you waiting for? Shop now and start looking your best!"""
+So what are you waiting for? Shop now and start looking your best!""",
 
-prompt_website_text_concept_store = """Cymbal Concept Shoe Store Opens in NYC\n
+"""Cymbal Concept Shoe Store Opens in NYC\n
 New York City, NY – March 8, 2023 – Cymbal, a new concept shoe store, opened its doors in New York City today. The store, located at 100 Fifth Avenue, offers a unique shopping experience that combines the latest in fashion with cutting-edge technology.\n
 Cymbal is the brainchild of two friends, Ben and Jerry. Ben is a former footwear designer who worked for some of the biggest brands in the industry. Jerry is a tech entrepreneur who has developed a new platform that allows shoppers to interact with products in a whole new way.\n
 The store is divided into two sections. The first section is dedicated to the latest in fashion. Cymbal carries a wide variety of shoes from both established brands and up-and-coming designers. The second section is where the technology comes in.\n
@@ -857,9 +857,9 @@ Cymbal is a new concept shoe store that combines the latest in fashion with cutt
 Cymbal was founded by two friends, Ben and Jerry. Ben is a former footwear designer who worked for some of the biggest brands in the industry. Jerry is a tech entrepreneur who has developed a new platform that allows shoppers to interact with products in a whole new way.\n
 Cymbal carries a wide variety of shoes from both established brands and up-and-coming designers. The store also offers a variety of services, including shoe repair and customization.\n
 Cymbal is the future of shoe shopping. It is a place where fashion and technology meet to create an unforgettable shopping experience.\n
-To learn more about Cymbal, visit their website at www.cymbal.com."""
+To learn more about Cymbal, visit their website at www.cymbal.com.""",
 
-prompt_website_text_brand = """Cymbal Shoes: A New Retail Brand in NYC\n
+"""Cymbal Shoes: A New Retail Brand in NYC\n
 Cymbal Shoes is a new retail brand that is taking the city by storm. With its unique selection of shoes, stylish designs, and affordable prices, Cymbal Shoes is quickly becoming a go-to destination for shoe lovers of all ages.\n
 Cymbal Shoes was founded by two friends who had a passion for shoes and a desire to create a brand that was different from anything else on the market. They wanted to create a brand that was stylish, affordable, and accessible to everyone.\n
 Cymbal Shoes offers a wide variety of shoes, including sneakers, boots, sandals, and heels. They also have a variety of styles to choose from, including casual, dressy, and athletic. And with prices starting at just $20, Cymbal Shoes is sure to have something for everyone.\n
@@ -873,7 +873,7 @@ Here are some of the reasons why Cymbal Shoes is a great choice:\n
  - Free shipping and returns\n
  - 30-day satisfaction guarantee\n
  - Convenient location\n
-If you're looking for a new pair of shoes, be sure to check out Cymbal Shoes. You won't be disappointed!"""
+If you're looking for a new pair of shoes, be sure to check out Cymbal Shoes. You won't be disappointed!"""]
 
 default_image_0 = "/app/images/website_1.png"
 default_image_1 = "/app/images/website_2.png"
