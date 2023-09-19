@@ -32,7 +32,6 @@ from vertexai.preview.language_models import TextGenerationModel
 with open("./app_config.toml", "rb") as f:
     data = tomllib.load(f)
 
-
 # Set project parameters
 PROJECT_ID = data["global"]["project_id"]
 LOCATION = data["global"]["location"]
@@ -117,47 +116,27 @@ if PREVIEW_TABLES_KEY in st.session_state:
         st.write(f'Preview for table: {result["name"]}')
         st.dataframe(result['dataframe'])
 
-st.subheader('Audience and Insight Finder')
+st.subheader('Audience Insights Finder')
 
-# Natural Language to GoogleSQL code generation
-insight_tab, audience_tab, followup_tab = st.tabs(
-    ["Insight Finder", "Audience Finder", "Purchase Follow Up"])
+with st.form("query_submit_form"):
 
-with insight_tab:
-    utils_codey.generate_sql_and_query(
-        state_key=f"{PAGE_KEY_PREFIX}_insight",
-        title="Ask you data",
-        query=QUERY,
-        project_id=PROJECT_ID,
-        dataset_id=DATASET_ID,
-        tag_template_name=TAG_TEMPLATE_NAME,
-        bqclient=bqclient,
-        prompt_example=data["pages"]["3_audiences"]["prompt_example_0"],
-        fallback_query=data["pages"]["3_audiences"]["audience_query_0"]
+    query_option = st.selectbox(
+        label="Select one of the options to ask BigQuery tables and find your audience",
+        options=data["pages"]["3_audiences"]["prompt_examples"]
     )
 
-with audience_tab:
-    query_result = utils_codey.generate_sql_and_query(
-        state_key=f"{PAGE_KEY_PREFIX}_audience",
-        title="Find your audience",
-        query=QUERY,
-        project_id=PROJECT_ID,
-        dataset_id=DATASET_ID,
-        tag_template_name=TAG_TEMPLATE_NAME,
-        bqclient=bqclient,
-        prompt_example=data["pages"]["3_audiences"]["prompt_example_1"],
-        fallback_query=data["pages"]["3_audiences"]["audience_query_1"]
-    )
+    col1, col2, col3 = st.columns([1,1,1])
+    with col1: 
+        submitted = st.form_submit_button("Submit")
 
-with followup_tab:
-    utils_codey.generate_sql_and_query(
-        state_key=f"{PAGE_KEY_PREFIX}_followup",
-        title="Follow up purchases",
-        query=QUERY,
-        project_id=PROJECT_ID,
-        dataset_id=DATASET_ID,
-        tag_template_name=TAG_TEMPLATE_NAME,
-        bqclient=bqclient,
-        prompt_example=data["pages"]["3_audiences"]["prompt_example_2"],
-        fallback_query=data["pages"]["3_audiences"]["audience_query_2"]
-    )
+utils_codey.generate_sql_and_query(
+    state_key=f"{PAGE_KEY_PREFIX}_insight",
+    title="Ask you data",
+    query=QUERY,
+    project_id=PROJECT_ID,
+    dataset_id=DATASET_ID,
+    tag_template_name=TAG_TEMPLATE_NAME,
+    bqclient=bqclient,
+    prompt_example=data["pages"]["3_audiences"]["prompt_example_0"],
+    fallback_query=data["pages"]["3_audiences"]["audience_query_0"]
+)

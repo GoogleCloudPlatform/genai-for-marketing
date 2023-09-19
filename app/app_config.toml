@@ -378,6 +378,13 @@ Here is an example: Convert text to SQL:"""
 
 # The following are default questions and fallback queries
 # Change the following variable if needed.
+
+prompt_examples = [
+    "What are the customer emails ordered by the sum of transactions value by customers in New York City?",
+    "What are the top 50 customer emails ordered by the loyalty score and emails opened?",
+    "What are the top 50 customer emails ordered by loyalty score?"
+]
+
 prompt_example_0 = "What are the customer emails ordered by the sum of transactions value by customers in New York City?"
 audience_query_0 = """SELECT c.email, SUM(t.transaction_value) as total_transaction_value
 FROM `{}.cdp_dataset.customers` as c
