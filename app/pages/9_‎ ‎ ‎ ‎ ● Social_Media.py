@@ -32,6 +32,8 @@ from utils_streamlit import reset_page_state
 with open("./app_config.toml", "rb") as f:
     data = tomllib.load(f)
 
+page_cfg = data["pages"]["9_social_media"]
+
 PROJECT_ID = data["global"]["project_id"]
 LOCATION = data["global"]["location"]
 TEXT_MODEL_NAME = data["models"]["text"]["text_model_name"]
@@ -43,45 +45,45 @@ TWITTER_PREFIX = f"{PAGE_KEY_PREFIX}_Twitter"
 INSTAGRAM_PREFIX = f"{PAGE_KEY_PREFIX}_Instagram"
 THREADS_PREFIX = f"{PAGE_KEY_PREFIX}_Threads"
 
-INSTAGRAM_GENDER_OPTIONS = data["pages"]["9_social_media"]["instagram_gender_options"]
-INSTAGRAM_CHAR_LIMIT = data["pages"]["9_social_media"]["instagram_char_limit"]
+INSTAGRAM_GENDER_OPTIONS: list[str] = page_cfg["instagram_gender_options"]
+INSTAGRAM_CHAR_LIMIT = page_cfg["instagram_char_limit"]
 
-THREADS_CHAR_LIMIT = data["pages"]["9_social_media"]["threads_char_limit"]
+THREADS_CHAR_LIMIT = page_cfg["threads_char_limit"]
 
-AD_PROMPT_TEMPLATE = data["pages"]["9_social_media"]["ad_prompt_template"]
-IMAGE_PROMPT_TEMPLATE = data["pages"]["9_social_media"]["image_prompt_template"]
-THEMES_FOR_PROMPTS = data["pages"]["9_social_media"]["themes_for_prompts"]
+AD_PROMPT_TEMPLATE = page_cfg["ad_prompt_template"]
+IMAGE_PROMPT_TEMPLATE = page_cfg["image_prompt_template"]
+THEMES_FOR_PROMPTS: list[str] = page_cfg["themes_for_prompts"]
 
 st.set_page_config(
-    page_title=data["pages"]["9_social_media"]["page_title"],
-    page_icon=data["pages"]["9_social_media"]["page_icon"]
+    page_title=page_cfg["page_title"],
+    page_icon=page_cfg["page_icon"]
 )
 
 import utils_styles
 utils_styles.sidebar_apply_style(
     style=utils_styles.style_sidebar,
-    image_path=data["pages"]["9_social_media"]["sidebar_image_path"]
+    image_path=page_cfg["sidebar_image_path"]
 )
 
 cols = st.columns([17, 83])
 with cols[0]:
-    st.image(data["pages"]["9_social_media"]["page_title_image"])
+    st.image(page_cfg["page_title_image"])
 with cols[1]:
-    st.title(data["pages"]["9_social_media"]["page_title"])
+    st.title(page_cfg["page_title"])
 
 def generate_ad(
-        theme, 
-        platform, 
-        age_range, 
-        gender, 
-        has_image, 
-        limit, 
-        key_prefix, 
-        generate_image_option):
+    theme: str, 
+    platform: str, 
+    age_range: str, 
+    gender: str, 
+    has_image: bool, 
+    limit: int, 
+    key_prefix: str, 
+    image_option: str):
 
-    st.session_state[key_prefix+'_Has_Image_Flag'] = has_image
-    st.session_state[key_prefix+'_Image_Generate_Option'] = generate_image_option
-
+    st.session_state[key_prefix + '_Has_Image'] = has_image
+    st.session_state[key_prefix + '_Image_Option'] = image_option
+    response = ""
     try:
         # Initialize variables
         with st.spinner(f'Generating {platform} text ...'):
@@ -95,79 +97,53 @@ def generate_ad(
                         gender,
                         theme),
                     temperature=0.2,
-                    max_output_tokens=limit//4, # 4 chars per token
+                    max_output_tokens=limit // 4, # 4 chars per token
                     top_k = 40,
                     top_p = 0.8
                 ).text
     except:
-        if platform == 'Threads':
-            if theme == THEMES_FOR_PROMPTS[0]:
-                st.session_state[key_prefix+"_Text"] = data["pages"]["9_social_media"]["social_threads_0"]
-            elif theme == THEMES_FOR_PROMPTS[1]:
-                st.session_state[key_prefix+"_Text"] = data["pages"]["9_social_media"]["social_threads_1"]
-            elif theme == THEMES_FOR_PROMPTS[2]:
-                st.session_state[key_prefix+"_Text"] = data["pages"]["9_social_media"]["social_threads_2"]
-            elif theme == THEMES_FOR_PROMPTS[3]:
-                st.session_state[key_prefix+"_Text"] = data["pages"]["9_social_media"]["social_threads_3"]
-        elif platform == "Instagram":
-            if theme == THEMES_FOR_PROMPTS[0]:
-                st.session_state[key_prefix+"_Text"] = data["pages"]["9_social_media"]["social_instagram_0"]
-            elif theme == THEMES_FOR_PROMPTS[1]:
-                st.session_state[key_prefix+"_Text"] = data["pages"]["9_social_media"]["social_instagram_1"]
-            elif theme == THEMES_FOR_PROMPTS[2]:
-                st.session_state[key_prefix+"_Text"] = data["pages"]["9_social_media"]["social_instagram_2"]
-            elif theme == THEMES_FOR_PROMPTS[3]:
-                st.session_state[key_prefix+"_Text"] = data["pages"]["9_social_media"]["social_instagram_3"]
-    else:
-        st.session_state[key_prefix+"_Text"] = response
-        if not response:
-            if platform == 'Threads':
-                if theme == THEMES_FOR_PROMPTS[0]:
-                    st.session_state[key_prefix+"_Text"] = data["pages"]["9_social_media"]["social_threads_0"]
-                elif theme == THEMES_FOR_PROMPTS[1]:
-                    st.session_state[key_prefix+"_Text"] = data["pages"]["9_social_media"]["social_threads_1"]
-                elif theme == THEMES_FOR_PROMPTS[2]:
-                    st.session_state[key_prefix+"_Text"] = data["pages"]["9_social_media"]["social_threads_2"]
-                elif theme == THEMES_FOR_PROMPTS[3]:
-                    st.session_state[key_prefix+"_Text"] = data["pages"]["9_social_media"]["social_threads_3"]
-            elif platform == "Instagram":
-                if theme == THEMES_FOR_PROMPTS[0]:
-                    st.session_state[key_prefix+"_Text"] = data["pages"]["9_social_media"]["social_instagram_0"]
-                elif theme == THEMES_FOR_PROMPTS[1]:
-                    st.session_state[key_prefix+"_Text"] = data["pages"]["9_social_media"]["social_instagram_1"]
-                elif theme == THEMES_FOR_PROMPTS[2]:
-                    st.session_state[key_prefix+"_Text"] = data["pages"]["9_social_media"]["social_instagram_2"]
-                elif theme == THEMES_FOR_PROMPTS[3]:
-                    st.session_state[key_prefix+"_Text"] = data["pages"]["9_social_media"]["social_instagram_3"]
+        pass
     
-    if st.session_state[key_prefix+'_Has_Image_Flag'] and key_prefix+"_Text" in st.session_state:
+    if not response:
+        if theme in THEMES_FOR_PROMPTS:
+            index = THEMES_FOR_PROMPTS.index(theme)
+            if platform == 'Threads':
+                response = page_cfg["default_threads"][index]
+            elif platform == "Instagram":
+                response = page_cfg["default_instagram"][index]
+
+    st.session_state[key_prefix+"_Text"] = response
+    if (st.session_state[key_prefix+'_Has_Image'] and 
+        key_prefix+"_Text" in st.session_state):
         prompt_image = IMAGE_PROMPT_TEMPLATE.format(theme)
         st.session_state[key_prefix+"_Generated_Image_Prompt"] = prompt_image
 
 
 def render_ad(
-        key_prefix, 
-        platform, 
-        theme, 
-        gender, 
-        age_range):
+    key_prefix: str, 
+    platform: str, 
+    theme: str, 
+    gender: str, 
+    age_range: str):
 
     if key_prefix+"_Text" in st.session_state:
         st.write('**Generated Post**')
         st.write(st.session_state[key_prefix+"_Text"])
 
-    if st.session_state[key_prefix+'_Has_Image_Flag'] and key_prefix+"_Generated_Image_Prompt" in st.session_state:
+    if (st.session_state[key_prefix+'_Has_Image'] and
+        key_prefix+"_Generated_Image_Prompt" in st.session_state):
         try:
-            if st.session_state[key_prefix+'_Image_Generate_Option'] == 'Generate Images':
+            if st.session_state[key_prefix + '_Image_Option'] == 'generated':
                 render_image_generation_and_edition_ui(
                     image_text_prompt_key=key_prefix+"_Image_Prompt",
                     generated_images_key=key_prefix+"_Generated_Images",
                     edit_image_prompt_key=key_prefix+"_Edit_Image_Prompt",
-                    pre_populated_prompts=[st.session_state[key_prefix+"_Generated_Image_Prompt"]],
+                    pre_populated_prompts=[
+                        st.session_state[key_prefix +
+                                         "_Generated_Image_Prompt"]],
                     select_button=True,
                     selected_image_key=key_prefix+"_Selected_Image",
                     edit_button=True,
-                    title=f"Generate {platform} ad image",
                     image_to_edit_key=key_prefix+"_Image_To_Edit",
                     edit_with_mask=True,
                     mask_image_key=key_prefix+"_Image_Mask",
@@ -188,67 +164,21 @@ def render_ad(
                     select_button=True,
                     selected_image_key=key_prefix+"_Selected_Image")
         except:
-            if key_prefix+'_Image_Generate_Option' in st.session_state:
-                st.info("Could not generate image due to policy restrictions. Please provide a different prompt.")
-            else:
-                if platform == "Instagram":
-                    if theme == THEMES_FOR_PROMPTS[0]:
+            pass
+
+        if key_prefix+"_Generated_Images" in st.session_state:
+            if not st.session_state[key_prefix+"_Generated_Images"]:
+                if theme in THEMES_FOR_PROMPTS:
+                    index = THEMES_FOR_PROMPTS.index(theme)
+
+                    if platform == "Instagram":
                         utils_image.get_default_image_bytesio(
-                            data["pages"]["9_social_media"]["default_image_instagram_0"], key_prefix+"_Selected_Image")
-                    elif theme == THEMES_FOR_PROMPTS[1]:
-                        utils_image.get_default_image_bytesio(
-                            data["pages"]["9_social_media"]["default_image_instagram_1"], key_prefix+"_Selected_Image")
-                    elif theme == THEMES_FOR_PROMPTS[2]:
-                        utils_image.get_default_image_bytesio(
-                            data["pages"]["9_social_media"]["default_image_instagram_2"], key_prefix+"_Selected_Image")
-                    elif theme == THEMES_FOR_PROMPTS[3]:
-                        utils_image.get_default_image_bytesio(
-                            data["pages"]["9_social_media"]["default_image_instagram_3"], key_prefix+"_Selected_Image")
-                else:
-                    if theme == THEMES_FOR_PROMPTS[0]:
-                        utils_image.get_default_image_bytesio(
-                            data["pages"]["9_social_media"]["default_image_threads_0"], key_prefix+"_Selected_Image")
-                    elif theme == THEMES_FOR_PROMPTS[1]:
-                        utils_image.get_default_image_bytesio(
-                            data["pages"]["9_social_media"]["default_image_threads_1"], key_prefix+"_Selected_Image")
-                    elif theme == THEMES_FOR_PROMPTS[2]:
-                        utils_image.get_default_image_bytesio(
-                            data["pages"]["9_social_media"]["default_image_threads_2"], key_prefix+"_Selected_Image")
-                    elif theme == THEMES_FOR_PROMPTS[3]:
-                        utils_image.get_default_image_bytesio(
-                            data["pages"]["9_social_media"]["default_image_threads_3"], key_prefix+"_Selected_Image")
-        else:
-            if key_prefix+"_Generated_Images" in st.session_state:
-                if not st.session_state[key_prefix+"_Generated_Images"]:
-                    if key_prefix+'_Image_Generate_Option' in st.session_state:
-                        st.info("Could not generate image due to policy restrictions. Please provide a different prompt.")
+                            page_cfg["default_image_instagram"][index], 
+                            key_prefix+"_Selected_Image")
                     else:
-                        if platform == "Instagram":
-                            if theme == THEMES_FOR_PROMPTS[0]:
-                                utils_image.get_default_image_bytesio(
-                                    data["pages"]["9_social_media"]["default_image_instagram_0"], key_prefix+"_Selected_Image")
-                            elif theme == THEMES_FOR_PROMPTS[1]:
-                                utils_image.get_default_image_bytesio(
-                                    data["pages"]["9_social_media"]["default_image_instagram_1"], key_prefix+"_Selected_Image")
-                            elif theme == THEMES_FOR_PROMPTS[2]:
-                                utils_image.get_default_image_bytesio(
-                                    data["pages"]["9_social_media"]["default_image_instagram_2"], key_prefix+"_Selected_Image")
-                            elif theme == THEMES_FOR_PROMPTS[3]:
-                                utils_image.get_default_image_bytesio(
-                                    data["pages"]["9_social_media"]["default_image_instagram_3"], key_prefix+"_Selected_Image")
-                        else:
-                            if theme == THEMES_FOR_PROMPTS[0]:
-                                utils_image.get_default_image_bytesio(
-                                    data["pages"]["9_social_media"]["default_image_threads_0"], key_prefix+"_Selected_Image")
-                            elif theme == THEMES_FOR_PROMPTS[1]:
-                                utils_image.get_default_image_bytesio(
-                                    data["pages"]["9_social_media"]["default_image_threads_1"], key_prefix+"_Selected_Image")
-                            elif theme == THEMES_FOR_PROMPTS[2]:
-                                utils_image.get_default_image_bytesio(
-                                    data["pages"]["9_social_media"]["default_image_threads_2"], key_prefix+"_Selected_Image")
-                            elif theme == THEMES_FOR_PROMPTS[3]:
-                                utils_image.get_default_image_bytesio(
-                                    data["pages"]["9_social_media"]["default_image_threads_3"], key_prefix+"_Selected_Image")
+                        utils_image.get_default_image_bytesio(
+                            page_cfg["default_image_threads"][index],
+                            key_prefix+"_Selected_Image")
 
     if key_prefix+"_Selected_Image" in st.session_state:
         st.image(st.session_state[key_prefix+"_Selected_Image"])
@@ -264,7 +194,8 @@ def render_ad(
             selected_name = st.selectbox("List of Campaigns", campaigns_names)
             link_to_campaign_button = st.form_submit_button()
         
-        image = base64.b64encode(st.session_state[key_prefix+"_Selected_Image"].getvalue()).decode("utf-8")
+        image = base64.b64encode(st.session_state[
+            key_prefix+"_Selected_Image"].getvalue()).decode("utf-8")
         ad = {
             "theme": theme,
             "gender": gender,
@@ -293,7 +224,8 @@ def render_ad(
             selected_name = st.selectbox("List of Campaigns", campaigns_names)
             link_to_campaign_button = st.form_submit_button()
         
-        image = base64.b64encode(st.session_state[key_prefix+"_Image_To_Edit"]).decode("utf-8")
+        image = base64.b64encode(st.session_state[
+                                 key_prefix+"_Image_To_Edit"]).decode("utf-8")
         ad = {
             "theme": theme,
             "gender": gender,
@@ -311,7 +243,7 @@ def render_ad(
 
 
     # Link to campaign with NO images
-    if (st.session_state[key_prefix+'_Has_Image_Flag'] == False and
+    if (st.session_state[key_prefix+'_Has_Image'] == False and
         key_prefix+"_Text" in st.session_state and 
         CAMPAIGNS_KEY in st.session_state):
         
@@ -352,9 +284,10 @@ with threads_tab:
             threads_image = st.checkbox("Include Images", value=True)
         with col2:
             threads_65_plus = st.checkbox("Older than 65", value=False)
-        generate_image_option = st.radio(
-                    label='Select one of the options for image generation',
-                    options=['Generate Images', 'Upload Image'])
+
+        image_option = st.radio(label="Choose an option for the image:",
+             options=["uploaded", "generated"],
+             format_func=lambda x: f"{x.capitalize()} Image")
 
         threads_theme = st.selectbox('Theme', THEMES_FOR_PROMPTS)
         threads_generation_button = st.form_submit_button()
@@ -368,24 +301,24 @@ with threads_tab:
             age_range += "+"
 
         generate_ad(
-            theme=threads_theme,
+            theme=str(threads_theme),
             platform="Threads",
-            gender=threads_gender,
+            gender=str(threads_gender),
             age_range=age_range,
             has_image=threads_image,
             limit=THREADS_CHAR_LIMIT,
             key_prefix=THREADS_PREFIX,
-            generate_image_option=generate_image_option)
+            image_option=str(image_option))
     
-    if THREADS_PREFIX+'_Has_Image_Flag' not in st.session_state:
-        st.session_state[THREADS_PREFIX+'_Has_Image_Flag'] = False
+    if THREADS_PREFIX+'_Has_Image' not in st.session_state:
+        st.session_state[THREADS_PREFIX+'_Has_Image'] = False
 
     age_range = f"{threads_age[0]}-{threads_age[1]}"
     render_ad(
         THREADS_PREFIX, 
         platform="Threads",
-        theme=threads_theme,
-        gender=threads_gender,
+        theme=str(threads_theme),
+        gender=str(threads_gender),
         age_range=age_range)
 
 
@@ -403,9 +336,12 @@ with instagram_tab:
             instagram_image = st.checkbox("Include Images", value=True)
         with col2:
             instagram_65_plus = st.checkbox("Older than 65", value=False)
-        generate_image_option = st.radio(
-                    label='Select one of the options for image generation',
-                    options=['Generate Images', 'Upload Image'])
+
+        image_option = st.radio(label="Choose an option for the image:",
+             options=["uploaded", "generated"],
+             format_func=lambda x: f"{x.capitalize()} Image")
+
+
 
         instagram_theme = st.selectbox('Theme', THEMES_FOR_PROMPTS)
         instagram_generation_button = st.form_submit_button()
@@ -418,24 +354,24 @@ with instagram_tab:
             age_range += "+"
 
         generate_ad(
-            theme=instagram_theme,
+            theme=str(instagram_theme),
             platform="Instagram",
-            gender=instagram_gender,
+            gender=str(instagram_gender),
             age_range=age_range,
             has_image=instagram_image,
             limit=INSTAGRAM_CHAR_LIMIT,
             key_prefix=INSTAGRAM_PREFIX,
-            generate_image_option=generate_image_option)
+            image_option=str(image_option))
     
-    if INSTAGRAM_PREFIX+'_Has_Image_Flag' not in st.session_state:
-        st.session_state[INSTAGRAM_PREFIX+'_Has_Image_Flag'] = False
+    if INSTAGRAM_PREFIX+'_Has_Image' not in st.session_state:
+        st.session_state[INSTAGRAM_PREFIX+'_Has_Image'] = False
 
     age_range = f"{instagram_age[0]}-{instagram_age[1]}"
     
     render_ad(
         INSTAGRAM_PREFIX, 
         platform="Instagram",
-        theme=instagram_theme,
-        gender=instagram_gender,
+        theme=str(instagram_theme),
+        gender=str(instagram_gender),
         age_range=age_range
     )

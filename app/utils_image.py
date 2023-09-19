@@ -26,12 +26,13 @@ import io
 import base64
 import math
 import tomllib
+
+from proto import Message
 import utils_edit_image
 
 from google.cloud import aiplatform
 from google.protobuf import json_format
 from google.protobuf.struct_pb2 import Value
-from io import BytesIO
 from PIL import Image
 import streamlit as st
 from typing import List
@@ -54,7 +55,7 @@ IMAGE_UPLOAD_BYTES_LIMIT = 10 ** 7
 def get_default_image_bytesio(
         image_path: str,
         selected_image_key: str,
-        display_image: bool = False) -> BytesIO:
+        display_image: bool = False):
     with open(image_path, 'rb') as fp:
         image = io.BytesIO(fp.read())
     st.session_state[selected_image_key] = image
@@ -106,7 +107,7 @@ def predict_large_language_model_sample(
     endpoint: str,
     input: dict,
     parameters: dict 
-):
+) -> list:
     """Predicts the output of a large language model on a given input.
 
     Args:
@@ -135,16 +136,17 @@ def predict_large_language_model_sample(
     client = aiplatform.gapic.PredictionServiceClient(
         client_options=client_options
     )
-    instance_dict = input
-    instance = json_format.ParseDict(instance_dict, Value())
+    instance = json_format.ParseDict(input, Value())
     instances = [instance]
-    parameters_dict = parameters
-    parameters = json_format.ParseDict(parameters_dict, Value())
-    response = client.predict(
-        endpoint=endpoint, instances=instances, parameters=parameters
-    )
+    parameters_message = json_format.ParseDict(parameters, Value())
+    try:
+        response = Message.to_dict(client.predict(
+            endpoint=endpoint, instances=instances, parameters=parameters_message
+        ))
     
-    return response.predictions
+        return response.get("predictions")
+    except:
+        return []
 
 
 def image_generation(
@@ -340,7 +342,6 @@ def render_image_generation_ui(
         select_button: bool=False,
         selected_image_key: str='',
         edit_button: bool=False,
-        title: str="Generate Images",
         image_to_edit_key: str='',
         download_button: bool=True, 
         auto_submit_first_pre_populated: bool=False):
@@ -443,8 +444,6 @@ def render_image_edit_prompt(
         None.
     """
 
-    SAMPLE_COUNT = [8, 4, 2, 1]
-
     def submitted():
         st.session_state[edit_image_prompt_key] = st.session_state[
             f"{edit_image_prompt_key}_text_area"]
@@ -528,7 +527,6 @@ def render_image_generation_and_edition_ui(
         select_button: bool=False,
         selected_image_key: str="",
         edit_button: bool=False,
-        title: str="Generate Images",
         image_to_edit_key: str="",
         edit_with_mask: bool=False,
         mask_image_key: str="",
@@ -543,7 +541,6 @@ def render_image_generation_and_edition_ui(
         select_button,
         selected_image_key,
         edit_button,
-        title,
         image_to_edit_key,
         download_button,
         auto_submit_first_pre_populated)

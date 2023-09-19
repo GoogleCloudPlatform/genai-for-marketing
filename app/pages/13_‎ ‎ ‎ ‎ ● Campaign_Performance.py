@@ -22,6 +22,7 @@ Marketing Insights demonstration:
 
 
 import streamlit as st
+import streamlit.components.v1 as components
 import tomllib
 
 
@@ -62,11 +63,8 @@ with cols[1]:
     with cols[1]:
         st.title('Campaign Performance')
 
-    st.write(
-        """
-        This page presents visualizations of marketing data in the form of Looker Dashboards.
-        """
-    )
+    st.write("This page presents visualizations of marketing data "
+             "in the form of Looker Dashboards.")
 
     if DASHBOARDS:
         with st.form(key='generate_marketing_dashboard'):
@@ -82,7 +80,7 @@ with cols[1]:
         st.info('Dashboards not available.')
 
 if DASHBOARD_KEY in st.session_state:
-    st.components.v1.html(f"""
-<iframe src="{DASHBOARDS.get(st.session_state[DASHBOARD_KEY])}" frameborder="0" width="100%" height="800px"></iframe>
-{INFOBOT}
-""", height=800)
+    components.html(
+        f'<iframe src="{DASHBOARDS.get(st.session_state[DASHBOARD_KEY])}" '
+        f'frameborder="0" width="100%" height="800px"></iframe>{INFOBOT}', 
+        height=800)

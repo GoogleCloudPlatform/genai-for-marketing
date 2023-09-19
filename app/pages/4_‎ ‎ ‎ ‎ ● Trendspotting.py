@@ -15,12 +15,14 @@
 
 """
 Trendspotting: 
-- Identify emerging trends in the market by analyzing Google Trends data on a Looker Dashboard 
+- Identify emerging trends in the market by analyzing Google Trends data 
+  on a Looker Dashboard 
 - Summarizing news related to top search terms. 
 - Generate a social media post for tweeter using summarized information.
 """
 
 import streamlit as st
+import streamlit.components.v1 as components
 import tomllib
 import vertexai
 
@@ -53,7 +55,8 @@ LOCATION = data["global"]["location"]
 
 bq_client = bigquery.Client(project=PROJECT_ID)
 vertexai.init(project=PROJECT_ID, location=LOCATION)
-llm = TextGenerationModel.from_pretrained(data["models"]["text"]["text_model_name"])
+llm = TextGenerationModel.from_pretrained(
+    data["models"]["text"]["text_model_name"])
 
 default_date_value = date.today() - timedelta(2)
 max_date_value = date.today() - timedelta(2)
@@ -78,24 +81,25 @@ with cols_page[1]:
         st.title(data["pages"]["4_trendspotting"]["page_title"])
 
     st.write(
-        """
-        This page demonstrates how to use Google Trends to stay up-to-date on current events 
-        and trends by tracking popular search terms and summarizing news articles about them.
-        """
+        "This page demonstrates how to use Google Trends " 
+        "to stay up-to-date on current events " 
+        "and trends by tracking popular search terms " 
+        "and summarizing news articles about them."
     )
 
 
     st.subheader('Google Trends dataset')
     st.write(
-        """
-        The following dashboard demonstrates the top search terms in the US for 
-        the latest available data. This query looks at the latest data available to 
-        return the top 25 search terms in the US for the most recent week available.
-        """
+        "The following dashboard demonstrates "
+        "the top search terms in the US for "
+        "the latest available data. "
+        "This query looks at the latest data available to "
+        "return the top 25 search terms in the US for "
+        "the most recent week available."
     )
 
 # Renders the Google trends dashboard
-st.components.v1.iframe(
+components.iframe(
     src='https://datasignals.looker.com/embed/dashboards/11?theme=GoogleWhite',
     height=800, 
     scrolling=False
@@ -105,35 +109,42 @@ cols_page = st.columns([14,72,14])
 with cols_page[1]:
     # Google Trends retrieval tool ###########
     st.write(
-        '''Using the form below, select a date to retrieve the top 1 search term(s) in the US.'''
+        "Using the form below, select a date" 
+        "to retrieve the top 1 search term(s) in the US."
     )
     with st.form('form_google_trends'):
         st.write("**Google Trends top search terms**")
 
         selected_date = st.date_input(
-            'Select the date to retrive the top search terms from Google Trends',
+            'Select a date to retrive the top search terms from Google Trends',
             default_date_value,
             min_value=min_date_value,
             max_value=max_date_value)
-        trends_date = datetime.strftime(selected_date, '%Y-%m-%d')
+        assert isinstance(selected_date, date)
+        trends_date = date.strftime(selected_date, '%Y-%m-%d')
         button_trend = st.form_submit_button('Get top search terms')
 
     if button_trend:
         with st.spinner("Querying..."):
-            google_trends_tool = GoogleTrends(project_id=PROJECT_ID, bq_client=bq_client)
+            google_trends_tool = GoogleTrends(
+                project_id=PROJECT_ID, bq_client=bq_client)
             st.session_state[TOP_SEARCH_TERM_DATE_KEY] = trends_date
-            st.session_state[TOP_SEARCH_TERM_KEY] = google_trends_tool.run(trends_date)
+            st.session_state[TOP_SEARCH_TERM_KEY] = google_trends_tool.run(
+                trends_date)
 
-    if TOP_SEARCH_TERM_KEY in st.session_state and TOP_SEARCH_TERM_DATE_KEY in st.session_state:
+    if (TOP_SEARCH_TERM_KEY in st.session_state and 
+        TOP_SEARCH_TERM_DATE_KEY in st.session_state):
         st.write(
-            f'Top search term for date {st.session_state[TOP_SEARCH_TERM_DATE_KEY]} is: '
+            'Top search term for date '
+            f'{st.session_state[TOP_SEARCH_TERM_DATE_KEY]} is: '
             f'{" ".join(st.session_state[TOP_SEARCH_TERM_KEY])}')
     ##########################################
 
     # News Summarization #####################
     st.subheader('News Summarization')
     st.write(
-        '''Provide keywords to retrive summaries of news articles related to them.'''
+        "Provide keywords to retrive summaries " 
+        "of news articles related to them."
     )
     with st.form(key='form_summarize'):
         st.write('**Summarize News**')
@@ -162,10 +173,12 @@ with cols_page[1]:
         if not any([keyword_1, keyword_2, keyword_3]):
             st.info('Provide at least one keyword')
 
-        st.session_state[SUMMARIZATION_TERM_KEY] = [keyword_1, keyword_2, keyword_3]
+        st.session_state[SUMMARIZATION_TERM_KEY] = [keyword_1,
+                                                    keyword_2,
+                                                    keyword_3]
 
         with st.spinner('Summarizing news...'):        
-            retriever = GDELTRetriever(max_records=max_records)
+            retriever = GDELTRetriever(max_records=int(max_records))
             today_date = datetime.now()
             start_date = today_date - timedelta(5)
 
@@ -180,7 +193,8 @@ with cols_page[1]:
                 st.info('No articles found. Try different keywords.')
             else:
                 summaries = []
-                summaries.append(f"Summaries of news articles with the keywords: "
+                summaries.append(
+                    f"Summaries of news articles with the keywords: "
                     f"{st.session_state[SUMMARIZATION_TERM_KEY][0]} "
                     f"{st.session_state[SUMMARIZATION_TERM_KEY][1]} " 
                     f"{st.session_state[SUMMARIZATION_TERM_KEY][2]}")

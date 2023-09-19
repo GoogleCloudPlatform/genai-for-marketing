@@ -243,7 +243,7 @@ Full table name: `{}.cdp_dataset.transactions` - Column: app_purchase_qnt - Data
 Full table name: `{}.cdp_dataset.transactions` - Column: customer_id - Data Type: INT64 - Primary Key: False - foreign Key: True - Description: A unique identifier of the customer.
 Full table name: `{}.cdp_dataset.transactions` - Column: product_id - Data Type: INT64 - Primary Key: False - foreign Key: True - Description: The code of the inventory item that was purchased.
 Full table name: `{}.cdp_dataset.transactions` - Column: product_name - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The name of the product that was purchased.
-Full table name: `{}.cdp_dataset.transactions` - Column: transaction_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date the transaction was made.
+Fulll table name: `{}.cdp_dataset.transactions` - Column: transaction_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date the transaction was made.
 Full table name: `{}.cdp_dataset.transactions` - Column: transaction_id - Data Type: INT64 - Primary Key: True - foreign Key: False - Description: A unique identifier for the transaction.
 Full table name: `{}.cdp_dataset.transactions` - Column: transaction_value - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The total value of the transaction.
 Full table name: `{}.cdp_dataset.transactions` - Column: transation_qnt - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The quantity of items purchased in the transaction.
@@ -594,7 +594,7 @@ page_icon = "/app/images/favicon.png"
 sidebar_image_path = "/app/images/menu_icon_2.png"
 page_title_image = "/app/images/consumer_icon.png"
 
-# Enterprise Search datastores and location. 
+# Vertex AI Search datastores and location. 
 # Change the dataset variable to reflect your configuration.
 # Sample datastore ID
 # datastores.<datastore ID> = 'default_config'
@@ -737,7 +737,7 @@ languages =  ["es","zh","cs","da","fr","el","it","ja","pt"]
 
 # The following variables are default texts and images in case the model fails to respond.
 # You can change the defaults if needed.
-defalt_email_copy_0 = """Dear customer,\n
+default_email_copy_0 = """Dear customer,\n
 We hope this email finds you well.\n
 We're writing to let you know about our upcoming sale on new women's handbags at Cymbal. We're offering discounts of up to 50% on all items, so this is a great opportunity to stock up on some new handbags for yourself or for someone special.\n
 We have a wide variety of handbags to choose from, including totes, satchels, crossbody bags, and more. We also have a variety of colors and styles to choose from, so you're sure to find something that you love.\n
@@ -747,7 +747,7 @@ We hope to see you soon!\n
 Sincerely,\n
 The Cymbal Team"""
 
-defalt_email_copy_1 = """Dear customer,\n
+default_email_copy_1 = """Dear customer,\n
 We're excited to introduce our new line of men's shoes at Cymbal. We know you'll love the stylish designs and comfortable construction.\n
 Our new shoes are perfect for men of all ages, including middle-aged men like you. They're made with high-quality materials and construction, so you can be sure they'll last.\n
 We also have a variety of styles to choose from, so you're sure to find the perfect pair of shoes for your needs. Whether you're looking for a pair of dress shoes for work or a pair of casual shoes for weekend wear, we have something for you.\n
@@ -756,7 +756,7 @@ So what are you waiting for? Shop our new line of men's shoes today.\n
 Sincerely,\n
 The Cymbal Team"""
 
-defalt_email_copy_2 = """Dear customer,\n
+default_email_copy_2 = """Dear customer,\n
 We're excited to announce the new opening of Cymbal concept shoe store in New York City! We know you're a middle-aged man, so we think you'd really appreciate our unique selection of shoes.\n
 Cymbal is a new concept store that offers a curated selection of shoes from around the world. We have something for everyone, whether you're looking for a new pair of sneakers, sandals, or boots.\n
 We're also offering a special discount to our first 100 customers. Use the code "NEWCYMBAL" at checkout to save 20% on your purchase.\n
@@ -764,7 +764,7 @@ We hope to see you soon at Cymbal!\n
 Sincerely,\n
 The Cymbal Team"""
 
-defalt_email_copy_3 = """Dear customer,\n
+default_email_copy_3 = """Dear customer,\n
 We hope this email finds you well.\n
 We're reaching out to you today because we know you're a fan of Cymbal shoes, and we wanted to let you know that we're now open in New York City!\n
 We're located at 123 Main Street, and we're open from 10am to 6pm, seven days a week.\n
@@ -819,7 +819,7 @@ prompt_image_template = """Generate an image for {}"""
 # The following variables are default / fallback website posts and images.
 # They are used in case the model doesn't return anything.
 # Change this defaults if needed.
-prompt_website_text_women_handbag = """New Women's Handbags on Sale at Cymbal\n
+prompt_default_responses = ["""New Women's Handbags on Sale at Cymbal\n
 Cymbal is excited to announce the arrival of our new collection of women's handbags. These stylish and functional bags are perfect for any occasion, from a night out on the town to a day at the office.\n
 Our new handbags come in a variety of styles, colors, and sizes to suit your individual needs. Whether you're looking for a small crossbody bag to carry your essentials or a large tote bag for work, we have something for you.\n
 In addition to our wide selection of styles, our new handbags are also made from high-quality materials that will last for years to come. We use only the finest leathers and fabrics, so you can be sure that your new bag will look and feel great for years to come.\n
@@ -829,9 +829,9 @@ Here are some of our top picks from the new collection:\n
 The Cymbal Tote Bag is a stylish and spacious bag that's perfect for everyday use. It features a roomy interior with multiple compartments, so you can keep your belongings organized. The Cymbal Tote Bag is also made from durable leather that will last for years to come.\n
 The Cymbal Crossbody Bag is a chic and compact bag that's perfect for a night out on the town. It features a stylish design and a comfortable crossbody strap, so you can wear it all day long. The Cymbal Crossbody Bag is also made from lightweight leather that won't weigh you down.\n
 The Cymbal Satchel Bag is a versatile and stylish bag that can be dressed up or down. It features a sleek design and a spacious interior, so you can carry everything you need. The Cymbal Satchel Bag is also made from durable leather that will last for years to come.\n
-These are just a few of our top picks from the new collection of women's handbags at Cymbal. Shop our entire collection today and find the perfect bag to complete your look."""
+These are just a few of our top picks from the new collection of women's handbags at Cymbal. Shop our entire collection today and find the perfect bag to complete your look.""",
 
-prompt_website_text_man_shoes = """Introducing the New Line of Men's Shoes at Cymbal\n
+"""Introducing the New Line of Men's Shoes at Cymbal\n
 We're excited to announce the launch of our new line of men's shoes! We've been working hard to create a collection that is stylish, comfortable, and durable, and we think you're going to love it.\n
 Our new line features a variety of styles to suit every man's needs. Whether you're looking for a pair of dress shoes for work, casual shoes for everyday wear, or athletic shoes for your next workout, we have something for you.\n
 We've also used only the finest materials in our construction, so you can be sure that our shoes will last. And because we know that life happens, all of our shoes come with a 90-day warranty.\n
@@ -850,9 +850,9 @@ Here are some of the styles that are available in our new line of men's shoes:\n
  - Sandals\n
 We have something for every man, so be sure to check out our entire collection today!\n
 We're also offering a special discount of 20% off your first purchase. Just use the code NEWLINE at checkout.\n
-So what are you waiting for? Shop now and start looking your best!"""
+So what are you waiting for? Shop now and start looking your best!""",
 
-prompt_website_text_concept_store = """Cymbal Concept Shoe Store Opens in NYC\n
+"""Cymbal Concept Shoe Store Opens in NYC\n
 New York City, NY – March 8, 2023 – Cymbal, a new concept shoe store, opened its doors in New York City today. The store, located at 100 Fifth Avenue, offers a unique shopping experience that combines the latest in fashion with cutting-edge technology.\n
 Cymbal is the brainchild of two friends, Ben and Jerry. Ben is a former footwear designer who worked for some of the biggest brands in the industry. Jerry is a tech entrepreneur who has developed a new platform that allows shoppers to interact with products in a whole new way.\n
 The store is divided into two sections. The first section is dedicated to the latest in fashion. Cymbal carries a wide variety of shoes from both established brands and up-and-coming designers. The second section is where the technology comes in.\n
@@ -864,9 +864,9 @@ Cymbal is a new concept shoe store that combines the latest in fashion with cutt
 Cymbal was founded by two friends, Ben and Jerry. Ben is a former footwear designer who worked for some of the biggest brands in the industry. Jerry is a tech entrepreneur who has developed a new platform that allows shoppers to interact with products in a whole new way.\n
 Cymbal carries a wide variety of shoes from both established brands and up-and-coming designers. The store also offers a variety of services, including shoe repair and customization.\n
 Cymbal is the future of shoe shopping. It is a place where fashion and technology meet to create an unforgettable shopping experience.\n
-To learn more about Cymbal, visit their website at www.cymbal.com."""
+To learn more about Cymbal, visit their website at www.cymbal.com.""",
 
-prompt_website_text_brand = """Cymbal Shoes: A New Retail Brand in NYC\n
+"""Cymbal Shoes: A New Retail Brand in NYC\n
 Cymbal Shoes is a new retail brand that is taking the city by storm. With its unique selection of shoes, stylish designs, and affordable prices, Cymbal Shoes is quickly becoming a go-to destination for shoe lovers of all ages.\n
 Cymbal Shoes was founded by two friends who had a passion for shoes and a desire to create a brand that was different from anything else on the market. They wanted to create a brand that was stylish, affordable, and accessible to everyone.\n
 Cymbal Shoes offers a wide variety of shoes, including sneakers, boots, sandals, and heels. They also have a variety of styles to choose from, including casual, dressy, and athletic. And with prices starting at just $20, Cymbal Shoes is sure to have something for everyone.\n
@@ -880,7 +880,7 @@ Here are some of the reasons why Cymbal Shoes is a great choice:\n
  - Free shipping and returns\n
  - 30-day satisfaction guarantee\n
  - Convenient location\n
-If you're looking for a new pair of shoes, be sure to check out Cymbal Shoes. You won't be disappointed!"""
+If you're looking for a new pair of shoes, be sure to check out Cymbal Shoes. You won't be disappointed!"""]
 
 default_image_0 = "/app/images/website_1.png"
 default_image_1 = "/app/images/website_2.png"
@@ -933,29 +933,25 @@ themes_for_prompts = [
 # The following variables are default / fallback social media posts and images.
 # They are used in case the model doesn't return anything.
 # Change this defaults if needed.
-social_threads_0 = """New handbags at Cymbal!\n
+default_threads = ["""New handbags at Cymbal!\n
 Looking for a new handbag to add to your collection? Look no further than Cymbal! We have a wide variety of handbags to choose from, all at great prices. Whether you're looking for a stylish crossbody bag, a roomy tote bag, or a chic clutch, we have something for everyone.\n
-And now, for a limited time, take an extra 20% off all handbags! This is the perfect opportunity to stock up on your favorite styles or treat yourself to a new bag."""
-
-social_threads_1 = """Introducing the new line of shoes from Cymbal!\n
+And now, for a limited time, take an extra 20% off all handbags! This is the perfect opportunity to stock up on your favorite styles or treat yourself to a new bag.""",
+"""Introducing the new line of shoes from Cymbal!\n
 Our new line of shoes is perfect for the modern woman on the go. With a variety of styles to choose from, you're sure to find the perfect pair of shoes to match your personality and lifestyle.\n
 Our shoes are made with high-quality materials and construction, so you can be sure they'll last. Plus, they're incredibly comfortable, so you can wear them all day long.\n
-So what are you waiting for? Shop our new line of shoes today!"""
-
-social_threads_2 = """Introducing Cymbal, a new concept shoe store in NYC.\n
+So what are you waiting for? Shop our new line of shoes today!""",
+"""Introducing Cymbal, a new concept shoe store in NYC.\n
 Cymbal is a one-of-a-kind shoe store that offers a unique shopping experience. We have a wide selection of shoes from all the top brands, but what really sets us apart is our personal touch.\n
-Our team of experts is here to help you find the perfect pair of shoes for your needs. We'll take the time to learn about your style and your lifestyle, and then we'll make recommendations that are perfect for you."""
-
-social_threads_3 = """Cymbal Shoes: The Perfect Shoes for Your Next Adventure\n
+Our team of experts is here to help you find the perfect pair of shoes for your needs. We'll take the time to learn about your style and your lifestyle, and then we'll make recommendations that are perfect for you.""",
+"""Cymbal Shoes: The Perfect Shoes for Your Next Adventure\n
 Looking for a pair of shoes that can keep up with your active lifestyle? Look no further than Cymbal Shoes! Our shoes are made with high-quality materials and construction, so you can be sure they'll last. Plus, our shoes are designed with comfort in mind, so you can wear them all day long.\n
-Whether you're running errands, going to the gym, or just taking a walk around the city, Cymbal Shoes are the perfect choice for you. """
+Whether you're running errands, going to the gym, or just taking a walk around the city, Cymbal Shoes are the perfect choice for you. """]
 
-social_instagram_0 = """Cymbal is excited to announce the launch of our new line of handbags. These stylish and functional bags are perfect for any occasion, from a night out on the town to a day at the office.\n
+default_instagram = ["""Cymbal is excited to announce the launch of our new line of handbags. These stylish and functional bags are perfect for any occasion, from a night out on the town to a day at the office.\n
 Our handbags are made with high-quality materials and construction, so you can be sure they'll last. They're also available in a variety of colors and styles, so you're sure to find the perfect one for you.\n
 To celebrate the launch of our new handbags, we're offering 20 percent off all purchases. So what are you waiting for? Shop now and get your new Cymbal handbag!\n
-Shop now at cymbal.com."""
-
-social_instagram_1 = """Introducing the new line of shoes from Cymbal!\n
+Shop now at cymbal.com.""",
+"""Introducing the new line of shoes from Cymbal!\n
 Our new line of shoes is designed to take you from day to night, with styles that are both stylish and comfortable. Whether you're running errands, going to work, or out on the town, our shoes will have you looking and feeling your best.\n
 Our new line of shoes features:\n
  - A variety of styles to choose from, including flats, heels, boots, and sandals\n
@@ -964,30 +960,22 @@ Our new line of shoes features:\n
  - Fashion-forward designs that will turn heads wherever you go\n
 Shop our new line of shoes today and experience the difference!\n
 Visit our website or find a store near you to see our full selection.\n
-Cymbal: Shoes that make you feel good."""
-
-social_instagram_2 = """Cymbal: The New Concept Shoe Store in NYC\n
+Cymbal: Shoes that make you feel good.""",
+"""Cymbal: The New Concept Shoe Store in NYC\n
 Cymbal is a new concept shoe store that's unlike anything you've seen before. We offer a curated selection of the latest and greatest shoes from around the world, all at an affordable price.\n
 We believe that shoes should be more than just a way to get from point A to point B. They should be an expression of your personality and style. That's why we offer a wide variety of styles to choose from, so you can find the perfect pair of shoes to match your look.\n
 In addition to our amazing selection of shoes, we also offer a unique shopping experience. Our stores are designed to be inviting and inspiring, and our staff is always happy to help you find the perfect pair of shoes.\n
 So if you're looking for a new pair of shoes that will make you stand out from the crowd, come check out Cymbal today!\n
-Visit our website or stop by one of our stores today to find the perfect pair of shoes!"""
-
-social_instagram_3 = """Cymbal Shoes: The Perfect Shoes for Your Next Adventure\n
+Visit our website or stop by one of our stores today to find the perfect pair of shoes!""",
+"""Cymbal Shoes: The Perfect Shoes for Your Next Adventure\n
 Are you looking for the perfect shoes for your next adventure? Look no further than Cymbal Shoes! Our shoes are made with high-quality materials and construction, so you can be sure they'll last. Plus, our shoes are stylish and comfortable, so you can look and feel your best on your next big trip.\n
 Whether you're hiking in the mountains, exploring a new city, or just running errands, Cymbal Shoes have you covered. Check out our wide selection of styles and colors today!\n
 Shop now at cymbalshoes.com.\n
-Cymbal Shoes: The perfect shoes for your next adventure."""
+Cymbal Shoes: The perfect shoes for your next adventure."""]
 
-default_image_instagram_0 = "/app/images/social_instagram_0.png"
-default_image_instagram_1 = "/app/images/social_instagram_1.png"
-default_image_instagram_2 = "/app/images/social_instagram_2.png"
-default_image_instagram_3 = "/app/images/social_instagram_3.png"
+default_image_instagram = ["/app/images/social_instagram_0.png", "/app/images/social_instagram_1.png", "/app/images/social_instagram_2.png", "/app/images/social_instagram_3.png"]
 
-default_image_threads_0 = "/app/images/social_threads_0.png"
-default_image_threads_1 = "/app/images/social_threads_1.png"
-default_image_threads_2 = "/app/images/social_threads_2.png"
-default_image_threads_3 = "/app/images/social_threads_3.png"
+default_image_threads = ["/app/images/social_threads_0.png", "/app/images/social_threads_1.png", "/app/images/social_threads_2.png", "/app/images/social_threads_3.png"]
 
 # -----------------------------------------------------------------------------
 # Configurations for 10_Asset_Group_Pmax.py page
@@ -1071,17 +1059,7 @@ Cymbal: A new season, a new you. Shop our latest collection of women's handbags 
 
 asset_group_description = "Cymbal's new collection of women's handbags is a symphony of style, featuring a harmonious blend of trendsetting designs and unparalleled quality."
 
-default_image_asset_0_0 = "/app/images/asset_group_0_0.png"
-default_image_asset_0_1 = "/app/images/asset_group_0_1.png"
-
-default_image_asset_1_0 = "/app/images/asset_group_1_0.png"
-default_image_asset_1_1 = "/app/images/asset_group_1_1.png"
-
-default_image_asset_2_0 = "/app/images/asset_group_2_0.png"
-default_image_asset_2_1 = "/app/images/asset_group_2_1.png"
-
-default_image_asset_3_0 = "/app/images/asset_group_3_0.png"
-default_image_asset_3_1 = "/app/images/asset_group_3_1.png"
+default_image_asset = [["/app/images/asset_group_0_0.png","/app/images/asset_group_0_1.png"], ["/app/images/asset_group_1_0.png", "/app/images/asset_group_1_1.png"], ["/app/images/asset_group_2_0.png", "/app/images/asset_group_2_1.png"], ["/app/images/asset_group_3_0.png", "/app/images/asset_group_3_1.png"]]
 
 
 # -----------------------------------------------------------------------------

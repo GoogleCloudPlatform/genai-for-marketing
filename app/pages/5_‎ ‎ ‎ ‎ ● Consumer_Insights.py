@@ -14,14 +14,15 @@
 
 """
 Content Search: 
-- Improve the search experience for enterprise users with Gen App Builder.
+- Improve the search experience for enterprise users with Vertex AI Search.
 """
 
 import streamlit as st
 import tomllib
 
 from google.cloud import discoveryengine
-from utils_enterprise_search import search
+from proto import Message
+from utils_vertex_ai_search import search
 
 
 # Load configuration file
@@ -36,8 +37,8 @@ DATASTORES = data["pages"]["5_consumer_insights"]["datastores"]
 search_client = discoveryengine.SearchServiceClient()
 complete_client = discoveryengine.CompletionServiceClient()
 
-# State variables for enterprise search results
-PAGE_KEY_PREFIX = "EnterpriseSearch"
+# State variables for Vertex AI Search results
+PAGE_KEY_PREFIX = "VertexAISearch"
 QUERY_KEY = f"{PAGE_KEY_PREFIX}_Query"
 RESULTS_KEY = f"{PAGE_KEY_PREFIX}_Results"
 AUTOCOMPLETE_KEY = f"{PAGE_KEY_PREFIX}_Autocomplete"
@@ -61,11 +62,11 @@ with cols[1]:
     st.title(data["pages"]["5_consumer_insights"]["page_title"])
 
 st.write(
-    """
-    This page demonstrates how to use Enterprise Search to find marketing assets. 
-    """
+    "This page demonstrates how to use Vertex AI Search "
+    "to find marketing assets."
 )
 
+datastore = None
 if DATASTORES:
     with st.form(key=f"{PAGE_KEY_PREFIX}_form"):
         datastore = list(DATASTORES.keys())[0]
@@ -80,7 +81,9 @@ if DATASTORES:
 else:
     st.info('Datastore not available.')
 
-if QUERY_KEY in st.session_state and RESULTS_KEY not in st.session_state:
+if (datastore and 
+    QUERY_KEY in st.session_state and 
+    RESULTS_KEY not in st.session_state):
     with st.spinner(f"Searching for '{st.session_state[QUERY_KEY]}'"):
         results = []
         try:
@@ -101,18 +104,22 @@ if QUERY_KEY in st.session_state and RESULTS_KEY not in st.session_state:
                 st.success('Empty results.')
 
             for search_result in search_results:
-                struct_data = search_result.document.derived_struct_data
-                title = struct_data["title"]
-                link = struct_data["link"]
-                snippet = struct_data["snippets"][0]["snippet"]
-                html_snippet = struct_data["snippets"][0]["htmlSnippet"]
-                result = {
-                    "title": title,
-                    "link": link,
-                    "snippet": snippet,
-                    "html_snippet": html_snippet
-                }
-                results.append(result)
+                search_result_dict = Message.to_dict(search_result)
+                document = search_result_dict.get("document", {})
+                struct_data = document.get("derived_struct_data",{})
+                title = struct_data.get("title", "")
+                link = struct_data.get("link", "")
+                snippets = struct_data.get("snippets", [])
+                if len(snippets) > 0:
+                    snippet = snippets[0].get("snippet", "")
+                    html_snippet = snippets[0].get("htmlSnippet", "")
+                    result = {
+                        "title": title,
+                        "link": link,
+                        "snippet": snippet,
+                        "html_snippet": html_snippet
+                    }
+                    results.append(result)
         
             if results:
                 st.session_state[RESULTS_KEY] = results
