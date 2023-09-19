@@ -23,7 +23,7 @@ Utility module to:
 
 import requests
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any 
 from newspaper import Article
 from newspaper import ArticleException
 
@@ -40,7 +40,8 @@ class GoogleTrends:
 
 
     def run(self, refresh_date: str):
-        """Gets the top search terms on a given date from the BigQuery `google_trends.top_terms` dataset.
+        """Gets the top search terms on a given date from the BigQuery 
+        `google_trends.top_terms` dataset.
 
         Args:
             refresh_date (str, optional): 
@@ -49,12 +50,13 @@ class GoogleTrends:
         Returns:
             List[str]: A list of the top search terms on the specified date.
         """
-        query = f"""
-            SELECT term, rank FROM `bigquery-public-data.google_trends.top_terms`
-            WHERE refresh_date = '{refresh_date}'
-            GROUP BY 1,2
-            ORDER by rank ASC
-        """
+        query = ( 
+            "SELECT term, rank "
+            "FROM `bigquery-public-data.google_trends.top_terms` "
+            f"WHERE refresh_date = '{refresh_date}' "
+            "GROUP BY 1,2 "
+            "ORDER by rank ASC"
+        )
         query_job = self.bq_client.query(
             query,
             location="US",
@@ -80,7 +82,7 @@ class GDELTRetriever:
         self.source_lang: str = 'english'
         
         if tone == 'positive':
-            self.tone = 'tone>5'
+            self.tone = 'tone>10'
         elif tone == 'negative':
             self.tone = 'tone<-5'
 
@@ -89,7 +91,7 @@ class GDELTRetriever:
             self, 
             keywords: list[str], 
             startdate: datetime, 
-            enddate: datetime) -> Dict:
+            enddate: datetime) -> dict:
         """Get articles that match the given keywords.
 
         Args:
@@ -103,9 +105,10 @@ class GDELTRetriever:
         Returns:
             A dictionary with news articles that match the given keywords.
         """
-        query = f'near{self.n_near_words}:"{" ".join(keywords)}" '
-        query += f'sourcecountry:{self.source_country} sourcelang:{self.source_lang} '
-        query += f'{self.tone}'
+        query = (f'near{self.n_near_words}:"{" ".join(keywords)}" '
+                 f'sourcecountry:{self.source_country} '
+                 f'sourcelang:{self.source_lang} '
+                 f'{self.tone}')
         params = {'query': query,
                   'format': self.format,
                   'mode': self.mode,
@@ -118,7 +121,7 @@ class GDELTRetriever:
         return response.json()
 
 
-    def _parse_article(self, url: str) -> str:
+    def _parse_article(self, url: str) -> Article|None:
         """Parses an article from the given URL.
 
         Args:
@@ -139,7 +142,7 @@ class GDELTRetriever:
             return article
 
 
-    def _get_documents(self, articles: Dict) -> List[Dict]:
+    def _get_documents(self, articles: dict) -> list[dict]:
         """Gets a list of documents from a list of articles.
 
         Args:
@@ -154,7 +157,8 @@ class GDELTRetriever:
 
         for article in articles['articles']:
             parsed_article = self._parse_article(article['url'])
-            if parsed_article and parsed_article.text and (article['title'] not in unique_docs):
+            if (parsed_article and parsed_article.text and 
+                (article['title'] not in unique_docs)):
                 unique_docs.add(article['title'])
                 document = {
                     'page_content': parsed_article.text,
@@ -167,7 +171,7 @@ class GDELTRetriever:
         return documents
 
 
-    def get_relevant_documents(self, query: str) -> List[Dict]:
+    def get_relevant_documents(self, query: dict) -> list[dict]:
         """Gets a list of relevant documents from a query.
         Args:
             query: A query.
@@ -184,7 +188,7 @@ class GDELTRetriever:
         return documents
 
 
-def summarize_news_article(document: Dict, llm):
+def summarize_news_article(document: dict, llm):
     """Summarizes a news article.
 
     Args:
@@ -198,20 +202,21 @@ def summarize_news_article(document: Dict, llm):
             `page_content`: The original text of the news article.
             `summary`: A one-sentence summary of the news article.
     """
-    prompt_template = f"""Write a one sentence summary of the following article delimited by triple backticks:
-
-    ```{document['page_content']}```
-    """
+    prompt_template = (
+        "Write a one sentence summary of the news article below:"
+        f"input: {document['page_content']}"
+        "output:")
     document['summary'] = llm.predict(prompt_template).text
     return document
 
 
-def summarize_documents(documents: Dict, llm) -> List:
+def summarize_documents(documents: dict, llm) -> list:
     """Summarizes a list of news articles.
 
     Args:
         documents: 
-            A dictionary containing a list of news articles, each of which is a dictionary containing the following keys:
+            A dictionary containing a list of news articles, 
+            each of which is a dictionary containing the following keys:
                 `page_content`: The text of the news article.
         llm: A language model that can be used to generate summaries.
 

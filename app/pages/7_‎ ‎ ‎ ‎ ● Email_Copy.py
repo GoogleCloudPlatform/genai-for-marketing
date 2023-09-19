@@ -30,7 +30,8 @@ import vertexai
 
 from google.cloud import translate_v2 as translate
 from utils_campaign import generate_names_uuid_dict
-from utils_image import IMAGEN_API_ENDPOINT, IMAGEN_ENDPOINT, predict_large_language_model_sample
+from utils_image import IMAGEN_API_ENDPOINT, IMAGEN_ENDPOINT 
+from utils_image import predict_large_language_model_sample
 from vertexai.preview.language_models import TextGenerationModel
 
 
@@ -38,13 +39,15 @@ from vertexai.preview.language_models import TextGenerationModel
 with open("./app_config.toml", "rb") as f:
     data = tomllib.load(f)
 
-st.set_page_config(page_title=data["pages"]["7_email_copy"]["page_title"],
-                   page_icon=data["pages"]["7_email_copy"]["page_icon"])
+page_cfg = data["pages"]["7_email_copy"]
+
+st.set_page_config(page_title=page_cfg["page_title"],
+                   page_icon=page_cfg["page_icon"])
 
 import utils_styles
 utils_styles.sidebar_apply_style(
     style=utils_styles.style_sidebar,
-    image_path=data["pages"]["7_email_copy"]["sidebar_image_path"]
+    image_path=page_cfg["sidebar_image_path"]
 )
 
 # Set project parameters
@@ -54,7 +57,8 @@ LOCATION = data["global"]["location"]
 vertexai.init(
     project=PROJECT_ID,
     location=LOCATION)
-llm = TextGenerationModel.from_pretrained(data["models"]["text"]["text_model_name"])
+llm = TextGenerationModel.from_pretrained(
+    data["models"]["text"]["text_model_name"])
 translate_client = translate.Client()
 
 # Default Campaign key
@@ -70,26 +74,27 @@ SAMPLE_EMAILS_KEY = f"{PAGE_KEY_PREFIX}_Sample_Emails"
 GENERATED_EMAILS_KEY = f"{PAGE_KEY_PREFIX}_Generated_Emails"
 
 # Default values
-EMAIL_TEXT_PROMPT = data["pages"]["7_email_copy"]["prompt_email_text"]
-IMAGE_GENERATION_PROMPT = data["pages"]["7_email_copy"]["prompt_image_generation"]
-THEMES_FOR_PROMPTS = data["pages"]["7_email_copy"]["prompt_themes"]
-SAMPLE_EMAILS = data["pages"]["7_email_copy"]["sample_emails"]
-AGE_BUCKET = data["pages"]["7_email_copy"]["age_bucket"]
-MALE_NAMES = data["pages"]["7_email_copy"]["male_names"]
-FEMALE_NAMES = data["pages"]["7_email_copy"]["female_names"]
-LANGUAGES = data["pages"]["7_email_copy"]["languages"]
+EMAIL_TEXT_PROMPT = page_cfg["prompt_email_text"]
+IMAGE_GENERATION_PROMPT = page_cfg["prompt_image_generation"]
+THEMES_FOR_PROMPTS = page_cfg["prompt_themes"]
+SAMPLE_EMAILS = page_cfg["sample_emails"]
+AGE_BUCKET = page_cfg["age_bucket"]
+MALE_NAMES = page_cfg["male_names"]
+FEMALE_NAMES = page_cfg["female_names"]
+LANGUAGES = page_cfg["languages"]
 
 
 cols = st.columns([15, 85])
 with cols[0]:
-    st.image(data["pages"]["7_email_copy"]["page_title_image"])
+    st.image(page_cfg["page_title_image"])
 with cols[1]:
-    st.title(data["pages"]["7_email_copy"]["page_title"])
+    st.title(page_cfg["page_title"])
 
 st.write(
     """
     This page provides a guided process for generating email copy. 
-    The following is a brief list of emails that can be used as a sample to generate email copies.
+    The following is a brief list of emails 
+    that can be used as a sample to generate email copies.
     """
 )
 
@@ -99,7 +104,8 @@ if EMAIL_AUDIENCE_KEY in st.session_state:
 else:      
     st.info(
     "Using an auto generated list of emails. "
-    "To use a custom list of emails, please generate the audience first using the Audience Insights page. ")
+    "To use a custom list of emails, please generate "
+    "the audience first using the Audience Insights page. ")
     sample_size = st.slider("Select a sample size", 1, 10, 3)
 
     audience_dataframe = pd.DataFrame.from_dict({
@@ -135,99 +141,83 @@ st.dataframe(audience_dataframe.head(sample_size))
 async def email_generate(row: pd.Series, theme: str) -> pd.Series:
     prompt_row_no_lan = row.drop('language')
 
-    email_prompt = EMAIL_TEXT_PROMPT.format(data=prompt_row_no_lan.to_string(), theme=theme)
+    email_prompt = EMAIL_TEXT_PROMPT.format(prompt_row_no_lan.to_string(),
+                                            theme)
     loop = asyncio.get_running_loop()
     progress_text = f"Generating email text for {prompt_row_no_lan.first_name}"
     email_bar = st.progress(0, text=progress_text)
+    generated_text = ""
 
     try:
-        generated_response = await loop.run_in_executor(None, functools.partial(
-            llm.predict,
-            prompt=email_prompt,
-            temperature=0.2,
-            max_output_tokens=1024,
-            top_k = 40,
-            top_p = 0.8
-            ))
+        generated_response = await loop.run_in_executor(
+            None, 
+            functools.partial(
+                llm.predict,
+                prompt=email_prompt,
+                temperature=0.2,
+                max_output_tokens=1024,
+                top_k = 40,
+                top_p = 0.8
+                ))
     except:
-        if theme == THEMES_FOR_PROMPTS[0]:
-            generated_text = data["pages"]["7_email_copy"]["defalt_email_copy_0"]
-        elif theme == THEMES_FOR_PROMPTS[1]:
-            generated_text = data["pages"]["7_email_copy"]["defalt_email_copy_1"]
-        elif theme == THEMES_FOR_PROMPTS[2]:
-            generated_text = data["pages"]["7_email_copy"]["defalt_email_copy_2"]
-        elif theme == THEMES_FOR_PROMPTS[3]:
-            generated_text = data["pages"]["7_email_copy"]["defalt_email_copy_3"]
+        generated_response = None
+
+    if generated_response and generated_response.text:
+        generated_text = generated_response.text
     else:
-        if generated_response and generated_response.text:
-            generated_text = generated_response.text
-        else:
-            if theme == THEMES_FOR_PROMPTS[0]:
-                generated_text = data["pages"]["7_email_copy"]["defalt_email_copy_0"]
-            elif theme == THEMES_FOR_PROMPTS[1]:
-                generated_text = data["pages"]["7_email_copy"]["defalt_email_copy_1"]
-            elif theme == THEMES_FOR_PROMPTS[2]:
-                generated_text = data["pages"]["7_email_copy"]["defalt_email_copy_2"]
-            elif theme == THEMES_FOR_PROMPTS[3]:
-                generated_text = data["pages"]["7_email_copy"]["defalt_email_copy_3"]
-
-    email_bar.progress(0.3, text=f'Generating email image for {prompt_row_no_lan.first_name}')
-
-    image_prompt = IMAGE_GENERATION_PROMPT.format(theme=theme)
-    email_bar.progress(0.6, text=f'Generating email image for {prompt_row_no_lan.first_name}')
-
-    try:
-        image_response = await loop.run_in_executor(None, functools.partial(
-            predict_large_language_model_sample,
-            api_endpoint=IMAGEN_API_ENDPOINT,
-            endpoint=IMAGEN_ENDPOINT,
-            input={
-                "prompt": image_prompt
-            },
-            parameters={
-                'sampleCount': 4,
-                'sampleImageSize': 256,
-                'aspectRatio': "1:1"
-            }))
-    except:
         if theme == THEMES_FOR_PROMPTS[0]:
-            with open(data["pages"]["7_email_copy"]["default_email_image_0"], 'rb') as fp:
-                imageb64 = base64.b64encode(fp.read()).decode('utf-8')
-                imageb64 = "data:image/png;base64,"+imageb64
+            generated_text = page_cfg["default_email_copy_0"]
         elif theme == THEMES_FOR_PROMPTS[1]:
-            with open(data["pages"]["7_email_copy"]["default_email_image_1"], 'rb') as fp:
-                imageb64 = base64.b64encode(fp.read()).decode('utf-8')
-                imageb64 = "data:image/png;base64,"+imageb64
+            generated_text = page_cfg["default_email_copy_1"]
         elif theme == THEMES_FOR_PROMPTS[2]:
-            with open(data["pages"]["7_email_copy"]["default_email_image_2"], 'rb') as fp:
-                imageb64 = base64.b64encode(fp.read()).decode('utf-8')
-                imageb64 = "data:image/png;base64,"+imageb64
+            generated_text = page_cfg["default_email_copy_2"]
         elif theme == THEMES_FOR_PROMPTS[3]:
-            with open(data["pages"]["7_email_copy"]["default_email_image_3"], 'rb') as fp:
-                imageb64 = base64.b64encode(fp.read()).decode('utf-8')
-                imageb64 = "data:image/png;base64,"+imageb64
-    else:
-        if image_response:
-            imageb64 = "data:image/png;base64,"+image_response[0]["bytesBase64Encoded"]
-        else:
-            if theme == THEMES_FOR_PROMPTS[0]:
-                with open(data["pages"]["7_email_copy"]["default_email_image_0"], 'rb') as fp:
-                    imageb64 = base64.b64encode(fp.read()).decode('utf-8')
-                    imageb64 = "data:image/png;base64,"+imageb64
-            elif theme == THEMES_FOR_PROMPTS[1]:
-                with open(data["pages"]["7_email_copy"]["default_email_image_1"], 'rb') as fp:
-                    imageb64 = base64.b64encode(fp.read()).decode('utf-8')
-                    imageb64 = "data:image/png;base64,"+imageb64
-            elif theme == THEMES_FOR_PROMPTS[2]:
-                with open(data["pages"]["7_email_copy"]["default_email_image_2"], 'rb') as fp:
-                    imageb64 = base64.b64encode(fp.read()).decode('utf-8')
-                    imageb64 = "data:image/png;base64,"+imageb64
-            elif theme == THEMES_FOR_PROMPTS[3]:
-                with open(data["pages"]["7_email_copy"]["default_email_image_3"], 'rb') as fp:
-                    imageb64 = base64.b64encode(fp.read()).decode('utf-8')
-                    imageb64 = "data:image/png;base64,"+imageb64
+            generated_text = page_cfg["default_email_copy_3"]
 
-    email_bar.progress(0.9, text=f'Translating text for {prompt_row_no_lan.first_name}')
+    email_bar.progress(
+        0.3,
+        text=f'Generating email image for {prompt_row_no_lan.first_name}')
+
+    image_prompt = IMAGE_GENERATION_PROMPT.format(theme)
+    email_bar.progress(
+        0.6, 
+        text=f'Generating email image for {prompt_row_no_lan.first_name}')
+
+    imageb64 = "data:image/png;base64,"
+    image_response = None
+
+    image_response = await loop.run_in_executor(None, functools.partial(
+        predict_large_language_model_sample,
+        api_endpoint=IMAGEN_API_ENDPOINT,
+        endpoint=IMAGEN_ENDPOINT,
+        input={
+            "prompt": image_prompt
+        },
+        parameters={
+            'sampleCount': 4,
+            'sampleImageSize': 256,
+            'aspectRatio': "1:1"
+        }))
+
+    if image_response:
+        imageb64 += image_response[0]["bytesBase64Encoded"]
+    else:
+        if theme == THEMES_FOR_PROMPTS[0]:
+            with open(page_cfg["default_email_image_0"], 'rb') as fp:
+                imageb64 += base64.b64encode(fp.read()).decode('utf-8')
+        elif theme == THEMES_FOR_PROMPTS[1]:
+            with open(page_cfg["default_email_image_1"], 'rb') as fp:
+                imageb64 += base64.b64encode(fp.read()).decode('utf-8')
+        elif theme == THEMES_FOR_PROMPTS[2]:
+            with open(page_cfg["default_email_image_2"], 'rb') as fp:
+                imageb64 += base64.b64encode(fp.read()).decode('utf-8')
+        elif theme == THEMES_FOR_PROMPTS[3]:
+            with open(page_cfg["default_email_image_3"], 'rb') as fp:
+                imageb64 += base64.b64encode(fp.read()).decode('utf-8')
+
+    email_bar.progress(
+        0.9,
+        text=f'Translating text for {prompt_row_no_lan.first_name}')
     translation = translate_client.translate(
         generated_text,
         source_language="en",
@@ -244,7 +234,8 @@ async def email_generate(row: pd.Series, theme: str) -> pd.Series:
 # --- Start of FORM
 with st.form(PAGE_KEY_PREFIX+'Sample_Email_Form'):
     # st.write("**Choose a theme for the email**")
-    theme = st.selectbox("**Choose a theme for the email**", options=THEMES_FOR_PROMPTS)
+    theme = st.selectbox("**Choose a theme for the email**",
+                         options=THEMES_FOR_PROMPTS)
     generate_samples_button = st.form_submit_button("Generate email samples")
 
 async def generate_emails(number_of_emails:int, state_key: str):
@@ -255,12 +246,14 @@ async def generate_emails(number_of_emails:int, state_key: str):
     st.success("All the emails have been generated")
 
 if generate_samples_button:
-    asyncio.run(generate_emails(number_of_emails=sample_size, state_key=SAMPLE_EMAILS_KEY))
+    asyncio.run(generate_emails(number_of_emails=sample_size,
+                                state_key=SAMPLE_EMAILS_KEY))
 
 if SAMPLE_EMAILS_KEY in st.session_state:
     st.write("**Generated emails**")
     for row in st.session_state[SAMPLE_EMAILS_KEY].itertuples():
-        with st.expander(f"To: {row.first_name} <{row.email}>", expanded=False):
+        with st.expander(f"To: {row.first_name} <{row.email}>",
+                         expanded=False):
             tab1, tab2 = st.tabs(["English", "Translated"])
 
             with tab1:
@@ -277,9 +270,11 @@ with st.form(PAGE_KEY_PREFIX+"_Bulk_Generate_Emails_Form"):
     bulk_generate_button = st.form_submit_button("Generate")
 
 if bulk_generate_button:
-    asyncio.run(generate_emails(number_of_emails=number_of_bulk_emails, state_key=GENERATED_EMAILS_KEY))
+    asyncio.run(generate_emails(number_of_emails=number_of_bulk_emails,
+                                state_key=GENERATED_EMAILS_KEY))
 
-if GENERATED_EMAILS_KEY in st.session_state and CAMPAIGNS_KEY in st.session_state:
+if (GENERATED_EMAILS_KEY in st.session_state and 
+    CAMPAIGNS_KEY in st.session_state):
     campaigns_names = generate_names_uuid_dict().keys() 
     with st.form(PAGE_KEY_PREFIX+"_Link_To_Campaign"):
         st.write("**Choose a Campaign to link the results**")
@@ -288,6 +283,7 @@ if GENERATED_EMAILS_KEY in st.session_state and CAMPAIGNS_KEY in st.session_stat
 
     if link_to_campaign_button:
         selected_uuid = generate_names_uuid_dict()[selected_name]
-        st.session_state[CAMPAIGNS_KEY][selected_uuid].emails = st.session_state[GENERATED_EMAILS_KEY].copy()
+        emails_copy = st.session_state[GENERATED_EMAILS_KEY].copy()
+        st.session_state[CAMPAIGNS_KEY][selected_uuid].emails = emails_copy
         st.success(f"Emails linked to campaign {selected_name}")
 

@@ -39,7 +39,8 @@ TEXT_MODEL_NAME = data["models"]["text"]["text_model_name"]
 TRANSLATE_LANGUAGES = data["translate_api"]
 
 translate_client = translate.Client()
-prompt = data["pages"]["3_audiences"]["prompt_nl_sql"]
+PROMPT = data["pages"]["3_audiences"]["prompt_nl_sql"]
+PROMPT_PROJECT_ID = [data['global']['project_id']]*130
 
 
 def get_tags_from_table(
@@ -157,7 +158,8 @@ def get_full_context_from_list(metadata: list):
 def generate_prompt(
         question: str,
         metadata: list,
-        state_key: str
+        state_key: str,
+        project_id: str
 ):
     """Generates a prompt for a GoogleSQL query compatible with BigQuery.
 
@@ -180,7 +182,7 @@ def generate_prompt(
     for i in metadata:
         context += i
 
-    st.session_state[state_key] = f"""{prompt}
+    st.session_state[state_key] = f"""{PROMPT.format(*PROMPT_PROJECT_ID)}
 {context}
 [Q]: {question}
 [SQL]: 
@@ -218,8 +220,6 @@ def generate_sql_and_query(
             A BigQuery client object.
         prompt_example: 
             An example prompt for the query.
-        email_prompt_example: 
-            An example prompt for the email.
         text_model: 
             A TextGenerationModel object.
 
@@ -258,7 +258,8 @@ def generate_sql_and_query(
             generate_prompt(
                 question, 
                 st.session_state[f"{state_key}_Dataset_Metadata"],
-                f"{state_key}_Prompt_Template")
+                f"{state_key}_Prompt_Template", 
+                project_id)
 
         with st.expander('Prompt'):
             st.text(st.session_state[f"{state_key}_Prompt_Template"])
@@ -272,19 +273,19 @@ def generate_sql_and_query(
                     temperature=0.2
                 )
             except:
-                st.session_state[f"{state_key}_Gen_Code"] = fallback_query
+                st.session_state[f"{state_key}_Gen_Code"] = fallback_query.format(*PROMPT_PROJECT_ID)
             else:
                 if gen_code and gen_code.text:
                     st.session_state[f"{state_key}_Gen_Code"] = gen_code.text
                 else:
-                    st.session_state[f"{state_key}_Gen_Code"] = fallback_query
+                    st.session_state[f"{state_key}_Gen_Code"] = fallback_query.format(*PROMPT_PROJECT_ID)
 
         try:
             with st.spinner('Querying BigQuery...'):
                 result_query = bqclient.query(st.session_state[f"{state_key}_Gen_Code"])
                 result_query.result()
         except:
-            st.session_state[f"{state_key}_Gen_Code"] = fallback_query
+            st.session_state[f"{state_key}_Gen_Code"] = fallback_query.format(*PROMPT_PROJECT_ID)
             with st.spinner('Querying BigQuery...'):
                 try:
                     result_query = bqclient.query(st.session_state[f"{state_key}_Gen_Code"])
