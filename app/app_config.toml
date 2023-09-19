@@ -587,7 +587,7 @@ page_icon = "/app/images/favicon.png"
 sidebar_image_path = "/app/images/menu_icon_2.png"
 page_title_image = "/app/images/consumer_icon.png"
 
-# Enterprise Search datastores and location. 
+# Vertex AI Search datastores and location. 
 # Change the dataset variable to reflect your configuration.
 # Sample datastore ID
 # datastores.<datastore ID> = 'default_config'

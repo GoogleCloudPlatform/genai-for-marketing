@@ -14,7 +14,7 @@
 
 """
 Content Search: 
-- Improve the search experience for enterprise users with Gen App Builder.
+- Improve the search experience for enterprise users with Vertex AI Search.
 """
 
 import streamlit as st
@@ -22,7 +22,7 @@ import tomllib
 
 from google.cloud import discoveryengine
 from proto import Message
-from utils_enterprise_search import search
+from utils_vertex_ai_search import search
 
 
 # Load configuration file
@@ -37,8 +37,8 @@ DATASTORES = data["pages"]["5_consumer_insights"]["datastores"]
 search_client = discoveryengine.SearchServiceClient()
 complete_client = discoveryengine.CompletionServiceClient()
 
-# State variables for enterprise search results
-PAGE_KEY_PREFIX = "EnterpriseSearch"
+# State variables for Vertex AI Search results
+PAGE_KEY_PREFIX = "VertexAISearch"
 QUERY_KEY = f"{PAGE_KEY_PREFIX}_Query"
 RESULTS_KEY = f"{PAGE_KEY_PREFIX}_Results"
 AUTOCOMPLETE_KEY = f"{PAGE_KEY_PREFIX}_Autocomplete"
@@ -62,7 +62,7 @@ with cols[1]:
     st.title(data["pages"]["5_consumer_insights"]["page_title"])
 
 st.write(
-    "This page demonstrates how to use Enterprise Search "
+    "This page demonstrates how to use Vertex AI Search "
     "to find marketing assets."
 )
 
