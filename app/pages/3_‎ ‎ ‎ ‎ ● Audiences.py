@@ -118,17 +118,6 @@ if PREVIEW_TABLES_KEY in st.session_state:
 
 st.subheader('Audience Insights Finder')
 
-with st.form("query_submit_form"):
-
-    query_option = st.selectbox(
-        label="Select one of the options to ask BigQuery tables and find your audience",
-        options=data["pages"]["3_audiences"]["prompt_examples"]
-    )
-
-    col1, col2, col3 = st.columns([1,1,1])
-    with col1: 
-        submitted = st.form_submit_button("Submit")
-
 utils_codey.generate_sql_and_query(
     state_key=f"{PAGE_KEY_PREFIX}_insight",
     title="Ask you data",
@@ -137,6 +126,5 @@ utils_codey.generate_sql_and_query(
     dataset_id=DATASET_ID,
     tag_template_name=TAG_TEMPLATE_NAME,
     bqclient=bqclient,
-    prompt_example=data["pages"]["3_audiences"]["prompt_example_0"],
     fallback_query=data["pages"]["3_audiences"]["audience_query_0"]
 )

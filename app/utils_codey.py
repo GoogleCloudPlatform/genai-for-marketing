@@ -17,19 +17,18 @@
 Utility module for Codey releated demo.
 """
 
-from functools import partial
 import pandas as pd
 import streamlit as st
 import tomllib
-from typing import Optional
 
 from google.cloud import bigquery
 from google.cloud import datacatalog_v1
 from google.cloud import translate_v2 as translate
 from pandas import DataFrame
+from time import sleep
+from typing import Optional
 from utils_streamlit import reset_page_state
 from vertexai.preview.language_models import TextGenerationModel
-
 
 # Load configuration file
 with open("./app_config.toml", "rb") as f:
@@ -197,10 +196,7 @@ def generate_sql_and_query(
         dataset_id: str,
         tag_template_name: str,
         bqclient: bigquery.Client,
-        prompt_example: str,
-        fallback_query: str="",
-        email_prompt_example: str="",
-        text_model: TextGenerationModel=None) -> Optional[DataFrame]:
+        fallback_query: str="") -> Optional[DataFrame]:
     """Generates a GoogleSQL query and executes it against a BigQuery dataset.
 
     Args:
@@ -218,10 +214,6 @@ def generate_sql_and_query(
             The name of the tag template to use for the query.
         bqclient: 
             A BigQuery client object.
-        prompt_example: 
-            An example prompt for the query.
-        text_model: 
-            A TextGenerationModel object.
 
     Returns:
         A DataFrame containing the results of the query.
@@ -233,13 +225,17 @@ def generate_sql_and_query(
     with st.form(f"{state_key}_form"):
         st.write(f"**{title}**")
 
-        question = st.text_area(
-            'Ask a question using natural language to the dataset above',
-            key=f"{state_key}_question_prompt_text_area",
-            value=prompt_example, height=50)
+        question = st.selectbox(
+            label="Select one of the options to ask BigQuery tables and find your audience",
+            options=data["pages"]["3_audiences"]["prompt_examples"],
+            key=f"{state_key}_question_prompt_text_area")
 
         # Every form must have a submit button.
-        submit_button = st.form_submit_button("Submit")
+        col1, col2, col3 = st.columns([15, 35, 50])
+        with col1:
+            submit_button = st.form_submit_button("Submit")
+        with col2:
+            st.checkbox(label="Save audience to campaign", value=True)
 
     if submit_button:
         reset_page_state(state_key)
@@ -253,7 +249,7 @@ def generate_sql_and_query(
                 dataset_id=dataset_id,
                 tag_template_name=tag_template_name,
                 state_key=f"{state_key}_Dataset_Metadata")
-        
+
         with st.spinner('Creating a prompt'):
             generate_prompt(
                 question, 
@@ -337,124 +333,10 @@ def generate_sql_and_query(
             st.write('Resulting table (limited by 50 rows)')
             st.dataframe(
                 st.session_state[f"{state_key}_Result_Final_Query"].iloc[:50])
-    
+
     if f"{state_key}_Result_Final_Query" in st.session_state:
-        if email_prompt_example:
-            results_length = len(
-                st.session_state[f"{state_key}_Result_Final_Query"])
-            with st.form(f"{state_key}_email_form"):
-                st.write(f"**Write an email**")
-
-                col1, col2 = st.columns([70,30])
-
-                with col1:
-                    email_prompt = st.text_area(
-                        'Write an email using natural language to each customer',
-                        key=f"{state_key}_email_prompt_text_area",
-                        value=email_prompt_example,
-                        height=170)
-                    number_emails = st.slider(
-                        "Number of emails to generate",
-                        min_value=1,
-                        max_value=min(results_length, 500),
-                        step=1,
-                        value=int(min(results_length/2, 2)))
-                
-                with col2:
-                    st.write('**Model parameters**')
-                    temperature = st.slider('Temperature', 0.0, 1.0, 0.2)
-
-                # Every form must have a submit button.
-                email_submit_button = st.form_submit_button("Submit")
-
-            if email_submit_button:
-                if not email_prompt:
-                    st.warning("Email prompt is empty.")
-                    return None
-                
-                emails = {"email":[], "generated_email": []}
-
-                bar = st.progress(0.0, f"Generating emails...0.0%")
-                
-                for i, row in st.session_state[
-                        f"{state_key}_Result_Final_Query"].iloc[
-                            :number_emails].iterrows():
-                    
-
-                    data_string = "\n".join(
-                        [f"{row_key}: {row[row_key]}" for row_key in row.keys()])
-                    
-                    response = text_model.predict(
-                            prompt=f"{data_string} \n {email_prompt}",
-                            temperature=temperature,
-                            max_output_tokens=1024,
-                        ).text
-                    
-                    emails["email"].append(row.get("email","")),
-                    emails["generated_email"].append(response)
-                    
-                    percent = (i+1)/number_emails
-                    bar.progress(percent, f"Generating emails...{percent*100:.1f}%")
-                
-                st.success("Emails generated")
-                
-                st.session_state[f"{state_key}_Generated_Emails"] = DataFrame(
-                    emails)
-                st.session_state[
-                    f"{state_key}_Generated_Emails_CSV"] = DataFrame(
-                    emails).to_csv().encode('utf-8')
-            
-            if f"{state_key}_Generated_Emails" in st.session_state:
-                st.write('Generated emails')
-                st.session_state[f"{state_key}_Generated_Emails"] = st.data_editor(
-                    st.session_state[f"{state_key}_Generated_Emails"]
-                )
-                st.download_button(
-                    "Download csv", 
-                    data=st.session_state[f"{state_key}_Generated_Emails_CSV"],
-                    file_name="emails.csv",
-                    mime="text/csv") 
-                
-                with st.form(key=f'{state_key}_translate_form'):
-                    st.write(f"**Translate generated text**")
-
-                    target_language_name = st.selectbox(
-                        "Languages", options=TRANSLATE_LANGUAGES.keys())
-
-                    translate_submit_button = st.form_submit_button(
-                        label='Translate')
-
-                if translate_submit_button:
-                    translated_df = st.session_state[
-                        f"{state_key}_Generated_Emails"].copy()
-                    
-                    with st.spinner("Translating..."):
-                        translate_map = partial(
-                            translate_client.translate,
-                            source_language="en",
-                            target_language=TRANSLATE_LANGUAGES[target_language_name])
-                        translated_df["generated_email"] = translated_df[
-                            "generated_email"].apply(
-                            translate_map).apply(
-                            lambda x: x.get("translatedText",""))
-                        st.session_state[
-                            f"{state_key}_Translated"] = translated_df
-                        st.session_state[
-                            f"{state_key}_Translated_CSV"
-                            ] = translated_df.to_csv().encode('utf-8')
-                    st.success("Emails translated")
-                
-                if f"{state_key}_Translated" in st.session_state:
-                    st.write('Translated Generated emails')
-                    st.session_state[f"{state_key}_Translated"] = st.data_editor(
-                        st.session_state[f"{state_key}_Translated"]) 
-                    st.download_button(
-                        "Download CSV", 
-                        data=st.session_state[f"{state_key}_Translated_CSV"],
-                        file_name="translated_emails.csv",
-                        mime="text/csv") 
-  
-        else:
-            return st.session_state[f"{state_key}_Result_Final_Query"]
-    
-    return None
+        save_campaign = st.button("Save audience to campaign")
+        if save_campaign:
+            with st.spinner("Saving ..."):
+                sleep(2)
+                st.success("The audience was successfully saved to the campaign.")
