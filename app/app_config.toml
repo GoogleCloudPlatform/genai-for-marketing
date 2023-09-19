@@ -926,29 +926,25 @@ themes_for_prompts = [
 # The following variables are default / fallback social media posts and images.
 # They are used in case the model doesn't return anything.
 # Change this defaults if needed.
-social_threads_0 = """New handbags at Cymbal!\n
+default_threads = ["""New handbags at Cymbal!\n
 Looking for a new handbag to add to your collection? Look no further than Cymbal! We have a wide variety of handbags to choose from, all at great prices. Whether you're looking for a stylish crossbody bag, a roomy tote bag, or a chic clutch, we have something for everyone.\n
-And now, for a limited time, take an extra 20% off all handbags! This is the perfect opportunity to stock up on your favorite styles or treat yourself to a new bag."""
-
-social_threads_1 = """Introducing the new line of shoes from Cymbal!\n
+And now, for a limited time, take an extra 20% off all handbags! This is the perfect opportunity to stock up on your favorite styles or treat yourself to a new bag.""",
+"""Introducing the new line of shoes from Cymbal!\n
 Our new line of shoes is perfect for the modern woman on the go. With a variety of styles to choose from, you're sure to find the perfect pair of shoes to match your personality and lifestyle.\n
 Our shoes are made with high-quality materials and construction, so you can be sure they'll last. Plus, they're incredibly comfortable, so you can wear them all day long.\n
-So what are you waiting for? Shop our new line of shoes today!"""
-
-social_threads_2 = """Introducing Cymbal, a new concept shoe store in NYC.\n
+So what are you waiting for? Shop our new line of shoes today!""",
+"""Introducing Cymbal, a new concept shoe store in NYC.\n
 Cymbal is a one-of-a-kind shoe store that offers a unique shopping experience. We have a wide selection of shoes from all the top brands, but what really sets us apart is our personal touch.\n
-Our team of experts is here to help you find the perfect pair of shoes for your needs. We'll take the time to learn about your style and your lifestyle, and then we'll make recommendations that are perfect for you."""
-
-social_threads_3 = """Cymbal Shoes: The Perfect Shoes for Your Next Adventure\n
+Our team of experts is here to help you find the perfect pair of shoes for your needs. We'll take the time to learn about your style and your lifestyle, and then we'll make recommendations that are perfect for you.""",
+"""Cymbal Shoes: The Perfect Shoes for Your Next Adventure\n
 Looking for a pair of shoes that can keep up with your active lifestyle? Look no further than Cymbal Shoes! Our shoes are made with high-quality materials and construction, so you can be sure they'll last. Plus, our shoes are designed with comfort in mind, so you can wear them all day long.\n
-Whether you're running errands, going to the gym, or just taking a walk around the city, Cymbal Shoes are the perfect choice for you. """
+Whether you're running errands, going to the gym, or just taking a walk around the city, Cymbal Shoes are the perfect choice for you. """]
 
-social_instagram_0 = """Cymbal is excited to announce the launch of our new line of handbags. These stylish and functional bags are perfect for any occasion, from a night out on the town to a day at the office.\n
+default_instagram = ["""Cymbal is excited to announce the launch of our new line of handbags. These stylish and functional bags are perfect for any occasion, from a night out on the town to a day at the office.\n
 Our handbags are made with high-quality materials and construction, so you can be sure they'll last. They're also available in a variety of colors and styles, so you're sure to find the perfect one for you.\n
 To celebrate the launch of our new handbags, we're offering 20 percent off all purchases. So what are you waiting for? Shop now and get your new Cymbal handbag!\n
-Shop now at cymbal.com."""
-
-social_instagram_1 = """Introducing the new line of shoes from Cymbal!\n
+Shop now at cymbal.com.""",
+"""Introducing the new line of shoes from Cymbal!\n
 Our new line of shoes is designed to take you from day to night, with styles that are both stylish and comfortable. Whether you're running errands, going to work, or out on the town, our shoes will have you looking and feeling your best.\n
 Our new line of shoes features:\n
  - A variety of styles to choose from, including flats, heels, boots, and sandals\n
@@ -957,30 +953,22 @@ Our new line of shoes features:\n
  - Fashion-forward designs that will turn heads wherever you go\n
 Shop our new line of shoes today and experience the difference!\n
 Visit our website or find a store near you to see our full selection.\n
-Cymbal: Shoes that make you feel good."""
-
-social_instagram_2 = """Cymbal: The New Concept Shoe Store in NYC\n
+Cymbal: Shoes that make you feel good.""",
+"""Cymbal: The New Concept Shoe Store in NYC\n
 Cymbal is a new concept shoe store that's unlike anything you've seen before. We offer a curated selection of the latest and greatest shoes from around the world, all at an affordable price.\n
 We believe that shoes should be more than just a way to get from point A to point B. They should be an expression of your personality and style. That's why we offer a wide variety of styles to choose from, so you can find the perfect pair of shoes to match your look.\n
 In addition to our amazing selection of shoes, we also offer a unique shopping experience. Our stores are designed to be inviting and inspiring, and our staff is always happy to help you find the perfect pair of shoes.\n
 So if you're looking for a new pair of shoes that will make you stand out from the crowd, come check out Cymbal today!\n
-Visit our website or stop by one of our stores today to find the perfect pair of shoes!"""
-
-social_instagram_3 = """Cymbal Shoes: The Perfect Shoes for Your Next Adventure\n
+Visit our website or stop by one of our stores today to find the perfect pair of shoes!""",
+"""Cymbal Shoes: The Perfect Shoes for Your Next Adventure\n
 Are you looking for the perfect shoes for your next adventure? Look no further than Cymbal Shoes! Our shoes are made with high-quality materials and construction, so you can be sure they'll last. Plus, our shoes are stylish and comfortable, so you can look and feel your best on your next big trip.\n
 Whether you're hiking in the mountains, exploring a new city, or just running errands, Cymbal Shoes have you covered. Check out our wide selection of styles and colors today!\n
 Shop now at cymbalshoes.com.\n
-Cymbal Shoes: The perfect shoes for your next adventure."""
+Cymbal Shoes: The perfect shoes for your next adventure."""]
 
-default_image_instagram_0 = "/app/images/social_instagram_0.png"
-default_image_instagram_1 = "/app/images/social_instagram_1.png"
-default_image_instagram_2 = "/app/images/social_instagram_2.png"
-default_image_instagram_3 = "/app/images/social_instagram_3.png"
+default_image_instagram = ["/app/images/social_instagram_0.png", "/app/images/social_instagram_1.png", "/app/images/social_instagram_2.png", "/app/images/social_instagram_3.png"]
 
-default_image_threads_0 = "/app/images/social_threads_0.png"
-default_image_threads_1 = "/app/images/social_threads_1.png"
-default_image_threads_2 = "/app/images/social_threads_2.png"
-default_image_threads_3 = "/app/images/social_threads_3.png"
+default_image_threads = ["/app/images/social_threads_0.png", "/app/images/social_threads_1.png", "/app/images/social_threads_2.png", "/app/images/social_threads_3.png"]
 
 # -----------------------------------------------------------------------------
 # Configurations for 10_Asset_Group_Pmax.py page
