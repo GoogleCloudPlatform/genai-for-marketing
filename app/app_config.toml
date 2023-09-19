@@ -243,7 +243,7 @@ Full table name: `{}.cdp_dataset.transactions` - Column: app_purchase_qnt - Data
 Full table name: `{}.cdp_dataset.transactions` - Column: customer_id - Data Type: INT64 - Primary Key: False - foreign Key: True - Description: A unique identifier of the customer.
 Full table name: `{}.cdp_dataset.transactions` - Column: product_id - Data Type: INT64 - Primary Key: False - foreign Key: True - Description: The code of the inventory item that was purchased.
 Full table name: `{}.cdp_dataset.transactions` - Column: product_name - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The name of the product that was purchased.
-Full table name: `{}.cdp_dataset.transactions` - Column: transaction_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date the transaction was made.
+Fulll table name: `{}.cdp_dataset.transactions` - Column: transaction_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date the transaction was made.
 Full table name: `{}.cdp_dataset.transactions` - Column: transaction_id - Data Type: INT64 - Primary Key: True - foreign Key: False - Description: A unique identifier for the transaction.
 Full table name: `{}.cdp_dataset.transactions` - Column: transaction_value - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The total value of the transaction.
 Full table name: `{}.cdp_dataset.transactions` - Column: transation_qnt - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The quantity of items purchased in the transaction.
@@ -730,7 +730,7 @@ languages =  ["es","zh","cs","da","fr","el","it","ja","pt"]
 
 # The following variables are default texts and images in case the model fails to respond.
 # You can change the defaults if needed.
-defalt_email_copy_0 = """Dear customer,\n
+default_email_copy_0 = """Dear customer,\n
 We hope this email finds you well.\n
 We're writing to let you know about our upcoming sale on new women's handbags at Cymbal. We're offering discounts of up to 50% on all items, so this is a great opportunity to stock up on some new handbags for yourself or for someone special.\n
 We have a wide variety of handbags to choose from, including totes, satchels, crossbody bags, and more. We also have a variety of colors and styles to choose from, so you're sure to find something that you love.\n
@@ -740,7 +740,7 @@ We hope to see you soon!\n
 Sincerely,\n
 The Cymbal Team"""
 
-defalt_email_copy_1 = """Dear customer,\n
+default_email_copy_1 = """Dear customer,\n
 We're excited to introduce our new line of men's shoes at Cymbal. We know you'll love the stylish designs and comfortable construction.\n
 Our new shoes are perfect for men of all ages, including middle-aged men like you. They're made with high-quality materials and construction, so you can be sure they'll last.\n
 We also have a variety of styles to choose from, so you're sure to find the perfect pair of shoes for your needs. Whether you're looking for a pair of dress shoes for work or a pair of casual shoes for weekend wear, we have something for you.\n
@@ -749,7 +749,7 @@ So what are you waiting for? Shop our new line of men's shoes today.\n
 Sincerely,\n
 The Cymbal Team"""
 
-defalt_email_copy_2 = """Dear customer,\n
+default_email_copy_2 = """Dear customer,\n
 We're excited to announce the new opening of Cymbal concept shoe store in New York City! We know you're a middle-aged man, so we think you'd really appreciate our unique selection of shoes.\n
 Cymbal is a new concept store that offers a curated selection of shoes from around the world. We have something for everyone, whether you're looking for a new pair of sneakers, sandals, or boots.\n
 We're also offering a special discount to our first 100 customers. Use the code "NEWCYMBAL" at checkout to save 20% on your purchase.\n
@@ -757,7 +757,7 @@ We hope to see you soon at Cymbal!\n
 Sincerely,\n
 The Cymbal Team"""
 
-defalt_email_copy_3 = """Dear customer,\n
+default_email_copy_3 = """Dear customer,\n
 We hope this email finds you well.\n
 We're reaching out to you today because we know you're a fan of Cymbal shoes, and we wanted to let you know that we're now open in New York City!\n
 We're located at 123 Main Street, and we're open from 10am to 6pm, seven days a week.\n

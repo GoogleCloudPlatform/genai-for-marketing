@@ -167,7 +167,6 @@ def render_ad(
                     select_button=True,
                     selected_image_key=key_prefix+"_Selected_Image",
                     edit_button=True,
-                    title=f"Generate {platform} ad image",
                     image_to_edit_key=key_prefix+"_Image_To_Edit",
                     edit_with_mask=True,
                     mask_image_key=key_prefix+"_Image_Mask",

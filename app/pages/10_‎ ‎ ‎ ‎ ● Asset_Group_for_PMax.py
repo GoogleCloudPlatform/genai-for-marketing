@@ -22,6 +22,7 @@ Marketing Insights demonstration:
 
 import base64
 import pandas as pd
+import numpy as np
 import random
 import streamlit as st
 import tomllib
@@ -362,7 +363,8 @@ if (HEADLINE_KEY in st.session_state and
             assets_images_pd.insert(
                 i,
                 column=f'image_{i}',
-                value=["data:image/png;base64,"+value["bytesBase64Encoded"]])
+                value=np.array(
+                    ["data:image/png;base64,"+value["bytesBase64Encoded"]]))
 
         st.session_state[CAMPAIGNS_KEY][selected_uuid].asset_classes_images = assets_images_pd
         st.success(f"Asset group linked to campaign {selected_name}")
@@ -401,7 +403,8 @@ if (HEADLINE_KEY in st.session_state and
         assets_images_pd.insert(
             0, 
             column='image_0', 
-            value=["data:image/png;base64,"+base64.b64encode(st.session_state[IMAGE_TO_EDIT_KEY]).decode('utf-8')])
+            value=np.array(["data:image/png;base64,"+base64.b64encode(
+                st.session_state[IMAGE_TO_EDIT_KEY]).decode('utf-8')]))
 
         st.session_state[CAMPAIGNS_KEY][selected_uuid].asset_classes_images = assets_images_pd
         st.success(f"Asset group linked to campaign {selected_name}")
