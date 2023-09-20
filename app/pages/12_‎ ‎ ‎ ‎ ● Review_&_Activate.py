@@ -642,7 +642,7 @@ if SELECTED_CAMPAIGN_KEY in st.session_state:
     st.divider()
     link = f'http://drive.google.com/corp/drive/folders/{new_folder_id}'
     st.write("**Google Workspace Integration** | "
-            f"[Explore the assets folder in Google Drive 🡭]({link})")
+            f"[Explore the assets folder in Google Drive ↗]({link})")
     upload_to_drive_button = st.button("Upload available assets to Google Drive")
 
     if upload_to_drive_button:
