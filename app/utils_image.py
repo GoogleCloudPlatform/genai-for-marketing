@@ -274,6 +274,7 @@ def render_one_image(
     if download_button:
         st.download_button(
             label='Download',
+            key=f"_btn_download_{images_key}_{image_position}",
             data=image,
             file_name='image.png',
         )

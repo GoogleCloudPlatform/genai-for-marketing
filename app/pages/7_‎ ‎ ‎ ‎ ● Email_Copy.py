@@ -22,6 +22,7 @@ Email Copy Generation:
 import asyncio
 import base64
 import functools
+import random
 import numpy as np
 import pandas as pd
 import streamlit as st
@@ -30,7 +31,7 @@ import vertexai
 
 from google.cloud import translate_v2 as translate
 from utils_campaign import generate_names_uuid_dict
-from utils_image import IMAGEN_API_ENDPOINT, IMAGEN_ENDPOINT 
+from utils_image import IMAGEN_API_ENDPOINT, IMAGEN_ENDPOINT, render_image_edit_prompt 
 from utils_image import predict_large_language_model_sample
 from vertexai.preview.language_models import TextGenerationModel
 
@@ -72,6 +73,14 @@ PAGE_KEY_PREFIX = "EmailCopy"
 AUDIENCE_DATAFRAME_KEY = f"{PAGE_KEY_PREFIX}_Audience_Dataframe"
 SAMPLE_EMAILS_KEY = f"{PAGE_KEY_PREFIX}_Sample_Emails"
 GENERATED_EMAILS_KEY = f"{PAGE_KEY_PREFIX}_Generated_Emails"
+IMAGE_TO_EDIT_KEY = f"{PAGE_KEY_PREFIX}_Image_To_Edit"
+EDITED_IMAGES_KEY = f"{PAGE_KEY_PREFIX}_Edited_Images"
+EDIT_IMAGE_PROMPT_KEY = f"{PAGE_KEY_PREFIX}_Edit_Image_Prompt"
+MASK_IMAGE_KEY = f"{PAGE_KEY_PREFIX}_Mask_Image"
+SELECTED_IMAGE_KEY = f"{PAGE_KEY_PREFIX}_Selected_Image" 
+FILE_UPLOADER_KEY = f"{PAGE_KEY_PREFIX}_File_Uploader"
+IMAGE_OPTION_KEY = f"{PAGE_KEY_PREFIX}_Image_Option"
+IMAGES_KEY = f"{PAGE_KEY_PREFIX}_Images"
 
 # Default values
 EMAIL_TEXT_PROMPT = page_cfg["prompt_email_text"]
@@ -138,7 +147,8 @@ if flag_new:
 
 st.dataframe(audience_dataframe.head(sample_size))
 
-async def email_generate(row: pd.Series, theme: str) -> pd.Series:
+async def email_generate(row: pd.Series, theme: str,
+                         images: list=[]) -> pd.Series:
     prompt_row_no_lan = row.drop('language')
 
     email_prompt = EMAIL_TEXT_PROMPT.format(prompt_row_no_lan.to_string(),
@@ -186,34 +196,37 @@ async def email_generate(row: pd.Series, theme: str) -> pd.Series:
     imageb64 = "data:image/png;base64,"
     image_response = None
 
-    image_response = await loop.run_in_executor(None, functools.partial(
-        predict_large_language_model_sample,
-        api_endpoint=IMAGEN_API_ENDPOINT,
-        endpoint=IMAGEN_ENDPOINT,
-        input={
-            "prompt": image_prompt
-        },
-        parameters={
-            'sampleCount': 4,
-            'sampleImageSize': 256,
-            'aspectRatio': "1:1"
-        }))
-
-    if image_response:
-        imageb64 += image_response[0]["bytesBase64Encoded"]
+    if images:
+        imageb64 = random.choice(images)
     else:
-        if theme == THEMES_FOR_PROMPTS[0]:
-            with open(page_cfg["default_email_image_0"], 'rb') as fp:
-                imageb64 += base64.b64encode(fp.read()).decode('utf-8')
-        elif theme == THEMES_FOR_PROMPTS[1]:
-            with open(page_cfg["default_email_image_1"], 'rb') as fp:
-                imageb64 += base64.b64encode(fp.read()).decode('utf-8')
-        elif theme == THEMES_FOR_PROMPTS[2]:
-            with open(page_cfg["default_email_image_2"], 'rb') as fp:
-                imageb64 += base64.b64encode(fp.read()).decode('utf-8')
-        elif theme == THEMES_FOR_PROMPTS[3]:
-            with open(page_cfg["default_email_image_3"], 'rb') as fp:
-                imageb64 += base64.b64encode(fp.read()).decode('utf-8')
+        image_response = await loop.run_in_executor(None, functools.partial(
+            predict_large_language_model_sample,
+            api_endpoint=IMAGEN_API_ENDPOINT,
+            endpoint=IMAGEN_ENDPOINT,
+            input={
+                "prompt": image_prompt
+            },
+            parameters={
+                'sampleCount': 4,
+                'sampleImageSize': 256,
+                'aspectRatio': "1:1"
+            }))
+
+        if image_response:
+            imageb64 += image_response[0]["bytesBase64Encoded"]
+        else:
+            if theme == THEMES_FOR_PROMPTS[0]:
+                with open(page_cfg["default_email_image_0"], 'rb') as fp:
+                    imageb64 += base64.b64encode(fp.read()).decode('utf-8')
+            elif theme == THEMES_FOR_PROMPTS[1]:
+                with open(page_cfg["default_email_image_1"], 'rb') as fp:
+                    imageb64 += base64.b64encode(fp.read()).decode('utf-8')
+            elif theme == THEMES_FOR_PROMPTS[2]:
+                with open(page_cfg["default_email_image_2"], 'rb') as fp:
+                    imageb64 += base64.b64encode(fp.read()).decode('utf-8')
+            elif theme == THEMES_FOR_PROMPTS[3]:
+                with open(page_cfg["default_email_image_3"], 'rb') as fp:
+                    imageb64 += base64.b64encode(fp.read()).decode('utf-8')
 
     email_bar.progress(
         0.9,
@@ -231,6 +244,26 @@ async def email_generate(row: pd.Series, theme: str) -> pd.Series:
         index=["first_name","email","text","translation","imageb64"]
     )
 
+image_option = st.radio(label="Choose an option for the images:",
+     options=["uploaded", "generated"],
+     index = st.session_state.get(IMAGE_OPTION_KEY, 0),
+     format_func=lambda x: f"{x.capitalize()} Images")
+
+
+if image_option == "uploaded":
+    st.session_state[IMAGE_OPTION_KEY] = 0
+    render_image_edit_prompt(
+        edit_image_prompt_key=EDIT_IMAGE_PROMPT_KEY,
+        edited_images_key=EDITED_IMAGES_KEY,
+        mask_image=True,
+        mask_image_key=MASK_IMAGE_KEY,
+        select_button=True,
+        selected_image_key=SELECTED_IMAGE_KEY,
+        file_uploader_key=FILE_UPLOADER_KEY
+    )
+else:
+    st.session_state[IMAGE_OPTION_KEY] = 1
+
 # --- Start of FORM
 with st.form(PAGE_KEY_PREFIX+'Sample_Email_Form'):
     # st.write("**Choose a theme for the email**")
@@ -238,16 +271,32 @@ with st.form(PAGE_KEY_PREFIX+'Sample_Email_Form'):
                          options=THEMES_FOR_PROMPTS)
     generate_samples_button = st.form_submit_button("Generate email samples")
 
-async def generate_emails(number_of_emails:int, state_key: str):
+async def generate_emails(number_of_emails:int, state_key: str, images: list):
     async_list = await asyncio.gather(
-    *(email_generate(person[1], theme=str(theme)
+    *(email_generate(person[1], theme=str(theme), images=images
     ) for person in audience_dataframe.head(number_of_emails).iterrows()))
     st.session_state[state_key] = pd.concat(async_list, axis=1).T
     st.success("All the emails have been generated")
 
 if generate_samples_button:
+    images = []
+    if EDITED_IMAGES_KEY in st.session_state:
+        if SELECTED_IMAGE_KEY in st.session_state:
+            images.append(st.session_state[SELECTED_IMAGE_KEY])
+        else:
+            images = st.session_state[EDITED_IMAGES_KEY]
+
+    # Convert list of BytesIO images to base64 strings
+    if images:
+        images = [
+            "data:image/png;base64," +
+            base64.b64encode(image.getvalue()).decode('utf-8')
+            for image in images]
+    st.session_state[IMAGES_KEY] = images
+
     asyncio.run(generate_emails(number_of_emails=sample_size,
-                                state_key=SAMPLE_EMAILS_KEY))
+                                state_key=SAMPLE_EMAILS_KEY,
+                                images=st.session_state[IMAGES_KEY]))
 
 if SAMPLE_EMAILS_KEY in st.session_state:
     st.write("**Generated emails**")
@@ -263,15 +312,16 @@ if SAMPLE_EMAILS_KEY in st.session_state:
             st.image(row.imageb64)
 
 
-with st.form(PAGE_KEY_PREFIX+"_Bulk_Generate_Emails_Form"):
-    st.write("**Bulk Generation**")
-    number_of_bulk_emails = st.slider(
-        "Number of emails to generate from the list.", 1, 50, 3)
-    bulk_generate_button = st.form_submit_button("Generate")
+    with st.form(PAGE_KEY_PREFIX+"_Bulk_Generate_Emails_Form"):
+        st.write("**Bulk Generation**")
+        number_of_bulk_emails = st.slider(
+            "Number of emails to generate from the list.", 1, 50, 3)
+        bulk_generate_button = st.form_submit_button("Generate")
 
-if bulk_generate_button:
-    asyncio.run(generate_emails(number_of_emails=number_of_bulk_emails,
-                                state_key=GENERATED_EMAILS_KEY))
+    if bulk_generate_button:
+        asyncio.run(generate_emails(number_of_emails=number_of_bulk_emails,
+                                    state_key=GENERATED_EMAILS_KEY,
+                                    images=st.session_state[IMAGES_KEY]))
 
 if (GENERATED_EMAILS_KEY in st.session_state and 
     CAMPAIGNS_KEY in st.session_state):
