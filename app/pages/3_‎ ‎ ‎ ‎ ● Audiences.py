@@ -128,3 +128,4 @@ utils_codey.generate_sql_and_query(
     bqclient=bqclient,
     fallback_query=data["pages"]["3_audiences"]["audience_query_0"]
 )
+

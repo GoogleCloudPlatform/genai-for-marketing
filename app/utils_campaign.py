@@ -43,6 +43,7 @@ class Campaign:
     asset_classes_images: pd.DataFrame | None = None
     workspace_assets: dict | None = None
     trendspotting_summaries: list | None = None
+    audiences: pd.DataFrame | None = None
 
 
 def add_new_campaign(name: str) -> str:

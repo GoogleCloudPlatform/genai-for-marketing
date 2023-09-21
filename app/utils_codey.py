@@ -27,6 +27,7 @@ from google.cloud import translate_v2 as translate
 from pandas import DataFrame
 from time import sleep
 from typing import Optional
+from utils_campaign import generate_names_uuid_dict
 from utils_streamlit import reset_page_state
 from vertexai.preview.language_models import TextGenerationModel
 
@@ -40,6 +41,7 @@ TRANSLATE_LANGUAGES = data["translate_api"]
 translate_client = translate.Client()
 PROMPT = data["pages"]["3_audiences"]["prompt_nl_sql"]
 PROMPT_PROJECT_ID = [data['global']['project_id']]*130
+CAMPAIGNS_KEY = data["pages"]["campaigns"]["campaigns_key"]
 
 
 def get_tags_from_table(
@@ -340,3 +342,18 @@ def generate_sql_and_query(
             with st.spinner("Saving ..."):
                 sleep(2)
                 st.success("The audience was successfully saved to the campaign.")
+
+
+    if (f"{state_key}_Result_Final_Query" in st.session_state and
+        CAMPAIGNS_KEY in st.session_state):
+        campaigns_names = generate_names_uuid_dict().keys()
+        with st.form(state_key+"_Link_To_Campaign_Upload"):
+            st.write("**Choose a Campaign to save the audience**")
+            selected_name = st.selectbox("List of Campaigns", campaigns_names)
+            link_to_campaign_button = st.form_submit_button()
+
+        if link_to_campaign_button:
+            selected_uuid = generate_names_uuid_dict()[selected_name]
+            st.session_state[CAMPAIGNS_KEY][
+                selected_uuid].audiences = st.session_state[f"{state_key}_Result_Final_Query"]
+            st.success(f"Saved to campaign {selected_name}")
