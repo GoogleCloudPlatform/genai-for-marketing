@@ -28,6 +28,7 @@ import vertexai
 
 from datetime import date, timedelta, datetime
 from google.cloud import bigquery
+from utils_campaign import generate_names_uuid_dict
 from utils_trendspotting import GDELTRetriever
 from utils_trendspotting import GoogleTrends
 from utils_trendspotting import summarize_news_article
@@ -52,6 +53,7 @@ utils_styles.sidebar_apply_style(
 # Set project parameters
 PROJECT_ID = data["global"]["project_id"]
 LOCATION = data["global"]["location"]
+CAMPAIGNS_KEY = data["pages"]["campaigns"]["campaigns_key"]
 
 bq_client = bigquery.Client(project=PROJECT_ID)
 vertexai.init(project=PROJECT_ID, location=LOCATION)
@@ -210,3 +212,17 @@ with cols_page[1]:
             st.write(summary)
             st.divider()
     ##########################################
+
+    if (SUMMARIZATION_SUMMARIES_KEY in st.session_state and
+        CAMPAIGNS_KEY in st.session_state):
+        campaigns_names = generate_names_uuid_dict().keys()
+        with st.form(PAGE_KEY_PREFIX+"_Link_To_Campaign_Upload"):
+            st.write("**Choose a Campaign to save the news summaries**")
+            selected_name = st.selectbox("List of Campaigns", campaigns_names)
+            link_to_campaign_button = st.form_submit_button()
+
+        if link_to_campaign_button:
+            selected_uuid = generate_names_uuid_dict()[selected_name]
+            st.session_state[CAMPAIGNS_KEY][
+                selected_uuid].trendspotting_summaries = st.session_state[SUMMARIZATION_SUMMARIES_KEY]
+            st.success(f"Saved to campaign {selected_name}")

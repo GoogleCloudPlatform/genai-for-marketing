@@ -27,7 +27,7 @@ import utils_image
 import vertexai
 
 from vertexai.preview.language_models import TextGenerationModel
-from utils_campaign import CAMPAIGNS_KEY, generate_names_uuid_dict
+from utils_campaign import generate_names_uuid_dict
 
 
 # Load configuration file
