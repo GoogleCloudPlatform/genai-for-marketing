@@ -18,6 +18,8 @@ A utility module for performing prompt engineering with the Vertex PaLM API.
 """
 
 
+import asyncio
+import functools
 import streamlit as st
 import tomllib
 import vertexai
@@ -189,3 +191,33 @@ def render_marketing_prompt_design(
                             f'**{st.session_state[f"{state_key}_translated_headline"]}**'
                         )
                     )
+
+async def async_predict_text_llm(
+        prompt: str,
+        name: str,
+        pretrained_model: str,
+        max_output_tokens: int=1024,
+        temperature: float=0.2,
+        top_k: int=40,
+        top_p: float=0.8
+    )-> str:
+    loop = asyncio.get_running_loop()
+    llm = TextGenerationModel.from_pretrained(pretrained_model)
+    generated_response = None
+    with st.spinner(f"Generating {name}"):
+        try:
+            generated_response = await loop.run_in_executor(
+                None,
+                functools.partial(
+                    llm.predict,
+                        prompt=prompt, 
+                        temperature=temperature, 
+                        max_output_tokens=max_output_tokens, 
+                        top_k=top_k, top_p=top_p))
+        except Exception as e:
+            print(e)
+
+    if generated_response and generated_response.text:
+        return generated_response.text
+    return ""
+
