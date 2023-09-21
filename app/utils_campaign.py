@@ -61,4 +61,3 @@ def generate_names_uuid_dict() -> dict:
     else:
         campaigns = st.session_state[CAMPAIGNS_KEY].values()
         return {campaign.name: str(campaign.unique_uuid) for campaign in campaigns} 
-

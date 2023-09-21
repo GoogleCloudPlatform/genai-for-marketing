@@ -24,15 +24,12 @@ import streamlit as st
 import streamlit.components.v1 as components
 import time
 import tomllib
-import uuid
+import utils_workspace
 import zipfile
 
-from googleapiclient import discovery
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaIoBaseUpload
 from google.oauth2 import service_account
 from io import BytesIO
-from utils_campaign import Campaign, generate_names_uuid_dict 
+from utils_campaign import generate_names_uuid_dict 
 
 
 # Load configuration file
@@ -49,14 +46,14 @@ CAMPAIGNS_KEY = data["pages"]["campaigns"]["campaigns_key"]
 # Variables for Workspace integration
 SCOPES = data["pages"]["12_review_activate"]["workspace_scopes"]
 SLIDES_TEMPLATE_ID = data["pages"]["12_review_activate"]["slides_template_id"]
+SLIDES_PAGE_ID_LIST = data["pages"]["12_review_activate"]["slide_page_id_list"]
 DOC_TEMPLATE_ID = data["pages"]["12_review_activate"]["doc_template_id"]
 DRIVE_FOLDER_ID = data["pages"]["12_review_activate"]["drive_folder_id"]
 SHEET_TEMPLATE_ID = data["pages"]["12_review_activate"]["sheet_template_id"]
-service_account_json_key = data["global"]["service_account_json_key"]
-creds = service_account.Credentials.from_service_account_file(
-    filename=service_account_json_key, scopes=SCOPES)
-new_folder_id = DRIVE_FOLDER_ID
 
+CREDENTIALS = service_account.Credentials.from_service_account_file(
+    filename=data["global"]["service_account_json_key"], 
+    scopes=SCOPES)
 
 PAGE_PREFIX_KEY = "Content_Activation"
 SELECTED_CAMPAIGN_KEY = f"{PAGE_PREFIX_KEY}_Selected_Campaign"
@@ -83,22 +80,17 @@ with cols[1]:
     st.title(data["pages"]["12_review_activate"]["page_title"])
 
 
-def render_openlink_button(link:str, button_text:str):
-    st.markdown(
-    f"""
-        <a href="{link}" class="rounded-button">{button_text}</a>
-    """, 
-    unsafe_allow_html=True)
-
-campaign_list = []
+# campaign_list = []
 if CAMPAIGNS_KEY not in st.session_state:
     st.info("Please create a campaign first")
 else:
-    campaign_list = generate_names_uuid_dict().keys()
+    # campaign_list = generate_names_uuid_dict().keys()
 
     with st.form(PAGE_PREFIX_KEY+"_Choose_A_Campaign"):
         st.write("**Choose a campaign to preview and edit**")
-        selected_campaign = st.selectbox("List of campaigns", campaign_list)
+        selected_campaign = st.selectbox(
+            "List of campaigns", 
+            generate_names_uuid_dict().keys())
         choose_a_campaign_button = st.form_submit_button()
 
     if choose_a_campaign_button:
@@ -111,7 +103,6 @@ def content_activated():
         time.sleep(3)
     st.success('Activation completed')
 
-campaign: Campaign|None = None
 
 if SELECTED_CAMPAIGN_KEY in st.session_state:
     campaign = st.session_state[CAMPAIGNS_KEY][st.session_state[
@@ -399,244 +390,7 @@ if SELECTED_CAMPAIGN_KEY in st.session_state:
 # ----------------------Workspace code----------------------
 
 if SELECTED_CAMPAIGN_KEY in st.session_state:
-    def merge_slide(presentation_id: str, spreadsheet_id:str):
-        emu4m = {
-            'magnitude': 4000000,
-            'unit': 'EMU'
-        }
-        
-        sheet_chart_id_list = get_chart_id(SHEET_TEMPLATE_ID)
-        page_list = data["pages"]["12_review_activate"]["slide_page_id_list"]
-
-        service = build('slides', 'v1', credentials=creds)
-        from datetime import date
-
-        today = date.today()
-        requests = [
-                {
-                    'replaceAllText': {
-                        'containsText': {
-                            'text': '{{date}}',
-                            'matchCase': True
-                        },
-                        'replaceText': str(today)
-                    }
-                }
-            ]
-
-        for chart_id,page_id in zip(sheet_chart_id_list,page_list):
-            presentation_chart_id = str(uuid.uuid4())
-            requests.append({
-            'createSheetsChart': {
-                'objectId': presentation_chart_id,
-                'spreadsheetId': spreadsheet_id,
-                'chartId': chart_id,
-                'linkingMode': 'LINKED',
-                'elementProperties': {
-                    'pageObjectId': page_id,
-                    'size': {
-                        'height': emu4m,
-                        'width': emu4m
-                    },
-                    'transform': {
-                        'scaleX': 1,
-                        'scaleY': 1,
-                        'translateX': 100000,
-                        'translateY': 100000,
-                        'unit': 'EMU'
-                    }
-                }
-            }
-            })
-
-        body = {
-            'requests': requests
-        }
-        service.presentations().batchUpdate(
-            presentationId=presentation_id, body=body).execute()
-            
-
-    def copy_drive_file(drive_file_id: str,
-                        parentFolderId: str,
-                        copy_title: str):
-       
-        drive_service = build('drive', 'v3', credentials=creds)
-        body = {
-            'name': copy_title,
-                'parents' : [ parentFolderId  ]
-        }
-        drive_response = drive_service.files().copy(
-            fileId=drive_file_id, body=body).execute()
-        presentation_copy_id = drive_response.get('id')
-
-        return presentation_copy_id
-
-    def upload_to_folder(f,folder_id, upload_name, mime_type):
-        """Upload a file to the specified folder and prints file ID, folder ID
-        Args: Id of the folder
-        Returns: ID of the file uploaded"""
-
-        # create drive api client
-        service = build('drive', 'v3', credentials=creds)
-
-        file_metadata = {
-            'name': upload_name,
-            'parents': [folder_id]
-        }
-        
-        media = MediaIoBaseUpload(f, mimetype=mime_type)
-    
-        file = service.files().create(body=file_metadata, media_body=media,
-                                    fields='id').execute()
-    
-        return file.get('id')
-
-    def update_doc(document_id: str, business_name: str, Scenario: str,
-                   brand_statement: str, primary_msg: str, comms_channel: str):
-        
-        requests = [
-            {
-                'replaceAllText': {
-                    'containsText': {
-                        'text': '{{business-name}}',
-                        'matchCase':  'true'
-                    },
-                    'replaceText': business_name,
-                }}, 
-                {
-                'replaceAllText': {
-                    'containsText': {
-                        'text': '{{Scenario}}',
-                        'matchCase':  'true'
-                    },
-                    'replaceText': Scenario,
-                }},
-                {
-                'replaceAllText': {
-                    'containsText': {
-                        'text': '{{brand-statement}}',
-                        'matchCase':  'true'
-                    },
-                    'replaceText': brand_statement,
-                }},
-                {
-                'replaceAllText': {
-                    'containsText': {
-                        'text': '{{primary-msg}}',
-                        'matchCase':  'true'
-                    },
-                    'replaceText': primary_msg,
-                }},
-                {
-                'replaceAllText': {
-                    'containsText': {
-                        'text': '{{comms-channel}}',
-                        'matchCase':  'true'
-                    },
-                    'replaceText': comms_channel,
-                }}
-        ]
-        service = build('docs', 'v1', credentials=creds)
-        service.documents().batchUpdate(
-            documentId=document_id, body={'requests': requests}).execute()
-
-
-    def get_chart_id(spreadsheet_id):
-        service = discovery.build('sheets', 'v4', credentials=creds)
-        spreadsheet_id = spreadsheet_id  
-        ranges = [] 
-        include_grid_data = False 
-
-    
-        request = service.spreadsheets().get(spreadsheetId=spreadsheet_id,
-                                             ranges=ranges,
-                                             includeGridData=include_grid_data)
-        response = request.execute()
-
-        chart_id_list = []
-        for chart in response['sheets'][0]['charts']:
-            chart_id_list.append(chart['chartId'])
-        return chart_id_list
-        
-
-    def create_sheets_chart(presentation_id: str, page_id: str,
-                            spreadsheet_id: str, sheet_chart_id: str):
-     
-        slides_service = build('slides', 'v1', credentials=creds)
-        emu4m = {
-            'magnitude': 1000000,
-            'unit': 'EMU'
-        }
-
-        presentation_chart_id = 'MyEmbeddedChart'
-        requests = [
-            {
-                'createSheetsChart': {
-                    'objectId': presentation_chart_id,
-                    'spreadsheetId': spreadsheet_id,
-                    'chartId': sheet_chart_id,
-                    'linkingMode': 'LINKED',
-                    'elementProperties': {
-                        'pageObjectId': page_id,
-                        'size': {
-                            'height': emu4m,
-                            'width': emu4m
-                        },
-                        'transform': {
-                            'scaleX': 0.5,
-                            'scaleY': 0.5,
-                            'translateX': 2,
-                            'translateY': 2,
-                            'unit': 'EMU'
-                        }
-                    }
-                }
-            }
-        ]
-
-        # Execute the request.
-        body = {
-            'requests': requests
-        }
-        response = slides_service.presentations().batchUpdate(
-            presentationId=presentation_id, body=body).execute()
-        return response
-      
-    
-    def create_folder_in_folder(folder_name: str, parent_folder_id: str):
-        
-        file_metadata = {
-        'name' : folder_name,
-        'parents' : [parent_folder_id],
-        'mimeType' : 'application/vnd.google-apps.folder'
-        }
-        service = build('drive', 'v3', credentials=creds)
-        file = service.files().create(body=file_metadata,
-                                        fields='id').execute()
-        
-        return file.get('id')
-        
-
-    def set_permission(file_id: str):
-        
-        permission = {'type': 'domain',
-                    'domain': 'google.com', 
-                    'role': 'writer'}
-        service = build('drive', 'v3', credentials=creds)
-        return service.permissions().create(fileId=file_id,
-                                            sendNotificationEmail=False,
-                                            body=permission).execute()
-
-    if NEW_FOLDER_KEY in st.session_state and st.session_state[NEW_FOLDER_KEY]:
-        new_folder_id = st.session_state[NEW_FOLDER_KEY]
-    else:
-        ts = int(time.time())
-        new_folder_id = create_folder_in_folder(f"Marketing_Assets_{ts}",
-                                                new_folder_id)
-        st.session_state[NEW_FOLDER_KEY] = new_folder_id
-        set_permission(new_folder_id)
-    st.divider()
-    link = f'http://drive.google.com/corp/drive/folders/{new_folder_id}'
+    link = f'http://drive.google.com/corp/drive/folders/{campaign.workspace_assets["folder_id"]}'
     st.write("**Google Workspace Integration** | "
             f"[Explore the assets folder in Google Drive ↗]({link})")
     upload_to_drive_button = st.button("Upload available assets to Google Drive")
@@ -650,23 +404,27 @@ if SELECTED_CAMPAIGN_KEY in st.session_state:
                 csv_bytes = io.BytesIO(str.encode(
                     campaign.asset_classes_text.to_csv()))
                 try:
-                    upload_to_folder(csv_bytes, new_folder_id,
-                                     'assets.csv','text/csv')
+                    utils_workspace.upload_to_folder(
+                        f=csv_bytes, 
+                        folder_id=campaign.workspace_assets["folder_id"],
+                        upload_name='assets_group_pmax.csv',
+                        mime_type='text/csv',
+                        credentials=CREDENTIALS)
 
                     files_bytes_io = []
-                    c=0
-                    for i in campaign.asset_classes_images.iloc[0]:
-                        base64_data = re.sub('^data:image/.+;base64,', '', i)
+                    for i, image_bytes in enumerate(campaign.asset_classes_images.iloc[0]):
+                        base64_data = re.sub('^data:image/.+;base64,', '', image_bytes)
                         byte_data = base64.b64decode(base64_data)
                         files_bytes_io.append(BytesIO(byte_data))
                         f = io.BytesIO(byte_data)
-                        upload_to_folder(f, new_folder_id,
-                                         f'image_{c}.png', 'image/png')
-                        c+=1            
-                    st.info("Upload is done. "
-                            "Click on 'Explore the assets "
-                            "folder in Google Drive' link "
-                            "to see the files.")
+                        utils_workspace.upload_to_folder(
+                            f=f, 
+                            folder_id=campaign.workspace_assets["folder_id"],
+                            upload_name=f'image_{i}.png', 
+                            mime_type='image/png',
+                            credentials=CREDENTIALS)
+                        
+                    st.info("Upload to Drive completed.")
                 except:
                     st.error("Network Issue.")
         else:
@@ -676,55 +434,48 @@ if SELECTED_CAMPAIGN_KEY in st.session_state:
     add_slide_button = st.button("Generate Workspace assets")
 
     if add_slide_button:
-        with st.spinner('Generating slides and docs...'):
+        with st.spinner('Generating Google Slides ...'):
             try:
-                slide_id = copy_drive_file(SLIDES_TEMPLATE_ID,
-                                           new_folder_id,
-                                           " Marketing Assets")        
-                st.session_state[SLIDE_ID_KEY] = slide_id
-                sheet_id = copy_drive_file(SHEET_TEMPLATE_ID,
-                                           new_folder_id,
-                                           "GenAI Marketing Data Source")            
-                st.session_state[SHEET_ID_KEY] = sheet_id
-                merge_slide(slide_id,sheet_id)
-                doc_id = copy_drive_file(DOC_TEMPLATE_ID,
-                                         new_folder_id,
-                                         "GenAI Marketing Demo Summary")
-                st.session_state[DOC_ID_KEY] = doc_id
+                slide_id = utils_workspace.copy_drive_file(
+                    drive_file_id=SLIDES_TEMPLATE_ID,
+                    parentFolderId=campaign.workspace_assets["folder_id"],
+                    copy_title="Marketing Assets",
+                    credentials=CREDENTIALS)
+                st.session_state[CAMPAIGNS_KEY][
+                    st.session_state[SELECTED_CAMPAIGN_KEY]].workspace_assets[
+                        "slide_id"] = slide_id
                 
-                brief_dict = {}
-                if campaign is not None and campaign.brief is not None:
-                    brief_dict = campaign.brief
-                
-                business_name = brief_dict.get('business_name', '') 
-                Scenario = brief_dict.get('brief_scenario','')
-                brand_statement = brief_dict.get('brand_statement','').replace('*','')
-                primary_msg = brief_dict.get('primary_message','').replace('*','')
-                comms_channel = brief_dict.get('comm_channels','').replace('*','')
-                
-                update_doc(doc_id, business_name, Scenario, brand_statement,
-                           primary_msg, comms_channel)
+                sheet_id = utils_workspace.copy_drive_file(
+                    drive_file_id=SHEET_TEMPLATE_ID,
+                    parentFolderId=campaign.workspace_assets["folder_id"],
+                    copy_title="GenAI Marketing Data Source",
+                    credentials=CREDENTIALS)            
+                st.session_state[CAMPAIGNS_KEY][
+                    st.session_state[SELECTED_CAMPAIGN_KEY]].workspace_assets[
+                        "sheet_id"] = sheet_id
+
+                utils_workspace.merge_slides(
+                    presentation_id=slide_id,
+                    spreadsheet_id=sheet_id,
+                    spreadsheet_template_id=SHEET_TEMPLATE_ID,
+                    slide_page_id_list=SLIDES_PAGE_ID_LIST,
+                    credencials=CREDENTIALS)
+
             except Exception as e:
                 print(e)
-                st.error("Network Issue.")
+                st.error("Something went wrong. Please try again.")
             else:
-                if (SLIDE_ID_KEY in st.session_state and 
-                    st.session_state[SLIDE_ID_KEY]):
-                    slide_id = st.session_state[SLIDE_ID_KEY]
+                components.iframe(
+                    f'https://docs.google.com/file/d/{slide_id}/preview',
+                    height=430)
+                doc_id = st.session_state[CAMPAIGNS_KEY][
+                    st.session_state[SELECTED_CAMPAIGN_KEY]].workspace_assets[
+                        "brief_docs_id"]
+                components.iframe(
+                    f'https://docs.google.com/file/d/{doc_id}/preview',
+                    height=600)
+                with st.expander("Check Google Sheet Data Source",
+                                    expanded=False):
                     components.iframe(
-                        f'https://docs.google.com/file/d/{slide_id}/preview',
-                        height=430)
-                if (DOC_ID_KEY in st.session_state and 
-                    st.session_state[DOC_ID_KEY]):
-                    doc_id = st.session_state[DOC_ID_KEY]
-                    components.iframe(
-                        f'https://docs.google.com/file/d/{doc_id}/preview',
+                        f'https://docs.google.com/file/d/{sheet_id}/preview',
                         height=600)
-                if (SHEET_ID_KEY in st.session_state and 
-                    st.session_state[SHEET_ID_KEY]):   
-                    sheet_id = st.session_state[SHEET_ID_KEY]
-                    with st.expander("Check Google Sheet Data Source",
-                                     expanded=False):
-                        components.iframe(
-                            f'https://docs.google.com/file/d/{sheet_id}/preview',
-                            height=600)
