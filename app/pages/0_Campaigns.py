@@ -16,12 +16,15 @@
 Initial page with an overview architecture and a description of each demo page.
 """
 
-
 import asyncio
 import functools
 import streamlit as st
+import random
+import time
 import tomllib
+import utils_workspace
 
+from google.oauth2 import service_account
 from vertexai.preview.language_models import TextGenerationModel
 from utils_campaign import add_new_campaign
 
@@ -71,14 +74,22 @@ AGEGROUP_FOR_PROMPTS = data["pages"]["campaigns"]["prompt_age_groups"]
 OBJECTIVES_FOR_PROMPTS = data["pages"]["campaigns"]["prompt_objectives"]
 COMPETITORS_FOR_PROMPTS = data["pages"]["campaigns"]["prompt_competitors"]
 
+# Variables for Workspace integration
+SCOPES = data["pages"]["12_review_activate"]["workspace_scopes"]
+DOC_TEMPLATE_ID = data["pages"]["12_review_activate"]["doc_template_id"]
+DRIVE_FOLDER_ID = data["pages"]["12_review_activate"]["drive_folder_id"]
+CREDENTIALS = service_account.Credentials.from_service_account_file(
+    filename=data["global"]["service_account_json_key"], scopes=SCOPES)
+
+DOC_ID_KEY = f"{CAMPAIGNS_KEY}_doc_id_key"
+NEW_FOLDER_KEY = f"{CAMPAIGNS_KEY}_new_folder_id_key"
+
 
 cols = st.columns([13, 87])
 with cols[0]:
     st.image(data["pages"]["campaigns"]["page_title_icon"])
 with cols[1]:
     st.title(data["pages"]["campaigns"]["page_title"])
-
-st.write('''Campaign and creative brief generation.''')
 
 tab1, tab2 = st.tabs(["Create Campaign", "Existing Campaigns"])
 
@@ -200,45 +211,51 @@ with tab1:
                     'comm_channels': st.session_state[COMMS_CHANNEL_KEY]
                 }
 
+                with st.spinner("Creating Google Drive folder..."):
+                    new_folder_id = utils_workspace.create_folder_in_folder(
+                        folder_name=f"Marketing_Assets_{int(time.time())}",
+                        parent_folder_id=DRIVE_FOLDER_ID,
+                        credentials=CREDENTIALS)
+                    st.session_state[NEW_FOLDER_KEY] = new_folder_id
+                    utils_workspace.set_permission(
+                        file_id=new_folder_id,
+                        credentials=CREDENTIALS)
+                with st.spinner("Uploading Creative Brief to Google Docs..."):
+                    doc_id = utils_workspace.copy_drive_file(
+                        drive_file_id=DOC_TEMPLATE_ID,
+                        parentFolderId=new_folder_id,
+                        copy_title=f"GenAI Marketing Brief",
+                        credentials=CREDENTIALS)
+                    st.session_state[DOC_ID_KEY] = doc_id
+                    utils_workspace.update_doc(
+                        document_id=doc_id,
+                        campaign_name= campaign_name,
+                        business_name=st.session_state[CAMPAIGNS_KEY][campaign_uuid].brief["business_name"].replace(
+                            "*", "").strip(), 
+                        scenario=st.session_state[CAMPAIGNS_KEY][campaign_uuid].brief["brief_scenario"].replace(
+                            "*", "").strip(), 
+                        brand_statement=st.session_state[CAMPAIGNS_KEY][campaign_uuid].brief["brand_statement"].replace(
+                            "*", "").strip(),
+                        primary_msg=st.session_state[CAMPAIGNS_KEY][campaign_uuid].brief["primary_message"].replace(
+                            "*", "").strip(), 
+                        comms_channel=st.session_state[CAMPAIGNS_KEY][campaign_uuid].brief["comm_channels"].replace(
+                            "*", "").strip(),
+                        credentials=CREDENTIALS)
+                st.success("Brief document uploaded to Google Docs.")
+
+                st.session_state[CAMPAIGNS_KEY][campaign_uuid].workspace_assets = {}
+                st.session_state[CAMPAIGNS_KEY][campaign_uuid].workspace_assets['brief_docs_id']=doc_id
+                st.session_state[CAMPAIGNS_KEY][campaign_uuid].workspace_assets['folder_id']=new_folder_id
+
+
 with tab2:
     if CAMPAIGNS_KEY not in st.session_state:
         st.info('No campaigns created yet, start by creating one.')
     elif (CAMPAIGNS_KEY in st.session_state and 
         st.session_state[CAMPAIGNS_KEY].keys()):
-        campaigns = st.session_state[CAMPAIGNS_KEY].values()
-        campaign_names = {
-            campaign.name : str(campaign.unique_uuid) for campaign in campaigns}
-
-        if not create_campaign_button:
-            campaigns_list_menu = list(campaign_names.keys())
-        else:
-            campaigns_list_menu = list(campaign_names.keys())
-            idx = campaigns_list_menu.index(campaign_name)
-            campaigns_list_menu.insert(0, campaigns_list_menu[idx])
-            campaigns_list_menu.pop(idx+1)
-        
-        with st.form('list_brief_campaigns'):
-            st.write("**Active Campaigns**")
-            campaign_list_name = st.selectbox(
-                'Select a campaign to display its brief', campaigns_list_menu)
-            retrieve_brief_button = st.form_submit_button('Retrieve Brief')
-
-        if retrieve_brief_button:
-            campaign_uuid = campaign_names[campaign_list_name]
-
-    if campaign_uuid:
-        brief = st.session_state[CAMPAIGNS_KEY][campaign_uuid].brief
-        st.subheader(
-            f'Creative Brief for campaign: {brief["campaign_name"]}')
-        def bi_column(title:str, content:str):
-            col1, col2 = st.columns([28,72])
-            with col1:
-                st.write(f'**{title}:**')
-            with col2:
-                st.write(content)
-        bi_column("Business name", brief["business_name"])
-        bi_column("Scenario", brief["brief_scenario"])
-        bi_column("Brand Statement", brief["brand_statement"])
-        bi_column("Brand Strategy", brief["primary_message"])
-        bi_column("Communication Channels", brief["comm_channels"])
-
+        st.subheader("List of existing campaigns")
+        st.write("\n")
+        for c in st.session_state[CAMPAIGNS_KEY].values():
+            docs_link = f'https://docs.google.com/document/d/{c.workspace_assets["brief_docs_id"]}/edit'
+            st.write(f"**Campaign name**: {c.name} \n\n**Workspace**: [Edit brief in Google Drive ↗]({docs_link})")
+            st.divider()

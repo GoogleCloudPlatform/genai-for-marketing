@@ -41,6 +41,8 @@ class Campaign:
     ads_insta: dict | None = None
     asset_classes_text: pd.DataFrame | None = None
     asset_classes_images: pd.DataFrame | None = None
+    workspace_assets: dict | None = None
+
 
 def add_new_campaign(name: str) -> str:
     new_uuid = uuid.uuid4()
@@ -49,6 +51,7 @@ def add_new_campaign(name: str) -> str:
         st.session_state[CAMPAIGNS_KEY] = {}
     st.session_state[CAMPAIGNS_KEY][str(new_uuid)] = campaign
     return str(new_uuid)
+
 
 def generate_names_uuid_dict() -> dict:
     if CAMPAIGNS_KEY not in st.session_state:

@@ -400,7 +400,6 @@ if SELECTED_CAMPAIGN_KEY in st.session_state:
 
 if SELECTED_CAMPAIGN_KEY in st.session_state:
     def merge_slide(presentation_id: str, spreadsheet_id:str):
-
         emu4m = {
             'magnitude': 4000000,
             'unit': 'EMU'
@@ -457,7 +456,6 @@ if SELECTED_CAMPAIGN_KEY in st.session_state:
             presentationId=presentation_id, body=body).execute()
             
 
-
     def copy_drive_file(drive_file_id: str,
                         parentFolderId: str,
                         copy_title: str):
@@ -478,8 +476,6 @@ if SELECTED_CAMPAIGN_KEY in st.session_state:
         Args: Id of the folder
         Returns: ID of the file uploaded"""
 
-       
-    
         # create drive api client
         service = build('drive', 'v3', credentials=creds)
 
@@ -630,7 +626,7 @@ if SELECTED_CAMPAIGN_KEY in st.session_state:
         return service.permissions().create(fileId=file_id,
                                             sendNotificationEmail=False,
                                             body=permission).execute()
-    
+
     if NEW_FOLDER_KEY in st.session_state and st.session_state[NEW_FOLDER_KEY]:
         new_folder_id = st.session_state[NEW_FOLDER_KEY]
     else:
@@ -642,7 +638,7 @@ if SELECTED_CAMPAIGN_KEY in st.session_state:
     st.divider()
     link = f'http://drive.google.com/corp/drive/folders/{new_folder_id}'
     st.write("**Google Workspace Integration** | "
-            f"[Explore the assets folder in Google Drive 🡭]({link})")
+            f"[Explore the assets folder in Google Drive ↗]({link})")
     upload_to_drive_button = st.button("Upload available assets to Google Drive")
 
     if upload_to_drive_button:
@@ -700,35 +696,11 @@ if SELECTED_CAMPAIGN_KEY in st.session_state:
                 if campaign is not None and campaign.brief is not None:
                     brief_dict = campaign.brief
                 
-                business_name = brief_dict.get('business_name', 'Cymbal') 
-                Scenario = brief_dict.get(
-                    'brief_scenario',
-                    'Targeting gender: Women, Age group: 20-30, '
-                    'Campaign objective: Drive Awareness, '
-                    'Competitor: Fashion Forward')
-                brand_statement = brief_dict.get(
-                    'brand_statement',
-                    'Mission: To create stylish, affordable jewelry '
-                    'that women love to wear. '
-                    'Goals: To drive awareness of Cymbal brand '
-                    'and products among women ages 20-30.').replace('*','')
-                primary_msg = brief_dict.get(
-                    'primary_message',
-                    'Cymbal is a fashion brand for women aged 20-30. '
-                    'We are a modern, stylish brand '
-                    'that offers high-quality clothing and accessories '
-                    'at affordable prices. '
-                    'We are committed to providing our customers with the '
-                    'best possible shopping experience.').replace('*','')
-                comms_channel = brief_dict.get(
-                    'comm_channels',
-                    'Social media is a great way to reach a large audience '
-                    'of potential customers. '
-                    'You can create engaging content that will capture '
-                    'their attention and make them want '
-                    'to learn more about your brand. '
-                    'Make sure to use high-quality images and videos, '
-                    'and use clear and concise language.').replace('*','')
+                business_name = brief_dict.get('business_name', '') 
+                Scenario = brief_dict.get('brief_scenario','')
+                brand_statement = brief_dict.get('brand_statement','').replace('*','')
+                primary_msg = brief_dict.get('primary_message','').replace('*','')
+                comms_channel = brief_dict.get('comm_channels','').replace('*','')
                 
                 update_doc(doc_id, business_name, Scenario, brand_statement,
                            primary_msg, comms_channel)
