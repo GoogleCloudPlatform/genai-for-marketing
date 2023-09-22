@@ -73,10 +73,14 @@ def upload_to_folder(
         'parents': [folder_id]
     }
     
-    media = MediaIoBaseUpload(f, mimetype=mime_type)
+    media = MediaIoBaseUpload(
+        f, 
+        mimetype=mime_type)
 
-    file = service.files().create(body=file_metadata, media_body=media,
-                                fields='id').execute()
+    file = service.files().create(
+        body=file_metadata, 
+        media_body=media,
+        fields='id').execute()
 
     return file.get('id')
 

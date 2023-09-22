@@ -23,7 +23,9 @@ import tomllib
 import utils_workspace
 
 from google.oauth2 import service_account
+from PIL import Image
 from vertexai.preview.language_models import TextGenerationModel
+from typing import Dict
 from utils_campaign import add_new_campaign
 from utils_prompt import async_predict_text_llm
 
@@ -62,9 +64,10 @@ PRIMARY_MSG_KEY = f'{PAGE_KEY_PREFIX}_primary_msg'
 COMMS_CHANNEL_KEY = f'{PAGE_KEY_PREFIX}_comms_channels'
 THEMES_FOR_PROMPTS_KEY = f'{PAGE_KEY_PREFIX}_theme'
 
+FILE_UPLOADER_KEY = f"{PAGE_KEY_PREFIX}_File_Uploader"
+
 # Prompt templates
 BRAND_OVERVIEW = page_cfg.get("prompt_brand_overview", "")
-
 BRAND_STATEMENT_PROMPT_TEMPLATE = page_cfg["prompt_brand_statement_template"]
 PRIMARY_MSG_PROMPT_TEMPLATE = page_cfg["prompt_primary_msg_template"]
 COMMS_CHANNEL_PROMPT_TEMPLATE = page_cfg["prompt_comms_channel_template"]
@@ -235,10 +238,58 @@ with tab1:
                 st.session_state[CAMPAIGNS_KEY][
                     campaign_uuid].workspace_assets = {}
                 st.session_state[CAMPAIGNS_KEY][
-                    campaign_uuid].workspace_assets['brief_docs_id']=doc_id
+                    campaign_uuid].workspace_assets["brief_docs_id"]=doc_id
                 st.session_state[CAMPAIGNS_KEY][
-                    campaign_uuid].workspace_assets['folder_id']=new_folder_id
+                    campaign_uuid].workspace_assets["folder_id"]=new_folder_id
 
+
+def display_campaigns_upload(
+        campaign: Dict
+):
+    docs_link = f'https://docs.google.com/document/d/{campaign.workspace_assets["brief_docs_id"]}/edit'
+    folder_link = f'http://drive.google.com/corp/drive/folders/{campaign.workspace_assets["folder_id"]}'
+
+    with st.form(
+        key=f"{PAGE_KEY_PREFIX}_{str(campaign.unique_uuid)}_form", 
+        clear_on_submit=True):
+        st.write(f"**Campaign name**: {c.name}")
+        st.write(f"**Workspace**: [Edit brief in Google Docs ↗]({docs_link}) | "
+        f"[Explore files in Google Drive ↗]({folder_link})")
+        uploaded_files = st.file_uploader(
+            "Upload images to your campaign. It MUST be in PNG or JPEG format.",
+            type=['png', 'jpg'],
+            key=FILE_UPLOADER_KEY+str(campaign.unique_uuid),
+            accept_multiple_files=True)
+        
+        submit_button = st.form_submit_button("Save to Campaign")
+        
+    if submit_button:
+        with st.spinner("Uploading files to Google Drive..."):
+            if uploaded_files:
+                st.session_state[CAMPAIGNS_KEY][
+                    str(campaign.unique_uuid)].campaign_uploaded_images = {}
+                for file in uploaded_files:
+                    try:
+                        file_id = utils_workspace.upload_to_folder(
+                            f=file,
+                            folder_id=campaign.workspace_assets["folder_id"],
+                            upload_name=file.name,
+                            mime_type=file.type,
+                            credentials=CREDENTIALS
+                        )
+                    except:
+                        st.error("Could not upload one or more images. Please try again.")
+                    else:
+                        st.session_state[CAMPAIGNS_KEY][
+                            str(campaign.unique_uuid)].campaign_uploaded_images[file_id] = {
+                                "name":file.name,
+                                "mime_type":file.type,
+                                "size":file.size,
+                                "thumbnail":Image.open(file).thumbnail((200,200))
+                            }
+                        st.success(f"File {file.name} uploaded to campaign.")
+            else:
+                st.info("Please select image(s) before saving to Drive.")
 
 with tab2:
     if CAMPAIGNS_KEY not in st.session_state:
@@ -248,6 +299,4 @@ with tab2:
         st.subheader("List of existing campaigns")
         st.write("\n")
         for c in st.session_state[CAMPAIGNS_KEY].values():
-            docs_link = f'https://docs.google.com/document/d/{c.workspace_assets["brief_docs_id"]}/edit'
-            st.write(f"**Campaign name**: {c.name} \n\n**Workspace**: [Edit brief in Google Drive ↗]({docs_link})")
-            st.divider()
+            display_campaigns_upload(c)
