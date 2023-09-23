@@ -41,7 +41,7 @@ The notebooks listed below were developed to explain the concepts exposed in thi
 - [Data Q&A with PaLM API and GoogleSQL](/notebooks/data_qa_with_sql.ipynb) (data_qa_with_sql.ipynb): Translate questions using natural language to GoogleSQL to interact with BigQuery.
 - [News summarization with LangChain agents and Vertex AI PaLM text models](/notebooks/news_summarization_langchain_palm.ipynb) (news_summarization_langchain_palm.ipynb): Summarize news articles related to top search terms using LangChain agents and the ReAct concept.
 - [News summarization with PaLM API](/notebooks/simple_news_summarization.ipynb) (simple_news_summarization.ipynb): News summarization related to top search terms using the PaLM API.
-
+- [Imagen fine tuning](/notebooks/Imagen_finetune.ipynb) (Imagen_finetune.ipynb): Fine tune Imagen model.
 
 The following additional (external) notebooks provide supplementary information on the concepts discussed in this repository:
 - [Tuning and deploy a foundation model](https://github.com/GoogleCloudPlatform/generative-ai/blob/main/language/tuning/getting_started_tuning.ipynb): This notebook demonstrates how to tune a model with your dataset to improve the model's response. This is useful for brand voice because it allows you to ensure that the model is generating text that is consistent with your brand's tone and style.
@@ -54,7 +54,7 @@ The following additional (external) notebooks provide supplementary information 
 
 # Environment Setup
 
-This section outlines the steps to configure the Google Cloud environment that is required in order to run the notebooks and demonstration provided in this repository.  
+This section outlines the steps to configure the Google Cloud environment that is required in order to run the notebooks and code provided in this repository.  
 You will be interacting with the following resources:
  - A user-managed instance of Vertex AI Workbench serves as your development setting and the main interface to Vertex AI services.  
  - BigQuery is utilized to house data from Marketing Platforms, while Dataplex is employed to keep their metadata.  
@@ -70,10 +70,11 @@ In the Google Cloud Console, on the project selector page, [select or create a G
 
 ### Enable the required services
 
-From [Cloud Shell](https://cloud.google.com/shell/docs/using-cloud-shell), run the following commands to enable the required Cloud APIs:
+From [Cloud Shell](https://cloud.google.com/shell/docs/using-cloud-shell), run the following commands to enable the required Cloud APIs.  
+Change `PROJECT_ID` to the id of your project.
 
 ```bash
-export PROJECT_ID=$(gcloud info --format='value(config.project)')
+export PROJECT_ID=<CHANGE TO YOUR PROJECT ID>
  
 gcloud config set project $PROJECT_ID
  
@@ -86,9 +87,7 @@ gcloud services enable \
   cloudapis.googleapis.com \
   cloudtrace.googleapis.com \
   containerregistry.googleapis.com \
-  iamcredentials.googleapis.com
-
-gcloud services enable \
+  iamcredentials.googleapis.com \
   monitoring.googleapis.com \
   logging.googleapis.com \
   notebooks.googleapis.com \
@@ -104,7 +103,7 @@ gcloud services enable \
   slides.googleapis.com
 ```
 
-**Note**: When you work with Vertex AI user-managed notebooks, be sure that all the services that you're using are enabled and white-listed.
+**Note**: When you work with Vertex AI user-managed notebooks, be sure that all the services that you're using are enabled.
 
 ### Configure Vertex AI Workbench
 
@@ -113,11 +112,12 @@ Create a user-managed notebooks instance from the command line.
 **Note**: Make sure that you're following these steps in the same project as before.
  
 In Cloud Shell, enter the following command.  
+ - For `<CHANGE TO YOUR PROJECT ID>`, enter the ID of your project.  
  - For `<YOUR_INSTANCE_NAME>`, enter a name starting with a lower-case letter followed by lower-case letters, numbers or dash sign.  
  - For `<YOUR_LOCATION>`, add a zone (for example, `us-central1-a` or `europe-west4-a`).
 
 ```bash
-PROJECT_ID=$(gcloud config list --format 'value(core.project)')
+PROJECT_ID=<CHANGE TO YOUR PROJECT ID>
 INSTANCE_NAME=<YOUR_INSTANCE_NAME>
 LOCATION=<YOUR_LOCATION>
 gcloud notebooks instances create $INSTANCE_NAME \
@@ -134,6 +134,9 @@ Clone the repository to your notebook instance:
 
 > git clone https://github.com/GoogleCloudPlatform/genai-for-marketing
 
+### Update the configuration with information of your project
+
+Open the [configuration file](/app/app_config.toml) and include your project id (line 21) and location (line 22).
 
 ### Prepare BigQuery and Dataplex
 
@@ -166,14 +169,16 @@ After you finished creating the Vertex AI Search datastore, navigate back to the
 Example:  
 ![Vertex AI Search ID](./app/images/es_id.png)
 
-Open this [configuration file - line 40](/app/utils_config.py) and paste the ID of your newly created datastore in the `DATASTORES` dictionary.  
+Open this [configuration file - line 600](/app/app_config.toml) and create a variable that follows this pattern:  
+> datastores.<datastore ID> = 'default_config'.  
 The resulting code should look like this:  
 
 ```
-# Vertex AI Search datastores and location
-DATASTORES = {
-    'google-ads-support_1688070625722': 'default_config'
-}
+# Vertex AI Search datastores and location. 
+# Change the dataset variable to reflect your configuration.
+# Sample datastore ID
+# datastores.<datastore ID> = 'default_config'
+datastores.google-ads-support_1686058481432 = "default_config"
 ```
 
 **Don't forget to save the configuration file.**
@@ -183,16 +188,16 @@ DATASTORES = {
 
 In order to render your Looker Dashboards in the UI, you need to update a configuration file with the links to them.
 
-Open the [configuration file - line 33](/app/utils_config.py) and paste the name and link of your Looker Dashboards in the `DASHBOARDS` dictionary.  
+Open the [configuration file](/app/app_config.toml) and include dashboards for Marketing Insights (line 196) and Campaign Performance (line 1156).  
 The resulting code should look like this:  
 
 ```
 # Looker Dashboards
 # The link of the looker Dashboard must follow this format:
 # https://<LOOKER INSTANCE URL>/embed/dashboards/<DASHBOARD NUMBER>?allow_login_screen=true
-DASHBOARDS = {
-    'Overview': 'https://mydomain.looker.com/embed/dashboards/1111?allow_login_screen=true'
-}
+# Include your Dashboards following this patter:
+# dashboards.<Name of your dashboard, no spaces> = '<link to your dashboard>'
+dashboards.Overview = 'https://googledemo.looker.com/embed/dashboards/2131?allow_login_screen=true'
 ```
 
 The `allow_login_screen=true` will open the authentication page from Looker to secure the access to your account.
@@ -210,7 +215,7 @@ Next you will create a Generative AI Agent that will assist the users to answer 
 - Enable [Dialogflow Messenger integration](https://cloud.google.com/dialogflow/cx/docs/concept/integration/dialogflow-messenger) and copy the HTML code snippet provided by the platform.  
   - The HTML code snippet looks like this: 
   ![HTML Code](/app/images/dialogflow-integration.png "HTML Code")
-  - Open the [configuration file - line 47](/app/utils_config.py) and replace the HTML code snipped with the one created in your deployment.
+  - Open the [configuration file - line 1134](/app/app_config.toml) and replace the HTML code snipped with the one created in your deployment.
 
 
 ### Workspace integration
@@ -220,9 +225,9 @@ Follow the steps below to setup the Workspace integration with this demonstratio
 #### Create a service account
 - Create a Service Account (SA) in the same project you are deploying the demo and download the JSON API Key. This SA doesn't need any roles / permissions.  
   - Follow this [documentation](https://cloud.google.com/iam/docs/service-accounts-create) to create the service account. Take note of the service account address; it will look like this: `name-of-the-sa@my-project.iam.gserviceaccount.com`.
-  - Follow this [documentation](https://cloud.google.com/iam/docs/keys-create-delete#creating) to dowload the key JSON file with the service account credentials.  
+  - Follow this [documentation](https://cloud.google.com/iam/docs/keys-create-delete#creating) to download the key JSON file with the service account credentials.  
   - Rename the JSON file to `credentials.json` and copy it under [/app](/app) folder.
-  - [Optional] If your file has a different name and/or you copied it to a different location, change line 66 in [utils_config.py](/app/utils_config.py) to reflect these changes.
+  - [Optional] If your file has a different name and/or you copied it to a different location, change line 27 in [app_config.toml](/app/app_config.toml) to reflect these changes.
  - When you deploy the app to AppEngine, the JSON file will be copied inside the docker image.
  - **IMPORTANT**: For security reasons, DON'T push this credentials to a public Github repository.
 
@@ -233,20 +238,23 @@ Follow the steps below to setup the Workspace integration with this demonstratio
 ![Share Drive](/app/images/workspace-drive.png "Share Drive")
  - Take note of the folder ID. Go into the folder you created and you will be able to find the ID in the URL. The URL will look like this:
  ![Drive ID](/app/images/workspace-drive0.png)
- - Open the configuration file [utils_config.py - line 69](/app/utils_config.py) and change to your folder ID.
- - **IMPORTANT**: Also share this folder with people who will be using the demonstration.
+ - Open the configuration file [app_config.toml - line 1100](/app/app_config.toml) and change to your folder ID.
+ - **IMPORTANT**: Also share this folder with people who will be using the code.
 
 #### Google Slides, Google Docs and Google Sheets
  - Copy the content of [templates](/templates) to this newly created folder.
  - For the Google Slides template (`[template] Marketing Assets`): 
-   - From the Google Drive folder, open the Google Slides and take note of the Slides ID from the URL.
-   - Open the configuration file [utils_config.py - line 70](/app/utils_config.py) and change to your Slides ID.
+   - From the Google Drive folder open the file in Google Slides.  
+   - In Google Slides, click on `File` and `Save as Google Slides`. Take note of the Slides ID from the URL.
+   - Open the configuration file [app_config.toml - line 1101](/app/app_config.toml) and change to your Slides ID.
  - For the Google Docs template (`[template] Gen AI for Marketing Google Doc Template`): 
-   - From the Google Drive folder, open the Google Docs and take note of the Docs ID from the URL.
-   - Open the configuration file [utils_config.py - line 71](/app/utils_config.py) and change to your Docs ID.
+   - From the Google Drive folder open the file in Google Docs. 
+   - In Google Docs, click on `File` and `Save as Google Docs`. Take note of the Docs ID from the URL.
+   - Open the configuration file [app_config.toml - line 1102](/app/app_config.toml) and change to your Docs ID.
  - For the Google Sheets template (`[template] GenAI for Marketing`):  
-   - From the Google Drive folder, open the Google Sheets and take note of the Sheets ID from the URL.
-   - Open the configuration file [utils_config.py - line 72](/app/utils_config.py) and change to your Sheets ID.
+   - From the Google Drive folder open the Google Sheets.
+   - In Google Sheets, click in `File` and `Save as Google Sheets`. Take note of the Sheets ID from the URL.
+   - Open the configuration file [app_config.toml - line 1103](/app/app_config.toml) and change to your Sheets ID.
  
 
 ### Deploy the demonstration to App Engine
