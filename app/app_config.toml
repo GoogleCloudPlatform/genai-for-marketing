@@ -882,10 +882,13 @@ Here are some of the reasons why Cymbal Shoes is a great choice:\n
  - Convenient location\n
 If you're looking for a new pair of shoes, be sure to check out Cymbal Shoes. You won't be disappointed!"""]
 
-default_image_0 = "/app/images/website_1.png"
-default_image_1 = "/app/images/website_2.png"
-default_image_2 = "/app/images/website_3.png"
-default_image_3 = "/app/images/website_4.png"
+# IMPORTANT: Must have the same number of "prompt_themes"
+default_images = [
+    "/app/images/website_1.png", 
+    "/app/images/website_2.png", 
+    "/app/images/website_3.png", 
+    "/app/images/website_4.png"
+]
 
 
 # -----------------------------------------------------------------------------

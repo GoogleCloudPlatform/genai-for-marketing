@@ -174,23 +174,12 @@ if submit_button:
             )
     except:
         error = True
-
     if (error or 
         (image_option == "generated" and 
          not st.session_state[GENERATED_IMAGES_KEY])):
-            if selected_prompt == THEMES_FOR_PROMPTS[0]:
-                utils_image.get_default_image_bytesio(
-                    page_cfg["default_image_0"], SELECTED_IMAGE_KEY, True)
-            elif selected_prompt == THEMES_FOR_PROMPTS[1]:
-                utils_image.get_default_image_bytesio(
-                    page_cfg["default_image_1"], SELECTED_IMAGE_KEY, True)
-            elif selected_prompt == THEMES_FOR_PROMPTS[2]:
-                utils_image.get_default_image_bytesio(
-                    page_cfg["default_image_2"], SELECTED_IMAGE_KEY, True)
-            elif selected_prompt == THEMES_FOR_PROMPTS[3]:
-                utils_image.get_default_image_bytesio(
-                    page_cfg["default_image_3"], SELECTED_IMAGE_KEY, True)
-
+            index = THEMES_FOR_PROMPTS.index(selected_prompt)
+            utils_image.get_default_image_bytesio(
+                page_cfg[f"default_images"][index], SELECTED_IMAGE_KEY, True) 
 
 if GENERATED_TEXT_KEY in st.session_state and not flag_new:
     st.write('**Generated text**')
