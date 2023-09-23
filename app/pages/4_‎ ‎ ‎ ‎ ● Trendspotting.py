@@ -224,7 +224,7 @@ with cols_page[1]:
         with st.form(PAGE_KEY_PREFIX+"_Link_To_Campaign_Upload"):
             st.write("**Choose a Campaign to save the news summaries**")
             selected_name = st.selectbox("List of Campaigns", campaigns_names)
-            link_to_campaign_button = st.form_submit_button()
+            link_to_campaign_button = st.form_submit_button(label="Save to Campaign")
 
         if link_to_campaign_button:
             selected_uuid = generate_names_uuid_dict()[selected_name]

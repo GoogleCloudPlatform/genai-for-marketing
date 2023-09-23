@@ -246,9 +246,9 @@ if (GENERATED_TEXT_KEY in st.session_state and
     CAMPAIGNS_KEY in st.session_state):
     campaigns_names = generate_names_uuid_dict().keys()
     with st.form(PAGE_KEY_PREFIX+"_Link_To_Campaign"):
-        st.write("**Choose a Campaign to link the results**")
+        st.write("**Choose a Campaign to save the results**")
         selected_name = st.selectbox("List of Campaigns", campaigns_names)
-        link_to_campaign_button = st.form_submit_button()
+        link_to_campaign_button = st.form_submit_button("Save to Campaign")
 
     if link_to_campaign_button:
         image = "data:image/png;base64,"+base64.b64encode(
@@ -258,7 +258,7 @@ if (GENERATED_TEXT_KEY in st.session_state and
             'website_text': st.session_state[GENERATED_TEXT_KEY]}
         st.session_state[CAMPAIGNS_KEY][selected_uuid].website_post.update(
             {'website_image': image})
-        st.success(f"Post linked to campaign {selected_name}")
+        st.success(f"Post saved to campaign {selected_name}")
 
 
 if (GENERATED_TEXT_KEY in st.session_state and
@@ -268,9 +268,9 @@ if (GENERATED_TEXT_KEY in st.session_state and
     CAMPAIGNS_KEY in st.session_state):
     campaigns_names = generate_names_uuid_dict().keys()
     with st.form(PAGE_KEY_PREFIX+"_Link_To_Campaign_Upload"):
-        st.write("**Choose a Campaign to link the results**")
+        st.write("**Choose a Campaign to save the results**")
         selected_name = st.selectbox("List of Campaigns", campaigns_names)
-        link_to_campaign_button = st.form_submit_button()
+        link_to_campaign_button = st.form_submit_button("Save to Campaign")
 
     if link_to_campaign_button:
         image = "data:image/png;base64,"+base64.b64encode(
@@ -280,4 +280,4 @@ if (GENERATED_TEXT_KEY in st.session_state and
             'website_text': st.session_state[GENERATED_TEXT_KEY]}
         st.session_state[CAMPAIGNS_KEY][selected_uuid].website_post.update(
             {'website_image': image})
-        st.success(f"Post linked to campaign {selected_name}")
+        st.success(f"Post saved to campaign {selected_name}")

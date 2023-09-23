@@ -327,13 +327,13 @@ if (GENERATED_EMAILS_KEY in st.session_state and
     CAMPAIGNS_KEY in st.session_state):
     campaigns_names = generate_names_uuid_dict().keys() 
     with st.form(PAGE_KEY_PREFIX+"_Link_To_Campaign"):
-        st.write("**Choose a Campaign to link the results**")
+        st.write("**Choose a Campaign to save the results**")
         selected_name = st.selectbox("List of Campaigns", campaigns_names)
-        link_to_campaign_button = st.form_submit_button()
+        link_to_campaign_button = st.form_submit_button("Save to Campaign")
 
     if link_to_campaign_button:
         selected_uuid = generate_names_uuid_dict()[selected_name]
         emails_copy = st.session_state[GENERATED_EMAILS_KEY].copy()
         st.session_state[CAMPAIGNS_KEY][selected_uuid].emails = emails_copy
-        st.success(f"Emails linked to campaign {selected_name}")
+        st.success(f"Emails saved to campaign {selected_name}")
 

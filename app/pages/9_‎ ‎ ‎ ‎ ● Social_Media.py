@@ -220,9 +220,9 @@ def render_ad(
         
         campaigns_names = generate_names_uuid_dict().keys() 
         with st.form(key_prefix+"_Link_To_Campaign"):
-            st.write("**Choose a Campaign to link the results**")
+            st.write("**Choose a Campaign to save the results**")
             selected_name = st.selectbox("List of Campaigns", campaigns_names)
-            link_to_campaign_button = st.form_submit_button()
+            link_to_campaign_button = st.form_submit_button(label="Save to Campaign")
         
         image = base64.b64encode(st.session_state[
                                  key_prefix+"_Image_To_Edit"]).decode("utf-8")
@@ -239,8 +239,7 @@ def render_ad(
                 st.session_state[CAMPAIGNS_KEY][selected_uuid].ads_threads = ad
             elif platform == "Instagram":
                 st.session_state[CAMPAIGNS_KEY][selected_uuid].ads_insta = ad
-            st.success(f"Ad linked to campaign {selected_name}")
-
+            st.success(f"Ad saved to campaign {selected_name}")
 
     # Link to campaign with NO images
     if (st.session_state[key_prefix+'_Has_Image'] == False and
@@ -249,23 +248,23 @@ def render_ad(
         
         campaigns_names = generate_names_uuid_dict().keys() 
         with st.form(key_prefix+"_Link_To_Campaign"):
-            st.write("**Choose a Campaign to link the results**")
+            st.write("**Choose a Campaign to save the results**")
             selected_name = st.selectbox("List of Campaigns", campaigns_names)
-            link_to_campaign_button = st.form_submit_button()
+            link_to_campaign_button = st.form_submit_button(label="Save to Campaign")
     
         ad = {
             "theme": theme,
             "gender": gender,
             "age_range": age_range,
             "text": st.session_state[key_prefix+"_Text"]}
-        
+
         if link_to_campaign_button:
             selected_uuid = generate_names_uuid_dict()[selected_name]
             if platform == "Threads":
                 st.session_state[CAMPAIGNS_KEY][selected_uuid].ads_threads = ad
             elif platform == "Instagram":
                 st.session_state[CAMPAIGNS_KEY][selected_uuid].ads_insta = ad
-            st.success(f"Ad linked to campaign {selected_name}")
+            st.success(f"Ad saved to campaign {selected_name}")
 
 
 threads_tab, instagram_tab = st.tabs(["Threads", "Instagram"])

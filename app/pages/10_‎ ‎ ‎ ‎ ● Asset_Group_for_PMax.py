@@ -105,7 +105,7 @@ with st.form(key='form_theme'):
              options=["uploaded", "generated"],
              format_func=lambda x: f"{x.capitalize()} Images")
 
-    generate_button = st.form_submit_button('Generate Asset Group')
+    generate_button = st.form_submit_button("Generate Asset Group")
 
 if generate_button:
     # Initialize variables
@@ -249,9 +249,9 @@ if (HEADLINE_KEY in st.session_state and
       FILE_UPLOADER_KEY in st.session_state))):
     campaigns_names = generate_names_uuid_dict().keys()
     with st.form(PAGE_KEY_PREFIX+"_Link_To_Campaign"):
-        st.write("**Choose a Campaign to link the results**")
+        st.write("**Choose a Campaign to save the results**")
         selected_name = st.selectbox("List of Campaigns", campaigns_names)
-        link_to_campaign_button = st.form_submit_button()
+        link_to_campaign_button = st.form_submit_button(label="Save to Campaign")
 
     if link_to_campaign_button:
         selected_uuid = generate_names_uuid_dict()[selected_name]
