@@ -80,12 +80,9 @@ with cols[1]:
     st.title(data["pages"]["12_review_activate"]["page_title"])
 
 
-# campaign_list = []
 if CAMPAIGNS_KEY not in st.session_state:
     st.info("Please create a campaign first")
 else:
-    # campaign_list = generate_names_uuid_dict().keys()
-
     with st.form(PAGE_PREFIX_KEY+"_Choose_A_Campaign"):
         st.write("**Choose a campaign to preview and edit**")
         selected_campaign = st.selectbox(
@@ -134,6 +131,30 @@ if SELECTED_CAMPAIGN_KEY in st.session_state:
                     file_name='creative_brief.csv',
                     mime='text/csv'
                 )
+
+    # Audiences
+    if campaign is not None and isinstance(campaign.audiences, pd.DataFrame):
+        with st.expander("📚 Audiences", expanded=False):
+            st.subheader("📚 Audiences")
+            st.dataframe(campaign.audiences)
+            st.download_button(
+                label='⬇️ Download Audience',
+                data=campaign.audiences.to_csv().encode('utf-8'),
+                file_name='audiences.csv',
+                mime='text/csv'
+            )
+
+    # Trendspotting news articles
+    if campaign is not None and isinstance(campaign.trendspotting_summaries, pd.DataFrame):
+        with st.expander("📚 Trendspotting News Summaries", expanded=False):
+            st.subheader("📚 Trendspotting News Summaries")
+            st.dataframe(campaign.trendspotting_summaries)
+            st.download_button(
+                label='⬇️ Download News Summaries',
+                data=campaign.trendspotting_summaries.to_csv().encode('utf-8'),
+                file_name='trendspotting_summaries.csv',
+                mime='text/csv'
+            )
 
     # Asset group
     if (campaign is not None and
@@ -194,7 +215,7 @@ if SELECTED_CAMPAIGN_KEY in st.session_state:
                 )
 
     # Emails
-    if campaign is not None and (campaign.emails, pd.DataFrame):
+    if campaign is not None and isinstance(campaign.emails, pd.DataFrame):
         with st.expander("✉️ Email Copy", expanded=False):
             st.subheader("✉️ Email Copy")
             campaign.emails = st.data_editor(
@@ -372,19 +393,6 @@ if SELECTED_CAMPAIGN_KEY in st.session_state:
                     mime='application/zip',
                 )
 
-    # Celebration
-    if (campaign is not None and 
-        isinstance(campaign.brief, dict) and 
-        isinstance(campaign.asset_classes_images, pd.DataFrame) and 
-        isinstance(campaign.asset_classes_text, pd.DataFrame) and
-        isinstance(campaign.emails, pd.DataFrame) and 
-        isinstance(campaign.ads_threads, dict) and 
-        isinstance(campaign.ads_insta, dict) and 
-        isinstance(campaign.website_post, dict)):
-        
-        is_button_clicked = st.button("🎈 Let's Celebrate!!!")
-        if is_button_clicked:
-            st.balloons()
 
 # ----------------------Workspace code----------------------
 # ----------------------Workspace code----------------------
@@ -423,7 +431,6 @@ if SELECTED_CAMPAIGN_KEY in st.session_state:
                             upload_name=f'image_{i}.png', 
                             mime_type='image/png',
                             credentials=CREDENTIALS)
-                        
                     st.info("Upload to Drive completed.")
                 except:
                     st.error("Network Issue.")

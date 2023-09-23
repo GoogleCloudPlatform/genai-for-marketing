@@ -21,6 +21,7 @@ Trendspotting:
 - Generate a social media post for tweeter using summarized information.
 """
 
+import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as components
 import tomllib
@@ -195,22 +196,26 @@ with cols_page[1]:
                 st.info('No articles found. Try different keywords.')
             else:
                 summaries = []
-                summaries.append(
-                    f"Summaries of news articles with the keywords: "
-                    f"{st.session_state[SUMMARIZATION_TERM_KEY][0]} "
-                    f"{st.session_state[SUMMARIZATION_TERM_KEY][1]} " 
-                    f"{st.session_state[SUMMARIZATION_TERM_KEY][2]}")
                 for i, doc in enumerate(documents):
                     summary = summarize_news_article(doc, llm)['summary']
-                    summaries.append(f"""
-                    **Original Headline**: {doc["title"]}.\n
-                    **Summary**: {summary}""")
+                    summaries.append({
+                        "original_headline": doc["title"],
+                        "summary":summary,
+                        "url": doc["url"]
+                    })
                 st.session_state[SUMMARIZATION_SUMMARIES_KEY] = summaries
         
     if SUMMARIZATION_SUMMARIES_KEY in st.session_state:
+        st.write(
+            f"**Summaries of news articles with the keyword(s)**: "
+            f"{st.session_state[SUMMARIZATION_TERM_KEY][0]} "
+            f"{st.session_state[SUMMARIZATION_TERM_KEY][1]} " 
+            f"{st.session_state[SUMMARIZATION_TERM_KEY][2]}")
         for summary in st.session_state[SUMMARIZATION_SUMMARIES_KEY]:
-            st.write(summary)
             st.divider()
+            st.write(f"""
+                     **Original Headline**: {summary["original_headline"]}.\n
+                     **Summary**: {summary["summary"]}""")
     ##########################################
 
     if (SUMMARIZATION_SUMMARIES_KEY in st.session_state and
@@ -224,5 +229,6 @@ with cols_page[1]:
         if link_to_campaign_button:
             selected_uuid = generate_names_uuid_dict()[selected_name]
             st.session_state[CAMPAIGNS_KEY][
-                selected_uuid].trendspotting_summaries = st.session_state[SUMMARIZATION_SUMMARIES_KEY]
+                selected_uuid].trendspotting_summaries = pd.DataFrame(
+                    st.session_state[SUMMARIZATION_SUMMARIES_KEY])
             st.success(f"Saved to campaign {selected_name}")

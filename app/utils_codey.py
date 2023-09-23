@@ -232,12 +232,7 @@ def generate_sql_and_query(
             options=data["pages"]["3_audiences"]["prompt_examples"],
             key=f"{state_key}_question_prompt_text_area")
 
-        # Every form must have a submit button.
-        col1, col2, col3 = st.columns([15, 35, 50])
-        with col1:
-            submit_button = st.form_submit_button("Submit")
-        with col2:
-            st.checkbox(label="Save audience to campaign", value=True)
+        submit_button = st.form_submit_button("Submit")
 
     if submit_button:
         reset_page_state(state_key)
@@ -336,21 +331,13 @@ def generate_sql_and_query(
             st.dataframe(
                 st.session_state[f"{state_key}_Result_Final_Query"].iloc[:50])
 
-    if f"{state_key}_Result_Final_Query" in st.session_state:
-        save_campaign = st.button("Save audience to campaign")
-        if save_campaign:
-            with st.spinner("Saving ..."):
-                sleep(2)
-                st.success("The audience was successfully saved to the campaign.")
-
-
     if (f"{state_key}_Result_Final_Query" in st.session_state and
         CAMPAIGNS_KEY in st.session_state):
         campaigns_names = generate_names_uuid_dict().keys()
         with st.form(state_key+"_Link_To_Campaign_Upload"):
             st.write("**Choose a Campaign to save the audience**")
             selected_name = st.selectbox("List of Campaigns", campaigns_names)
-            link_to_campaign_button = st.form_submit_button()
+            link_to_campaign_button = st.form_submit_button(label="Save to Campaign")
 
         if link_to_campaign_button:
             selected_uuid = generate_names_uuid_dict()[selected_name]

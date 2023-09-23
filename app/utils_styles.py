@@ -57,6 +57,10 @@ style_sidebar = """
             border-color: #3367d6ff !important;
         }}
 
+        [data-testid="stToolbar"] {{
+            display: none;
+        }}
+
         #MainMenu {{visibility: hidden;}}
         footer {{visibility: hidden;}}
     </style>
