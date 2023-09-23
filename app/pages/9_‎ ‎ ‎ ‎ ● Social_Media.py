@@ -170,7 +170,6 @@ def render_ad(
             if not st.session_state[key_prefix+"_Generated_Images"]:
                 if theme in THEMES_FOR_PROMPTS:
                     index = THEMES_FOR_PROMPTS.index(theme)
-
                     if platform == "Instagram":
                         utils_image.get_default_image_bytesio(
                             page_cfg["default_image_instagram"][index], 
@@ -190,9 +189,9 @@ def render_ad(
         
         campaigns_names = generate_names_uuid_dict().keys() 
         with st.form(key_prefix+"_Link_To_Campaign"):
-            st.write("**Choose a Campaign to link the results**")
+            st.write("**Choose a Campaign to save the results**")
             selected_name = st.selectbox("List of Campaigns", campaigns_names)
-            link_to_campaign_button = st.form_submit_button()
+            link_to_campaign_button = st.form_submit_button(label="Save to Campaign")
         
         image = base64.b64encode(st.session_state[
             key_prefix+"_Selected_Image"].getvalue()).decode("utf-8")
@@ -209,7 +208,7 @@ def render_ad(
                 st.session_state[CAMPAIGNS_KEY][selected_uuid].ads_threads = ad
             elif platform == "Instagram":
                 st.session_state[CAMPAIGNS_KEY][selected_uuid].ads_insta = ad
-            st.success(f"Ad linked to campaign {selected_name}")
+            st.success(f"Ad saved to campaign {selected_name}")
 
     # Attach to campaign when upload
     if (key_prefix+"_Text" in st.session_state and 
