@@ -25,7 +25,6 @@ from google.cloud import bigquery
 from google.cloud import datacatalog_v1
 from google.cloud import translate_v2 as translate
 from pandas import DataFrame
-from time import sleep
 from typing import Optional
 from utils_campaign import generate_names_uuid_dict
 from utils_streamlit import reset_page_state
@@ -160,7 +159,6 @@ def generate_prompt(
         question: str,
         metadata: list,
         state_key: str,
-        project_id: str
 ):
     """Generates a prompt for a GoogleSQL query compatible with BigQuery.
 
@@ -251,8 +249,7 @@ def generate_sql_and_query(
             generate_prompt(
                 question, 
                 st.session_state[f"{state_key}_Dataset_Metadata"],
-                f"{state_key}_Prompt_Template", 
-                project_id)
+                f"{state_key}_Prompt_Template")
 
         with st.expander('Prompt'):
             st.text(st.session_state[f"{state_key}_Prompt_Template"])

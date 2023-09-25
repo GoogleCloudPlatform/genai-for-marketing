@@ -25,8 +25,7 @@ import utils_workspace
 from google.oauth2 import service_account
 from PIL import Image
 from vertexai.preview.language_models import TextGenerationModel
-from typing import Dict
-from utils_campaign import add_new_campaign
+from utils_campaign import Campaign, add_new_campaign
 from utils_prompt import async_predict_text_llm
 
 
@@ -244,8 +243,10 @@ with tab1:
 
 
 def display_campaigns_upload(
-        campaign: Dict
+        campaign: Campaign
 ):
+    if campaign.workspace_assets == None:
+        return
     docs_link = f'https://docs.google.com/document/d/{campaign.workspace_assets["brief_docs_id"]}/edit'
     folder_link = f'http://drive.google.com/corp/drive/folders/{campaign.workspace_assets["folder_id"]}'
 

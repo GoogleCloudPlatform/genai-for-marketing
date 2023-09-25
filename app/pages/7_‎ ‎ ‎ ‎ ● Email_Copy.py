@@ -31,8 +31,10 @@ import vertexai
 
 from google.cloud import translate_v2 as translate
 from utils_campaign import generate_names_uuid_dict
-from utils_image import IMAGEN_API_ENDPOINT, IMAGEN_ENDPOINT, render_image_edit_prompt 
+from utils_image import IMAGEN_API_ENDPOINT, IMAGEN_ENDPOINT 
+from utils_image import render_image_edit_prompt 
 from utils_image import predict_large_language_model_sample
+from utils_streamlit import reset_page_state
 from vertexai.preview.language_models import TextGenerationModel
 
 
@@ -65,9 +67,6 @@ translate_client = translate.Client()
 # Default Campaign key
 CAMPAIGNS_KEY = data["pages"]["campaigns"]["campaigns_key"]
 
-# External states
-EMAIL_AUDIENCE_KEY = "TalkToData_insight_Result_Final_Query"
-
 # State variables for email and image generation
 PAGE_KEY_PREFIX = "EmailCopy"
 AUDIENCE_DATAFRAME_KEY = f"{PAGE_KEY_PREFIX}_Audience_Dataframe"
@@ -81,12 +80,13 @@ SELECTED_IMAGE_KEY = f"{PAGE_KEY_PREFIX}_Selected_Image"
 FILE_UPLOADER_KEY = f"{PAGE_KEY_PREFIX}_File_Uploader"
 IMAGE_OPTION_KEY = f"{PAGE_KEY_PREFIX}_Image_Option"
 IMAGES_KEY = f"{PAGE_KEY_PREFIX}_Images"
+THEME_KEY = f"{PAGE_KEY_PREFIX}_Theme"
+UUID_KEY = f"{PAGE_KEY_PREFIX}_UUID"
 
 # Default values
 EMAIL_TEXT_PROMPT = page_cfg["prompt_email_text"]
 IMAGE_GENERATION_PROMPT = page_cfg["prompt_image_generation"]
 THEMES_FOR_PROMPTS = page_cfg["prompt_themes"]
-SAMPLE_EMAILS = page_cfg["sample_emails"]
 AGE_BUCKET = page_cfg["age_bucket"]
 MALE_NAMES = page_cfg["male_names"]
 FEMALE_NAMES = page_cfg["female_names"]
@@ -107,49 +107,25 @@ st.write(
     """
 )
 
-if EMAIL_AUDIENCE_KEY in st.session_state: 
-    sample_size = st.slider("Select a sample size", 1, 10, 3)
-    audience_dataframe = st.session_state[EMAIL_AUDIENCE_KEY].copy()
-else:      
-    st.info(
-    "Using an auto generated list of emails. "
-    "To use a custom list of emails, please generate "
-    "the audience first using the Audience Insights page. ")
-    sample_size = st.slider("Select a sample size", 1, 10, 3)
-
-    audience_dataframe = pd.DataFrame.from_dict({
-        'email': SAMPLE_EMAILS, 
-    })
-
-
-flag_new = True
-if AUDIENCE_DATAFRAME_KEY in st.session_state:
-    first_email_key = st.session_state[AUDIENCE_DATAFRAME_KEY].at[0, 'email'] 
-    first_email_df = audience_dataframe.at[0,'email']
-    if first_email_key == first_email_df:
-        audience_dataframe = st.session_state[AUDIENCE_DATAFRAME_KEY]
-        flag_new = False
-
-if flag_new:
+def generate_information(df: pd.DataFrame) -> pd.DataFrame:
     rng = np.random.default_rng(
-        abs(hash(audience_dataframe.at[0,'email']) % (10 ** 8)))
-    audience_dataframe['first_name'] = rng.choice(
-        FEMALE_NAMES+MALE_NAMES, len(audience_dataframe['email']))
-    audience_dataframe['language'] = rng.choice(
-        LANGUAGES, len(audience_dataframe['email']))
-    audience_dataframe['age_group'] = rng.choice(
-        AGE_BUCKET, len(audience_dataframe['email']))
-    audience_dataframe['gender'] = audience_dataframe['first_name'].map(
+        abs(hash(df.at[0,'email']) % (10 ** 8)))
+    df['first_name'] = rng.choice(
+        FEMALE_NAMES+MALE_NAMES, len(df['email']))
+    df['language'] = rng.choice(
+        LANGUAGES, len(df['email']))
+    df['age_group'] = rng.choice(
+        AGE_BUCKET, len(df['email']))
+    df['gender'] = df['first_name'].map(
         lambda x: 'woman' if x in FEMALE_NAMES else 'man')
-    audience_dataframe['city'] = np.full_like(
-        audience_dataframe['email'], 'New York City') 
-    st.session_state[AUDIENCE_DATAFRAME_KEY] = audience_dataframe
-
-st.dataframe(audience_dataframe.head(sample_size))
+    df['city'] = np.full_like(
+        df['email'], 'New York City') 
+    st.session_state[AUDIENCE_DATAFRAME_KEY] = df
+    return df
 
 async def email_generate(row: pd.Series, theme: str,
                          images: list=[]) -> pd.Series:
-    prompt_row_no_lan = row.drop('language')
+    prompt_row_no_lan = row.drop('language', errors='ignore')
 
     email_prompt = EMAIL_TEXT_PROMPT.format(prompt_row_no_lan.to_string(),
                                             theme)
@@ -174,15 +150,9 @@ async def email_generate(row: pd.Series, theme: str,
 
     if generated_response and generated_response.text:
         generated_text = generated_response.text
-    else:
-        if theme == THEMES_FOR_PROMPTS[0]:
-            generated_text = page_cfg["default_email_copy_0"]
-        elif theme == THEMES_FOR_PROMPTS[1]:
-            generated_text = page_cfg["default_email_copy_1"]
-        elif theme == THEMES_FOR_PROMPTS[2]:
-            generated_text = page_cfg["default_email_copy_2"]
-        elif theme == THEMES_FOR_PROMPTS[3]:
-            generated_text = page_cfg["default_email_copy_3"]
+    elif theme in THEMES_FOR_PROMPTS:
+        index = THEMES_FOR_PROMPTS.index(theme)
+        generated_text = page_cfg["default_email_copy"][index]
 
     email_bar.progress(
         0.3,
@@ -214,29 +184,23 @@ async def email_generate(row: pd.Series, theme: str,
 
         if image_response:
             imageb64 += image_response[0]["bytesBase64Encoded"]
-        else:
-            if theme == THEMES_FOR_PROMPTS[0]:
-                with open(page_cfg["default_email_image_0"], 'rb') as fp:
-                    imageb64 += base64.b64encode(fp.read()).decode('utf-8')
-            elif theme == THEMES_FOR_PROMPTS[1]:
-                with open(page_cfg["default_email_image_1"], 'rb') as fp:
-                    imageb64 += base64.b64encode(fp.read()).decode('utf-8')
-            elif theme == THEMES_FOR_PROMPTS[2]:
-                with open(page_cfg["default_email_image_2"], 'rb') as fp:
-                    imageb64 += base64.b64encode(fp.read()).decode('utf-8')
-            elif theme == THEMES_FOR_PROMPTS[3]:
-                with open(page_cfg["default_email_image_3"], 'rb') as fp:
-                    imageb64 += base64.b64encode(fp.read()).decode('utf-8')
+        elif theme in THEMES_FOR_PROMPTS:
+            index = THEMES_FOR_PROMPTS.index(theme)
+            with open(page_cfg["default_email_image"][index], 'rb') as fp:
+                imageb64 += base64.b64encode(fp.read()).decode('utf-8')
 
     email_bar.progress(
         0.9,
         text=f'Translating text for {prompt_row_no_lan.first_name}')
-    translation = translate_client.translate(
-        generated_text,
-        source_language="en",
-        target_language=row.language,
-        format_="text"
-    )['translatedText']
+    if "language" in row and row.language != "en":
+        translation = translate_client.translate(
+            generated_text,
+            source_language="en",
+            target_language=row.language,
+            format_="text"
+        )['translatedText']
+    else:
+        translation = generated_text
     email_bar.empty()
     st.toast(f"Email for :blue[{row.first_name}] :green[generated]", icon='✉️')
     return pd.Series(
@@ -244,59 +208,125 @@ async def email_generate(row: pd.Series, theme: str,
         index=["first_name","email","text","translation","imageb64"]
     )
 
-image_option = st.radio(label="Choose an option for the images:",
-     options=["uploaded", "generated"],
-     index = st.session_state.get(IMAGE_OPTION_KEY, 0),
-     format_func=lambda x: f"{x.capitalize()} Images")
+async def generate_emails(
+        number_of_emails:int,
+        state_key: str,
+        images: list,
+        theme: str,
+        audience_dataframe: pd.DataFrame
+    ):
+        async_list = await asyncio.gather(
+        *(email_generate(person[1], theme=str(theme), images=images
+        ) for person in audience_dataframe.head(number_of_emails).iterrows()))
+        st.session_state[state_key] = pd.concat(async_list, axis=1).T
+        st.success("All the emails have been generated")
 
 
-if image_option == "uploaded":
-    st.session_state[IMAGE_OPTION_KEY] = 0
-    render_image_edit_prompt(
-        edit_image_prompt_key=EDIT_IMAGE_PROMPT_KEY,
-        edited_images_key=EDITED_IMAGES_KEY,
-        mask_image=True,
-        mask_image_key=MASK_IMAGE_KEY,
-        select_button=True,
-        selected_image_key=SELECTED_IMAGE_KEY,
-        file_uploader_key=FILE_UPLOADER_KEY
-    )
+if CAMPAIGNS_KEY in st.session_state:
+    campaigns_names = list(generate_names_uuid_dict().keys())
+    #index = 0
+    if UUID_KEY in st.session_state:
+        campaign_uuid = st.session_state[UUID_KEY]
+    with st.form(PAGE_KEY_PREFIX+"_Choose_Campaign"):
+        st.write("**Choose a Campaign to get the audience**")
+        selected_campaign = st.selectbox(
+            "List of Campaigns",
+            campaigns_names)
+        choose_campaign_button = st.form_submit_button(
+            "Retrieve audiences from campaign")
+
+    if choose_campaign_button:
+        selected_uuid = generate_names_uuid_dict()[selected_campaign]
+        if (UUID_KEY in st.session_state and 
+            st.session_state[UUID_KEY] != selected_uuid):
+            reset_page_state(PAGE_KEY_PREFIX)
+        st.session_state[UUID_KEY] = selected_uuid
 else:
-    st.session_state[IMAGE_OPTION_KEY] = 1
-
-# --- Start of FORM
-with st.form(PAGE_KEY_PREFIX+'Sample_Email_Form'):
-    # st.write("**Choose a theme for the email**")
-    theme = st.selectbox("**Choose a theme for the email**",
-                         options=THEMES_FOR_PROMPTS)
-    generate_samples_button = st.form_submit_button("Generate email samples")
-
-async def generate_emails(number_of_emails:int, state_key: str, images: list):
-    async_list = await asyncio.gather(
-    *(email_generate(person[1], theme=str(theme), images=images
-    ) for person in audience_dataframe.head(number_of_emails).iterrows()))
-    st.session_state[state_key] = pd.concat(async_list, axis=1).T
-    st.success("All the emails have been generated")
-
-if generate_samples_button:
-    images = []
-    if EDITED_IMAGES_KEY in st.session_state:
-        if SELECTED_IMAGE_KEY in st.session_state:
-            images.append(st.session_state[SELECTED_IMAGE_KEY])
+    st.info("Please generate a campaign first by going to the Campaingns page "
+            "and then create an audience in the Audiences page "
+            "before using this page.")
+if UUID_KEY in st.session_state:
+    selected_uuid = st.session_state[UUID_KEY]
+    campaign_name = st.session_state[CAMPAIGNS_KEY][selected_uuid].name
+    st.subheader(f"Email Copy for campaign '{campaign_name}'")
+    if isinstance(st.session_state[CAMPAIGNS_KEY][selected_uuid].audiences,
+                  pd.DataFrame):
+        audience_dataframe = st.session_state[CAMPAIGNS_KEY][
+                            selected_uuid].audiences.copy()
+        rows = len(audience_dataframe)
+        if rows == 0:
+            st.info("Audience is empty.")
         else:
-            images = st.session_state[EDITED_IMAGES_KEY]
+            if "first_name" not in audience_dataframe:
+                audience_dataframe = generate_information(audience_dataframe)
+                st.session_state[CAMPAIGNS_KEY][
+                    selected_uuid].audiences = audience_dataframe.copy()
 
-    # Convert list of BytesIO images to base64 strings
-    if images:
-        images = [
-            "data:image/png;base64," +
-            base64.b64encode(image.getvalue()).decode('utf-8')
-            for image in images]
-    st.session_state[IMAGES_KEY] = images
+            st.session_state[AUDIENCE_DATAFRAME_KEY] = audience_dataframe
+    else:                  
+        st.info("To use this page, please generate "
+                f"the audience for campaign '{campaign_name}' "
+                "using the Audience page. ")
 
-    asyncio.run(generate_emails(number_of_emails=sample_size,
-                                state_key=SAMPLE_EMAILS_KEY,
-                                images=st.session_state[IMAGES_KEY]))
+if AUDIENCE_DATAFRAME_KEY in st.session_state:
+    audience_dataframe = st.session_state[AUDIENCE_DATAFRAME_KEY]
+    rows = len(audience_dataframe)
+    sample_size = st.slider("Select a sample size", 1,
+                            min(10, rows), min(3, rows))
+    st.dataframe(audience_dataframe.head(sample_size))
+    image_option = st.radio(label="Choose an option for the images:",
+         options=["uploaded", "generated"],
+         index = st.session_state.get(IMAGE_OPTION_KEY, 0),
+         format_func=lambda x: f"{x.capitalize()} Images")
+
+
+    if image_option == "uploaded":
+        st.session_state[IMAGE_OPTION_KEY] = 0
+        render_image_edit_prompt(
+            image_to_edit_key=IMAGE_TO_EDIT_KEY,
+            edit_image_prompt_key=EDIT_IMAGE_PROMPT_KEY,
+            edited_images_key=EDITED_IMAGES_KEY,
+            mask_image=True,
+            mask_image_key=MASK_IMAGE_KEY,
+            select_button=True,
+            selected_image_key=SELECTED_IMAGE_KEY,
+            file_uploader_key=FILE_UPLOADER_KEY
+        )
+    else:
+        st.session_state[IMAGE_OPTION_KEY] = 1
+
+    if image_option == "generated" or SELECTED_IMAGE_KEY in st.session_state:
+    # --- Start of FORM
+        with st.form(PAGE_KEY_PREFIX+'Sample_Email_Form'):
+            # st.write("**Choose a theme for the email**")
+            theme = st.selectbox("**Choose a theme for the email**",
+                                 options=THEMES_FOR_PROMPTS)
+            generate_samples_button = st.form_submit_button(
+                "Generate email samples")
+
+        if generate_samples_button:
+            st.session_state[THEME_KEY] = theme
+            images = []
+            if EDITED_IMAGES_KEY in st.session_state:
+                if SELECTED_IMAGE_KEY in st.session_state:
+                    images.append(st.session_state[SELECTED_IMAGE_KEY])
+                else:
+                    images = st.session_state[EDITED_IMAGES_KEY]
+
+            # Convert list of BytesIO images to base64 strings
+            if images:
+                images = [
+                    "data:image/png;base64," +
+                    base64.b64encode(image.getvalue()).decode('utf-8')
+                    for image in images]
+            st.session_state[IMAGES_KEY] = images
+
+            asyncio.run(generate_emails(number_of_emails=sample_size,
+                                        state_key=SAMPLE_EMAILS_KEY,
+                                        images=st.session_state[IMAGES_KEY],
+                                        theme=str(theme),
+                                        audience_dataframe=audience_dataframe))
+
 
 if SAMPLE_EMAILS_KEY in st.session_state:
     st.write("**Generated emails**")
@@ -321,19 +351,18 @@ if SAMPLE_EMAILS_KEY in st.session_state:
     if bulk_generate_button:
         asyncio.run(generate_emails(number_of_emails=number_of_bulk_emails,
                                     state_key=GENERATED_EMAILS_KEY,
-                                    images=st.session_state[IMAGES_KEY]))
+                                    images=st.session_state[IMAGES_KEY],
+                                    theme=st.session_state[THEME_KEY],
+                                    audience_dataframe=st.session_state[
+                                        AUDIENCE_DATAFRAME_KEY]))
 
-if (GENERATED_EMAILS_KEY in st.session_state and 
-    CAMPAIGNS_KEY in st.session_state):
-    campaigns_names = generate_names_uuid_dict().keys() 
+if (GENERATED_EMAILS_KEY in st.session_state and UUID_KEY in st.session_state): 
+    selected_uuid = st.session_state[UUID_KEY]
     with st.form(PAGE_KEY_PREFIX+"_Link_To_Campaign"):
-        st.write("**Choose a Campaign to save the results**")
-        selected_name = st.selectbox("List of Campaigns", campaigns_names)
         link_to_campaign_button = st.form_submit_button("Save to Campaign")
 
     if link_to_campaign_button:
-        selected_uuid = generate_names_uuid_dict()[selected_name]
         emails_copy = st.session_state[GENERATED_EMAILS_KEY].copy()
         st.session_state[CAMPAIGNS_KEY][selected_uuid].emails = emails_copy
-        st.success(f"Emails saved to campaign {selected_name}")
+        st.success(f"Emails saved to campaign")
 

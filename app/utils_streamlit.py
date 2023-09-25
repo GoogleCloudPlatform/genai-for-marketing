@@ -21,14 +21,14 @@ Utility module to reset the state of a page or the application.
 import streamlit as st
 
 
-def reset_page_state(prefix:str):
+def reset_page_state(prefix: str):
     """Reset the state of a specific streamlit page
 
     Args:
         prefix (str): Identifier of the page
     """
     for key in st.session_state:
-        if key.startswith(prefix):
+        if key.startswith(prefix) or key.startswith(f"FormSubmitter:{prefix}"):
             del st.session_state[key]
 
 
@@ -36,3 +36,4 @@ def reset_st_state():
     '''Reset the state of all streamlit pages'''
     for key in st.session_state:
         del st.session_state[key]
+
