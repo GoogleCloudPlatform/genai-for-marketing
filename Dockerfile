@@ -30,6 +30,7 @@ RUN pip install google-cloud-bigquery
 RUN pip install -U streamlit
 RUN pip install pillow
 RUN pip install streamlit-drawable-canvas==0.9.1
+RUN pip install streamlit-image-select==0.6.0
 RUN pip install google-cloud-discoveryengine
 RUN pip install google-cloud-translate
 RUN pip install cloudpickle

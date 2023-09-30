@@ -27,7 +27,6 @@ import tomllib
 import utils_workspace
 import zipfile
 
-from google.oauth2 import service_account
 from io import BytesIO
 from utils_campaign import generate_names_uuid_dict 
 
@@ -44,16 +43,11 @@ IMAGE_MODEL_NAME = data["models"]["image"]["image_model_name"]
 CAMPAIGNS_KEY = data["pages"]["campaigns"]["campaigns_key"]
 
 # Variables for Workspace integration
-SCOPES = data["pages"]["12_review_activate"]["workspace_scopes"]
 SLIDES_TEMPLATE_ID = data["pages"]["12_review_activate"]["slides_template_id"]
 SLIDES_PAGE_ID_LIST = data["pages"]["12_review_activate"]["slide_page_id_list"]
 DOC_TEMPLATE_ID = data["pages"]["12_review_activate"]["doc_template_id"]
 DRIVE_FOLDER_ID = data["pages"]["12_review_activate"]["drive_folder_id"]
 SHEET_TEMPLATE_ID = data["pages"]["12_review_activate"]["sheet_template_id"]
-
-CREDENTIALS = service_account.Credentials.from_service_account_file(
-    filename=data["global"]["service_account_json_key"], 
-    scopes=SCOPES)
 
 PAGE_PREFIX_KEY = "Content_Activation"
 SELECTED_CAMPAIGN_KEY = f"{PAGE_PREFIX_KEY}_Selected_Campaign"
@@ -100,7 +94,7 @@ def content_activated():
         time.sleep(3)
     st.success('Activation completed')
 
-
+# campaign = None
 if SELECTED_CAMPAIGN_KEY in st.session_state:
     campaign = st.session_state[CAMPAIGNS_KEY][st.session_state[
         SELECTED_CAMPAIGN_KEY]]
@@ -145,7 +139,8 @@ if SELECTED_CAMPAIGN_KEY in st.session_state:
             )
 
     # Trendspotting news articles
-    if campaign is not None and isinstance(campaign.trendspotting_summaries, pd.DataFrame):
+    if campaign is not None and isinstance(
+        campaign.trendspotting_summaries, pd.DataFrame):
         with st.expander("📚 Trendspotting News Summaries", expanded=False):
             st.subheader("📚 Trendspotting News Summaries")
             st.dataframe(campaign.trendspotting_summaries)
@@ -395,13 +390,13 @@ if SELECTED_CAMPAIGN_KEY in st.session_state:
 
 
 # ----------------------Workspace code----------------------
-# ----------------------Workspace code----------------------
 
-if SELECTED_CAMPAIGN_KEY in st.session_state:
-    link = f'http://drive.google.com/corp/drive/folders/{campaign.workspace_assets["folder_id"]}'
+    link = ('http://drive.google.com/corp/drive/folders/'
+            f'{campaign.workspace_assets["folder_id"]}')
     st.write("**Google Workspace Integration** | "
             f"[Explore the assets folder in Google Drive ↗]({link})")
-    upload_to_drive_button = st.button("Upload available assets to Google Drive")
+    upload_to_drive_button = st.button(
+        "Upload available assets to Google Drive")
 
     if upload_to_drive_button:
         # Asset group
@@ -416,12 +411,13 @@ if SELECTED_CAMPAIGN_KEY in st.session_state:
                         f=csv_bytes, 
                         folder_id=campaign.workspace_assets["folder_id"],
                         upload_name='assets_group_pmax.csv',
-                        mime_type='text/csv',
-                        credentials=CREDENTIALS)
+                        mime_type='text/csv')
 
                     files_bytes_io = []
-                    for i, image_bytes in enumerate(campaign.asset_classes_images.iloc[0]):
-                        base64_data = re.sub('^data:image/.+;base64,', '', image_bytes)
+                    for i, image_bytes in enumerate(
+                        campaign.asset_classes_images.iloc[0]):
+                        base64_data = re.sub(
+                            '^data:image/.+;base64,', '', image_bytes)
                         byte_data = base64.b64decode(base64_data)
                         files_bytes_io.append(BytesIO(byte_data))
                         f = io.BytesIO(byte_data)
@@ -429,8 +425,7 @@ if SELECTED_CAMPAIGN_KEY in st.session_state:
                             f=f, 
                             folder_id=campaign.workspace_assets["folder_id"],
                             upload_name=f'image_{i}.png', 
-                            mime_type='image/png',
-                            credentials=CREDENTIALS)
+                            mime_type='image/png')
                     st.info("Upload to Drive completed.")
                 except:
                     st.error("Network Issue.")
@@ -446,8 +441,7 @@ if SELECTED_CAMPAIGN_KEY in st.session_state:
                 slide_id = utils_workspace.copy_drive_file(
                     drive_file_id=SLIDES_TEMPLATE_ID,
                     parentFolderId=campaign.workspace_assets["folder_id"],
-                    copy_title="Marketing Assets",
-                    credentials=CREDENTIALS)
+                    copy_title="Marketing Assets")
                 st.session_state[CAMPAIGNS_KEY][
                     st.session_state[SELECTED_CAMPAIGN_KEY]].workspace_assets[
                         "slide_id"] = slide_id
@@ -455,8 +449,7 @@ if SELECTED_CAMPAIGN_KEY in st.session_state:
                 sheet_id = utils_workspace.copy_drive_file(
                     drive_file_id=SHEET_TEMPLATE_ID,
                     parentFolderId=campaign.workspace_assets["folder_id"],
-                    copy_title="GenAI Marketing Data Source",
-                    credentials=CREDENTIALS)            
+                    copy_title="GenAI Marketing Data Source")            
                 st.session_state[CAMPAIGNS_KEY][
                     st.session_state[SELECTED_CAMPAIGN_KEY]].workspace_assets[
                         "sheet_id"] = sheet_id
@@ -465,8 +458,7 @@ if SELECTED_CAMPAIGN_KEY in st.session_state:
                     presentation_id=slide_id,
                     spreadsheet_id=sheet_id,
                     spreadsheet_template_id=SHEET_TEMPLATE_ID,
-                    slide_page_id_list=SLIDES_PAGE_ID_LIST,
-                    credencials=CREDENTIALS)
+                    slide_page_id_list=SLIDES_PAGE_ID_LIST)
 
             except Exception as e:
                 print(e)
