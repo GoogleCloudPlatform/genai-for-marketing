@@ -1,0 +1,1 @@
+docker run -e GOOGLE_APPLICATION_CREDENTIALS=/credentials/rl-llm-dev.json -v /home/renatoleite/workspace/genai-for-marketing/backend_apis/app:/code/app -v /home/renatoleite/workspace/credentials:/credentials -p 8501:8080 gcr.io/rl-llm-dev/genai-marketing-apis
