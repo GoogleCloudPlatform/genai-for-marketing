@@ -35,7 +35,10 @@ from google.protobuf import json_format
 from google.protobuf.struct_pb2 import Value
 from PIL import Image
 import streamlit as st
+from streamlit_image_select import image_select
 from typing import List
+
+from utils_workspace import download_file
 
 
 # Load configuration file
@@ -46,13 +49,12 @@ with open("./app_config.toml", "rb") as f:
 PROJECT_ID = data["global"]["project_id"]
 LOCATION = data["global"]["location"]
 MODEL_NAME = data["models"]["image"]["image_model_name"]
-
 IMAGEN_API_ENDPOINT = f'{LOCATION}-aiplatform.googleapis.com'
 IMAGEN_ENDPOINT = f'projects/{PROJECT_ID}/locations/{LOCATION}/publishers/google/models/{MODEL_NAME}'
 IMAGE_UPLOAD_BYTES_LIMIT = 10 ** 7
 
 
-def get_default_image_bytesio(
+def render_image_file(
         image_path: str,
         selected_image_key: str,
         display_image: bool = False):
@@ -131,8 +133,6 @@ def predict_large_language_model_sample(
 
     # The AI Platform services require regional API endpoints.
     client_options = {"api_endpoint": api_endpoint}
-    # Initialize client that will be used to create and send requests.
-    # This client only needs to be created once, and can be reused for multiple requests.
     client = aiplatform.gapic.PredictionServiceClient(
         client_options=client_options
     )
@@ -141,7 +141,9 @@ def predict_large_language_model_sample(
     parameters_message = json_format.ParseDict(parameters, Value())
     try:
         response = Message.to_dict(client.predict(
-            endpoint=endpoint, instances=instances, parameters=parameters_message
+            endpoint=endpoint,
+            instances=instances,
+            parameters=parameters_message
         ))
     
         return response.get("predictions")
@@ -368,7 +370,7 @@ def render_image_generation_ui(
         download_button: 
             Whether to show a button to download the generated images.
         auto_submit_first_pre_populated: 
-            Whether to automatically submit the form with the first pre-populated prompt.
+            Whether to automatically submit the form with the first prompt.
 
     Returns:
         None.
@@ -415,7 +417,9 @@ def render_image_edit_prompt(
         select_button: bool=False,
         selected_image_key: str="",
         download_button: bool=True,
-        file_uploader_key: str=""):
+        file_uploader_key: str="",
+        campaign_image_dict: dict={},
+        local_image_list: list=[]):
     """
     Renders a prompt for editing an image.
 
@@ -440,6 +444,10 @@ def render_image_edit_prompt(
             Whether to show a button to download the edited images.
         file_uploader_key: 
             The key to store the file uploader in the session state.
+        campaign_image_dict:
+            Dict of image metadata dicts from campaign
+        local_image_list:
+            List of local image paths
 
     Returns:
         None.
@@ -455,30 +463,69 @@ def render_image_edit_prompt(
                 edit_image_prompt_key]
     
     if upload_file:
-        with st.form(f"{file_uploader_key}_form", clear_on_submit=True):
+        expander_title = "Upload an image"
+        expanded = True
+        if image_to_edit_key in st.session_state:
+            expander_title = "Change the uploaded image"
+            expanded = False
+        with st.expander(expander_title, expanded):
+            if campaign_image_dict:
+                drive_file = image_select(
+                    "Select an image uploaded to the campaign Drive",
+                    [im["thumbnail"] for im in campaign_image_dict.values()],
+                    key=f"{file_uploader_key}_drive", 
+                    return_value="index")
+                st.write('========== or ===========')
+            else:
+                drive_file = None
+
+            if local_image_list:
+                local_file = image_select(
+                    "Select a local image",
+                    local_image_list,
+                    key=f"{file_uploader_key}_local")
+                st.write('========== or ===========')
+            else:
+                local_file = None
+            
             uploaded_file = st.file_uploader(
                 'Upload your image here. It MUST be in PNG or JPEG format.',
                 type=['png', 'jpg'],
                 key=file_uploader_key)
-            submit_button_uploader = st.form_submit_button('Upload Image')
-        if submit_button_uploader:
-            if uploaded_file is not None:
-                if edited_images_key in st.session_state:
-                    del st.session_state[edited_images_key]
-                if selected_image_key in st.session_state:
-                    del st.session_state[selected_image_key]
+            def upload_button():
+                if any([uploaded_file, local_file, drive_file]):
+                    if edited_images_key in st.session_state:
+                        del st.session_state[edited_images_key]
+                    if selected_image_key in st.session_state:
+                        del st.session_state[selected_image_key]
 
-                st.session_state[image_to_edit_key] = uploaded_file.getvalue()
-                if mask_image and mask_image_key in st.session_state:
-                    del st.session_state[mask_image_key]
+                image_to_edit = None
 
+                if uploaded_file is not None:
+                    image_to_edit = uploaded_file.getvalue()
+                elif drive_file is not None:
+                    image_to_edit = download_file(
+                        list(campaign_image_dict.keys())[drive_file])
+                elif local_file is not None:
+                    image_to_edit = local_file
+
+                if image_to_edit:
+                    st.session_state[image_to_edit_key] = image_to_edit
+                    if mask_image and mask_image_key in st.session_state:
+                        del st.session_state[mask_image_key]
+
+
+
+            st.button('Upload Image', on_click=upload_button)
     if image_to_edit_key in st.session_state:
-        if image_to_edit_key in st.session_state and mask_image:
+        if mask_image:
             with st.expander(
-                "**[Optional] Paint where to edit in the image**", expanded=True):
+                "**[Optional] Paint where to edit in the image**",
+                expanded=True):
                 utils_edit_image.edit_image_canvas(
                         mask_image_key,
-                        resize_image_bytes(st.session_state[image_to_edit_key]))
+                        resize_image_bytes(
+                            st.session_state[image_to_edit_key]))
         else:
             st.image(st.session_state[image_to_edit_key])
 
@@ -489,7 +536,8 @@ def render_image_edit_prompt(
                 'Provide a prompt using natural language to edit the image',
                 key=f"{edit_image_prompt_key}_text_area")
 
-            submit_button = st.form_submit_button('Edit Image', on_click=submitted)
+            submit_button = st.form_submit_button('Edit Image',
+                                                  on_click=submitted)
 
         if submit_button:
             bytes_data = st.session_state[image_to_edit_key]
@@ -508,7 +556,9 @@ def render_image_edit_prompt(
                             8,
                             bytes_data,
                             edited_images_key,
-                            st.session_state.get(mask_image_key, b"") if mask_image and mask_image_key else b"")
+                            st.session_state.get(
+                                mask_image_key,
+                                b"") if mask_image and mask_image_key else b"")
             else:
                 st.error("No image found to edit")
 

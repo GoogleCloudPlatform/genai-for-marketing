@@ -171,11 +171,11 @@ def render_ad(
                 if theme in THEMES_FOR_PROMPTS:
                     index = THEMES_FOR_PROMPTS.index(theme)
                     if platform == "Instagram":
-                        utils_image.get_default_image_bytesio(
+                        utils_image.render_image_file(
                             page_cfg["default_image_instagram"][index], 
                             key_prefix+"_Selected_Image")
                     else:
-                        utils_image.get_default_image_bytesio(
+                        utils_image.render_image_file(
                             page_cfg["default_image_threads"][index],
                             key_prefix+"_Selected_Image")
 
@@ -191,7 +191,8 @@ def render_ad(
         with st.form(key_prefix+"_Link_To_Campaign"):
             st.write("**Choose a Campaign to save the results**")
             selected_name = st.selectbox("List of Campaigns", campaigns_names)
-            link_to_campaign_button = st.form_submit_button(label="Save to Campaign")
+            link_to_campaign_button = st.form_submit_button(
+                label="Save to Campaign")
         
         image = base64.b64encode(st.session_state[
             key_prefix+"_Selected_Image"].getvalue()).decode("utf-8")

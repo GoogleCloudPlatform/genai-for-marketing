@@ -22,7 +22,6 @@ import time
 import tomllib
 import utils_workspace
 
-from google.oauth2 import service_account
 from PIL import Image
 from vertexai.preview.language_models import TextGenerationModel
 from utils_campaign import Campaign, add_new_campaign
@@ -77,11 +76,8 @@ OBJECTIVES_FOR_PROMPTS = page_cfg["prompt_objectives"]
 COMPETITORS_FOR_PROMPTS = page_cfg["prompt_competitors"]
 
 # Variables for Workspace integration
-SCOPES = data["pages"]["12_review_activate"]["workspace_scopes"]
 DOC_TEMPLATE_ID = data["pages"]["12_review_activate"]["doc_template_id"]
 DRIVE_FOLDER_ID = data["pages"]["12_review_activate"]["drive_folder_id"]
-CREDENTIALS = service_account.Credentials.from_service_account_file(
-    filename=data["global"]["service_account_json_key"], scopes=SCOPES)
 
 DOC_ID_KEY = f"{CAMPAIGNS_KEY}_doc_id_key"
 NEW_FOLDER_KEY = f"{CAMPAIGNS_KEY}_new_folder_id_key"
@@ -209,18 +205,15 @@ with tab1:
                 with st.spinner("Creating Google Drive folder..."):
                     new_folder_id = utils_workspace.create_folder_in_folder(
                         folder_name=f"Marketing_Assets_{int(time.time())}",
-                        parent_folder_id=DRIVE_FOLDER_ID,
-                        credentials=CREDENTIALS)
+                        parent_folder_id=DRIVE_FOLDER_ID)
                     st.session_state[NEW_FOLDER_KEY] = new_folder_id
                     utils_workspace.set_permission(
-                        file_id=new_folder_id,
-                        credentials=CREDENTIALS)
+                        file_id=new_folder_id)
                 with st.spinner("Uploading Creative Brief to Google Docs..."):
                     doc_id = utils_workspace.copy_drive_file(
                         drive_file_id=DOC_TEMPLATE_ID,
                         parentFolderId=new_folder_id,
-                        copy_title=f"GenAI Marketing Brief",
-                        credentials=CREDENTIALS)
+                        copy_title=f"GenAI Marketing Brief")
                     st.session_state[DOC_ID_KEY] = doc_id
                     clean = lambda x: x.replace("*", "").strip()
                     utils_workspace.update_doc(
@@ -230,8 +223,7 @@ with tab1:
                         scenario=clean(brief["brief_scenario"]), 
                         brand_statement=clean(brief["brand_statement"]),
                         primary_msg=clean(brief["primary_message"]), 
-                        comms_channel=clean(brief["comm_channels"]),
-                        credentials=CREDENTIALS)
+                        comms_channel=clean(brief["comm_channels"]))
                 st.success("Brief document uploaded to Google Docs.")
 
                 st.session_state[CAMPAIGNS_KEY][
@@ -275,18 +267,19 @@ def display_campaigns_upload(
                             f=file,
                             folder_id=campaign.workspace_assets["folder_id"],
                             upload_name=file.name,
-                            mime_type=file.type,
-                            credentials=CREDENTIALS
+                            mime_type=file.type
                         )
                     except:
                         st.error("Could not upload one or more images. Please try again.")
                     else:
+                        im = Image.open(file).convert("RGB")
+                        im.thumbnail((200,200))
                         st.session_state[CAMPAIGNS_KEY][
                             str(campaign.unique_uuid)].campaign_uploaded_images[file_id] = {
                                 "name":file.name,
                                 "mime_type":file.type,
                                 "size":file.size,
-                                "thumbnail":Image.open(file).thumbnail((200,200))
+                                "thumbnail":im
                             }
                         st.success(f"File {file.name} uploaded to campaign.")
             else:

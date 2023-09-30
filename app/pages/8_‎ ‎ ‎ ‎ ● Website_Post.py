@@ -178,7 +178,7 @@ if submit_button:
         (image_option == "generated" and 
          not st.session_state[GENERATED_IMAGES_KEY])):
             index = THEMES_FOR_PROMPTS.index(selected_prompt)
-            utils_image.get_default_image_bytesio(
+            utils_image.render_image_file(
                 page_cfg[f"default_images"][index], SELECTED_IMAGE_KEY, True) 
 
 if GENERATED_TEXT_KEY in st.session_state and not flag_new:

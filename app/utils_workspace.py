@@ -14,36 +14,60 @@
 
 """Module to manage Workspace elements"""
 
+import io
 import uuid
+import tomllib
 
+
+from google.oauth2 import service_account
 from googleapiclient import discovery
 from googleapiclient.discovery import build
-from googleapiclient.http import MediaIoBaseUpload
-from typing import Any
+from googleapiclient.http import HttpError, MediaIoBaseUpload
+from googleapiclient.http import MediaIoBaseDownload
+
+with open("./app_config.toml", "rb") as f:
+    data = tomllib.load(f)
+
+SCOPES = data["pages"]["12_review_activate"]["workspace_scopes"]
+CREDENTIALS = service_account.Credentials.from_service_account_file(
+    filename=data["global"]["service_account_json_key"], scopes=SCOPES)
 
 
 def create_folder_in_folder(
         folder_name: str, 
-        parent_folder_id: str,
-        credentials: Any):
+        parent_folder_id: str
+    ):
     file_metadata = {
     'name' : folder_name,
     'parents' : [parent_folder_id],
     'mimeType' : 'application/vnd.google-apps.folder'
     }
-    service = build('drive', 'v3', credentials=credentials)
+    service = build('drive', 'v3', credentials=CREDENTIALS)
     file = service.files().create(body=file_metadata,
                                     fields='id').execute()
     
     return file.get('id')
 
+def download_file(file_id: str) -> bytes | None:
+    try:
+        service = build('drive', 'v3', credentials=CREDENTIALS)
+        request = service.files().get_media(fileId=file_id)
+        file = io.BytesIO()
+        downloader = MediaIoBaseDownload(file, request)
+        done = False
+        while done is False:
+            status, done = downloader.next_chunk()
+            print(F'Download {int(status.progress() * 100)}.')
+    except HttpError as error:
+        print(f'An error occured: {error}')
+        return None
+    return file.getvalue()
 
 def copy_drive_file(drive_file_id: str,
                     parentFolderId: str,
-                    copy_title: str,
-                    credentials: Any):
+                    copy_title: str):
     
-    drive_service = build('drive', 'v3', credentials=credentials)
+    drive_service = build('drive', 'v3', credentials=CREDENTIALS)
     body = {
         'name': copy_title,
             'parents' : [ parentFolderId  ]
@@ -59,14 +83,13 @@ def upload_to_folder(
         f,
         folder_id, 
         upload_name, 
-        mime_type,
-        credentials):
+        mime_type):
     """Upload a file to the specified folder and prints file ID, folder ID
     Args: Id of the folder
     Returns: ID of the file uploaded"""
 
     # create drive api client
-    service = build('drive', 'v3', credentials=credentials)
+    service = build('drive', 'v3', credentials=CREDENTIALS)
 
     file_metadata = {
         'name': upload_name,
@@ -92,8 +115,7 @@ def update_doc(
         scenario: str,
         brand_statement: str, 
         primary_msg: str, 
-        comms_channel: str,
-        credentials: Any):
+        comms_channel: str):
     
     requests = [
             {
@@ -145,28 +167,26 @@ def update_doc(
                 'replaceText': comms_channel,
             }}
     ]
-    service = build('docs', 'v1', credentials=credentials)
+    service = build('docs', 'v1', credentials=CREDENTIALS)
     service.documents().batchUpdate(
         documentId=document_id, body={'requests': requests}).execute()
 
 
 def set_permission(
-        file_id: str,
-        credentials: Any):
+        file_id: str):
     
     permission = {'type': 'domain',
                 'domain': 'google.com', 
                 'role': 'writer'}
-    service = build('drive', 'v3', credentials=credentials)
+    service = build('drive', 'v3', credentials=CREDENTIALS)
     return service.permissions().create(fileId=file_id,
                                         sendNotificationEmail=False,
                                         body=permission).execute()
 
 
 def get_chart_id(
-        spreadsheet_id,
-        credentials):
-    service = discovery.build('sheets', 'v4', credentials=credentials)
+        spreadsheet_id):
+    service = discovery.build('sheets', 'v4', credentials=CREDENTIALS)
     spreadsheet_id = spreadsheet_id  
     ranges = [] 
     include_grid_data = False 
@@ -187,18 +207,16 @@ def merge_slides(
         presentation_id: str, 
         spreadsheet_id: str,
         spreadsheet_template_id: str,
-        slide_page_id_list: list,
-        credencials: Any):
+        slide_page_id_list: list):
     emu4m = {
         'magnitude': 4000000,
         'unit': 'EMU'
     }
 
     sheet_chart_id_list = get_chart_id(
-        spreadsheet_template_id,
-        credentials=credencials)
+        spreadsheet_template_id)
 
-    service = build('slides', 'v1', credentials=credencials)
+    service = build('slides', 'v1', credentials=CREDENTIALS)
     from datetime import date
 
     today = date.today()
@@ -250,10 +268,9 @@ def create_sheets_chart(
         presentation_id: str, 
         page_id: str,
         spreadsheet_id: str, 
-        sheet_chart_id: str,
-        credentials: Any):
+        sheet_chart_id: str):
     
-    slides_service = build('slides', 'v1', credentials=credentials)
+    slides_service = build('slides', 'v1', credentials=CREDENTIALS)
     emu4m = {
         'magnitude': 1000000,
         'unit': 'EMU'

@@ -224,23 +224,25 @@ async def generate_emails(
 
 if CAMPAIGNS_KEY in st.session_state:
     campaigns_names = list(generate_names_uuid_dict().keys())
-    #index = 0
+    expander_title = "**Choose a Campaign to get the audience**"
+    expanded = True
     if UUID_KEY in st.session_state:
-        campaign_uuid = st.session_state[UUID_KEY]
-    with st.form(PAGE_KEY_PREFIX+"_Choose_Campaign"):
-        st.write("**Choose a Campaign to get the audience**")
+        expander_title = ("Change campaign")
+        expanded = False
+
+    with st.expander(expander_title, expanded):
         selected_campaign = st.selectbox(
             "List of Campaigns",
             campaigns_names)
-        choose_campaign_button = st.form_submit_button(
-            "Retrieve audiences from campaign")
-
-    if choose_campaign_button:
-        selected_uuid = generate_names_uuid_dict()[selected_campaign]
-        if (UUID_KEY in st.session_state and 
-            st.session_state[UUID_KEY] != selected_uuid):
-            reset_page_state(PAGE_KEY_PREFIX)
-        st.session_state[UUID_KEY] = selected_uuid
+        def choose_campaign():
+            selected_uuid = generate_names_uuid_dict()[selected_campaign]
+            if (UUID_KEY in st.session_state and 
+                st.session_state[UUID_KEY] != selected_uuid):
+                reset_page_state(PAGE_KEY_PREFIX)
+            st.session_state[UUID_KEY] = selected_uuid
+            
+        st.button("Retrieve audiences from campaign", on_click=choose_campaign)
+        
 else:
     st.info("Please generate a campaign first by going to the Campaingns page "
             "and then create an audience in the Audiences page "
@@ -269,19 +271,32 @@ if UUID_KEY in st.session_state:
                 "using the Audience page. ")
 
 if AUDIENCE_DATAFRAME_KEY in st.session_state:
+    selected_uuid = st.session_state[UUID_KEY]
+    campaign_image_dict = st.session_state[
+        CAMPAIGNS_KEY][selected_uuid].campaign_uploaded_images
     audience_dataframe = st.session_state[AUDIENCE_DATAFRAME_KEY]
     rows = len(audience_dataframe)
     sample_size = st.slider("Select a sample size", 1,
                             min(10, rows), min(3, rows))
     st.dataframe(audience_dataframe.head(sample_size))
-    image_option = st.radio(label="Choose an option for the images:",
-         options=["uploaded", "generated"],
-         index = st.session_state.get(IMAGE_OPTION_KEY, 0),
-         format_func=lambda x: f"{x.capitalize()} Images")
+
+    expander_title = "Choose an option for the images"
+    expanded = True
+    if IMAGE_OPTION_KEY in st.session_state:
+        expander_title = "Change image option"
+        expanded = False
+
+    with st.expander(expander_title, expanded):
+        image_option_radio = st.radio(
+            label="Choose image option", label_visibility="collapsed",
+            options=["uploaded", "generated"],
+            format_func=lambda x: f"{x.capitalize()} Images")
+        def image_option_button():
+            st.session_state[IMAGE_OPTION_KEY] = image_option_radio
+        st.button("Select", on_click=image_option_button)
 
 
-    if image_option == "uploaded":
-        st.session_state[IMAGE_OPTION_KEY] = 0
+    if st.session_state.get(IMAGE_OPTION_KEY, "") == "uploaded":
         render_image_edit_prompt(
             image_to_edit_key=IMAGE_TO_EDIT_KEY,
             edit_image_prompt_key=EDIT_IMAGE_PROMPT_KEY,
@@ -290,15 +305,13 @@ if AUDIENCE_DATAFRAME_KEY in st.session_state:
             mask_image_key=MASK_IMAGE_KEY,
             select_button=True,
             selected_image_key=SELECTED_IMAGE_KEY,
-            file_uploader_key=FILE_UPLOADER_KEY
+            file_uploader_key=FILE_UPLOADER_KEY,
+            campaign_image_dict=campaign_image_dict,
+            local_image_list=[] #TODO
         )
-    else:
-        st.session_state[IMAGE_OPTION_KEY] = 1
-
-    if image_option == "generated" or SELECTED_IMAGE_KEY in st.session_state:
-    # --- Start of FORM
+    if (st.session_state.get(IMAGE_OPTION_KEY, "") == "generated" or 
+          SELECTED_IMAGE_KEY in st.session_state):
         with st.form(PAGE_KEY_PREFIX+'Sample_Email_Form'):
-            # st.write("**Choose a theme for the email**")
             theme = st.selectbox("**Choose a theme for the email**",
                                  options=THEMES_FOR_PROMPTS)
             generate_samples_button = st.form_submit_button(
