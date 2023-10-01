@@ -55,7 +55,7 @@ THREADS_CHAR_LIMIT = page_cfg["threads_char_limit"]
 
 AD_PROMPT_TEMPLATE = page_cfg["ad_prompt_template"]
 IMAGE_PROMPT_TEMPLATE = page_cfg["image_prompt_template"]
-THEMES_FOR_PROMPTS: list[str] = page_cfg["themes_for_prompts"]
+THEMES_FOR_PROMPTS: list[str] = data["pages"]["campaigns"]["prompt_themes"]
 
 st.set_page_config(
     page_title=page_cfg["page_title"],
@@ -130,6 +130,7 @@ def render_ad(
     age_range: str):
 
     selected_uuid = st.session_state[UUID_KEY]
+    campaign_name = st.session_state[CAMPAIGNS_KEY][selected_uuid].name
     campaign_image_dict = st.session_state[
         CAMPAIGNS_KEY][selected_uuid].campaign_uploaded_images
 
@@ -191,95 +192,37 @@ def render_ad(
                             page_cfg["default_image_threads"][index],
                             key_prefix+"_Selected_Image")
 
+    image = None
     if key_prefix+"_Selected_Image" in st.session_state:
         st.image(st.session_state[key_prefix+"_Selected_Image"])
-
-    # Attach to campaign when generate images
-    if (key_prefix+"_Text" in st.session_state and 
-        CAMPAIGNS_KEY in st.session_state and
-        key_prefix+"_Selected_Image" in st.session_state):
-        
-        campaigns_names = generate_names_uuid_dict().keys() 
-        with st.form(key_prefix+"_Link_To_Campaign"):
-            st.write("**Choose a Campaign to save the results**")
-            selected_name = st.selectbox("List of Campaigns", campaigns_names)
-            link_to_campaign_button = st.form_submit_button(
-                label="Save to Campaign")
-        
         image = base64.b64encode(st.session_state[
             key_prefix+"_Selected_Image"].getvalue()).decode("utf-8")
-        ad = {
-            "theme": theme,
-            "gender": gender,
-            "age_range": age_range,
-            "text": st.session_state[key_prefix+"_Text"],
-            "image": "data:image/png;base64,"+image}
-        
-        if link_to_campaign_button:
-            selected_uuid = generate_names_uuid_dict()[selected_name]
-            if platform == "Threads":
-                st.session_state[CAMPAIGNS_KEY][selected_uuid].ads_threads = ad
-            elif platform == "Instagram":
-                st.session_state[CAMPAIGNS_KEY][selected_uuid].ads_insta = ad
-            st.success(f"Ad saved to campaign {selected_name}")
 
-    # Attach to campaign when upload
     if (key_prefix+"_Text" in st.session_state and 
-        key_prefix+"_Image_To_Edit" in st.session_state and 
-        key_prefix+"_File_Uploader" in st.session_state and
-        key_prefix+"_Selected_Image" not in st.session_state and
-        CAMPAIGNS_KEY in st.session_state):
+        (key_prefix+"_Selected_Image" in st.session_state or
+        st.session_state[key_prefix+'_Has_Image'] == False)):
         
-        campaigns_names = generate_names_uuid_dict().keys() 
         with st.form(key_prefix+"_Link_To_Campaign"):
-            st.write("**Choose a Campaign to save the results**")
-            selected_name = st.selectbox("List of Campaigns", campaigns_names)
             link_to_campaign_button = st.form_submit_button(
                 label="Save to Campaign")
-        
-        image = base64.b64encode(st.session_state[
-                                 key_prefix+"_Image_To_Edit"]).decode("utf-8")
-        ad = {
-            "theme": theme,
-            "gender": gender,
-            "age_range": age_range,
-            "text": st.session_state[key_prefix+"_Text"],
-            "image": "data:image/png;base64,"+image}
-        
-        if link_to_campaign_button:
-            selected_uuid = generate_names_uuid_dict()[selected_name]
-            if platform == "Threads":
-                st.session_state[CAMPAIGNS_KEY][selected_uuid].ads_threads = ad
-            elif platform == "Instagram":
-                st.session_state[CAMPAIGNS_KEY][selected_uuid].ads_insta = ad
-            st.success(f"Ad saved to campaign {selected_name}")
-
-    # Link to campaign with NO images
-    if (st.session_state[key_prefix+'_Has_Image'] == False and
-        key_prefix+"_Text" in st.session_state and 
-        CAMPAIGNS_KEY in st.session_state):
-        
-        campaigns_names = generate_names_uuid_dict().keys() 
-        with st.form(key_prefix+"_Link_To_Campaign"):
-            st.write("**Choose a Campaign to save the results**")
-            selected_name = st.selectbox("List of Campaigns", campaigns_names)
-            link_to_campaign_button = st.form_submit_button(
-                label="Save to Campaign")
-    
         ad = {
             "theme": theme,
             "gender": gender,
             "age_range": age_range,
             "text": st.session_state[key_prefix+"_Text"]}
 
+        if image:
+            ad["image"] = "data:image/png;base64,"+image
+
+            
         if link_to_campaign_button:
-            selected_uuid = generate_names_uuid_dict()[selected_name]
             if platform == "Threads":
                 st.session_state[CAMPAIGNS_KEY][selected_uuid].ads_threads = ad
             elif platform == "Instagram":
                 st.session_state[CAMPAIGNS_KEY][selected_uuid].ads_insta = ad
-            st.success(f"Ad saved to campaign {selected_name}")
+            st.success(f"Ad saved to campaign {campaign_name}")
 
+    
 if CAMPAIGNS_KEY in st.session_state:
     campaigns_names = list(generate_names_uuid_dict().keys())
     expander_title = "**Choose a Campaign**"
@@ -334,7 +277,7 @@ if UUID_KEY in st.session_state:
             placeholder_for_threads_options_theme = st.empty()
             placeholder_for_threads_custom_theme = st.empty()
 
-            threads_generation_button = st.form_submit_button()
+            threads_generation_button = st.form_submit_button("Generate")
         # Create selectbox
         with placeholder_for_threads_options_theme:
             threads_theme_option = st.radio(
@@ -404,13 +347,10 @@ if UUID_KEY in st.session_state:
             image_option = st.radio(label="Choose an option for the image:",
                  options=["uploaded", "generated"],
                  format_func=lambda x: f"{x.capitalize()} Image")
-
-
-
             placeholder_for_instagram_options_theme = st.empty()
             placeholder_for_instagram_custom_theme = st.empty()
 
-            instagram_generation_button = st.form_submit_button()
+            instagram_generation_button = st.form_submit_button("Generate")
         # Create selectbox
         with placeholder_for_instagram_options_theme:
             instagram_theme_option = st.radio(

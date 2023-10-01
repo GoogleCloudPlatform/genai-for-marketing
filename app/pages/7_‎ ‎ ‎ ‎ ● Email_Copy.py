@@ -325,9 +325,9 @@ if AUDIENCE_DATAFRAME_KEY in st.session_state:
                 [f"Campaign: '{theme}'", "Custom"],
                 label_visibility="collapsed")
             if campaign_option == "Custom":
-                otherOption = st.text_input("Enter your custom theme...")
+                other_option = st.text_input("Enter your custom theme...")
             else:
-                otherOption = ""
+                other_option = ""
                             
             generate_button = st.button("Generate email samples")
         
@@ -335,10 +335,10 @@ if AUDIENCE_DATAFRAME_KEY in st.session_state:
             if campaign_option != "Custom":
                 st.session_state[THEME_KEY] = theme
             else:
-                if otherOption == "":
+                if other_option == "":
                     st.info("Please write the custom theme")
                     st.stop()
-                st.session_state[THEME_KEY] = otherOption
+                st.session_state[THEME_KEY] = other_option
             images = []
             if EDITED_IMAGES_KEY in st.session_state:
                 if SELECTED_IMAGE_KEY in st.session_state:
