@@ -316,7 +316,6 @@ if AUDIENCE_DATAFRAME_KEY in st.session_state:
         theme = st.session_state[CAMPAIGNS_KEY][selected_uuid].theme
         theme_expander_title = "Choose the theme for the email"
         theme_expanded = True
-        generate_emails_flag = False
         if THEME_KEY in st.session_state:
             theme_expander_title = "Change the theme"
             theme_expanded = False

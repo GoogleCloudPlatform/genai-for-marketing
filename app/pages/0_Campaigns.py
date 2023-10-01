@@ -133,9 +133,9 @@ with tab1:
     # Create text input for user entry
     with placeholder_for_custom_theme:
         if selection == "Another theme...":
-            otherOption = st.text_input("Enter your custom theme...")
+            other_option = st.text_input("Enter your custom theme...")
         else:
-            otherOption = ""
+            other_option = ""
 
     campaign_uuid = None
     if create_campaign_button:
@@ -143,10 +143,10 @@ with tab1:
         if selection != "Another theme...":
             theme = selection
         else:
-            if otherOption == "":
+            if other_option == "":
                 st.info("Please write the custom theme")
 
-            theme = otherOption
+            theme = other_option
         llm = TextGenerationModel.from_pretrained(TEXT_MODEL_NAME)
         is_allowed_to_create_campaign = False
 

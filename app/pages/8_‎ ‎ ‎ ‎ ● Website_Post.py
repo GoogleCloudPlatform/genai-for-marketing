@@ -122,17 +122,34 @@ if UUID_KEY in st.session_state:
     campaign_name = st.session_state[CAMPAIGNS_KEY][selected_uuid].name
 
     st.subheader(f"Website Post for campaign '{campaign_name}'")
-          
-    with st.form(key='form_post_generation'):
-        selected_prompt = st.selectbox(
-            label='Select a scenario to generate the website post',
-            options=THEMES_FOR_PROMPTS)
+    theme = st.session_state[CAMPAIGNS_KEY][selected_uuid].theme
+    theme_expander_title = "Choose the theme for the email"
+    theme_expanded = True
+    if SELECTED_PROMPT_KEY in st.session_state:
+        theme_expander_title = "Change the theme"
+        theme_expanded = False
+    with st.expander(theme_expander_title, theme_expanded):
+        campaign_option = st.radio(
+            "**Choose the theme to generate the website post**",
+            [f"Campaign: '{theme}'", "Custom"],
+            label_visibility="collapsed")
+        if campaign_option == "Custom":
+            other_option = st.text_input("Enter your custom theme...")
+        else:
+            other_option = ""
+                        
+        generate_button = st.button("Generate")
+    
+    if generate_button:
+        if campaign_option != "Custom":
+            st.session_state[SELECTED_PROMPT_KEY] = theme
+        else:
+            if other_option == "":
+                st.info("Please write the custom theme")
+                st.stop()
+            st.session_state[SELECTED_PROMPT_KEY] = other_option
 
-        submit_button = st.form_submit_button(label='Generate')
-
-    if submit_button:
-
-        st.session_state[SELECTED_PROMPT_KEY] = selected_prompt
+        selected_prompt = st.session_state[SELECTED_PROMPT_KEY]
         # Initialize variables
         if GENERATED_TEXT_KEY in st.session_state:
             del st.session_state[GENERATED_TEXT_KEY]

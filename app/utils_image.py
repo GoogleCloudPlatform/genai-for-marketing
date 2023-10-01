@@ -492,7 +492,6 @@ def render_image_edit_prompt(
                     use_container_width=False)
                 def select_campaign():
                     if drive_file is not None:
-                        print("ok")
                         image_to_edit = download_file(
                             list(campaign_image_dict.keys())[drive_file])
                         add_image_to_state(image_to_edit)
