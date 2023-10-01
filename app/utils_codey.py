@@ -117,9 +117,11 @@ def get_metadata_from_dataset(
         dataset_id: 
             The ID of the BigQuery dataset.
         tag_template_name: 
-            The name of the BigQuery tag template to use to get the table descriptions.
+            The name of the BigQuery tag template to use to get the table 
+            descriptions.
         state_key: 
-            The key to use to store the metadata in the Streamlit session state.
+            The key to use to store the metadata in the Streamlit 
+            session state.
     """
     
     if len(st.session_state.get(state_key, [])) == 0:
@@ -166,7 +168,8 @@ def generate_prompt(
         question: 
             The question to answer.
         metadata: 
-            A list of dictionaries, where each dictionary describes a BigQuery table. 
+            A list of dictionaries, where each dictionary describes a BigQuery 
+            table. 
             The dictionaries should have the following keys:
             - name: The name of the table.
             - schema: The schema of the table.
@@ -224,19 +227,36 @@ def generate_sql_and_query(
     """
     with st.form(f"{state_key}_form"):
         st.write(f"**{title}**")
+        placeholder_for_selectbox = st.empty()
+        placeholder_for_custom_question = st.empty()
+        submit_button = st.form_submit_button("Submit")
+    
+    with placeholder_for_selectbox:
 
-        question = st.selectbox(
-            label="Select one of the options to ask BigQuery tables and find your audience",
-            options=data["pages"]["3_audiences"]["prompt_examples"],
+        question_option = st.selectbox(
+            label=("Select one of the options to ask BigQuery tables "
+                   "and find your audience"),
+            options=data["pages"]["3_audiences"][
+                "prompt_examples"] + ["Another question..."],
             key=f"{state_key}_question_prompt_text_area")
 
-        submit_button = st.form_submit_button("Submit")
+    with placeholder_for_custom_question:
+        if question_option == "Another question...":
+            otherQuestion = st.text_input("Enter your custom question")
+        else:
+            otherQuestion = ""
 
     if submit_button:
+        question = ""
         reset_page_state(state_key)
-        if not question:
-            st.warning("Question is empty")
-            return None
+        if question_option == "Another question":
+            if otherQuestion == "":
+                st.info("Please write your custom question...")
+                return None
+            else:
+                question = otherQuestion
+        elif question_option:
+            question = question_option
         with st.spinner('Retrieving metadata from BigQuery'):
             get_metadata_from_dataset(
                 query=query, 
@@ -255,7 +275,8 @@ def generate_sql_and_query(
             st.text(st.session_state[f"{state_key}_Prompt_Template"])
         
         with st.spinner('Generating the GoogleSQL statement with PaLM'):
-            client_code_model = TextGenerationModel.from_pretrained(TEXT_MODEL_NAME)
+            client_code_model = TextGenerationModel.from_pretrained(
+                TEXT_MODEL_NAME)
             try:
                 gen_code = client_code_model.predict(
                     prompt = st.session_state[f"{state_key}_Prompt_Template"],
@@ -263,36 +284,40 @@ def generate_sql_and_query(
                     temperature=0.2
                 )
             except:
-                st.session_state[f"{state_key}_Gen_Code"] = fallback_query.format(*PROMPT_PROJECT_ID)
+                st.session_state[
+                    f"{state_key}_Gen_Code"] = fallback_query.format(
+                    *PROMPT_PROJECT_ID)
             else:
                 if gen_code and gen_code.text:
                     st.session_state[f"{state_key}_Gen_Code"] = gen_code.text
                 else:
-                    st.session_state[f"{state_key}_Gen_Code"] = fallback_query.format(*PROMPT_PROJECT_ID)
+                    st.session_state[
+                        f"{state_key}_Gen_Code"] = fallback_query.format(
+                        *PROMPT_PROJECT_ID)
 
         try:
             with st.spinner('Querying BigQuery...'):
-                result_query = bqclient.query(st.session_state[f"{state_key}_Gen_Code"])
+                result_query = bqclient.query(
+                    st.session_state[f"{state_key}_Gen_Code"])
                 result_query.result()
         except:
-            st.session_state[f"{state_key}_Gen_Code"] = fallback_query.format(*PROMPT_PROJECT_ID)
+            st.session_state[f"{state_key}_Gen_Code"] = fallback_query.format(
+                *PROMPT_PROJECT_ID)
             with st.spinner('Querying BigQuery...'):
                 try:
-                    result_query = bqclient.query(st.session_state[f"{state_key}_Gen_Code"])
+                    result_query = bqclient.query(
+                        st.session_state[f"{state_key}_Gen_Code"])
                     result_query.result()
                 except:
                     if state_key == "TalkToData_insight":
-                        st.session_state[f"{state_key}_Result_Final_Query"] = pd.DataFrame(
+                        st.session_state[
+                            f"{state_key}_Result_Final_Query"
+                        ] = pd.DataFrame(
                             data["pages"]["3_audiences"]["example_result_0"])
-                    elif state_key == "TalkToData_audience":
-                        st.session_state[f"{state_key}_Result_Final_Query"] = pd.DataFrame(
-                            data["pages"]["3_audiences"]["example_result_1"])
-                    elif state_key == "TalkToData_followup":
-                        st.session_state[f"{state_key}_Result_Final_Query"] = pd.DataFrame(
-                            data["pages"]["3_audiences"]["example_result_2"])
                 else:
                     st.session_state[
-                        f"{state_key}_Result_Final_Query"] = result_query.to_dataframe()
+                        f"{state_key}_Result_Final_Query"
+                    ] = result_query.to_dataframe()
     
             st.write('Resulting query generated by PaLM 2')
             st.write(f"""```sql
@@ -308,7 +333,8 @@ def generate_sql_and_query(
                     {st.session_state[f"{state_key}_Gen_Code"]}""")
             st.success('Query executed successfully. Retrieving dataset.')
             st.session_state[
-                f"{state_key}_Result_Final_Query"] = result_query.to_dataframe()
+                f"{state_key}_Result_Final_Query"
+            ] = result_query.to_dataframe()
             st.write('')
             st.write('Resulting table (limited by 50 rows)')
             st.dataframe(
@@ -330,14 +356,21 @@ def generate_sql_and_query(
 
     if (f"{state_key}_Result_Final_Query" in st.session_state and
         CAMPAIGNS_KEY in st.session_state):
-        campaigns_names = generate_names_uuid_dict().keys()
-        with st.form(state_key+"_Link_To_Campaign_Upload"):
-            st.write("**Choose a Campaign to save the audience**")
-            selected_name = st.selectbox("List of Campaigns", campaigns_names)
-            link_to_campaign_button = st.form_submit_button(label="Save to Campaign")
+        df = st.session_state[f"{state_key}_Result_Final_Query"]
+        if "email" not in df.columns:
+            st.info("No email column found in the results")
+        else:
+            campaigns_names = generate_names_uuid_dict().keys()
+            with st.form(state_key+"_Link_To_Campaign_Upload"):
+                st.write("**Choose a Campaign to save the audience**")
+                selected_name = st.selectbox("List of Campaigns",
+                                             campaigns_names)
+                link_to_campaign_button = st.form_submit_button(
+                    label="Save to Campaign")
 
-        if link_to_campaign_button:
-            selected_uuid = generate_names_uuid_dict()[selected_name]
-            st.session_state[CAMPAIGNS_KEY][
-                selected_uuid].audiences = st.session_state[f"{state_key}_Result_Final_Query"]
-            st.success(f"Saved to campaign {selected_name}")
+            if link_to_campaign_button:
+                selected_uuid = generate_names_uuid_dict()[selected_name]
+                st.session_state[CAMPAIGNS_KEY][
+                    selected_uuid].audiences = st.session_state[
+                        f"{state_key}_Result_Final_Query"]
+                st.success(f"Saved to campaign {selected_name}")

@@ -453,9 +453,7 @@ def render_image_edit_prompt(
         None.
     """
 
-    def submitted():
-        st.session_state[edit_image_prompt_key] = st.session_state[
-            f"{edit_image_prompt_key}_text_area"]
+    
     
     if edit_image_prompt_key in st.session_state:
         st.session_state[
@@ -469,59 +467,87 @@ def render_image_edit_prompt(
             expander_title = "Change the uploaded image"
             expanded = False
         with st.expander(expander_title, expanded):
-            if campaign_image_dict:
-                drive_file = image_select(
-                    "Select an image uploaded to the campaign Drive",
-                    [im["thumbnail"] for im in campaign_image_dict.values()],
-                    key=f"{file_uploader_key}_drive", 
-                    return_value="index")
-                st.write('========== or ===========')
-            else:
-                drive_file = None
-
-            if local_image_list:
-                local_file = image_select(
-                    "Select a local image",
-                    local_image_list,
-                    key=f"{file_uploader_key}_local")
-                st.write('========== or ===========')
-            else:
-                local_file = None
-            
-            uploaded_file = st.file_uploader(
-                'Upload your image here. It MUST be in PNG or JPEG format.',
-                type=['png', 'jpg'],
-                key=file_uploader_key)
-            def upload_button():
-                if any([uploaded_file, local_file, drive_file]):
+            def add_image_to_state(image_to_edit:bytes | None):
+                if image_to_edit is not None:
                     if edited_images_key in st.session_state:
                         del st.session_state[edited_images_key]
                     if selected_image_key in st.session_state:
                         del st.session_state[selected_image_key]
 
-                image_to_edit = None
-
-                if uploaded_file is not None:
-                    image_to_edit = uploaded_file.getvalue()
-                elif drive_file is not None:
-                    image_to_edit = download_file(
-                        list(campaign_image_dict.keys())[drive_file])
-                elif local_file is not None:
-                    image_to_edit = local_file
-
-                if image_to_edit:
                     st.session_state[image_to_edit_key] = image_to_edit
                     if mask_image and mask_image_key in st.session_state:
                         del st.session_state[mask_image_key]
+                else:
+                    st.error("Network error. Try Again")
 
 
+            if campaign_image_dict:
+                images = campaign_image_dict.values()
+                drive_file = image_select(
+                    label="Select an image uploaded to the campaign Drive",
+                    images=[im["thumbnail"] for im in images],
+                    captions = [im["name"] for im in images],
+                    key=f"{file_uploader_key}_drive", 
+                    return_value="index",
+                    use_container_width=False)
+                def select_campaign():
+                    if drive_file is not None:
+                        print("ok")
+                        image_to_edit = download_file(
+                            list(campaign_image_dict.keys())[drive_file])
+                        add_image_to_state(image_to_edit)
+                    else:
+                        st.info("Select a Campaign image first")
 
-            st.button('Upload Image', on_click=upload_button)
+
+                st.button("Select image from Campaign",
+                          key=f"{file_uploader_key}_drive_button",
+                          on_click=select_campaign)
+
+
+                st.write('========== or ===========')
+            else:
+                drive_file = None
+            if local_image_list:
+                local_file = image_select(
+                    "Select a local image",
+                    local_image_list, 
+                    [caption.split("/")[-1] for caption in local_image_list],
+                    key=f"{file_uploader_key}_local",
+                    use_container_width=False)
+                def select_local():
+                    if local_file is not None:
+                        with open(local_file, "rb") as f:
+                            add_image_to_state(f.read())
+                    else:
+                        st.info("Select a local image first")
+
+
+                st.button("Select image from Stock",
+                          key=f"{file_uploader_key}_local_button",
+                          on_click=select_local)
+                st.write('========== or ===========')
+            else:
+                local_file = None
+
+           
+            uploaded_file = st.file_uploader(
+                'Upload your image here. It MUST be in PNG or JPEG format.',
+                type=['png', 'jpg'],
+                key=file_uploader_key)
+            def upload_button():
+                if uploaded_file is not None:
+                    add_image_to_state(uploaded_file.getvalue())
+                else:
+                    st.info("Select an image for the upload")
+            st.button('Upload Image',
+                      key=f"{file_uploader_key}_upload_button",
+                      on_click=upload_button)
     if image_to_edit_key in st.session_state:
         if mask_image:
             with st.expander(
-                "**[Optional] Paint where to edit in the image**",
-                expanded=True):
+                "[Optional] Paint where to edit in the image",
+                expanded=edited_images_key not in st.session_state):
                 utils_edit_image.edit_image_canvas(
                         mask_image_key,
                         resize_image_bytes(
@@ -529,45 +555,48 @@ def render_image_edit_prompt(
         else:
             st.image(st.session_state[image_to_edit_key])
 
-        with st.form(f'{edited_images_key}_edit_image'):
-            st.write('**Edit the image with a prompt**')
-
+        with st.expander('Edit the image with a prompt',
+                         expanded=selected_image_key not in st.session_state):
             edit_image_prompt = st.text_input(
                 'Provide a prompt using natural language to edit the image',
                 key=f"{edit_image_prompt_key}_text_area")
 
-            submit_button = st.form_submit_button('Edit Image',
-                                                  on_click=submitted)
-
-        if submit_button:
-            bytes_data = st.session_state[image_to_edit_key]
+            edit_image_button = st.button('Edit Image')
+        if edit_image_button:
+                st.session_state[edit_image_prompt_key] = st.session_state[
+                    f"{edit_image_prompt_key}_text_area"]
+                bytes_data = st.session_state[image_to_edit_key]
             
-            if bytes_data:
-                if len(bytes_data) > IMAGE_UPLOAD_BYTES_LIMIT:
-                    bytes_data = resize_image_bytes(bytes_data)
-                
-                if not edit_image_prompt:
-                    st.error("Provide a prompt for editing the image")
+                if bytes_data:
+                    if len(bytes_data) > IMAGE_UPLOAD_BYTES_LIMIT:
+                        bytes_data = resize_image_bytes(bytes_data)
+                    
+                    if not edit_image_prompt:
+                        st.error("Provide a prompt for editing the image")
+                    else:
+                        st.session_state[
+                            edit_image_prompt_key] = edit_image_prompt
+                        with st.spinner('Generating Edited images ...'):
+                            edit_image_generation(
+                                st.session_state[edit_image_prompt_key],
+                                8,
+                                bytes_data,
+                                edited_images_key,
+                                st.session_state.get(
+                                    mask_image_key, b""
+                                ) if mask_image and mask_image_key else b"")
                 else:
-                    st.session_state[edit_image_prompt_key] = edit_image_prompt
-                    with st.spinner('Generating Edited images ...'):
-                        edit_image_generation(
-                            st.session_state[edit_image_prompt_key],
-                            8,
-                            bytes_data,
-                            edited_images_key,
-                            st.session_state.get(
-                                mask_image_key,
-                                b"") if mask_image and mask_image_key else b"")
-            else:
-                st.error("No image found to edit")
+                    st.error("No image found to edit")
 
+            
     if edited_images_key in st.session_state:
-        generate_image_columns(
-            edited_images_key,
-            select_button,
-            selected_image_key,
-            download_button=download_button)
+        with st.expander("Edited Images",
+                         expanded=selected_image_key not in st.session_state):
+            generate_image_columns(
+                edited_images_key,
+                select_button,
+                selected_image_key,
+                download_button=download_button)
 
 
 def render_image_generation_and_edition_ui(

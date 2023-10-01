@@ -28,6 +28,7 @@ import vertexai
 
 from vertexai.preview.language_models import TextGenerationModel
 from utils_campaign import generate_names_uuid_dict
+from utils_streamlit import reset_page_state
 
 
 # Load configuration file
@@ -62,10 +63,12 @@ IMAGE_PROMPT_KEY = f"{PAGE_KEY_PREFIX}_Image_Prompt"
 
 IMAGE_OPTION = f"{PAGE_KEY_PREFIX}_Image_Upload_Checkbox"
 FILE_UPLOADER_KEY = f"{PAGE_KEY_PREFIX}_File_Uploader"
-IMAGE_TO_EDIT_PROMPT_KEY = f"{PAGE_KEY_PREFIX}_Edit_Prompt_key"
+EDIT_IMAGE_PROMPT_KEY = f"{PAGE_KEY_PREFIX}_Edit_Prompt_key"
+IMAGE_OPTION_KEY = f"{PAGE_KEY_PREFIX}_Image_Option"
 
 SELECTED_PROMPT_KEY = f"{PAGE_KEY_PREFIX}_Selected_Prompt"
 
+UUID_KEY = f"{PAGE_KEY_PREFIX}_UUID"
 # State variables for image generation
 IMAGE_GENERATION_TEXT_PROMPT_KEY = (
         f"{PAGE_KEY_PREFIX}_Text_Prompt_Images_Generation")
@@ -76,7 +79,7 @@ DEFAULT_IMAGE_PROMPT_KEY = f"{PAGE_KEY_PREFIX}_Image_Prompt"
 # Templates
 WEBSITE_PROMPT_TEMPLATE = page_cfg["prompt_website_template"]
 IMAGE_PROMPT_TAMPLATE = page_cfg["prompt_image_template"]
-THEMES_FOR_PROMPTS = page_cfg["prompt_themes"]
+THEMES_FOR_PROMPTS = data["pages"]["campaigns"]["prompt_themes"]
 
 
 cols = st.columns([15, 85])
@@ -90,144 +93,133 @@ st.write(
 
 st.subheader('Post Generation')
 
-flag_new = False
+if CAMPAIGNS_KEY in st.session_state:
+    campaigns_names = list(generate_names_uuid_dict().keys())
+    expander_title = "**Choose a Campaign**"
+    expanded = True
+    if UUID_KEY in st.session_state:
+        expander_title = ("Change campaign")
+        expanded = False
 
-with st.form(key='form_post_generation'):
-    selected_prompt = st.selectbox(
-        label='Select a scenario to generate the website post',
-        options=THEMES_FOR_PROMPTS)
-    image_option = st.radio(label="Choose an option for the post image:",
-             options=["uploaded", "generated"],
-             format_func=lambda x: f"{x.capitalize()} Image")
+    with st.expander(expander_title, expanded):
+        selected_campaign = st.selectbox(
+            "List of Campaigns",
+            campaigns_names)
+        def choose_campaign():
+            selected_uuid = generate_names_uuid_dict()[selected_campaign]
+            if (UUID_KEY in st.session_state and 
+                st.session_state[UUID_KEY] != selected_uuid):
+                reset_page_state(PAGE_KEY_PREFIX)
+            st.session_state[UUID_KEY] = selected_uuid
+            
+        st.button("Choose campaign", on_click=choose_campaign)
+        
+else:
+    st.info("Please generate a campaign first by going to the Campaingns page "
+            "before using this page.")
+if UUID_KEY in st.session_state:
+    selected_uuid = st.session_state[UUID_KEY]
+    campaign_name = st.session_state[CAMPAIGNS_KEY][selected_uuid].name
 
-    st.session_state[SELECTED_PROMPT_KEY] = selected_prompt
+    st.subheader(f"Website Post for campaign '{campaign_name}'")
+          
+    with st.form(key='form_post_generation'):
+        selected_prompt = st.selectbox(
+            label='Select a scenario to generate the website post',
+            options=THEMES_FOR_PROMPTS)
 
-    submit_button = st.form_submit_button(label='Generate')
+        submit_button = st.form_submit_button(label='Generate')
 
-if submit_button:
-    # Initialize variables
-    if GENERATED_TEXT_KEY in st.session_state:
-        del st.session_state[GENERATED_TEXT_KEY]
-    if SELECTED_IMAGE_KEY in st.session_state:
-        del st.session_state[SELECTED_IMAGE_KEY]
-    if GENERATED_IMAGES_KEY in st.session_state:
-        del st.session_state[GENERATED_IMAGES_KEY]
-    if EDITED_IMAGES_KEY in st.session_state:
-        del st.session_state[EDITED_IMAGES_KEY]
-    if IMAGE_TO_EDIT_KEY in st.session_state:
-        del st.session_state[IMAGE_TO_EDIT_KEY]
-    if FILE_UPLOADER_KEY in st.session_state:
-        del st.session_state[FILE_UPLOADER_KEY]
-    
-    st.session_state[IMAGE_OPTION] = image_option 
-    flag_new = True
+    if submit_button:
 
-    with st.spinner('Generating website post ...'):
-        try:
-            vertexai.init(project=PROJECT_ID, location=LOCATION)
-            llm = TextGenerationModel.from_pretrained(TEXT_MODEL_NAME)
-            response = llm.predict(
-                    prompt=WEBSITE_PROMPT_TEMPLATE.format(selected_prompt),
-                    max_output_tokens=1024,
-                ).text
-        except:
-            response = ""
-        if not response:
-            if selected_prompt in THEMES_FOR_PROMPTS:
-                index = THEMES_FOR_PROMPTS.index(selected_prompt)
-                response = page_cfg["prompt_default_responses"][index]
-        st.session_state[GENERATED_TEXT_KEY] = response
-
-    st.write('**Generated text**')
-    st.write(st.session_state[GENERATED_TEXT_KEY])
-    error = False
-
-    try:
-        if image_option == "uploaded":
-            utils_image.render_image_edit_prompt(
-                edited_images_key=EDITED_IMAGES_KEY,
-                edit_image_prompt_key=IMAGE_TO_EDIT_PROMPT_KEY,
-                upload_file=True,
-                image_to_edit_key=IMAGE_TO_EDIT_KEY,
-                mask_image=True,
-                mask_image_key=MASK_IMAGE_KEY,
-                download_button=False,
-                file_uploader_key=FILE_UPLOADER_KEY,
-                select_button=True,
-                selected_image_key=SELECTED_IMAGE_KEY)
-        else:
-            utils_image.render_image_generation_and_edition_ui(
-                image_text_prompt_key=IMAGE_GENERATION_TEXT_PROMPT_KEY,
-                generated_images_key=GENERATED_IMAGES_KEY,
-                edit_image_prompt_key=EDIT_GENERATED_IMAGE_PROMPT_KEY,
-                pre_populated_prompts=[
-                    IMAGE_PROMPT_TAMPLATE.format(selected_prompt)],
-                select_button=True,
-                selected_image_key=SELECTED_IMAGE_KEY,
-                edit_button=True,
-                image_to_edit_key=IMAGE_TO_EDIT_KEY,
-                edit_with_mask=True,
-                mask_image_key=MASK_IMAGE_KEY,
-                edited_images_key=EDITED_IMAGES_KEY,
-                download_button=False,
-                auto_submit_first_pre_populated=True
-            )
-    except:
-        error = True
-    if (error or 
-        (image_option == "generated" and 
-         not st.session_state[GENERATED_IMAGES_KEY])):
-            index = THEMES_FOR_PROMPTS.index(selected_prompt)
-            utils_image.render_image_file(
-                page_cfg[f"default_images"][index], SELECTED_IMAGE_KEY, True) 
-
-if GENERATED_TEXT_KEY in st.session_state and not flag_new:
-    st.write('**Generated text**')
-    st.write(st.session_state[GENERATED_TEXT_KEY])
-
-    try:
-        if st.session_state[IMAGE_OPTION] == "uploaded":
-            utils_image.render_image_edit_prompt(
-                edited_images_key=EDITED_IMAGES_KEY,
-                edit_image_prompt_key=IMAGE_TO_EDIT_PROMPT_KEY,
-                upload_file=True,
-                image_to_edit_key=IMAGE_TO_EDIT_KEY,
-                mask_image=True,
-                mask_image_key=MASK_IMAGE_KEY,
-                download_button=False,
-                file_uploader_key=FILE_UPLOADER_KEY,
-                select_button=True,
-                selected_image_key=SELECTED_IMAGE_KEY)
-        else:
-            utils_image.render_image_generation_and_edition_ui(
-                image_text_prompt_key=IMAGE_GENERATION_TEXT_PROMPT_KEY,
-                generated_images_key=GENERATED_IMAGES_KEY,
-                edit_image_prompt_key=EDIT_GENERATED_IMAGE_PROMPT_KEY,
-                pre_populated_prompts=[
-                    IMAGE_PROMPT_TAMPLATE.format(
-                        st.session_state[SELECTED_PROMPT_KEY])],
-                select_button=True,
-                selected_image_key=SELECTED_IMAGE_KEY,
-                edit_button=True,
-                image_to_edit_key=IMAGE_TO_EDIT_KEY,
-                edit_with_mask=True,
-                mask_image_key=MASK_IMAGE_KEY,
-                edited_images_key=EDITED_IMAGES_KEY,
-                download_button=False,
-                auto_submit_first_pre_populated=False)
-    except:
-        st.info('Could not generate image due to policy restrictions. '
-                'Please provide a different prompt.')
-    else:
+        st.session_state[SELECTED_PROMPT_KEY] = selected_prompt
+        # Initialize variables
+        if GENERATED_TEXT_KEY in st.session_state:
+            del st.session_state[GENERATED_TEXT_KEY]
+        if SELECTED_IMAGE_KEY in st.session_state:
+            del st.session_state[SELECTED_IMAGE_KEY]
+        if GENERATED_IMAGES_KEY in st.session_state:
+            del st.session_state[GENERATED_IMAGES_KEY]
         if EDITED_IMAGES_KEY in st.session_state:
-            if not st.session_state[EDITED_IMAGES_KEY]:
-                st.info('Could not generate image due to policy restrictions. '
-                        'Please provide a different prompt.')
+            del st.session_state[EDITED_IMAGES_KEY]
+        if IMAGE_TO_EDIT_KEY in st.session_state:
+            del st.session_state[IMAGE_TO_EDIT_KEY]
+        if FILE_UPLOADER_KEY in st.session_state:
+            del st.session_state[FILE_UPLOADER_KEY]
+        
 
-    if SELECTED_IMAGE_KEY in st.session_state:
-        with st.container():
-            st.write("**Currently selected image**")
-            st.image(st.session_state[SELECTED_IMAGE_KEY])
+        with st.spinner('Generating website post ...'):
+            try:
+                vertexai.init(project=PROJECT_ID, location=LOCATION)
+                llm = TextGenerationModel.from_pretrained(TEXT_MODEL_NAME)
+                response = llm.predict(
+                        prompt=WEBSITE_PROMPT_TEMPLATE.format(selected_prompt),
+                        max_output_tokens=1024,
+                    ).text
+            except:
+                response = ""
+            if not response:
+                if selected_prompt in THEMES_FOR_PROMPTS:
+                    index = THEMES_FOR_PROMPTS.index(selected_prompt)
+                    response = page_cfg["prompt_default_responses"][index]
+            st.session_state[GENERATED_TEXT_KEY] = response
+ 
+
+if GENERATED_TEXT_KEY in st.session_state and UUID_KEY in st.session_state:
+    st.write('**Generated text**')
+    st.write(st.session_state[GENERATED_TEXT_KEY])
+    selected_uuid = st.session_state[UUID_KEY]
+    campaign_image_dict = st.session_state[
+        CAMPAIGNS_KEY][selected_uuid].campaign_uploaded_images
+
+    expander_title = "Choose an option for the images"
+    expanded = True
+    if IMAGE_OPTION_KEY in st.session_state:
+        expander_title = "Change image option"
+        expanded = False
+
+    with st.expander(expander_title, expanded):
+        image_option_radio = st.radio(
+            label="Choose image option", label_visibility="collapsed",
+            key=f"{PAGE_KEY_PREFIX}_image_option_radio",
+            options=["uploaded", "generated"],
+            format_func=lambda x: f"{x.capitalize()} Images")
+        def image_option_button():
+            st.session_state[IMAGE_OPTION_KEY
+                ] = st.session_state[f"{PAGE_KEY_PREFIX}_image_option_radio"]
+        st.button("Select", on_click=image_option_button)
+        
+    if st.session_state.get(IMAGE_OPTION_KEY, "") == "uploaded":
+        utils_image.render_image_edit_prompt(
+            image_to_edit_key=IMAGE_TO_EDIT_KEY,
+            edit_image_prompt_key=EDIT_IMAGE_PROMPT_KEY,
+            edited_images_key=EDITED_IMAGES_KEY,
+            mask_image=True,
+            mask_image_key=MASK_IMAGE_KEY,
+            select_button=True,
+            selected_image_key=SELECTED_IMAGE_KEY,
+            file_uploader_key=FILE_UPLOADER_KEY,
+            campaign_image_dict=campaign_image_dict,
+            local_image_list=page_cfg["default_images"]
+        )
+    else:
+         utils_image.render_image_generation_and_edition_ui(
+            image_text_prompt_key=IMAGE_GENERATION_TEXT_PROMPT_KEY,
+            generated_images_key=GENERATED_IMAGES_KEY,
+            edit_image_prompt_key=EDIT_GENERATED_IMAGE_PROMPT_KEY,
+            pre_populated_prompts=[
+                IMAGE_PROMPT_TAMPLATE.format(
+                    st.session_state[SELECTED_PROMPT_KEY])],
+            select_button=True,
+            selected_image_key=SELECTED_IMAGE_KEY,
+            edit_button=True,
+            image_to_edit_key=IMAGE_TO_EDIT_KEY,
+            edit_with_mask=True,
+            mask_image_key=MASK_IMAGE_KEY,
+            edited_images_key=EDITED_IMAGES_KEY,
+            download_button=False,
+            auto_submit_first_pre_populated=True
+        )
 
 
 if (GENERATED_TEXT_KEY in st.session_state and 
