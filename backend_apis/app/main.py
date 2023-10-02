@@ -468,8 +468,8 @@ def post_brief_create_upload(data: BriefCreateRequest) -> BriefCreateResponse:
     )
 
 
-@app.post(path="/creative-brief-create-upload")
-def post_brief_create_upload(data: SlidesCreateRequest) -> SlidesCreateResponse:
+@app.post(path="/creative-slides-upload")
+def post_create_slides_upload(data: SlidesCreateRequest) -> SlidesCreateResponse:
     """Create Slides and upload charts from Google Sheets
     Parameters:
         folder_id: str
