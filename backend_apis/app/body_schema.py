@@ -94,3 +94,25 @@ class ConsumerInsightsRequest(BaseModel):
 class ConsumerInsightsResponse(BaseModel):
     results: list
 
+
+class BriefCreateRequest(BaseModel):
+    campaign_name: str
+    business_name: str
+    brief_scenario: str
+    brand_statement: str
+    primary_message: str
+    comm_channels: str
+
+
+class BriefCreateResponse(BaseModel):
+    new_folder_id: str
+    doc_id: str
+
+
+class SlidesCreateRequest(BaseModel):
+    folder_id: str
+
+
+class SlidesCreateResponse(BaseModel):
+    slide_id: str
+    sheet_id: str

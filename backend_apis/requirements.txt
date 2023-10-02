@@ -22,3 +22,5 @@ pandas
 db-dtypes
 google-cloud-datacatalog
 google-cloud-discoveryengine
+google-api-python-client
+python-multipart

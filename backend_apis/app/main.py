@@ -12,19 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from google.cloud import datacatalog_v1
-
-from datetime import datetime, timedelta
-from . import utils_codey
-from . import utils_search
+import time
 import tomllib
 
-from proto import Message
-
+from . import utils_codey
+from . import utils_search
+from . import utils_workspace
 from . import utils_trendspotting as trendspotting
-from fastapi import FastAPI, HTTPException
+from datetime import datetime, timedelta
+from fastapi import FastAPI, HTTPException, UploadFile
+from googleapiclient.discovery import build
 from google.cloud import bigquery
+from google.cloud import datacatalog_v1
 from google.cloud import discoveryengine
+from google.oauth2 import service_account
+from proto import Message
 from vertexai.preview.language_models import TextGenerationModel as bison_latest
 from vertexai.language_models import TextGenerationModel as bison_ga
 from vertexai.preview.vision_models import ImageGenerationModel
@@ -45,7 +47,11 @@ from .body_schema import (
     AudiencesSampleDataRequest,
     AudiencesSampleDataResponse,
     ConsumerInsightsRequest,
-    ConsumerInsightsResponse
+    ConsumerInsightsResponse,
+    BriefCreateRequest,
+    BriefCreateResponse,
+    SlidesCreateRequest,
+    SlidesCreateResponse
 )
 
 # Load configuration file
@@ -73,6 +79,22 @@ llm_ga = bison_ga.from_pretrained(model_name="text-bison@001")
 
 # Image models
 imagen = ImageGenerationModel.from_pretrained("imagegeneration@002")
+
+# Workspace integration
+CREDENTIALS = service_account.Credentials.from_service_account_file(
+    filename=config["global"]["service_account_json_key"], 
+    scopes=config["global"]["workspace_scopes"])
+drive_service = build('drive', 'v3', credentials=CREDENTIALS)
+docs_service = build('docs', 'v1', credentials=CREDENTIALS)
+sheets_service = build('sheets', 'v4', credentials=CREDENTIALS)
+slides_service = build('slides', 'v1', credentials=CREDENTIALS)
+
+drive_folder_id = config["global"]["drive_folder_id"]
+slides_template_id = config["global"]["slides_template_id"]
+doc_template_id = config["global"]["doc_template_id"]
+sheet_template_id = config["global"]["sheet_template_id"]
+slide_page_id_list = config["global"]["slide_page_id_list"]
+
 
 app = FastAPI()
 
@@ -267,7 +289,7 @@ def post_summarize_news(data: NewsSummaryRequest) -> NewsSummaryResponse:
 
 @app.post(path="/post-audiences")
 def post_audiences(data: AudiencesRequest) -> AudiencesResponse:
-    """Summarize news related to keyword(s)
+    """Transform a question in NL to SQL and query BQ.
     Parameters:
         question: Question to be asked to BQ.
     Returns:
@@ -303,8 +325,8 @@ def post_audiences(data: AudiencesRequest) -> AudiencesResponse:
 
 
 @app.get(path="/get-dataset-sample")
-def get_audiences(data: AudiencesSampleDataRequest) -> AudiencesSampleDataResponse:
-    """Summarize news related to keyword(s)
+def get_dataset_sample(data: AudiencesSampleDataRequest) -> AudiencesSampleDataResponse:
+    """Retrieve 3 rows of a BQ table
     Parameters:
         table_name: str
     Returns:
@@ -326,12 +348,12 @@ def get_audiences(data: AudiencesSampleDataRequest) -> AudiencesSampleDataRespon
 
 
 @app.get(path="/post-consumer-insights")
-def get_audiences(data: ConsumerInsightsRequest) -> ConsumerInsightsResponse:
-    """Summarize news related to keyword(s)
+def post_consumer_insights(data: ConsumerInsightsRequest) -> ConsumerInsightsResponse:
+    """Query Vertex AI Search and return top 10 results.
     Parameters:
-        
+        query: str
     Returns:
-        
+        results: list
     """
     datastore_location = "global"
     results = []
@@ -368,4 +390,117 @@ def get_audiences(data: ConsumerInsightsRequest) -> ConsumerInsightsResponse:
 
     return ConsumerInsightsResponse(
         results=results
+    )
+
+
+@app.post(path="/post-upload-file-drive")
+def post_upload_file_drive(file: UploadFile):
+    """Upload file to Google Drive
+    Parameters:
+        file: UploadFile
+    Returns:
+        file_id: str
+    """
+    try:
+        file_id = utils_workspace.upload_to_folder(
+            drive_service=drive_service,
+            f=file.file,
+            folder_id=drive_folder_id,
+            upload_name=file.filename,
+            mime_type=file.content_type
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=400,
+            detail="Something went wrong. Please try again.")
+    finally:
+        file.file.close()
+    return file_id
+
+
+@app.post(path="/creative-brief-create-upload")
+def post_brief_create_upload(data: BriefCreateRequest) -> BriefCreateResponse:
+    """Create a creative brief document and upload to Google Drive
+    Parameters:
+        campaign_name: str
+        business_name: str
+        brief_scenario: str
+        brand_statement: str
+        primary_message: str
+        comm_channels: str
+    Returns:
+        new_folder_id: str
+        doc_id: str
+    """
+    try:
+        new_folder_id = utils_workspace.create_folder_in_folder(
+            drive_service=drive_service,
+            folder_name=f"Marketing_Assets_{int(time.time())}",
+            parent_folder_id=drive_folder_id)
+        
+        utils_workspace.set_permission(
+            drive_service=drive_service,
+            file_id=new_folder_id)
+
+        doc_id = utils_workspace.copy_drive_file(
+            drive_service=drive_service,
+            drive_file_id=doc_template_id,
+            parentFolderId=new_folder_id,
+            copy_title=f"GenAI Marketing Brief")
+
+        utils_workspace.update_doc(
+            docs_service=docs_service,
+            document_id=doc_id,
+            campaign_name=data.campaign_name,
+            business_name=data.business_name,
+            scenario=data.brief_scenario,
+            brand_statement=data.brand_statement,
+            primary_msg=data.primary_message,
+            comms_channel=data.comm_channels)
+    except Exception as e:
+        raise HTTPException(
+            status_code=400, 
+            detail="Something went wrong. Please try again.")
+
+    return BriefCreateResponse(
+        new_folder_id=new_folder_id,
+        doc_id=doc_id
+    )
+
+
+@app.post(path="/creative-brief-create-upload")
+def post_brief_create_upload(data: SlidesCreateRequest) -> SlidesCreateResponse:
+    """Create Slides and upload charts from Google Sheets
+    Parameters:
+        folder_id: str
+    Returns:
+        slide_id: str
+        sheet_id: str
+    """
+    try:
+        slide_id = utils_workspace.copy_drive_file(
+            drive_file_id=slides_template_id,
+            parentFolderId=data.folder_id,
+            copy_title="Marketing Assets")
+        
+        sheet_id = utils_workspace.copy_drive_file(
+            drive_file_id=sheet_template_id,
+            parentFolderId=data.folder_id,
+            copy_title="GenAI Marketing Data Source")     
+
+        utils_workspace.merge_slides(
+            presentation_id=slide_id,
+            spreadsheet_id=sheet_id,
+            spreadsheet_template_id=sheet_template_id,
+            slide_page_id_list=sheet_template_id)
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=400, 
+            detail="Something went wrong. Please try again."
+        )
+
+    return SlidesCreateResponse(
+        slide_id=slide_id,
+        sheet_id=sheet_id
     )
