@@ -24,6 +24,8 @@ dataset_id = "cdp_dataset"
 # Tag name for the Dataplex Tag manager.
 tag_name = "llmcdptemplate"
 
+vertexai_search_datastore = "google-ads-support_1686058481432"
+
 # Prompt used to generate SQL from questions using natural language.
 # You can change this prompt if needed. 
 prompt_nl_sql = """This is a task converting text into GoogleSQL statement. We will first given the dataset schema and then ask a question in text. You are asked to generate SQL statement.

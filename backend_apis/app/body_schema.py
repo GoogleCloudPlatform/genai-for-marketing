@@ -87,3 +87,10 @@ class AudiencesSampleDataResponse(BaseModel):
     table_name: str
 
 
+class ConsumerInsightsRequest(BaseModel):
+    query: str
+
+
+class ConsumerInsightsResponse(BaseModel):
+    results: list
+

@@ -21,3 +21,4 @@ newspaper3k
 pandas
 db-dtypes
 google-cloud-datacatalog
+google-cloud-discoveryengine

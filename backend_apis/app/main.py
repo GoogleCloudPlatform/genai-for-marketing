@@ -16,11 +16,15 @@ from google.cloud import datacatalog_v1
 
 from datetime import datetime, timedelta
 from . import utils_codey
+from . import utils_search
 import tomllib
+
+from proto import Message
 
 from . import utils_trendspotting as trendspotting
 from fastapi import FastAPI, HTTPException
 from google.cloud import bigquery
+from google.cloud import discoveryengine
 from vertexai.preview.language_models import TextGenerationModel as bison_latest
 from vertexai.language_models import TextGenerationModel as bison_ga
 from vertexai.preview.vision_models import ImageGenerationModel
@@ -39,7 +43,9 @@ from .body_schema import (
     AudiencesRequest,
     AudiencesResponse,
     AudiencesSampleDataRequest,
-    AudiencesSampleDataResponse
+    AudiencesSampleDataResponse,
+    ConsumerInsightsRequest,
+    ConsumerInsightsResponse
 )
 
 # Load configuration file
@@ -47,6 +53,12 @@ with open("/code/app/config.toml", "rb") as f:
     config = tomllib.load(f)
 project_id = config["global"]["project_id"]
 location = config["global"]["location"]
+
+# Vertex AI Search Client
+search_client = discoveryengine.SearchServiceClient()
+vertexai_search_datastore = config["global"]["vertexai_search_datastore"]
+
+# Audiences
 dataset_id = config["global"]["dataset_id"]
 prompt_nl_sql = config["global"]["prompt_nl_sql"]
 tag_name = config["global"]["tag_name"]
@@ -257,9 +269,10 @@ def post_summarize_news(data: NewsSummaryRequest) -> NewsSummaryResponse:
 def post_audiences(data: AudiencesRequest) -> AudiencesResponse:
     """Summarize news related to keyword(s)
     Parameters:
-
+        question: Question to be asked to BQ.
     Returns:
-        
+        audiences: dict with emails
+        gen_code: SQL code
     """
     # Audiences
     tag_template_name = (f'projects/{project_id}/locations/'
@@ -312,3 +325,47 @@ def get_audiences(data: AudiencesSampleDataRequest) -> AudiencesSampleDataRespon
     )
 
 
+@app.get(path="/post-consumer-insights")
+def get_audiences(data: ConsumerInsightsRequest) -> ConsumerInsightsResponse:
+    """Summarize news related to keyword(s)
+    Parameters:
+        
+    Returns:
+        
+    """
+    datastore_location = "global"
+    results = []
+    try:
+        search_results = utils_search.search(
+            search_query=data.query,
+            project_id=project_id,
+            location=datastore_location,
+            search_engine_id=vertexai_search_datastore,
+            serving_config_id="default_config",
+            search_client=search_client)
+    except Exception as e:
+        raise HTTPException(
+            status_code=400, 
+            detail="Something went wrong. Please try again.")
+    else:
+        for search_result in search_results:
+            search_result_dict = Message.to_dict(search_result)
+            document = search_result_dict.get("document", {})
+            struct_data = document.get("derived_struct_data",{})
+            title = struct_data.get("title", "")
+            link = struct_data.get("link", "")
+            snippets = struct_data.get("snippets", [])
+            if len(snippets) > 0:
+                snippet = snippets[0].get("snippet", "")
+                html_snippet = snippets[0].get("htmlSnippet", "")
+                result = {
+                    "title": title,
+                    "link": link,
+                    "snippet": snippet,
+                    "html_snippet": html_snippet
+                }
+                results.append(result)
+
+    return ConsumerInsightsResponse(
+        results=results
+    )
