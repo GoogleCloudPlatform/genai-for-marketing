@@ -45,6 +45,7 @@ class Campaign:
     trendspotting_summaries: list | None = None
     audiences: pd.DataFrame | None = None
     campaign_uploaded_images: dict | None = None
+    theme: str = ""
 
 
 def add_new_campaign(name: str) -> str:

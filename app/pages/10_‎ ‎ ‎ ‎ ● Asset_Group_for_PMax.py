@@ -22,6 +22,7 @@ Marketing Insights demonstration:
 
 import asyncio
 import base64
+from itertools import chain
 import pandas as pd
 import numpy as np
 import random
@@ -29,6 +30,7 @@ import streamlit as st
 import tomllib
 
 import utils_image
+from utils_streamlit import reset_page_state
 
 from utils_campaign import generate_names_uuid_dict
 from utils_prompt import async_predict_text_llm
@@ -76,6 +78,8 @@ EDITED_IMAGES_KEY = f"{PAGE_KEY_PREFIX}_Edited_Images"
 IMAGE_PROMPT_KEY = f"{PAGE_KEY_PREFIX}_Image_Prompt"
 
 GENERATED_IMAGES_KEY = f"{PAGE_KEY_PREFIX}_generated_images"
+UUID_KEY = f"{PAGE_KEY_PREFIX}_UUID"
+THEME_KEY = f"{PAGE_KEY_PREFIX}_Theme"
 
 IMAGE_GENERATION_PROMPT = page_cfg["image_generation_prompt"]
 BRAND_OVERVIEW = data["pages"]["campaigns"].get("prompt_brand_overview", "")
@@ -86,7 +90,7 @@ LONG_HEADLINE_PROMPT_TEMPLATE = page_cfg["load_headline_prompt_template"]
 DESCRIPTION_PROMPT_TEMPLATE = page_cfg["description_prompt_template"]
 BUSINESS_NAME = page_cfg["business_name"]
 CALL_TO_ACTION = page_cfg["call_to_action"]
-THEMES_FOR_PROMPTS = page_cfg["themes_for_prompts"]
+THEMES_FOR_PROMPTS = data["pages"]["campaigns"]["prompt_themes"]
 
 
 cols = st.columns([15, 85])
@@ -97,83 +101,138 @@ with cols[1]:
 
 st.write("""Generate an asset group for PMax using Vertex AI PaLM 2 API.""")
 
-with st.form(key='form_theme'):
-    select_theme = st.selectbox(
-        'Select the scenario to generate an asset group for PMax.',
-        options=THEMES_FOR_PROMPTS)
-    image_option = st.radio(label="Choose an option for the images:",
-             options=["uploaded", "generated"],
-             format_func=lambda x: f"{x.capitalize()} Images")
+if CAMPAIGNS_KEY in st.session_state:
+    campaigns_names = list(generate_names_uuid_dict().keys())
+    expander_title = "**Choose a Campaign**"
+    expanded = True
+    if UUID_KEY in st.session_state:
+        expander_title = ("Change campaign")
+        expanded = False
 
-    generate_button = st.form_submit_button("Generate Asset Group")
+    with st.expander(expander_title, expanded):
+        selected_campaign = st.selectbox(
+            "List of Campaigns",
+            campaigns_names)
+        def choose_campaign():
+            selected_uuid = generate_names_uuid_dict()[selected_campaign]
+            if (UUID_KEY in st.session_state and 
+                st.session_state[UUID_KEY] != selected_uuid):
+                reset_page_state(PAGE_KEY_PREFIX)
+            st.session_state[UUID_KEY] = selected_uuid
+            
+        st.button("Choose campaign", on_click=choose_campaign)
+        
+else:
+    st.info("Please generate a campaign first by going to the Campaingns page "
+            "before using this page.")
+if UUID_KEY in st.session_state:
+    selected_uuid = st.session_state[UUID_KEY]
+    campaign_name = st.session_state[CAMPAIGNS_KEY][selected_uuid].name
+    campaign_theme = st.session_state[CAMPAIGNS_KEY][selected_uuid].theme
+    st.subheader(f"Asset Group for PMax for campaign '{campaign_name}'")
 
-if generate_button:
-    # Initialize variables
-    if GENERATED_IMAGES_KEY in st.session_state:
-        del st.session_state[GENERATED_IMAGES_KEY]
-    if EDITED_IMAGES_KEY in st.session_state:
-        del st.session_state[EDITED_IMAGES_KEY]
-    if IMAGE_TO_EDIT_KEY in st.session_state:
-        del st.session_state[IMAGE_TO_EDIT_KEY]
-    if IMAGE_TO_EDIT_PROMPT_KEY in st.session_state:
-        del st.session_state[IMAGE_TO_EDIT_PROMPT_KEY]
-    if FILE_UPLOADER_KEY in st.session_state:
-        del st.session_state[FILE_UPLOADER_KEY]
+    with st.form(key='form_theme'):
+        placeholder_for_options_theme = st.empty()
+        placeholder_for_custom_theme = st.empty()
 
-    st.session_state[IMAGE_OPTION] = image_option
+        image_option = st.radio(label="Choose an option for the images:",
+                 options=["uploaded", "generated"],
+                 format_func=lambda x: f"{x.capitalize()} Images")
+        
+        generation_button = st.form_submit_button("Generate")
+    # Create selectbox
+    with placeholder_for_options_theme:
+        theme_option = st.radio(
+        "Choose the theme to generate an asset group for PMax.",
+        [f"Campaign: '{campaign_theme}'", "Custom"])
 
-    async def generate_brief() -> tuple:
-        return await asyncio.gather(
-            async_predict_text_llm(
-                prompt=HEADLINE_PROMPT_TEMPLATE.format(
-                    select_theme,
-                    BRAND_OVERVIEW),
-                name="Headline",
-                pretrained_model=TEXT_MODEL_NAME,
-                max_output_tokens=256
-            ),
-            async_predict_text_llm(
-                prompt=LONG_HEADLINE_PROMPT_TEMPLATE.format(
-                    select_theme,
-                    BRAND_OVERVIEW),
-                name="Long Headline",
-                pretrained_model=TEXT_MODEL_NAME,
-            ),
-            async_predict_text_llm(
-                prompt=DESCRIPTION_PROMPT_TEMPLATE.format(
-                    select_theme,
-                    BRAND_OVERVIEW),
-                name="Description",
-                pretrained_model=TEXT_MODEL_NAME))
+    # Create text input for user entry
+    with placeholder_for_custom_theme:
+        if theme_option == "Custom":
+            theme_other = st.text_input("Enter your custom theme...")
+        else:
+            theme_other = ""
 
-    try:
-        generated_brief = asyncio.run(generate_brief())
-        st.session_state[HEADLINE_KEY] = generated_brief[0]
-        st.session_state[LONG_HEADLINE_KEY] = generated_brief[1]
-        st.session_state[DESCRIPTION_KEY] = generated_brief[2]
-    except Exception as e:
-        print(e)
+    if generation_button:
+        if theme_option != "Custom":
+            theme = campaign_theme
+        else:
+            if theme_other == "":
+                st.info("Please write the custom theme")
+                st.stop()
 
-    if not st.session_state[HEADLINE_KEY]:
-        st.session_state[HEADLINE_KEY] = page_cfg[
-            "asset_group_headlines"]
+            theme = theme_other
+        # Initialize variables
+        if GENERATED_IMAGES_KEY in st.session_state:
+            del st.session_state[GENERATED_IMAGES_KEY]
+        if EDITED_IMAGES_KEY in st.session_state:
+            del st.session_state[EDITED_IMAGES_KEY]
+        if IMAGE_TO_EDIT_KEY in st.session_state:
+            del st.session_state[IMAGE_TO_EDIT_KEY]
+        if IMAGE_TO_EDIT_PROMPT_KEY in st.session_state:
+            del st.session_state[IMAGE_TO_EDIT_PROMPT_KEY]
+        if FILE_UPLOADER_KEY in st.session_state:
+            del st.session_state[FILE_UPLOADER_KEY]
 
-    if not st.session_state[LONG_HEADLINE_KEY]:
-        st.session_state[LONG_HEADLINE_KEY] = page_cfg[
-            "asset_group_long_headlines"]
+        st.session_state[IMAGE_OPTION] = image_option
 
-    if not st.session_state[HEADLINE_KEY]:
-        st.session_state[HEADLINE_KEY] = page_cfg[
-           "asset_group_description"]
+        async def generate_brief() -> tuple:
+            return await asyncio.gather(
+                async_predict_text_llm(
+                    prompt=HEADLINE_PROMPT_TEMPLATE.format(
+                        theme,
+                        BRAND_OVERVIEW),
+                    name="Headline",
+                    pretrained_model=TEXT_MODEL_NAME,
+                    max_output_tokens=256
+                ),
+                async_predict_text_llm(
+                    prompt=LONG_HEADLINE_PROMPT_TEMPLATE.format(
+                        theme,
+                        BRAND_OVERVIEW),
+                    name="Long Headline",
+                    pretrained_model=TEXT_MODEL_NAME,
+                ),
+                async_predict_text_llm(
+                    prompt=DESCRIPTION_PROMPT_TEMPLATE.format(
+                        theme,
+                        BRAND_OVERVIEW),
+                    name="Description",
+                    pretrained_model=TEXT_MODEL_NAME))
 
-    st.session_state[CALL_TO_ACTION_KEY] = random.choice(CALL_TO_ACTION)
-    st.session_state[THEMES_FOR_PROMPTS_KEY] = select_theme
+        try:
+            generated_brief = asyncio.run(generate_brief())
+            st.session_state[HEADLINE_KEY] = generated_brief[0]
+            st.session_state[LONG_HEADLINE_KEY] = generated_brief[1]
+            st.session_state[DESCRIPTION_KEY] = generated_brief[2]
+        except Exception as e:
+            print(e)
 
-if (THEMES_FOR_PROMPTS_KEY in st.session_state and
+        if not st.session_state[HEADLINE_KEY]:
+            st.session_state[HEADLINE_KEY] = page_cfg[
+                "asset_group_headlines"]
+
+        if not st.session_state[LONG_HEADLINE_KEY]:
+            st.session_state[LONG_HEADLINE_KEY] = page_cfg[
+                "asset_group_long_headlines"]
+
+        if not st.session_state[HEADLINE_KEY]:
+            st.session_state[HEADLINE_KEY] = page_cfg[
+               "asset_group_description"]
+
+        st.session_state[CALL_TO_ACTION_KEY] = random.choice(CALL_TO_ACTION)
+        st.session_state[THEMES_FOR_PROMPTS_KEY] = theme
+
+if (UUID_KEY in st.session_state and
+    THEMES_FOR_PROMPTS_KEY in st.session_state and
     HEADLINE_KEY in st.session_state and
     LONG_HEADLINE_KEY in st.session_state and
     DESCRIPTION_KEY in st.session_state and
     CALL_TO_ACTION_KEY in st.session_state):
+    selected_uuid = st.session_state[UUID_KEY]
+    campaign_image_dict = st.session_state[
+        CAMPAIGNS_KEY][selected_uuid].campaign_uploaded_images
+
     st.subheader('Asset Group for PMax')
 
     st.write(f'**Business name:** {BUSINESS_NAME}')
@@ -213,7 +272,11 @@ if (THEMES_FOR_PROMPTS_KEY in st.session_state and
             mask_image_key=MASK_IMAGE_KEY,
             download_button=False,
             file_uploader_key=FILE_UPLOADER_KEY,
-            select_button=False)
+            select_button=False,
+            campaign_image_dict=campaign_image_dict,
+            local_image_list=list(chain.from_iterable(
+                page_cfg["default_image_asset"]))
+        )
     else:
 
         if GENERATED_IMAGES_KEY not in st.session_state:
@@ -226,13 +289,13 @@ if (THEMES_FOR_PROMPTS_KEY in st.session_state and
                     '1:1',
                     GENERATED_IMAGES_KEY)
 
-        
+        theme = st.session_state[THEMES_FOR_PROMPTS_KEY]
         if st.session_state[GENERATED_IMAGES_KEY]:
             st.write('**Generated images**')
             utils_image.generate_image_columns(GENERATED_IMAGES_KEY,
                                                download_button=False)
-        elif select_theme in THEMES_FOR_PROMPTS:
-            index = THEMES_FOR_PROMPTS.index(select_theme)
+        elif theme in THEMES_FOR_PROMPTS:
+            index = THEMES_FOR_PROMPTS.index(theme)
             with open(page_cfg["default_image_asset"][index][0], "rb") as fp:
                 st.session_state[GENERATED_IMAGES_KEY].append(
                     {"bytesBase64Encoded":base64.b64encode(
@@ -242,19 +305,19 @@ if (THEMES_FOR_PROMPTS_KEY in st.session_state and
                     {"bytesBase64Encoded":base64.b64encode(
                         fp.read()).decode('utf-8')})
 
-if (HEADLINE_KEY in st.session_state and 
+if (UUID_KEY in st.session_state and
+    HEADLINE_KEY in st.session_state and 
     CAMPAIGNS_KEY in st.session_state and 
     (GENERATED_IMAGES_KEY in st.session_state or 
      (IMAGE_TO_EDIT_KEY in st.session_state and 
       FILE_UPLOADER_KEY in st.session_state))):
-    campaigns_names = generate_names_uuid_dict().keys()
+    selected_uuid = st.session_state[UUID_KEY]
+    campaign_name = st.session_state[CAMPAIGNS_KEY][selected_uuid].name
+
     with st.form(PAGE_KEY_PREFIX+"_Link_To_Campaign"):
-        st.write("**Choose a Campaign to save the results**")
-        selected_name = st.selectbox("List of Campaigns", campaigns_names)
         link_to_campaign_button = st.form_submit_button(label="Save to Campaign")
 
     if link_to_campaign_button:
-        selected_uuid = generate_names_uuid_dict()[selected_name]
 
         assets_group_dict = {}
         assets_group_dict.update({'business_name': BUSINESS_NAME})
@@ -296,5 +359,5 @@ if (HEADLINE_KEY in st.session_state and
 
         st.session_state[CAMPAIGNS_KEY][
                          selected_uuid].asset_classes_images = assets_images_pd
-        st.success(f"Asset group linked to campaign {selected_name}")
+        st.success(f"Asset group linked to campaign {campaign_name}")
 

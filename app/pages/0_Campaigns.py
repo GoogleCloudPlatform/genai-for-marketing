@@ -17,12 +17,13 @@ Initial page with an overview architecture and a description of each demo page.
 """
 
 import asyncio
+from itertools import cycle
 import streamlit as st
 import time
 import tomllib
 import utils_workspace
 
-from PIL import Image
+from PIL import Image, ImageOps
 from vertexai.preview.language_models import TextGenerationModel
 from utils_campaign import Campaign, add_new_campaign
 from utils_prompt import async_predict_text_llm
@@ -74,6 +75,7 @@ GENDER_FOR_PROMPTS = page_cfg["prompt_genders"]
 AGEGROUP_FOR_PROMPTS = page_cfg["prompt_age_groups"]
 OBJECTIVES_FOR_PROMPTS = page_cfg["prompt_objectives"]
 COMPETITORS_FOR_PROMPTS = page_cfg["prompt_competitors"]
+PROMPT_THEMES = page_cfg["prompt_themes"]
 
 # Variables for Workspace integration
 DOC_TEMPLATE_ID = data["pages"]["12_review_activate"]["doc_template_id"]
@@ -95,6 +97,9 @@ with tab1:
     with st.form(CAMPAIGNS_KEY+"_Creation_Form"):
         st.write("**Create a new campaign**")
         campaign_name = st.text_input("Campaign name")
+
+        placeholder_for_selectbox_theme = st.empty()
+        placeholder_for_custom_theme = st.empty()
 
         st.write("**Creative brief inputs**")
         cols = st.columns([1, 1])
@@ -120,10 +125,28 @@ with tab1:
                 options=COMPETITORS_FOR_PROMPTS)
 
         create_campaign_button = st.form_submit_button()
+    # Create selectbox
+    with placeholder_for_selectbox_theme:
+        options = PROMPT_THEMES + ["Another theme..."]
+        selection = st.selectbox("Select a theme", options=options)
 
+    # Create text input for user entry
+    with placeholder_for_custom_theme:
+        if selection == "Another theme...":
+            other_option = st.text_input("Enter your custom theme...")
+        else:
+            other_option = ""
 
     campaign_uuid = None
     if create_campaign_button:
+        theme = ""
+        if selection != "Another theme...":
+            theme = selection
+        else:
+            if other_option == "":
+                st.info("Please write the custom theme")
+
+            theme = other_option
         llm = TextGenerationModel.from_pretrained(TEXT_MODEL_NAME)
         is_allowed_to_create_campaign = False
 
@@ -145,7 +168,7 @@ with tab1:
         else:
             is_allowed_to_create_campaign = True
 
-        if is_allowed_to_create_campaign:
+        if is_allowed_to_create_campaign and theme != "":
             async def generate_campaign() -> tuple:
                 return await asyncio.gather(
                     async_predict_text_llm(
@@ -199,6 +222,8 @@ with tab1:
                     'primary_message': st.session_state[PRIMARY_MSG_KEY],
                     'comm_channels': st.session_state[COMMS_CHANNEL_KEY]
                 }
+                st.session_state[CAMPAIGNS_KEY][
+                    campaign_uuid].theme = theme
                 # local reference
                 brief = st.session_state[CAMPAIGNS_KEY][campaign_uuid].brief 
 
@@ -241,13 +266,24 @@ def display_campaigns_upload(
         return
     docs_link = f'https://docs.google.com/document/d/{campaign.workspace_assets["brief_docs_id"]}/edit'
     folder_link = f'http://drive.google.com/corp/drive/folders/{campaign.workspace_assets["folder_id"]}'
+    
 
     with st.form(
         key=f"{PAGE_KEY_PREFIX}_{str(campaign.unique_uuid)}_form", 
         clear_on_submit=True):
-        st.write(f"**Campaign name**: {c.name}")
+        st.write(f"**Campaign name**: {campaign.name}")
+        st.write(f"**Campaign theme**: {campaign.theme}")
         st.write(f"**Workspace**: [Edit brief in Google Docs ↗]({docs_link}) | "
-        f"[Explore files in Google Drive ↗]({folder_link})")
+            f"[Explore files in Google Drive ↗]({folder_link})")
+
+
+        if campaign.campaign_uploaded_images:
+            st.write("**Campaign images**:")
+            images = st.session_state[CAMPAIGNS_KEY][str(campaign.unique_uuid)].campaign_uploaded_images.values() 
+            cols = cycle(st.columns(4)) 
+            for im in images:
+                next(cols).image(im["thumbnail"], width=150, caption=im["name"])
+
         uploaded_files = st.file_uploader(
             "Upload images to your campaign. It MUST be in PNG or JPEG format.",
             type=['png', 'jpg'],
@@ -259,8 +295,8 @@ def display_campaigns_upload(
     if submit_button:
         with st.spinner("Uploading files to Google Drive..."):
             if uploaded_files:
-                st.session_state[CAMPAIGNS_KEY][
-                    str(campaign.unique_uuid)].campaign_uploaded_images = {}
+                if not campaign.campaign_uploaded_images:
+                    campaign.campaign_uploaded_images = {}
                 for file in uploaded_files:
                     try:
                         file_id = utils_workspace.upload_to_folder(
@@ -273,15 +309,15 @@ def display_campaigns_upload(
                         st.error("Could not upload one or more images. Please try again.")
                     else:
                         im = Image.open(file).convert("RGB")
-                        im.thumbnail((200,200))
-                        st.session_state[CAMPAIGNS_KEY][
-                            str(campaign.unique_uuid)].campaign_uploaded_images[file_id] = {
+                        im = ImageOps.fit(im, (150, 150))
+                        st.session_state[CAMPAIGNS_KEY][str(campaign.unique_uuid)].campaign_uploaded_images[file_id] = {
                                 "name":file.name,
                                 "mime_type":file.type,
                                 "size":file.size,
                                 "thumbnail":im
                             }
                         st.success(f"File {file.name} uploaded to campaign.")
+                st.rerun()
             else:
                 st.info("Please select image(s) before saving to Drive.")
 

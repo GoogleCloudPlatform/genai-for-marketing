@@ -86,7 +86,7 @@ UUID_KEY = f"{PAGE_KEY_PREFIX}_UUID"
 # Default values
 EMAIL_TEXT_PROMPT = page_cfg["prompt_email_text"]
 IMAGE_GENERATION_PROMPT = page_cfg["prompt_image_generation"]
-THEMES_FOR_PROMPTS = page_cfg["prompt_themes"]
+THEMES_FOR_PROMPTS = data["pages"]["campaigns"]["prompt_themes"]
 AGE_BUCKET = page_cfg["age_bucket"]
 MALE_NAMES = page_cfg["male_names"]
 FEMALE_NAMES = page_cfg["female_names"]
@@ -289,10 +289,12 @@ if AUDIENCE_DATAFRAME_KEY in st.session_state:
     with st.expander(expander_title, expanded):
         image_option_radio = st.radio(
             label="Choose image option", label_visibility="collapsed",
+            key=f"{PAGE_KEY_PREFIX}_image_option_radio",
             options=["uploaded", "generated"],
             format_func=lambda x: f"{x.capitalize()} Images")
         def image_option_button():
-            st.session_state[IMAGE_OPTION_KEY] = image_option_radio
+            st.session_state[IMAGE_OPTION_KEY
+                ] = st.session_state[f"{PAGE_KEY_PREFIX}_image_option_radio"]
         st.button("Select", on_click=image_option_button)
 
 
@@ -307,18 +309,36 @@ if AUDIENCE_DATAFRAME_KEY in st.session_state:
             selected_image_key=SELECTED_IMAGE_KEY,
             file_uploader_key=FILE_UPLOADER_KEY,
             campaign_image_dict=campaign_image_dict,
-            local_image_list=[] #TODO
+            local_image_list=page_cfg["default_email_image"]
         )
     if (st.session_state.get(IMAGE_OPTION_KEY, "") == "generated" or 
           SELECTED_IMAGE_KEY in st.session_state):
-        with st.form(PAGE_KEY_PREFIX+'Sample_Email_Form'):
-            theme = st.selectbox("**Choose a theme for the email**",
-                                 options=THEMES_FOR_PROMPTS)
-            generate_samples_button = st.form_submit_button(
-                "Generate email samples")
-
-        if generate_samples_button:
-            st.session_state[THEME_KEY] = theme
+        theme = st.session_state[CAMPAIGNS_KEY][selected_uuid].theme
+        theme_expander_title = "Choose the theme for the email"
+        theme_expanded = True
+        if THEME_KEY in st.session_state:
+            theme_expander_title = "Change the theme"
+            theme_expanded = False
+        with st.expander(theme_expander_title, theme_expanded):
+            campaign_option = st.radio(
+                "**Choose the theme for the email**",
+                [f"Campaign: '{theme}'", "Custom"],
+                label_visibility="collapsed")
+            if campaign_option == "Custom":
+                other_option = st.text_input("Enter your custom theme...")
+            else:
+                other_option = ""
+                            
+            generate_button = st.button("Generate email samples")
+        
+        if generate_button:
+            if campaign_option != "Custom":
+                st.session_state[THEME_KEY] = theme
+            else:
+                if other_option == "":
+                    st.info("Please write the custom theme")
+                    st.stop()
+                st.session_state[THEME_KEY] = other_option
             images = []
             if EDITED_IMAGES_KEY in st.session_state:
                 if SELECTED_IMAGE_KEY in st.session_state:
@@ -334,11 +354,14 @@ if AUDIENCE_DATAFRAME_KEY in st.session_state:
                     for image in images]
             st.session_state[IMAGES_KEY] = images
 
-            asyncio.run(generate_emails(number_of_emails=sample_size,
-                                        state_key=SAMPLE_EMAILS_KEY,
-                                        images=st.session_state[IMAGES_KEY],
-                                        theme=str(theme),
-                                        audience_dataframe=audience_dataframe))
+            asyncio.run(
+                generate_emails(number_of_emails=sample_size,
+                                state_key=SAMPLE_EMAILS_KEY,
+                                images=st.session_state[IMAGES_KEY],
+                                theme=str(theme),
+                                audience_dataframe=audience_dataframe))
+
+        
 
 
 if SAMPLE_EMAILS_KEY in st.session_state:

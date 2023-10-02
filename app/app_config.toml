@@ -86,6 +86,14 @@ page_title_icon = "/app/images/logo.png"
 sidebar_image_path = "/app/images/menu_icon_2.png"
 campaigns_key = "Campaigns"
 
+# Default themes 
+# (optional) Include or remove themes as needed
+prompt_themes = [
+    "Sales of new women's handbags at Cymbal",
+    "Introducing a new line of men's leather shoes",
+    "New opening of Cymbal concept shoe store in NYC",
+    "Cymbal shoes retail brand in NYC"]
+
 # Overview of the Cymbal brand. This description is used along with the prompts
 # to generate better results.
 # Change this description if you want to describe a different brand.
@@ -645,12 +653,6 @@ prompt_image_generation = "Generate an image for an email copy for {}"
 
 # Default themes for email copy generation
 # (optional) Include or remove themes as needed
-prompt_themes = [
-    "sales of new women's handbags at Cymbal",
-    "introducing a new line of men's leather shoes",
-    "new opening of Cymbal concept shoe store in NYC",
-    "Cymbal shoes retail brand in NYC"]
-
 # Age buckets that describe your audience
 # You can include or remove these options as needed.
 age_bucket = ['young adult', 'middle-aged', 'senior']
@@ -767,15 +769,6 @@ page_title = "Website Post"
 page_icon = "/app/images/favicon.png"
 sidebar_image_path = "/app/images/menu_icon_2.png"
 page_title_image = "/app/images/website_icon.png"
-
-# Default themes for website post generation
-# You can change them if needed.
-prompt_themes = [
-    "sales of new women's handbags at Cymbal",
-    "introducing a new line of men's leather shoes",
-    "new opening of Cymbal concept shoe store in NYC",
-    "Cymbal shoes retail brand in NYC"
-]
 
 # Default prompt for website post generation
 # Change this prompt if needed.
@@ -897,15 +890,6 @@ Generate a social media ad for {}: """
 # You can change this prompt if needed.
 image_prompt_template = """Generate an image for {}"""
 
-# Default themes for the prompts. This will be displayed as options for the user.
-# You can change this list if needed.
-themes_for_prompts = [
-    "sales of new handbags at Cymbal",
-    "introducing a new line of men's leather shoes",
-    "new opening of Cymbal concept shoe store in NYC",
-    "Cymbal shoes retail brand in NYC"
-]
-
 # The following variables are default / fallback social media posts and images.
 # They are used in case the model doesn't return anything.
 # Change this defaults if needed.
@@ -1008,15 +992,6 @@ call_to_action = [
 "Sign Up",
 "Subscribe",
 "See More"]
-
-# Default themes for PMax assets generation
-# You can change this list if needed.
-themes_for_prompts = [
-    "sales of new women's handbags at Cymbal",
-    "introducing a new line of men's leather shoes",
-    "new opening of Cymbal concept shoe store in NYC",
-    "Cymbal shoes retail brand in NYC"
-]
 
 # The following variables are default / fallback PMax assets and images.
 # They are used in case the model doesn't return anything.
