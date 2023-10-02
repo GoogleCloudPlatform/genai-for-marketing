@@ -172,7 +172,8 @@ def generate_sql_and_query(
         llm,
         datacatalog_client,
         prompt_template: str,
-        query: str,
+        query_metadata: str,
+        question: str,
         project_id: str,
         dataset_id: str,
         tag_template_name: str,
@@ -180,10 +181,6 @@ def generate_sql_and_query(
     """Generates a GoogleSQL query and executes it against a BigQuery dataset.
 
     Args:
-        state_key: 
-            A unique identifier for the current session.
-        title: 
-            The title of the UI page.
         query: 
             The initial query text.
         project_id: 
@@ -206,13 +203,13 @@ def generate_sql_and_query(
     metadata = get_metadata_from_dataset(
         bqclient=bqclient,
         datacatalog_client=datacatalog_client,
-        query=query, 
+        query=query_metadata, 
         project_id=project_id, 
         dataset_id=dataset_id,
         tag_template_name=tag_template_name)
 
     prompt = generate_prompt(
-        query, 
+        question, 
         metadata,
         prompt_template,
         project_id)
@@ -224,4 +221,4 @@ def generate_sql_and_query(
     ).text
 
     result_query = bqclient.query(gen_code)
-    return result_query.result().to_dataframe()
+    return result_query.result().to_dataframe().to_dict(), gen_code

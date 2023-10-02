@@ -15,6 +15,7 @@
 from google.cloud import datacatalog_v1
 
 from datetime import datetime, timedelta
+from . import utils_codey
 import tomllib
 
 from . import utils_trendspotting as trendspotting
@@ -36,7 +37,9 @@ from .body_schema import (
     NewsSummaryRequest,
     NewsSummaryResponse,
     AudiencesRequest,
-    AudiencesResponse
+    AudiencesResponse,
+    AudiencesSampleDataRequest,
+    AudiencesSampleDataResponse
 )
 
 # Load configuration file
@@ -44,6 +47,9 @@ with open("/code/app/config.toml", "rb") as f:
     config = tomllib.load(f)
 project_id = config["global"]["project_id"]
 location = config["global"]["location"]
+dataset_id = config["global"]["dataset_id"]
+prompt_nl_sql = config["global"]["prompt_nl_sql"]
+tag_name = config["global"]["tag_name"]
 
 # Trendspotting
 bq_client = bigquery.Client(project="rl-llm-dev")
@@ -255,22 +261,54 @@ def post_audiences(data: AudiencesRequest) -> AudiencesResponse:
     Returns:
         
     """
-
-
     # Audiences
-    TAG_TEMPLATE_NAME = (f'projects/{project_id}/locations/'
+    tag_template_name = (f'projects/{project_id}/locations/'
                         f'{location}/tagTemplates/{config["global"]["tag_name"]}')
-
-    QUERY = (
-        f'SELECT * FROM `{project_id}.{config["global"]["dataset_id"]}.INFORMATION_SCHEMA.TABLES`'
+    query_metadata = (
+        f'SELECT * FROM `{project_id}.{dataset_id}.INFORMATION_SCHEMA.TABLES`'
         ' WHERE table_name NOT LIKE "%metadata%"')
 
+    try:
+        audiences, gen_code = utils_codey.generate_sql_and_query(
+            llm=llm_latest,
+            datacatalog_client=datacatalog_client,
+            prompt_template=prompt_nl_sql,
+            query_metadata=query_metadata,
+            question=data.question,
+            project_id=project_id,
+            dataset_id=dataset_id,
+            tag_template_name=tag_template_name,
+            bqclient=bq_client
+        )
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
-# @app.get(path="/get-dataset-sample")
-# def get_audiences(data: ) -> :
-#     """Summarize news related to keyword(s)
-#     Parameters:
+    return AudiencesResponse(
+        audiences=audiences,
+        gen_code=gen_code
+    )
 
-#     Returns:
-        
-#     """
+
+@app.get(path="/get-dataset-sample")
+def get_audiences(data: AudiencesSampleDataRequest) -> AudiencesSampleDataResponse:
+    """Summarize news related to keyword(s)
+    Parameters:
+        table_name: str
+    Returns:
+        table_sample: dict
+    """
+    if data.table_name not in ["customers", "events", "transactions"]:
+        raise HTTPException(
+            status_code=400,
+            detail="Provide a valid table name."
+        )
+
+    query = f"SELECT * FROM `{project_id}.{dataset_id}.{data.table_name}` LIMIT 3"
+    result_query = bq_client.query(query=query).to_dataframe()
+
+    return AudiencesSampleDataResponse(
+        table_name=data.table_name,
+        table_sample=result_query.to_dict()
+    )
+
+

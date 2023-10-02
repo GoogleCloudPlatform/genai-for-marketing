@@ -23,21 +23,26 @@ class TextGenerateRequest(BaseModel):
     top_p: float = 0.8
     max_output_tokens: int = 1024
 
+
 class TextGenerateResponse(BaseModel):
     text: str
     safety_attributes: dict
 
+
 class ImageGenerateRequest(BaseModel):
     prompt: str
     number_of_images: int = 1
+
 
 class ImageResponse(BaseModel):
     images_base64_string: str
     image_size: tuple
     images_parameters: dict
 
+
 class ImageGenerateResponse(BaseModel):
     generated_images: list[ImageResponse]
+
 
 class ImageEditRequest(BaseModel):
     prompt: str
@@ -45,25 +50,40 @@ class ImageEditRequest(BaseModel):
     mask_bytes: str | None = None
     number_of_images: int = 1
 
+
 class TrendTopRequest(BaseModel):
     trends_date: str
 
+
 class TrendTopReponse(BaseModel):
     top_search_terms: list[dict]
+
 
 class NewsSummaryRequest(BaseModel):
     keywords: list[str]
     max_records: int
     max_days: int = 10
 
+
 class NewsSummaryResponse(BaseModel):
     summaries: list[dict[str, str]]
 
+
 class AudiencesRequest(BaseModel):
-    query: str
-    tag_template_name: str
-    
+    question: str
+
 
 class AudiencesResponse(BaseModel):
-    pass
+    audiences: dict
+    gen_code: str
+
+
+class AudiencesSampleDataRequest(BaseModel):
+    table_name: str
+
+
+class AudiencesSampleDataResponse(BaseModel):
+    table_sample: dict
+    table_name: str
+
 
