@@ -46,7 +46,9 @@ Using the same Vertex AI managed notebook you created in this README file, navig
 Here are the steps:
 
 > cd ./genai-for-marketing/backend_apis  
+
 > gcloud builds submit --region=us-central1 --tag gcr.io/**"YOUR PROJECT ID"**/genai-marketing-apis  
+
 > gcloud run deploy genai-marketing-apis --image gcr.io/**"YOUR PROJECT ID"**/genai-marketing-apis --allow-unauthenticated --region us-central1  
 
 Replace **"YOUR PROJECT ID"** with the id of your project.   
