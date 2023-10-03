@@ -46,8 +46,8 @@ Using the same Vertex AI managed notebook you created in this README file, navig
 Here are the steps:
 
 > cd ./genai-for-marketing/backend_apis  
-> gcloud builds submit --region=us-central1 --tag gcr.io/<YOUR PROJECT ID>/genai-marketing-apis  
-> gcloud run deploy genai-marketing-apis --image gcr.io/<YOUR PROJECT ID>/genai-marketing-apis --allow-unauthenticated --region us-central1  
+> gcloud builds submit --region=us-central1 --tag gcr.io/**"YOUR PROJECT ID"**/genai-marketing-apis  
+> gcloud run deploy genai-marketing-apis --image gcr.io/**"YOUR PROJECT ID"**/genai-marketing-apis --allow-unauthenticated --region us-central1  
 
-Replace <YOUR PROJECT ID> with the id of your project.   
+Replace **"YOUR PROJECT ID"** with the id of your project.   
 This is just one example on how to deploy this container to Cloud Run on an endpoint that accepts unauthenticated requests. Change to your requirements.  
