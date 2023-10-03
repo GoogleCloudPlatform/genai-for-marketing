@@ -45,9 +45,9 @@ You are empowered to extend these APIs, intertwining them with your specific pol
 Using the same Vertex AI managed notebook you created in this README file, navigate to the `backend_apis` folder, build the docker image and deploy to Cloud Run.  
 Here are the steps:
 
-> cd ./genai-for-marketing/backend_apis
-> gcloud builds submit --region=us-central1 --tag gcr.io/<YOUR PROJECT ID>/genai-marketing-apis
-> gcloud run deploy genai-marketing-apis --image gcr.io/<YOUR PROJECT ID>/genai-marketing-apis --allow-unauthenticated --region us-central1
+> cd ./genai-for-marketing/backend_apis  
+> gcloud builds submit --region=us-central1 --tag gcr.io/<YOUR PROJECT ID>/genai-marketing-apis  
+> gcloud run deploy genai-marketing-apis --image gcr.io/<YOUR PROJECT ID>/genai-marketing-apis --allow-unauthenticated --region us-central1  
 
-Replace <YOUR PROJECT ID> with the id of your project.  
-This is just one example on how to deploy this container to Cloud Run on an endpoint that accepts unauthenticated requests. Change to your requirements.
+Replace <YOUR PROJECT ID> with the id of your project.   
+This is just one example on how to deploy this container to Cloud Run on an endpoint that accepts unauthenticated requests. Change to your requirements.  
