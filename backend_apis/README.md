@@ -42,12 +42,32 @@ You are empowered to extend these APIs, intertwining them with your specific pol
 
 ## How to deploy this APIs to Google Cloud Run
 
-Using the same Vertex AI managed notebook you created in this README file, navigate to the `backend_apis` folder, build the docker image and deploy to Cloud Run.  
-Here are the steps:
+Using the same Vertex AI managed notebook you created in this [README](../README.md) file, follow the steps below:
+ - Open the JupyterLab environment
+ - Create a new terminal
+ - Navigate to the `backend_apis` folder
 
-> cd ./genai-for-marketing/backend_apis  
+> cd ./genai-for-marketing/backend_apis 
+
+ - Open the file [config.toml](./app/config.toml), change the variables below and save it:
+  - project_id
+  - location
+  - vertexai_search_datastore
+  - drive_folder_id
+  - slides_template_id
+  - doc_template_id
+  - sheet_template_id
+  - slide_page_id_list
+
+You will find detailed intructions in this [README](../README.md) file, specially for the workspace integration.  
+
+ - Copy the Service Account to interact with Workspace inside the folder [backend_apis/app](./app/) and rename it to `credentials.json`.
+
+ - Build the docker image:
 
 > gcloud builds submit --region=us-central1 --tag gcr.io/**"YOUR PROJECT ID"**/genai-marketing-apis  
+
+ - Deploy the container to Cloud Run:
 
 > gcloud run deploy genai-marketing-apis --image gcr.io/**"YOUR PROJECT ID"**/genai-marketing-apis --allow-unauthenticated --region us-central1  
 

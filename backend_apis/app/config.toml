@@ -13,8 +13,8 @@
 # limitations under the License.
 
 [global]
-project_id = "rl-llm-dev"
-location = "us-central1"
+project_id = "<CHANGE TO YOUR PROJECT ID>"
+location = "<CHANGE TO YOUR LOCATION>"
 
 # Provide the path to your JSON credential
 # This credential will be used to interact with Workspace
@@ -30,14 +30,15 @@ dataset_id = "cdp_dataset"
 tag_name = "llmcdptemplate"
 
 # Vertex AI Search Datastore ID
-vertexai_search_datastore = "google-ads-support_1686058481432"
+vertexai_search_datastore = "<CHANGE TO YOUR VERTEX AI SEARCH DATASTORE ID>"
 
+# Workspace integration variables
 # ID of the templates
 # Change this variables according to your Google Workspace settings
-drive_folder_id = '15Akyp0ZEl8Lovxbe2nF_R6uQvXAVCY2B' # example: "1MYB0Ybyo9XZERgIcjsdfeqO0SKqhrkvqMx"
-slides_template_id = '14KJHyhNeLWCr1-t40Zw5Gj_Rvsf-AKHhkw4W3li9td8' # example: '16uQlLkCJ9YRiMU_IoONHsl-vY-uKeoasnWTPlbZZ1D4'
-doc_template_id = '1iZ69ARJO9xaLjpbJHuhabL_PScu7tkGiPUx2IRzCImU' # example: '1kqvxZLRXIdfM8MVS7css4UoiJ8f0I4dKFj9cP986K4pM'
-sheet_template_id = '1LKUUnX67GupQrHMgvMvAnLQmM_9PzbkyOVRaqPL7qaQ' # example: '1gIaIWLOeKmnjso7-CAAAcqMlPznpoEXDdEue3DNWr7bw'
+drive_folder_id = "CHANGE TO YOUR DRIVER FOLDER ID" # example: "1MYB0Ybyo9XZERgIcjsdfeqO0SKqhrkvqMx"
+slides_template_id = "CHANGE TO YOUR SLIDES TEMPLATE ID" # example: '16uQlLkCJ9YRiMU_IoONHsl-vY-uKeoasnWTPlbZZ1D4'
+doc_template_id = "CHANGE TO YOUR DOCS TEMPLATE ID" # example: '1kqvxZLRXIdfM8MVS7css4UoiJ8f0I4dKFj9cP986K4pM'
+sheet_template_id = "CHANGE TO YOUR SHEETS TEMPLATE ID" # example: '1gIaIWLOeKmnjso7-CAAAcqMlPznpoEXDdEue3DNWr7bw'
 slide_page_id_list = ["p3","p4","p5","p6","p7","p8"] # LIST OF PAGES WHERE YOU WANT TO INSERT CHARTS FROM THE SHEETS
 
 # Scope for the Workspace API - don't change
