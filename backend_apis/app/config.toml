@@ -19,7 +19,7 @@ location = "us-central1"
 # Provide the path to your JSON credential
 # This credential will be used to interact with Workspace
 # This is the path inside the docker image, example: /app/credential.json
-service_account_json_key = '/credentials/credentials.json'  # Change this path if you copied the file to a different path 
+service_account_json_key = '/code/credentials.json'  # Change this path if you copied the file to a different path 
 
 # Audiences
 # Dataset ID of the BigQuery dataset. If you change the dataset_id during the deployment 

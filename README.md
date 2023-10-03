@@ -79,6 +79,7 @@ export PROJECT_ID=<CHANGE TO YOUR PROJECT ID>
 gcloud config set project $PROJECT_ID
  
 gcloud services enable \
+  run.googleapis.com \
   cloudbuild.googleapis.com \
   compute.googleapis.com \
   cloudresourcemanager.googleapis.com \
@@ -87,7 +88,9 @@ gcloud services enable \
   cloudapis.googleapis.com \
   cloudtrace.googleapis.com \
   containerregistry.googleapis.com \
-  iamcredentials.googleapis.com \
+  iamcredentials.googleapis.com
+
+gcloud services enable \
   monitoring.googleapis.com \
   logging.googleapis.com \
   notebooks.googleapis.com \
