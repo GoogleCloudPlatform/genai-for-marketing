@@ -22,20 +22,16 @@ Website post generation:
 
 import base64
 import streamlit as st
-import tomllib
 import utils_image
 import vertexai
 
 from vertexai.preview.language_models import TextGenerationModel
+from utils_config import GLOBAL_CFG, MODEL_CFG, PAGES_CFG
 from utils_campaign import generate_names_uuid_dict
 from utils_streamlit import reset_page_state
 
 
-# Load configuration file
-with open("./app_config.toml", "rb") as f:
-    data = tomllib.load(f)
-
-page_cfg = data["pages"]["8_website_post"]
+page_cfg = PAGES_CFG["8_website_post"]
 st.set_page_config(page_title=page_cfg["page_title"],
                    page_icon=page_cfg["page_icon"])
 
@@ -46,10 +42,10 @@ utils_styles.sidebar_apply_style(
 )
 
 # Set project parameters
-PROJECT_ID = data["global"]["project_id"]
-LOCATION = data["global"]["location"]
-TEXT_MODEL_NAME = data["models"]["text"]["text_model_name"]
-CAMPAIGNS_KEY = data["pages"]["campaigns"]["campaigns_key"]
+PROJECT_ID = GLOBAL_CFG["project_id"]
+LOCATION = GLOBAL_CFG["location"]
+TEXT_MODEL_NAME = MODEL_CFG["text"]["text_model_name"]
+CAMPAIGNS_KEY = PAGES_CFG["campaigns"]["campaigns_key"]
 
 # State variables for Website post generation (text and image)
 PAGE_KEY_PREFIX = "WebsitePost"
@@ -79,7 +75,7 @@ DEFAULT_IMAGE_PROMPT_KEY = f"{PAGE_KEY_PREFIX}_Image_Prompt"
 # Templates
 WEBSITE_PROMPT_TEMPLATE = page_cfg["prompt_website_template"]
 IMAGE_PROMPT_TAMPLATE = page_cfg["prompt_image_template"]
-THEMES_FOR_PROMPTS = data["pages"]["campaigns"]["prompt_themes"]
+THEMES_FOR_PROMPTS = PAGES_CFG["campaigns"]["prompt_themes"]
 
 
 cols = st.columns([15, 85])
@@ -174,9 +170,9 @@ if UUID_KEY in st.session_state:
                         max_output_tokens=1024,
                     ).text
             except:
-                response = ""
-            if not response:
-                if selected_prompt in THEMES_FOR_PROMPTS:
+                response = "No text was generated."
+                if (selected_prompt in THEMES_FOR_PROMPTS and 
+                    "prompt_default_responses" in page_cfg):
                     index = THEMES_FOR_PROMPTS.index(selected_prompt)
                     response = page_cfg["prompt_default_responses"][index]
             st.session_state[GENERATED_TEXT_KEY] = response
@@ -217,7 +213,7 @@ if GENERATED_TEXT_KEY in st.session_state and UUID_KEY in st.session_state:
             selected_image_key=SELECTED_IMAGE_KEY,
             file_uploader_key=FILE_UPLOADER_KEY,
             campaign_image_dict=campaign_image_dict,
-            local_image_list=page_cfg["default_images"]
+            local_image_list=page_cfg["local_images"]
         )
     else:
          utils_image.render_image_generation_and_edition_ui(

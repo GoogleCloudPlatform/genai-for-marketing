@@ -23,31 +23,28 @@ import re
 import streamlit as st
 import streamlit.components.v1 as components
 import time
-import tomllib
 import utils_workspace
 import zipfile
 
 from io import BytesIO
 from utils_campaign import generate_names_uuid_dict 
+from utils_config import GLOBAL_CFG, MODEL_CFG, PAGES_CFG
 
-
-# Load configuration file
-with open("./app_config.toml", "rb") as f:
-    data = tomllib.load(f)
+page_cfg = PAGES_CFG["12_review_activate"]
 
 # Set project parameters 
-PROJECT_ID = data["global"]["project_id"]
-LOCATION = data["global"]["location"]
-TEXT_MODEL_NAME = data["models"]["text"]["text_model_name"]
-IMAGE_MODEL_NAME = data["models"]["image"]["image_model_name"]
-CAMPAIGNS_KEY = data["pages"]["campaigns"]["campaigns_key"]
+PROJECT_ID = GLOBAL_CFG["project_id"]
+LOCATION = GLOBAL_CFG["location"]
+TEXT_MODEL_NAME = MODEL_CFG["text"]["text_model_name"]
+IMAGE_MODEL_NAME = MODEL_CFG["image"]["image_model_name"]
+CAMPAIGNS_KEY = PAGES_CFG["campaigns"]["campaigns_key"]
 
 # Variables for Workspace integration
-SLIDES_TEMPLATE_ID = data["pages"]["12_review_activate"]["slides_template_id"]
-SLIDES_PAGE_ID_LIST = data["pages"]["12_review_activate"]["slide_page_id_list"]
-DOC_TEMPLATE_ID = data["pages"]["12_review_activate"]["doc_template_id"]
-DRIVE_FOLDER_ID = data["pages"]["12_review_activate"]["drive_folder_id"]
-SHEET_TEMPLATE_ID = data["pages"]["12_review_activate"]["sheet_template_id"]
+SLIDES_TEMPLATE_ID = page_cfg["slides_template_id"]
+SLIDES_PAGE_ID_LIST = page_cfg["slide_page_id_list"]
+DOC_TEMPLATE_ID = page_cfg["doc_template_id"]
+DRIVE_FOLDER_ID = page_cfg["drive_folder_id"]
+SHEET_TEMPLATE_ID = page_cfg["sheet_template_id"]
 
 PAGE_PREFIX_KEY = "Content_Activation"
 SELECTED_CAMPAIGN_KEY = f"{PAGE_PREFIX_KEY}_Selected_Campaign"
@@ -58,20 +55,20 @@ NEW_FOLDER_KEY = f"{PAGE_PREFIX_KEY}_new_folder_id_key"
 
 
 st.set_page_config(
-    page_title=data["pages"]["12_review_activate"]["page_title"], 
-    page_icon=data["pages"]["12_review_activate"]["page_icon"])
+    page_title=page_cfg["page_title"], 
+    page_icon=page_cfg["page_icon"])
 
 import utils_styles
 utils_styles.sidebar_apply_style(
     utils_styles.style_sidebar,
-    data["pages"]["12_review_activate"]["sidebar_image_path"]
+    page_cfg["sidebar_image_path"]
 )
 
 cols = st.columns([15, 85])
 with cols[0]:
-    st.image(data["pages"]["12_review_activate"]["page_title_icon"])
+    st.image(page_cfg["page_title_icon"])
 with cols[1]:
-    st.title(data["pages"]["12_review_activate"]["page_title"])
+    st.title(page_cfg["page_title"])
 
 
 if CAMPAIGNS_KEY not in st.session_state:

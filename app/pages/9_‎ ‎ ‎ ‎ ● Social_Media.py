@@ -18,26 +18,22 @@ Social Media Ads
 
 import base64
 import streamlit as st
-import tomllib
 import vertexai
 import utils_image
 
 from vertexai.preview.language_models import TextGenerationModel
 from utils_campaign import generate_names_uuid_dict
+from utils_config import GLOBAL_CFG, MODEL_CFG, PAGES_CFG
 from utils_image import render_image_generation_and_edition_ui
 from utils_streamlit import reset_page_state
 
 
-# Load configuration file
-with open("./app_config.toml", "rb") as f:
-    data = tomllib.load(f)
+page_cfg = PAGES_CFG["9_social_media"]
 
-page_cfg = data["pages"]["9_social_media"]
-
-PROJECT_ID = data["global"]["project_id"]
-LOCATION = data["global"]["location"]
-TEXT_MODEL_NAME = data["models"]["text"]["text_model_name"]
-CAMPAIGNS_KEY = data["pages"]["campaigns"]["campaigns_key"]
+PROJECT_ID = GLOBAL_CFG["project_id"]
+LOCATION = GLOBAL_CFG["location"]
+TEXT_MODEL_NAME = MODEL_CFG["text"]["text_model_name"]
+CAMPAIGNS_KEY = PAGES_CFG["campaigns"]["campaigns_key"]
 
 
 PAGE_KEY_PREFIX = "Social_Media_Ads"
@@ -55,7 +51,7 @@ THREADS_CHAR_LIMIT = page_cfg["threads_char_limit"]
 
 AD_PROMPT_TEMPLATE = page_cfg["ad_prompt_template"]
 IMAGE_PROMPT_TEMPLATE = page_cfg["image_prompt_template"]
-THEMES_FOR_PROMPTS: list[str] = data["pages"]["campaigns"]["prompt_themes"]
+THEMES_FOR_PROMPTS: list[str] = PAGES_CFG["campaigns"]["prompt_themes"]
 
 st.set_page_config(
     page_title=page_cfg["page_title"],
@@ -104,15 +100,15 @@ def generate_ad(
                     top_k = 40,
                     top_p = 0.8
                 ).text
-    except:
-        pass
-    
-    if not response:
+    except Exception as e:
+        print("Error")
+        print(str(e))
+        response = "No text was generated."
         if theme in THEMES_FOR_PROMPTS:
             index = THEMES_FOR_PROMPTS.index(theme)
-            if platform == 'Threads':
+            if platform == 'Threads' and "default_threads" in page_cfg:
                 response = page_cfg["default_threads"][index]
-            elif platform == "Instagram":
+            elif platform == "Instagram" and "default_instragram" in page_cfg:
                 response = page_cfg["default_instagram"][index]
 
     st.session_state[key_prefix+"_Text"] = response
@@ -174,7 +170,7 @@ def render_ad(
                     selected_image_key=key_prefix+"_Selected_Image",
                     campaign_image_dict=campaign_image_dict,
                     local_image_list=page_cfg[
-                        f"default_image_{platform.lower()}"]
+                        f"local_image_{platform.lower()}"]
                 )
         except Exception as e:
             print(f"Error {str(e)}")
@@ -185,11 +181,11 @@ def render_ad(
                     index = THEMES_FOR_PROMPTS.index(theme)
                     if platform == "Instagram":
                         utils_image.render_image_file(
-                            page_cfg["default_image_instagram"][index], 
+                            page_cfg["local_image_instagram"][index], 
                             key_prefix+"_Selected_Image")
                     else:
                         utils_image.render_image_file(
-                            page_cfg["default_image_threads"][index],
+                            page_cfg["local_image_threads"][index],
                             key_prefix+"_Selected_Image")
 
     image = None

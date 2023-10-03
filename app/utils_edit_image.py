@@ -25,9 +25,12 @@ from streamlit_drawable_canvas import st_canvas
 
 
 def edit_image_canvas(result_image_key: str, background_image: bytes):
-    """This function allows users to edit an image using a Streamlit canvas component. 
-    The user can select a painting tool and stroke width, and then draw on the canvas. 
-    The edited image is then stored in the Streamlit session state and can be displayed.
+    """This function allows users to edit an image using a 
+       Streamlit canvas component. 
+       The user can select a painting tool and stroke width,
+       and then draw on the canvas. 
+       The edited image is then stored in the Streamlit 
+       session state and can be displayed.
 
     Args:
         result_image_key (str): 
@@ -44,28 +47,32 @@ def edit_image_canvas(result_image_key: str, background_image: bytes):
     }
     
     drawing_mode = st.selectbox(
-        "[Optional] Draw a mask where you want to edit the image using one of the provided drawing tools", drawing_dict.keys(),
+        ("[Optional] Draw a mask where you want to edit the image "
+        "using one of the provided drawing tools"),
+        drawing_dict.keys(),
         key=f"{result_image_key}_canvas_selectbox"
     )
     
     stroke_width = st.slider(
         "Stroke width: ", 10, 50, 20, key=f"{result_image_key}_canvas_slider")
     
-    background_image = Image.open(io.BytesIO(background_image))
-    height = int(background_image.size[1] / (background_image.size[0] / 704))
-    background = Image.new('RGB', background_image.size)
+    background_image_PIL = Image.open(io.BytesIO(background_image))
+    height = int(background_image_PIL.size[1] / 
+                 (background_image_PIL.size[0] / 704))
+    background = Image.new('RGB', background_image_PIL.size)
 
     # Create a canvas component
     canvas_result = st_canvas(
-        fill_color="rgba(255, 255, 255, 1)",  # Fixed fill color with some opacity
+        fill_color="rgba(255, 255, 255, 1)", 
         stroke_width=stroke_width,
         stroke_color="rgba(255, 255, 255, 1)",
         background_color="#000",
-        background_image=background_image,
+        background_image=background_image_PIL, # type: ignore
         update_streamlit=True,
         height=height,
         width=704,
-        drawing_mode=drawing_dict[drawing_mode],
+        drawing_mode=drawing_dict[
+            drawing_mode] if drawing_mode is not None else "rect",
         point_display_radius=0,
         key=f"{result_image_key}_canvas",
     )

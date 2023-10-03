@@ -23,33 +23,32 @@ Marketing Insights demonstration:
 
 import streamlit as st
 import streamlit.components.v1 as components
-import tomllib
+
+from utils_config import GLOBAL_CFG, MODEL_CFG, PAGES_CFG
 
 
-# Load configuration file
-with open("./app_config.toml", "rb") as f:
-    data = tomllib.load(f)
+page_cfg = PAGES_CFG["13_campaign_performance"]
 
 st.set_page_config(
-    page_title=data["pages"]["13_campaign_performance"]["page_title"], 
-    page_icon=data["pages"]["13_campaign_performance"]["page_icon"],
+    page_title=page_cfg["page_title"], 
+    page_icon=page_cfg["page_icon"],
     layout='wide'
 )
 
 import utils_styles
 utils_styles.sidebar_apply_style(
     style=utils_styles.style_sidebar,
-    image_path=data["pages"]["13_campaign_performance"]["sidebar_image_path"]
+    image_path=page_cfg["sidebar_image_path"]
 )
 
 # Set project parameters 
-PROJECT_ID = data["global"]["project_id"]
-LOCATION = data["global"]["location"]
-TEXT_MODEL_NAME = data["models"]["text"]["text_model_name"]
-IMAGE_MODEL_NAME = data["models"]["image"]["image_model_name"]
+PROJECT_ID = GLOBAL_CFG["project_id"]
+LOCATION = GLOBAL_CFG["location"]
+TEXT_MODEL_NAME = MODEL_CFG["text"]["text_model_name"]
+IMAGE_MODEL_NAME = MODEL_CFG["image"]["image_model_name"]
 
-DASHBOARDS = data["pages"]["13_campaign_performance"]["dashboards"]
-INFOBOT = data["pages"]["13_campaign_performance"]["infobot"]
+DASHBOARDS = page_cfg["dashboards"]
+INFOBOT = page_cfg["infobot"]
 
 # State variables
 PAGE_KEY_PREFIX = "CampaignPerformance"

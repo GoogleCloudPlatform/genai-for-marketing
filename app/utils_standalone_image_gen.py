@@ -24,7 +24,6 @@ Utility module to:
 import base64
 import io
 import math
-import tomllib
 import utils_edit_image
 
 from google.cloud import aiplatform
@@ -34,20 +33,25 @@ from PIL import Image
 import streamlit as st
 from typing import List
 
+from utils_config import GLOBAL_CFG, PAGES_CFG, MODEL_CFG
 
-# Load configuration file
-with open("./app_config.toml", "rb") as f:
-    data = tomllib.load(f)
 
 # Set project parameters
-PROJECT_ID = data["global"]["project_id"]
-LOCATION = data["global"]["location"]
+PROJECT_ID = GLOBAL_CFG["project_id"]
+LOCATION = GLOBAL_CFG["location"]
 
 # Set project parameters
-IMAGE_MODEL_NAME = data["models"]["image"]["image_model_name"]
+IMAGE_MODEL_NAME = MODEL_CFG["image"]["image_model_name"]
 IMAGEN_API_ENDPOINT = f'{LOCATION}-aiplatform.googleapis.com'
 IMAGEN_ENDPOINT = f'projects/{PROJECT_ID}/locations/{LOCATION}/publishers/google/models/{IMAGE_MODEL_NAME}'
-IMAGE_UPLOAD_BYTES_LIMIT = data["pages"]["16_image_generation"]["image_upload_bytes_limit"]
+IMAGE_UPLOAD_BYTES_LIMIT = PAGES_CFG["16_image_generation"][
+                                     "image_upload_bytes_limit"]
+# The AI Platform services require regional API endpoints.
+client_options = {"api_endpoint": IMAGEN_ENDPOINT}
+# Initialize client that will be used to create and send requests.
+imagen_client = aiplatform.gapic.PredictionServiceClient(
+    client_options=client_options
+)
 
 
 def resize_image_bytes(
@@ -88,23 +92,17 @@ def resize_image_bytes(
     return bytes_data
 
 
-def predict_large_language_model_sample(
-    api_endpoint: str,
-    endpoint: str,
-    input: str,
-    parameters: str
+def predict_image(
+    instance_dict: dict,
+    parameters: dict
 ):
-    """Predicts the output of a large language model on a given input.
+    """Predicts the output of imagen on a given instance dict.
 
     Args:
-        api_endpoint: 
-            The API endpoint of the AI Platform Prediction service. (str)
-        endpoint: 
-            The name of the endpoint to use for predictions. (str)
-        input: 
-            The input to the large language model. (str)
+        instance_dict: 
+            The input to the large language model. (dict)
         parameters: 
-            The parameters for the prediction. (str)
+            The parameters for the prediction. (dict)
 
     Returns:
         A list of strings containing the predictions.
@@ -115,20 +113,13 @@ def predict_large_language_model_sample(
         aiplatform.exceptions.InternalServerError: If an internal error occurred.
     """
 
-    # The AI Platform services require regional API endpoints.
-    client_options = {"api_endpoint": api_endpoint}
-    # Initialize client that will be used to create and send requests.
-    # This client only needs to be created once, and can be reused for multiple requests.
-    client = aiplatform.gapic.PredictionServiceClient(
-        client_options=client_options
-    )
-    instance_dict = input
     instance = json_format.ParseDict(instance_dict, Value())
     instances = [instance]
-    parameters_dict = parameters
-    parameters = json_format.ParseDict(parameters_dict, Value())
-    response = client.predict(
-        endpoint=endpoint, instances=instances, parameters=parameters
+    parameters_client = json_format.ParseDict(parameters, Value())
+    response = imagen_client.predict(
+        endpoint=IMAGEN_ENDPOINT,
+        instances=instances,
+        parameters=parameters_client
     )
     
     return response.predictions
@@ -158,10 +149,8 @@ def image_generation(
         None.
     """
 
-    st.session_state[state_key] = predict_large_language_model_sample(
-        api_endpoint=IMAGEN_API_ENDPOINT,
-        endpoint=IMAGEN_ENDPOINT,
-        input={
+    st.session_state[state_key] = predict_image(
+        instance_dict={
             "prompt": prompt
         },
         parameters={
@@ -210,10 +199,8 @@ def edit_image_generation(
             }
         }
     
-    st.session_state[state_key] = predict_large_language_model_sample(
-        api_endpoint=IMAGEN_API_ENDPOINT,
-        endpoint=IMAGEN_ENDPOINT,
-        input=input_dict,
+    st.session_state[state_key] = predict_image(
+        instance_dict=input_dict,
         parameters={
             'sampleCount':sample_count
         }
@@ -416,10 +403,10 @@ def render_image_generation_ui(
         try:
             with st.spinner('Generating images ...'):
                 image_generation(
-                    question,
-                    sample_count,
-                    sample_image_size,
-                    aspect_ratio,
+                    question or "",
+                    sample_count or 1,
+                    sample_image_size or 256,
+                    aspect_ratio or "1:1",
                     generated_images_key)
         except:
             st.error('Could not generate image. Try a different prompt.')
@@ -526,7 +513,7 @@ def render_image_edit_prompt(
                 key=f"{edit_image_prompt_key}_text_area")
 
             st.write('**Model parameters**')
-            col1, col2, col3 = st.columns([1,1,1])
+            col1, _, _ = st.columns([1,1,1])
 
             with col1:
                 sample_count = st.selectbox('Number of samples', SAMPLE_COUNT)
@@ -548,7 +535,7 @@ def render_image_edit_prompt(
                         with st.spinner('Generating Edited images ...'):
                             edit_image_generation(
                                 st.session_state[edit_image_prompt_key],
-                                sample_count,
+                                sample_count or 1,
                                 bytes_data,
                                 edited_images_key,
                                 st.session_state.get(mask_image_key, b"") if mask_image and mask_image_key else b"")

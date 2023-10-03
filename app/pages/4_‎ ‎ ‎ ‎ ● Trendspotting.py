@@ -24,42 +24,40 @@ Trendspotting:
 import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as components
-import tomllib
 import vertexai
 
 from datetime import date, timedelta, datetime
 from google.cloud import bigquery
 from utils_campaign import generate_names_uuid_dict
+from utils_config import GLOBAL_CFG, MODEL_CFG, PAGES_CFG
 from utils_trendspotting import GDELTRetriever
 from utils_trendspotting import GoogleTrends
 from utils_trendspotting import summarize_news_article
 from vertexai.preview.language_models import TextGenerationModel
 
 
-# Load configuration file
-with open("./app_config.toml", "rb") as f:
-    data = tomllib.load(f)
+page_cfg = PAGES_CFG["4_trendspotting"]
 
 st.set_page_config(
-    page_title=data["pages"]["4_trendspotting"]["page_title"], 
-    page_icon=data["pages"]["4_trendspotting"]["page_icon"],
+    page_title=page_cfg["page_title"], 
+    page_icon=page_cfg["page_icon"],
     layout='wide')
 
 import utils_styles
 utils_styles.sidebar_apply_style(
     style=utils_styles.style_sidebar,
-    image_path=data["pages"]["4_trendspotting"]["sidebar_image_path"]
+    image_path=page_cfg["sidebar_image_path"]
 )
 
 # Set project parameters
-PROJECT_ID = data["global"]["project_id"]
-LOCATION = data["global"]["location"]
-CAMPAIGNS_KEY = data["pages"]["campaigns"]["campaigns_key"]
+PROJECT_ID = GLOBAL_CFG["project_id"]
+LOCATION = GLOBAL_CFG["location"]
+CAMPAIGNS_KEY = PAGES_CFG["campaigns"]["campaigns_key"]
 
 bq_client = bigquery.Client(project=PROJECT_ID)
 vertexai.init(project=PROJECT_ID, location=LOCATION)
 llm = TextGenerationModel.from_pretrained(
-    data["models"]["text"]["text_model_name"])
+    MODEL_CFG["text"]["text_model_name"])
 
 default_date_value = date.today() - timedelta(2)
 max_date_value = date.today() - timedelta(2)
@@ -79,9 +77,9 @@ cols_page = st.columns([14,72,14])
 with cols_page[1]:
     cols = st.columns([15, 85])
     with cols[0]:
-        st.image(data["pages"]["4_trendspotting"]["page_title_image"])
+        st.image(page_cfg["page_title_image"])
     with cols[1]:
-        st.title(data["pages"]["4_trendspotting"]["page_title"])
+        st.title(page_cfg["page_title"])
 
     st.write(
         "This page demonstrates how to use Google Trends " 
@@ -224,7 +222,8 @@ with cols_page[1]:
         with st.form(PAGE_KEY_PREFIX+"_Link_To_Campaign_Upload"):
             st.write("**Choose a Campaign to save the news summaries**")
             selected_name = st.selectbox("List of Campaigns", campaigns_names)
-            link_to_campaign_button = st.form_submit_button(label="Save to Campaign")
+            link_to_campaign_button = st.form_submit_button(
+                label="Save to Campaign")
 
         if link_to_campaign_button:
             selected_uuid = generate_names_uuid_dict()[selected_name]

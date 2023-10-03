@@ -27,20 +27,16 @@ import pandas as pd
 import numpy as np
 import random
 import streamlit as st
-import tomllib
 
 import utils_image
 from utils_streamlit import reset_page_state
 
 from utils_campaign import generate_names_uuid_dict
+from utils_config import GLOBAL_CFG, MODEL_CFG, PAGES_CFG
 from utils_prompt import async_predict_text_llm
 
 
-# Load configuration file
-with open("./app_config.toml", "rb") as f:
-    data = tomllib.load(f)
-
-page_cfg = data["pages"]["10_asset_group"]
+page_cfg = PAGES_CFG["10_asset_group"]
 
 st.set_page_config(
     page_title=page_cfg["page_title"], 
@@ -54,11 +50,11 @@ utils_styles.sidebar_apply_style(
 )
 
 # Set project parameters 
-PROJECT_ID = data["global"]["project_id"]
-LOCATION = data["global"]["location"]
-TEXT_MODEL_NAME = data["models"]["text"]["text_model_name"]
-IMAGE_MODEL_NAME = data["models"]["image"]["image_model_name"]
-CAMPAIGNS_KEY = data["pages"]["campaigns"]["campaigns_key"]
+PROJECT_ID = GLOBAL_CFG["project_id"]
+LOCATION = GLOBAL_CFG["location"]
+TEXT_MODEL_NAME = MODEL_CFG["text"]["text_model_name"]
+IMAGE_MODEL_NAME = MODEL_CFG["image"]["image_model_name"]
+CAMPAIGNS_KEY = PAGES_CFG["campaigns"]["campaigns_key"]
 
 # State variables for image and text generation
 PAGE_KEY_PREFIX = "AssetGroupPmax"
@@ -82,7 +78,7 @@ UUID_KEY = f"{PAGE_KEY_PREFIX}_UUID"
 THEME_KEY = f"{PAGE_KEY_PREFIX}_Theme"
 
 IMAGE_GENERATION_PROMPT = page_cfg["image_generation_prompt"]
-BRAND_OVERVIEW = data["pages"]["campaigns"].get("prompt_brand_overview", "")
+BRAND_OVERVIEW = PAGES_CFG["campaigns"].get("prompt_brand_overview", "")
 
 # Prompt templates
 HEADLINE_PROMPT_TEMPLATE = page_cfg["headline_prompt_template"]
@@ -90,7 +86,7 @@ LONG_HEADLINE_PROMPT_TEMPLATE = page_cfg["load_headline_prompt_template"]
 DESCRIPTION_PROMPT_TEMPLATE = page_cfg["description_prompt_template"]
 BUSINESS_NAME = page_cfg["business_name"]
 CALL_TO_ACTION = page_cfg["call_to_action"]
-THEMES_FOR_PROMPTS = data["pages"]["campaigns"]["prompt_themes"]
+THEMES_FOR_PROMPTS = PAGES_CFG["campaigns"]["prompt_themes"]
 
 
 cols = st.columns([15, 85])
@@ -208,15 +204,18 @@ if UUID_KEY in st.session_state:
         except Exception as e:
             print(e)
 
-        if not st.session_state[HEADLINE_KEY]:
+        if (not st.session_state[HEADLINE_KEY] and 
+            "asset_group_headlines" in page_cfg):
             st.session_state[HEADLINE_KEY] = page_cfg[
                 "asset_group_headlines"]
 
-        if not st.session_state[LONG_HEADLINE_KEY]:
+        if (not st.session_state[LONG_HEADLINE_KEY] and 
+            "asset_group_long_headlines" in page_cfg):
             st.session_state[LONG_HEADLINE_KEY] = page_cfg[
                 "asset_group_long_headlines"]
 
-        if not st.session_state[HEADLINE_KEY]:
+        if (not st.session_state[HEADLINE_KEY] and
+            "asset_group_description" in page_cfg):
             st.session_state[HEADLINE_KEY] = page_cfg[
                "asset_group_description"]
 
@@ -275,7 +274,7 @@ if (UUID_KEY in st.session_state and
             select_button=False,
             campaign_image_dict=campaign_image_dict,
             local_image_list=list(chain.from_iterable(
-                page_cfg["default_image_asset"]))
+                page_cfg["local_image_asset"]))
         )
     else:
 
@@ -296,11 +295,11 @@ if (UUID_KEY in st.session_state and
                                                download_button=False)
         elif theme in THEMES_FOR_PROMPTS:
             index = THEMES_FOR_PROMPTS.index(theme)
-            with open(page_cfg["default_image_asset"][index][0], "rb") as fp:
+            with open(page_cfg["local_image_asset"][index][0], "rb") as fp:
                 st.session_state[GENERATED_IMAGES_KEY].append(
                     {"bytesBase64Encoded":base64.b64encode(
                         fp.read()).decode('utf-8')})
-            with open(page_cfg["default_image_asset"][index][1], "rb") as fp:
+            with open(page_cfg["local_image_asset"][index][1], "rb") as fp:
                 st.session_state[GENERATED_IMAGES_KEY].append(
                     {"bytesBase64Encoded":base64.b64encode(
                         fp.read()).decode('utf-8')})

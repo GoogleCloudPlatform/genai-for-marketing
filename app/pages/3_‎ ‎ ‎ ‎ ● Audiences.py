@@ -20,25 +20,23 @@ Audience and Insight finder:
 """
 
 import streamlit as st
-import tomllib
 import utils_codey
 import vertexai
 
 from google.cloud import bigquery
 from vertexai.preview.language_models import TextGenerationModel
+from utils_config import GLOBAL_CFG, MODEL_CFG, PAGES_CFG
 
 
-# Load configuration file
-with open("./app_config.toml", "rb") as f:
-    data = tomllib.load(f)
+page_cfg = PAGES_CFG["3_audiences"]
 
 # Set project parameters
-PROJECT_ID = data["global"]["project_id"]
-LOCATION = data["global"]["location"]
-TEXT_MODEL_NAME = data["models"]["text"]["text_model_name"]
+PROJECT_ID = GLOBAL_CFG["project_id"]
+LOCATION = GLOBAL_CFG["location"]
+TEXT_MODEL_NAME = MODEL_CFG["text"]["text_model_name"]
 
-DATASET_ID = data["pages"]["3_audiences"]["dataset_id"]
-TAG_NAME = data["pages"]["3_audiences"]["tag_name"]
+DATASET_ID = page_cfg["dataset_id"]
+TAG_NAME = page_cfg["tag_name"]
 
 TAG_TEMPLATE_NAME = f'projects/{PROJECT_ID}/locations/{LOCATION}/tagTemplates/{TAG_NAME}'
 QUERY = (
@@ -59,20 +57,20 @@ PROMPT_TEMPLATE_KEY = f"{PAGE_KEY_PREFIX}_Prompt_Template"
 DATASET_METADATA_KEY = f"{PAGE_KEY_PREFIX}_Dataset_Metadata"
 
 
-st.set_page_config(page_title=data["pages"]["3_audiences"]["page_title"], 
-                   page_icon=data["pages"]["3_audiences"]["page_icon"])
+st.set_page_config(page_title=page_cfg["page_title"], 
+                   page_icon=page_cfg["page_icon"])
 
 import utils_styles
 utils_styles.sidebar_apply_style(
     style=utils_styles.style_sidebar,
-    image_path=data["pages"]["3_audiences"]["sidebar_image_path"]
+    image_path=page_cfg["sidebar_image_path"]
 )
 
 cols = st.columns([15, 85])
 with cols[0]:
-    st.image(data["pages"]["3_audiences"]["page_title_image"])
+    st.image(page_cfg["page_title_image"])
 with cols[1]:
-    st.title(data["pages"]["3_audiences"]["page_title"])
+    st.title(page_cfg["page_title"])
 
 st.write(
     "This page provides instructions on how to extract data from BigQuery"  
@@ -126,6 +124,6 @@ utils_codey.generate_sql_and_query(
     dataset_id=DATASET_ID,
     tag_template_name=TAG_TEMPLATE_NAME,
     bqclient=bqclient,
-    fallback_query=data["pages"]["3_audiences"]["audience_query_0"]
+    default_query=page_cfg.get("audience_query_0", "")
 )
 

@@ -20,20 +20,18 @@ import asyncio
 from itertools import cycle
 import streamlit as st
 import time
-import tomllib
 import utils_workspace
 
 from PIL import Image, ImageOps
 from vertexai.preview.language_models import TextGenerationModel
 from utils_campaign import Campaign, add_new_campaign
 from utils_prompt import async_predict_text_llm
+from utils_config import GLOBAL_CFG, MODEL_CFG, PAGES_CFG
 
 
 # Load configuration file
-with open("./app_config.toml", "rb") as f:
-    data = tomllib.load(f)
 
-page_cfg = data["pages"]["campaigns"]
+page_cfg = PAGES_CFG["campaigns"]
 st.set_page_config(
     page_title=page_cfg["page_title"],
     page_icon=page_cfg["page_icon"]
@@ -49,12 +47,12 @@ utils_styles.sidebar_apply_style(
 CAMPAIGNS_KEY = page_cfg["campaigns_key"]
 
 # Set project parameters 
-PROJECT_ID = data["global"]["project_id"]
-LOCATION = data["global"]["location"]
+PROJECT_ID = GLOBAL_CFG["project_id"]
+LOCATION = GLOBAL_CFG["location"]
 
 # Model configuration
-TEXT_MODEL_NAME = data["models"]["text"]["text_model_name"]
-IMAGE_MODEL_NAME = data["models"]["image"]["image_model_name"]
+TEXT_MODEL_NAME = MODEL_CFG["text"]["text_model_name"]
+IMAGE_MODEL_NAME = MODEL_CFG["image"]["image_model_name"]
 
 # State variables for image and text generation
 PAGE_KEY_PREFIX = "CreativeBrief"
@@ -78,8 +76,8 @@ COMPETITORS_FOR_PROMPTS = page_cfg["prompt_competitors"]
 PROMPT_THEMES = page_cfg["prompt_themes"]
 
 # Variables for Workspace integration
-DOC_TEMPLATE_ID = data["pages"]["12_review_activate"]["doc_template_id"]
-DRIVE_FOLDER_ID = data["pages"]["12_review_activate"]["drive_folder_id"]
+DOC_TEMPLATE_ID = PAGES_CFG["12_review_activate"]["doc_template_id"]
+DRIVE_FOLDER_ID = PAGES_CFG["12_review_activate"]["drive_folder_id"]
 
 DOC_ID_KEY = f"{CAMPAIGNS_KEY}_doc_id_key"
 NEW_FOLDER_KEY = f"{CAMPAIGNS_KEY}_new_folder_id_key"
@@ -279,7 +277,7 @@ def display_campaigns_upload(
 
         if campaign.campaign_uploaded_images:
             st.write("**Campaign images**:")
-            images = st.session_state[CAMPAIGNS_KEY][str(campaign.unique_uuid)].campaign_uploaded_images.values() 
+            images = campaign.campaign_uploaded_images.values() 
             cols = cycle(st.columns(4)) 
             for im in images:
                 next(cols).image(im["thumbnail"], width=150, caption=im["name"])
@@ -306,11 +304,12 @@ def display_campaigns_upload(
                             mime_type=file.type
                         )
                     except:
-                        st.error("Could not upload one or more images. Please try again.")
+                        st.error("Could not upload one or more images. "
+                                 "Please try again.")
                     else:
                         im = Image.open(file).convert("RGB")
                         im = ImageOps.fit(im, (150, 150))
-                        st.session_state[CAMPAIGNS_KEY][str(campaign.unique_uuid)].campaign_uploaded_images[file_id] = {
+                        campaign.campaign_uploaded_images[file_id] = {
                                 "name":file.name,
                                 "mime_type":file.type,
                                 "size":file.size,

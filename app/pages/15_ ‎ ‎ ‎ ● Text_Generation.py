@@ -20,37 +20,34 @@ Text Generation:
 
 
 import streamlit as st
-import tomllib
 import utils_prompt
+from utils_config import GLOBAL_CFG, MODEL_CFG, PAGES_CFG
 
-
-# Load configuration file
-with open("./app_config.toml", "rb") as f:
-    data = tomllib.load(f)
+page_cfg = PAGES_CFG["15_text_generation"]
 
 # Set project parameters
-PROJECT_ID = data["global"]["project_id"]
-LOCATION = data["global"]["location"]
-TEXT_MODEL_NAME = data["models"]["text"]["text_model_name"]
+PROJECT_ID = GLOBAL_CFG["project_id"]
+LOCATION = GLOBAL_CFG["location"]
+TEXT_MODEL_NAME = MODEL_CFG["text"]["text_model_name"]
 
 # State variables for text generation
 PAGE_KEY_PREFIX = "TextGeneration"
 GENERATED_TEXT_KEY = f"{PAGE_KEY_PREFIX}_Generated_Text"
 
 st.set_page_config(
-    page_title=data["pages"]["15_text_generation"]["page_title"],
-    page_icon=data["pages"]["15_text_generation"]["page_icon"])
+    page_title=page_cfg["page_title"],
+    page_icon=page_cfg["page_icon"])
 
 import utils_styles
 utils_styles.sidebar_apply_style(
     style=utils_styles.style_sidebar,
-    image_path=data["pages"]["15_text_generation"]["sidebar_image_path"])
+    image_path=page_cfg["sidebar_image_path"])
 
 cols = st.columns([13, 87])
 with cols[0]:
-    st.image(data["pages"]["15_text_generation"]["page_title_icon"])
+    st.image(page_cfg["page_title_icon"])
 with cols[1]:
-    st.title(data["pages"]["15_text_generation"]["page_title"])
+    st.title(page_cfg["page_title"])
 
 st.write(
     """

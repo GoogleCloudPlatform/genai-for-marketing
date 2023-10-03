@@ -18,27 +18,24 @@ Initial page with an overview architecture and a description of each demo page.
 
 import base64
 import streamlit as st
-import tomllib
 
+from utils_config import PAGES_CFG
 
-# Load configuration file
-with open("./app_config.toml", "rb") as f:
-    data = tomllib.load(f)
-
+page_cfg = PAGES_CFG["home"]
 
 st.set_page_config(
-    page_title=data["pages"]["home"]["page_title"], 
-    page_icon=data["pages"]["home"]["page_icon"]
+    page_title=page_cfg["page_title"], 
+    page_icon=page_cfg["page_icon"]
 )
 
 import utils_styles
 utils_styles.sidebar_apply_style(
     style=utils_styles.style_sidebar,
-    image_path=data["pages"]["home"]["sidebar_image_path"]
+    image_path=page_cfg["sidebar_image_path"]
 )
 
-file_name_1 = data["pages"]["home"]["file_name_1"]
-file_name_2 = data["pages"]["home"]["file_name_2"]
+file_name_1 = page_cfg["file_name_1"]
+file_name_2 = page_cfg["file_name_2"]
 
 with open(file_name_1, "rb") as fp:
     contents = fp.read()

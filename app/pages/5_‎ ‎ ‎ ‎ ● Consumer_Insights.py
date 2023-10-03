@@ -18,21 +18,18 @@ Content Search:
 """
 
 import streamlit as st
-import tomllib
 
 from google.cloud import discoveryengine
 from proto import Message
+from utils_config import GLOBAL_CFG, PAGES_CFG
 from utils_vertex_ai_search import search
 
-
-# Load configuration file
-with open("./app_config.toml", "rb") as f:
-    data = tomllib.load(f)
+page_cfg = PAGES_CFG["5_consumer_insights"]
 
 # Set project parameters
-PROJECT_ID = data["global"]["project_id"]
-LOCATION = data["pages"]["5_consumer_insights"]["search_location"]
-DATASTORES = data["pages"]["5_consumer_insights"]["datastores"]
+PROJECT_ID = GLOBAL_CFG["project_id"]
+LOCATION = page_cfg["search_location"]
+DATASTORES = page_cfg["datastores"]
 
 search_client = discoveryengine.SearchServiceClient()
 complete_client = discoveryengine.CompletionServiceClient()
@@ -45,21 +42,21 @@ AUTOCOMPLETE_KEY = f"{PAGE_KEY_PREFIX}_Autocomplete"
 
 
 st.set_page_config(
-    page_title=data["pages"]["5_consumer_insights"]["page_title"], 
-    page_icon=data["pages"]["5_consumer_insights"]["page_icon"])
+    page_title=page_cfg["page_title"], 
+    page_icon=page_cfg["page_icon"])
 
 import utils_styles
 utils_styles.sidebar_apply_style(
     style=utils_styles.style_sidebar,
-    image_path=data["pages"]["5_consumer_insights"]["sidebar_image_path"]
+    image_path=page_cfg["sidebar_image_path"]
 )
 
 
 cols = st.columns([15, 85])
 with cols[0]:
-    st.image(data["pages"]["5_consumer_insights"]["page_title_image"])
+    st.image(page_cfg["page_title_image"])
 with cols[1]:
-    st.title(data["pages"]["5_consumer_insights"]["page_title"])
+    st.title(page_cfg["page_title"])
 
 st.write(
     "This page demonstrates how to use Vertex AI Search "

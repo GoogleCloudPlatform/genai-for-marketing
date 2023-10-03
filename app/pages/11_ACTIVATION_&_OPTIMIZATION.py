@@ -18,25 +18,22 @@ Initial page with an overview architecture and a description of each demo page.
 
 import streamlit as st
 import base64
-import tomllib
+from utils_config import PAGES_CFG
 
-
-# Load configuration file
-with open("./app_config.toml", "rb") as f:
-    data = tomllib.load(f)
+page_cfg = PAGES_CFG["11_activation_optimization"]
 
 st.set_page_config(
-    page_title=data["pages"]["11_activation_optimization"]["page_title"], 
-    page_icon=data["pages"]["11_activation_optimization"]["page_icon"]
+    page_title=page_cfg["page_title"], 
+    page_icon=page_cfg["page_icon"]
 )
 
 import utils_styles
 utils_styles.sidebar_apply_style(
     style=utils_styles.style_sidebar,
-    image_path=data["pages"]["11_activation_optimization"]["sidebar_image_path"]
+    image_path=page_cfg["sidebar_image_path"]
 )
 
-file_name = data["pages"]["11_activation_optimization"]["file_name"]
+file_name = page_cfg["file_name"]
 
 with open(file_name, "rb") as fp:
     contents = fp.read()

@@ -19,28 +19,22 @@ Utility module for Codey releated demo.
 
 import pandas as pd
 import streamlit as st
-import tomllib
 
 from google.cloud import bigquery
 from google.cloud import datacatalog_v1
-from google.cloud import translate_v2 as translate
 from pandas import DataFrame
 from typing import Optional
 from utils_campaign import generate_names_uuid_dict
+from utils_config import GLOBAL_CFG, MODEL_CFG, PAGES_CFG
 from utils_streamlit import reset_page_state
 from vertexai.preview.language_models import TextGenerationModel
 
-# Load configuration file
-with open("./app_config.toml", "rb") as f:
-    data = tomllib.load(f)
 
-TEXT_MODEL_NAME = data["models"]["text"]["text_model_name"]
-TRANSLATE_LANGUAGES = data["translate_api"]
+TEXT_MODEL_NAME = MODEL_CFG["text"]["text_model_name"]
 
-translate_client = translate.Client()
-PROMPT = data["pages"]["3_audiences"]["prompt_nl_sql"]
-PROMPT_PROJECT_ID = [data['global']['project_id']]*130
-CAMPAIGNS_KEY = data["pages"]["campaigns"]["campaigns_key"]
+PROMPT = PAGES_CFG["3_audiences"]["prompt_nl_sql"]
+PROMPT_PROJECT_ID = [GLOBAL_CFG['project_id']]*130
+CAMPAIGNS_KEY = PAGES_CFG["campaigns"]["campaigns_key"]
 
 
 def get_tags_from_table(
@@ -199,7 +193,7 @@ def generate_sql_and_query(
         dataset_id: str,
         tag_template_name: str,
         bqclient: bigquery.Client,
-        fallback_query: str="") -> Optional[DataFrame]:
+        default_query: str="") -> Optional[DataFrame]:
     """Generates a GoogleSQL query and executes it against a BigQuery dataset.
 
     Args:
@@ -236,7 +230,7 @@ def generate_sql_and_query(
         question_option = st.selectbox(
             label=("Select one of the options to ask BigQuery tables "
                    "and find your audience"),
-            options=data["pages"]["3_audiences"][
+            options=PAGES_CFG["3_audiences"][
                 "prompt_examples"] + ["Another question..."],
             key=f"{state_key}_question_prompt_text_area")
 
@@ -282,18 +276,19 @@ def generate_sql_and_query(
                     prompt = st.session_state[f"{state_key}_Prompt_Template"],
                     max_output_tokens = 1024,
                     temperature=0.2
-                )
-            except:
+                ).text
+            except Exception as e:
+                print("Error")
+                print(str(e))
+                gen_code = ""
+
+
+            if gen_code:
+                st.session_state[f"{state_key}_Gen_Code"] = gen_code
+            elif default_query:
                 st.session_state[
-                    f"{state_key}_Gen_Code"] = fallback_query.format(
+                    f"{state_key}_Gen_Code"] = default_query.format(
                     *PROMPT_PROJECT_ID)
-            else:
-                if gen_code and gen_code.text:
-                    st.session_state[f"{state_key}_Gen_Code"] = gen_code.text
-                else:
-                    st.session_state[
-                        f"{state_key}_Gen_Code"] = fallback_query.format(
-                        *PROMPT_PROJECT_ID)
 
         try:
             with st.spinner('Querying BigQuery...'):
@@ -301,19 +296,20 @@ def generate_sql_and_query(
                     st.session_state[f"{state_key}_Gen_Code"])
                 result_query.result()
         except:
-            st.session_state[f"{state_key}_Gen_Code"] = fallback_query.format(
+            if default_query:
+                st.session_state[f"{state_key}_Gen_Code"] = default_query.format(
                 *PROMPT_PROJECT_ID)
             with st.spinner('Querying BigQuery...'):
                 try:
                     result_query = bqclient.query(
                         st.session_state[f"{state_key}_Gen_Code"])
                     result_query.result()
-                except:
-                    if state_key == "TalkToData_insight":
-                        st.session_state[
-                            f"{state_key}_Result_Final_Query"
-                        ] = pd.DataFrame(
-                            data["pages"]["3_audiences"]["example_result_0"])
+                except Exception as e:
+                    print(str(e))
+                    st.session_state[
+                        f"{state_key}_Result_Final_Query"
+                    ] = pd.DataFrame({'Empty' : []})
+
                 else:
                     st.session_state[
                         f"{state_key}_Result_Final_Query"

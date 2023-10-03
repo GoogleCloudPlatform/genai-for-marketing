@@ -21,14 +21,10 @@ Marketing Insights demonstration:
 
 import streamlit as st
 import streamlit.components.v1 as components
-import tomllib
+from utils_config import GLOBAL_CFG, PAGES_CFG
 
 
-# Load configuration file
-with open("./app_config.toml", "rb") as f:
-    data = tomllib.load(f)
-
-page_cfg = data["pages"]["2_marketing_insights"]
+page_cfg = PAGES_CFG["2_marketing_insights"]
 st.set_page_config(
     page_title=page_cfg["page_title"], 
     page_icon=page_cfg["page_icon"],
@@ -42,9 +38,9 @@ utils_styles.sidebar_apply_style(
 )
 
 # Set project parameters 
-PROJECT_ID = data["global"]["project_id"]
-LOCATION = data["global"]["location"]
-TEXT_MODEL_NAME = data["global"]["location"]
+PROJECT_ID = GLOBAL_CFG["project_id"]
+LOCATION = GLOBAL_CFG["location"]
+TEXT_MODEL_NAME = GLOBAL_CFG["location"]
 
 # State variables for image and text generation
 PAGE_KEY_PREFIX = "MarketingPlatforms"

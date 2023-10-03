@@ -26,11 +26,11 @@ import random
 import numpy as np
 import pandas as pd
 import streamlit as st
-import tomllib
 import vertexai
 
 from google.cloud import translate_v2 as translate
 from utils_campaign import generate_names_uuid_dict
+from utils_config import GLOBAL_CFG, MODEL_CFG, PAGES_CFG
 from utils_image import IMAGEN_API_ENDPOINT, IMAGEN_ENDPOINT 
 from utils_image import render_image_edit_prompt 
 from utils_image import predict_large_language_model_sample
@@ -38,11 +38,7 @@ from utils_streamlit import reset_page_state
 from vertexai.preview.language_models import TextGenerationModel
 
 
-# Load configuration file
-with open("./app_config.toml", "rb") as f:
-    data = tomllib.load(f)
-
-page_cfg = data["pages"]["7_email_copy"]
+page_cfg = PAGES_CFG["7_email_copy"]
 
 st.set_page_config(page_title=page_cfg["page_title"],
                    page_icon=page_cfg["page_icon"])
@@ -54,18 +50,18 @@ utils_styles.sidebar_apply_style(
 )
 
 # Set project parameters
-PROJECT_ID = data["global"]["project_id"]
-LOCATION = data["global"]["location"]
+PROJECT_ID = GLOBAL_CFG["project_id"]
+LOCATION = GLOBAL_CFG["location"]
 
 vertexai.init(
     project=PROJECT_ID,
     location=LOCATION)
 llm = TextGenerationModel.from_pretrained(
-    data["models"]["text"]["text_model_name"])
+    MODEL_CFG["text"]["text_model_name"])
 translate_client = translate.Client()
 
 # Default Campaign key
-CAMPAIGNS_KEY = data["pages"]["campaigns"]["campaigns_key"]
+CAMPAIGNS_KEY = PAGES_CFG["campaigns"]["campaigns_key"]
 
 # State variables for email and image generation
 PAGE_KEY_PREFIX = "EmailCopy"
@@ -86,7 +82,7 @@ UUID_KEY = f"{PAGE_KEY_PREFIX}_UUID"
 # Default values
 EMAIL_TEXT_PROMPT = page_cfg["prompt_email_text"]
 IMAGE_GENERATION_PROMPT = page_cfg["prompt_image_generation"]
-THEMES_FOR_PROMPTS = data["pages"]["campaigns"]["prompt_themes"]
+THEMES_FOR_PROMPTS = PAGES_CFG["campaigns"]["prompt_themes"]
 AGE_BUCKET = page_cfg["age_bucket"]
 MALE_NAMES = page_cfg["male_names"]
 FEMALE_NAMES = page_cfg["female_names"]
@@ -145,14 +141,19 @@ async def email_generate(row: pd.Series, theme: str,
                 top_k = 40,
                 top_p = 0.8
                 ))
-    except:
+    except Exception as e:
         generated_response = None
+        print("Error")
+        print(str(e))
 
     if generated_response and generated_response.text:
         generated_text = generated_response.text
-    elif theme in THEMES_FOR_PROMPTS:
+    elif theme in THEMES_FOR_PROMPTS and "default_email_copy" in page_cfg:
         index = THEMES_FOR_PROMPTS.index(theme)
         generated_text = page_cfg["default_email_copy"][index]
+    else:
+        generated_text = "No text was generated for this email."
+
 
     email_bar.progress(
         0.3,
@@ -186,7 +187,7 @@ async def email_generate(row: pd.Series, theme: str,
             imageb64 += image_response[0]["bytesBase64Encoded"]
         elif theme in THEMES_FOR_PROMPTS:
             index = THEMES_FOR_PROMPTS.index(theme)
-            with open(page_cfg["default_email_image"][index], 'rb') as fp:
+            with open(page_cfg["local_email_image"][index], 'rb') as fp:
                 imageb64 += base64.b64encode(fp.read()).decode('utf-8')
 
     email_bar.progress(
@@ -309,7 +310,7 @@ if AUDIENCE_DATAFRAME_KEY in st.session_state:
             selected_image_key=SELECTED_IMAGE_KEY,
             file_uploader_key=FILE_UPLOADER_KEY,
             campaign_image_dict=campaign_image_dict,
-            local_image_list=page_cfg["default_email_image"]
+            local_image_list=page_cfg["local_email_image"]
         )
     if (st.session_state.get(IMAGE_OPTION_KEY, "") == "generated" or 
           SELECTED_IMAGE_KEY in st.session_state):

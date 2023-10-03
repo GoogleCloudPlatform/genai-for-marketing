@@ -21,19 +21,15 @@ A utility module for performing prompt engineering with the Vertex PaLM API.
 import asyncio
 import functools
 import streamlit as st
-import tomllib
 import vertexai
 
 from google.cloud import translate_v2 as translate
 from vertexai.preview.language_models import TextGenerationModel
 
+from utils_config import TRANSLATE_CFG
 
-# Load configuration file
-with open("./app_config.toml", "rb") as f:
-    data = tomllib.load(f)
 
-translate_client = translate.Client()
-TRANSLATE_LANGUAGES = data["translate_api"]
+translate_client = translate.Client() 
 
 def render_marketing_prompt_design(
         project_id: str,
@@ -88,13 +84,15 @@ def render_marketing_prompt_design(
         prompt_title: 
             The title of the prompt. (str, default="Text Generation")
         prompt_label: 
-            The label of the prompt input field. (str, default="Create and submit your prompt.")
+            The label of the prompt input field. 
+            (str, default="Create and submit your prompt.")
         prompt_example: 
             An example prompt. (str, default="")
         model_name: 
             The name of the model to use. (str, default='text-bison@001')
         translate: 
-            Whether to show the translate widget for the user. (bool, default=False)
+            Whether to show the translate widget for the user. 
+            (bool, default=False)
         text_area_height: 
             The height of the text area. (int, default=400)
 
@@ -104,7 +102,8 @@ def render_marketing_prompt_design(
     with st.form(key='{state_key}_form'):
         st.write(f"**{prompt_title}**")
 
-        if show_temperature or show_max_output_tokens or show_top_k or show_top_p:
+        if (show_temperature or show_max_output_tokens or
+            show_top_k or show_top_p):
             col1, col2 = st.columns([70,30])
 
             with col1:
@@ -114,9 +113,11 @@ def render_marketing_prompt_design(
             with col2:
                 st.write('**Model parameters**')
                 if show_temperature:
-                    temperature = st.slider('Temperature', 0.0, 1.0, temperature)
+                    temperature = st.slider('Temperature', 0.0, 1.0, 
+                                            temperature)
                 if show_max_output_tokens:
-                    max_output_tokens = st.slider('Max output tokens', 1, 1024, max_output_tokens)
+                    max_output_tokens = st.slider('Max output tokens', 1, 1024,
+                                                  max_output_tokens)
                 if show_top_k:
                     top_k = st.slider('TopK', 1, 40, top_k)
                 if show_top_p:
@@ -147,11 +148,12 @@ def render_marketing_prompt_design(
                 
                 st.session_state[state_key] = response
             except:
-                st.info('An exception occured. Review and provide a valid prompt.')
+                st.info('An exception occured. '
+                        'Review and provide a valid prompt.')
     
     if show_response and state_key in st.session_state:
         st.write('**Response**')
-        for i in st.session_state[state_key].split(sep='\n'):
+        for i in st.session_state[state_key].split('\n'):
             st.write(i.replace('Headline', '**Headline**'))
 
         if translate:
@@ -159,38 +161,40 @@ def render_marketing_prompt_design(
                 st.write(f"**Translate generated text**")
 
                 target_language_name = st.selectbox(
-                    "Languages", options=TRANSLATE_LANGUAGES.keys())
+                    "Languages", options=TRANSLATE_CFG.keys())
 
                 translate_submit_button = st.form_submit_button(
                     label='Translate')
 
             if translate_submit_button:
                 with st.spinner("Translating..."):
-                    st.session_state[f'{state_key}_translated_headline'] = translate_client.translate(
+                    st.session_state[
+                        f'{state_key}_translated_headline'
+                    ] = translate_client.translate(
                             'Headline',
                             source_language="en",
-                            target_language=TRANSLATE_LANGUAGES[target_language_name],
+                            target_language=TRANSLATE_CFG[
+                                target_language_name],
                         ).get("translatedText","")
 
                     st.session_state[f"{state_key}_translated"] = []
-                    for headline in st.session_state[state_key].split(sep='\n'):
+                    for headline in st.session_state[state_key].split('\n'):
                         st.session_state[
                             f"{state_key}_translated"].append(
                                 translate_client.translate(
                                     headline,
                                     source_language="en",
-                                    target_language=TRANSLATE_LANGUAGES[target_language_name]
+                                    target_language=TRANSLATE_CFG[
+                                        target_language_name]
                                 ).get("translatedText","")
                             )
             if f"{state_key}_translated" in st.session_state:
                 st.write('**Translation**')
                 for t in st.session_state[f"{state_key}_translated"]:
-                    st.write(
-                        t.replace(
-                            st.session_state[f'{state_key}_translated_headline'], 
-                            f'**{st.session_state[f"{state_key}_translated_headline"]}**'
-                        )
-                    )
+                    translated_headline = st.session_state[
+                        f'[state_key]_translated_headline']
+                    st.write(t.replace(translated_headline,
+                                       f'**{translated_headline}**'))
 
 async def async_predict_text_llm(
         prompt: str,

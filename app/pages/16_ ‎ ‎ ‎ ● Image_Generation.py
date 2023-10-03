@@ -20,18 +20,15 @@ Image Generation:
 
 
 import streamlit as st
-import tomllib
 import utils_standalone_image_gen
+from utils_config import PAGES_CFG
 
 
-# Load configuration file
-with open("./app_config.toml", "rb") as f:
-    data = tomllib.load(f)
-
+page_cfg = PAGES_CFG["16_image_generation"]
 
 st.set_page_config(
-    page_title=data["pages"]["16_image_generation"]["page_title"], 
-    page_icon=data["pages"]["16_image_generation"]["page_icon"])
+    page_title=page_cfg["page_title"], 
+    page_icon=page_cfg["page_icon"])
 
 # State variables for image generation
 PAGE_KEY_PREFIX = "ImageGeneration"
@@ -50,18 +47,18 @@ FILE_UPLOADER_KEY = f"{PAGE_KEY_PREFIX}_File_Uploader"
 IMAGE_TO_EDIT_PROMPT_KEY = f"{PAGE_KEY_PREFIX}_Edit_Prompt_key"
 
 # Pre populated prompts for image generation
-PRE_POPULATED_PROMPTS = data["pages"]["16_image_generation"]["pre_populated_prompts"]
+PRE_POPULATED_PROMPTS = page_cfg["pre_populated_prompts"]
 
 import utils_styles
 utils_styles.sidebar_apply_style(
     style=utils_styles.style_sidebar,
-    image_path=data["pages"]["16_image_generation"]["sidebar_image_path"])
+    image_path=page_cfg["sidebar_image_path"])
 
 cols = st.columns([13, 87])
 with cols[0]:
-    st.image(data["pages"]["16_image_generation"]["page_title_icon"])
+    st.image(page_cfg["page_title_icon"])
 with cols[1]:
-    st.title(data["pages"]["16_image_generation"]["page_title"])
+    st.title(page_cfg["page_title"])
 
 # Generate image
 st.subheader('Image Generation')

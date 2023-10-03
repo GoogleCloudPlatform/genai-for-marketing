@@ -16,8 +16,6 @@
 
 import io
 import uuid
-import tomllib
-
 
 from google.oauth2 import service_account
 from googleapiclient import discovery
@@ -25,12 +23,19 @@ from googleapiclient.discovery import build
 from googleapiclient.http import HttpError, MediaIoBaseUpload
 from googleapiclient.http import MediaIoBaseDownload
 
-with open("./app_config.toml", "rb") as f:
-    data = tomllib.load(f)
+from utils_config import GLOBAL_CFG, PAGES_CFG
 
-SCOPES = data["pages"]["12_review_activate"]["workspace_scopes"]
+
+SCOPES = PAGES_CFG["12_review_activate"]["workspace_scopes"]
 CREDENTIALS = service_account.Credentials.from_service_account_file(
-    filename=data["global"]["service_account_json_key"], scopes=SCOPES)
+    filename=GLOBAL_CFG["service_account_json_key"], scopes=SCOPES)
+
+
+drive_service = build('drive', 'v3', credentials=CREDENTIALS)
+docs_service = build('docs', 'v1', credentials=CREDENTIALS)
+sheets_service = discovery.build('sheets', 'v4', credentials=CREDENTIALS)
+slides_service = build('slides', 'v1', credentials=CREDENTIALS)
+
 
 
 def create_folder_in_folder(
@@ -42,16 +47,14 @@ def create_folder_in_folder(
     'parents' : [parent_folder_id],
     'mimeType' : 'application/vnd.google-apps.folder'
     }
-    service = build('drive', 'v3', credentials=CREDENTIALS)
-    file = service.files().create(body=file_metadata,
+    file = drive_service.files().create(body=file_metadata,
                                     fields='id').execute()
     
     return file.get('id')
 
 def download_file(file_id: str) -> bytes | None:
     try:
-        service = build('drive', 'v3', credentials=CREDENTIALS)
-        request = service.files().get_media(fileId=file_id)
+        request = drive_service.files().get_media(fileId=file_id)
         file = io.BytesIO()
         downloader = MediaIoBaseDownload(file, request)
         done = False
@@ -67,7 +70,6 @@ def copy_drive_file(drive_file_id: str,
                     parentFolderId: str,
                     copy_title: str):
     
-    drive_service = build('drive', 'v3', credentials=CREDENTIALS)
     body = {
         'name': copy_title,
             'parents' : [ parentFolderId  ]
@@ -89,8 +91,6 @@ def upload_to_folder(
     Returns: ID of the file uploaded"""
 
     # create drive api client
-    service = build('drive', 'v3', credentials=CREDENTIALS)
-
     file_metadata = {
         'name': upload_name,
         'parents': [folder_id]
@@ -100,7 +100,7 @@ def upload_to_folder(
         f, 
         mimetype=mime_type)
 
-    file = service.files().create(
+    file = drive_service.files().create(
         body=file_metadata, 
         media_body=media,
         fields='id').execute()
@@ -167,8 +167,7 @@ def update_doc(
                 'replaceText': comms_channel,
             }}
     ]
-    service = build('docs', 'v1', credentials=CREDENTIALS)
-    service.documents().batchUpdate(
+    docs_service.documents().batchUpdate(
         documentId=document_id, body={'requests': requests}).execute()
 
 
@@ -178,21 +177,19 @@ def set_permission(
     permission = {'type': 'domain',
                 'domain': 'google.com', 
                 'role': 'writer'}
-    service = build('drive', 'v3', credentials=CREDENTIALS)
-    return service.permissions().create(fileId=file_id,
+    return drive_service.permissions().create(fileId=file_id,
                                         sendNotificationEmail=False,
                                         body=permission).execute()
 
 
 def get_chart_id(
         spreadsheet_id):
-    service = discovery.build('sheets', 'v4', credentials=CREDENTIALS)
     spreadsheet_id = spreadsheet_id  
     ranges = [] 
     include_grid_data = False 
 
 
-    request = service.spreadsheets().get(spreadsheetId=spreadsheet_id,
+    request = sheets_service.spreadsheets().get(spreadsheetId=spreadsheet_id,
                                             ranges=ranges,
                                             includeGridData=include_grid_data)
     response = request.execute()
@@ -216,7 +213,6 @@ def merge_slides(
     sheet_chart_id_list = get_chart_id(
         spreadsheet_template_id)
 
-    service = build('slides', 'v1', credentials=CREDENTIALS)
     from datetime import date
 
     today = date.today()
@@ -260,7 +256,7 @@ def merge_slides(
     body = {
         'requests': requests
     }
-    service.presentations().batchUpdate(
+    slides_service.presentations().batchUpdate(
         presentationId=presentation_id, body=body).execute()
 
 
@@ -269,8 +265,6 @@ def create_sheets_chart(
         page_id: str,
         spreadsheet_id: str, 
         sheet_chart_id: str):
-    
-    slides_service = build('slides', 'v1', credentials=CREDENTIALS)
     emu4m = {
         'magnitude': 1000000,
         'unit': 'EMU'

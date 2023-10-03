@@ -21,14 +21,12 @@ from dataclasses import dataclass
 import streamlit as st 
 import uuid
 import pandas as pd
-import tomllib
+
+from utils_config import PAGES_CFG
 
 
-# Load configuration file
-with open("./app_config.toml", "rb") as f:
-    data = tomllib.load(f)
 
-CAMPAIGNS_KEY = data["pages"]["campaigns"]["campaigns_key"]
+CAMPAIGNS_KEY = PAGES_CFG["campaigns"]["campaigns_key"]
 
 @dataclass
 class Campaign:
