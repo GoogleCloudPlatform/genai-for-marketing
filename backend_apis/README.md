@@ -50,14 +50,14 @@ Using the same Vertex AI managed notebook you created in this [README](../README
 > cd ./genai-for-marketing/backend_apis 
 
  - Open the file [config.toml](./app/config.toml), change the variables below and save it:
-  - project_id
-  - location
-  - vertexai_search_datastore
-  - drive_folder_id
-  - slides_template_id
-  - doc_template_id
-  - sheet_template_id
-  - slide_page_id_list
+   - project_id
+   - location
+   - vertexai_search_datastore
+   - drive_folder_id
+   - slides_template_id
+   - doc_template_id
+   - sheet_template_id
+   - slide_page_id_list
 
 You will find detailed intructions in this [README](../README.md) file, specially for the workspace integration.  
 
