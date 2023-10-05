@@ -18,6 +18,7 @@ The architecture of all the demos that are implemented in this application is as
 ```
 
 - [`/app`](/app): Source code for demo app.  
+- [`/backend_apis`](/backend_apis): Source code for backend APIs.
 - [`/notebooks`](/notebooks): Sample notebooks demonstrating the concepts covered in this demonstration.  
 - [`/templates`](/templates): Workspace Slides, Docs and Sheets templates used in the demonstration.
 
@@ -172,8 +173,8 @@ After you finished creating the Vertex AI Search datastore, navigate back to the
 Example:  
 ![Vertex AI Search ID](./app/images/es_id.png)
 
-Open this [configuration file - line 600](/app/app_config.toml) and create a variable that follows this pattern:  
-> datastores.<datastore ID> = 'default_config'.  
+Open this [configuration file - line 282](/app/app_config.toml) and include the datastore ID. To do that create a variable that follows this pattern:  
+> datastores.<datastore ID> = "default_config".  
 The resulting code should look like this:  
 
 ```
@@ -191,7 +192,7 @@ datastores.google-ads-support_1686058481432 = "default_config"
 
 In order to render your Looker Dashboards in the UI, you need to update a configuration file with the links to them.
 
-Open the [configuration file](/app/app_config.toml) and include dashboards for Marketing Insights (line 196) and Campaign Performance (line 1156).  
+Open the [configuration file](/app/app_config.toml) and include links to the Looker dashboards for Marketing Insights (line 205) and Campaign Performance (line 615).  
 The resulting code should look like this:  
 
 ```
@@ -205,7 +206,7 @@ dashboards.Overview = 'https://googledemo.looker.com/embed/dashboards/2131?allow
 
 The `allow_login_screen=true` will open the authentication page from Looker to secure the access to your account.
 
-**[Optional]** If you have your Google Ads and Google Analytics 4 accounts in production, you can deploy our [`Marketing Data Engine`](https://github.com/GoogleCloudPlatform/marketing-data-engine/tree/main) solution to your project, build the Dashboards and link them to the demonstration UI.  
+**[Optional]** If you have your Google Ads and Google Analytics 4 accounts in production, you can deploy the [`Marketing Data Engine`](https://github.com/GoogleCloudPlatform/marketing-data-engine/tree/main) solution to your project, build the Dashboards and link them to the demonstration UI.  
 
 
 ### Create a Generative AI Agent
@@ -218,7 +219,7 @@ Next you will create a Generative AI Agent that will assist the users to answer 
 - Enable [Dialogflow Messenger integration](https://cloud.google.com/dialogflow/cx/docs/concept/integration/dialogflow-messenger) and copy the HTML code snippet provided by the platform.  
   - The HTML code snippet looks like this: 
   ![HTML Code](/app/images/dialogflow-integration.png "HTML Code")
-  - Open the [configuration file - line 1134](/app/app_config.toml) and replace the HTML code snipped with the one created in your deployment.
+  - Open the [configuration file - line 592](/app/app_config.toml) and replace the HTML code snipped with the one created in your deployment.
 
 
 ### Workspace integration
@@ -241,7 +242,7 @@ Follow the steps below to setup the Workspace integration with this demonstratio
 ![Share Drive](/app/images/workspace-drive.png "Share Drive")
  - Take note of the folder ID. Go into the folder you created and you will be able to find the ID in the URL. The URL will look like this:
  ![Drive ID](/app/images/workspace-drive0.png)
- - Open the configuration file [app_config.toml - line 1100](/app/app_config.toml) and change to your folder ID.
+ - Open the configuration file [app_config.toml - line 558](/app/app_config.toml) and change to your folder ID.
  - **IMPORTANT**: Also share this folder with people who will be using the code.
 
 #### Google Slides, Google Docs and Google Sheets
@@ -249,15 +250,15 @@ Follow the steps below to setup the Workspace integration with this demonstratio
  - For the Google Slides template (`[template] Marketing Assets`): 
    - From the Google Drive folder open the file in Google Slides.  
    - In Google Slides, click on `File` and `Save as Google Slides`. Take note of the Slides ID from the URL.
-   - Open the configuration file [app_config.toml - line 1101](/app/app_config.toml) and change to your Slides ID.
+   - Open the configuration file [app_config.toml - line 559](/app/app_config.toml) and change to your Slides ID.
  - For the Google Docs template (`[template] Gen AI for Marketing Google Doc Template`): 
    - From the Google Drive folder open the file in Google Docs. 
    - In Google Docs, click on `File` and `Save as Google Docs`. Take note of the Docs ID from the URL.
-   - Open the configuration file [app_config.toml - line 1102](/app/app_config.toml) and change to your Docs ID.
+   - Open the configuration file [app_config.toml - line 560](/app/app_config.toml) and change to your Docs ID.
  - For the Google Sheets template (`[template] GenAI for Marketing`):  
    - From the Google Drive folder open the Google Sheets.
    - In Google Sheets, click in `File` and `Save as Google Sheets`. Take note of the Sheets ID from the URL.
-   - Open the configuration file [app_config.toml - line 1103](/app/app_config.toml) and change to your Sheets ID.
+   - Open the configuration file [app_config.toml - line 561](/app/app_config.toml) and change to your Sheets ID.
  
 
 ### Deploy the demonstration to App Engine
