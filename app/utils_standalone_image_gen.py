@@ -47,7 +47,7 @@ IMAGEN_ENDPOINT = f'projects/{PROJECT_ID}/locations/{LOCATION}/publishers/google
 IMAGE_UPLOAD_BYTES_LIMIT = PAGES_CFG["16_image_generation"][
                                      "image_upload_bytes_limit"]
 # The AI Platform services require regional API endpoints.
-client_options = {"api_endpoint": IMAGEN_ENDPOINT}
+client_options = {"api_endpoint": IMAGEN_API_ENDPOINT}
 # Initialize client that will be used to create and send requests.
 imagen_client = aiplatform.gapic.PredictionServiceClient(
     client_options=client_options
