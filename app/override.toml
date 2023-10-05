@@ -20,6 +20,7 @@
 # Replace with your project ID and location
 project_id = ""
 location = "us-central1"
+service_account_json_key = ""
 
 # -----------------------------------------------------------------------------
 # Configurations for page: 3_Audiences.py
@@ -52,10 +53,10 @@ search_location = "global"
 
 # ID of the templates
 # Change this variables according to your Google Workspace settings
-drive_folder_id = '' # example: "1MYB0Ybyo9XZERgIcjsdfeqO0SKqhrkvqMx"
-slides_template_id = '' # example: '16uQlLkCJ9YRiMU_IoONHsl-vY-uKeoasnWTPlbZZ1D4'
-doc_template_id = '' # example: '1kqvxZLRXIdfM8MVS7css4UoiJ8f0I4dKFj9cP986K4pM'
-sheet_template_id = '' # example: '1gIaIWLOeKmnjso7-CAAAcqMlPznpoEXDdEue3DNWr7bw'
+drive_folder_id = "" # example: "1MYB0Ybyo9XZERgIcjsdfeqO0SKqhrkvqMx"
+slides_template_id = "" # example: '16uQlLkCJ9YRiMU_IoONHsl-vY-uKeoasnWTPlbZZ1D4'
+doc_template_id = "" # example: '1kqvxZLRXIdfM8MVS7css4UoiJ8f0I4dKFj9cP986K4pM'
+sheet_template_id = "" # example: '1gIaIWLOeKmnjso7-CAAAcqMlPznpoEXDdEue3DNWr7bw'
 slide_page_id_list = ["p3","p4","p5","p6","p7","p8"] # LIST OF PAGES WHERE YOU WANT TO INSERT CHARTS FROM THE SHEETS
 
 # -----------------------------------------------------------------------------
@@ -89,4 +90,4 @@ infobot = """<script src="https://www.gstatic.com/dialogflow-console/fast/df-mes
 # https://<LOOKER INSTANCE URL>/embed/dashboards/<DASHBOARD NUMBER>?allow_login_screen=true
 # Include your Dashboards following this patter:
 # dashboards.<Name of your dashboard, no spaces> = '<link to your dashboard>'
-dashboards.Overview = ''
+dashboards.Overview = ""
