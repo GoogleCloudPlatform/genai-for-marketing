@@ -192,7 +192,7 @@ def render_marketing_prompt_design(
                 st.write('**Translation**')
                 for t in st.session_state[f"{state_key}_translated"]:
                     translated_headline = st.session_state[
-                        f'[state_key]_translated_headline']
+                        f'{state_key}_translated_headline']
                     st.write(t.replace(translated_headline,
                                        f'**{translated_headline}**'))
 
