@@ -246,6 +246,7 @@ def render_one_image(
     if download_button:
         st.download_button(
             label='Download',
+            key=f"_btn_download_{images_key}_{image_position}",
             data=image,
             file_name='image.png',
         )
@@ -264,7 +265,7 @@ def generate_image_columns(
         images_key: str,
         select_button: bool=False,
         selected_image_key: str="",
-        edit_button: bool=False,
+        edit_button: bool=True,
         image_to_edit_key: str="",
         download_button: bool=True):
     """Generates a grid of image columns.
