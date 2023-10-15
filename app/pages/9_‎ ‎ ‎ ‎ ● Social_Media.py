@@ -190,6 +190,7 @@ def render_ad(
 
     image = None
     if key_prefix+"_Selected_Image" in st.session_state:
+        st.write("**Selected image**")
         st.image(st.session_state[key_prefix+"_Selected_Image"])
         image = base64.b64encode(st.session_state[
             key_prefix+"_Selected_Image"].getvalue()).decode("utf-8")

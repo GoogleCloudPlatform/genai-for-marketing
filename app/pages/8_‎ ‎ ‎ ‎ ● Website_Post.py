@@ -159,7 +159,8 @@ if UUID_KEY in st.session_state:
             del st.session_state[IMAGE_TO_EDIT_KEY]
         if FILE_UPLOADER_KEY in st.session_state:
             del st.session_state[FILE_UPLOADER_KEY]
-        
+        if IMAGE_OPTION_KEY in st.session_state:
+            del st.session_state[IMAGE_OPTION_KEY]
 
         with st.spinner('Generating website post ...'):
             try:
@@ -201,7 +202,7 @@ if GENERATED_TEXT_KEY in st.session_state and UUID_KEY in st.session_state:
             st.session_state[IMAGE_OPTION_KEY
                 ] = st.session_state[f"{PAGE_KEY_PREFIX}_image_option_radio"]
         st.button("Select", on_click=image_option_button)
-        
+
     if st.session_state.get(IMAGE_OPTION_KEY, "") == "uploaded":
         utils_image.render_image_edit_prompt(
             image_to_edit_key=IMAGE_TO_EDIT_KEY,
@@ -215,8 +216,8 @@ if GENERATED_TEXT_KEY in st.session_state and UUID_KEY in st.session_state:
             campaign_image_dict=campaign_image_dict,
             local_image_list=page_cfg["local_images"]
         )
-    else:
-         utils_image.render_image_generation_and_edition_ui(
+    elif st.session_state.get(IMAGE_OPTION_KEY, "") == "generated":      
+        utils_image.render_image_generation_and_edition_ui(
             image_text_prompt_key=IMAGE_GENERATION_TEXT_PROMPT_KEY,
             generated_images_key=GENERATED_IMAGES_KEY,
             edit_image_prompt_key=EDIT_GENERATED_IMAGE_PROMPT_KEY,
@@ -239,6 +240,12 @@ if (GENERATED_TEXT_KEY in st.session_state and
     SELECTED_IMAGE_KEY in st.session_state and 
     CAMPAIGNS_KEY in st.session_state):
     campaigns_names = generate_names_uuid_dict().keys()
+
+    image = None
+    if SELECTED_IMAGE_KEY in st.session_state:
+        st.write("**Selected image**")
+        st.image(st.session_state[SELECTED_IMAGE_KEY])
+        
     with st.form(PAGE_KEY_PREFIX+"_Link_To_Campaign"):
         st.write("**Choose a Campaign to save the results**")
         selected_name = st.selectbox("List of Campaigns", campaigns_names)
