@@ -19,6 +19,7 @@ Initial page with an overview architecture and a description of each demo page.
 import asyncio
 from itertools import cycle
 import streamlit as st
+import streamlit.components.v1 as components
 import time
 import utils_workspace
 
@@ -256,6 +257,13 @@ with tab1:
                 st.session_state[CAMPAIGNS_KEY][
                     campaign_uuid].workspace_assets["folder_id"]=new_folder_id
 
+                if st.session_state[CAMPAIGNS_KEY][
+                    campaign_uuid].workspace_assets["brief_docs_id"]:
+                    components.iframe(
+                        src=f'https://docs.google.com/file/d/{doc_id}/preview',
+                        height=1000
+                    )
+
 
 def display_campaigns_upload(
         campaign: Campaign
@@ -263,8 +271,8 @@ def display_campaigns_upload(
     if campaign.workspace_assets == None:
         return
     docs_link = f'https://docs.google.com/document/d/{campaign.workspace_assets["brief_docs_id"]}/edit'
+    docs_link_preview = f'https://docs.google.com/file/d/{campaign.workspace_assets["brief_docs_id"]}/preview'
     folder_link = f'http://drive.google.com/corp/drive/folders/{campaign.workspace_assets["folder_id"]}'
-    
 
     with st.form(
         key=f"{PAGE_KEY_PREFIX}_{str(campaign.unique_uuid)}_form", 
@@ -288,8 +296,28 @@ def display_campaigns_upload(
             key=FILE_UPLOADER_KEY+str(campaign.unique_uuid),
             accept_multiple_files=True)
         
-        submit_button = st.form_submit_button("Save to Campaign")
+        cols = st.columns([0.4,0.8])
+
+        with cols[0]:
+            submit_button = st.form_submit_button("Save images to Campaign")
         
+        with cols[1]:
+            placeholder_for_toggle = st.empty()
+
+        placeholder_for_iframe = st.empty()
+
+    with placeholder_for_toggle:
+        preview_docs_toggle = st.toggle(
+            label="Preview brief"
+        )
+
+    with placeholder_for_iframe.container():
+        if preview_docs_toggle:
+            components.iframe(
+                src=docs_link_preview,
+                height=1000
+            )
+
     if submit_button:
         with st.spinner("Uploading files to Google Drive..."):
             if uploaded_files:
