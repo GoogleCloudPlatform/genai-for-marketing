@@ -43,12 +43,13 @@ def create_folder_in_folder(
         parent_folder_id: str
     ):
     file_metadata = {
-    'name' : folder_name,
-    'parents' : [parent_folder_id],
-    'mimeType' : 'application/vnd.google-apps.folder'
+        'name' : folder_name,
+        'parents' : [parent_folder_id],
+        'mimeType' : 'application/vnd.google-apps.folder'
     }
     file = drive_service.files().create(body=file_metadata,
-                                    fields='id').execute()
+                                    fields='id',
+                                    supportsAllDrives=True).execute()
     
     return file.get('id')
 
@@ -75,7 +76,9 @@ def copy_drive_file(drive_file_id: str,
             'parents' : [ parentFolderId  ]
     }
     drive_response = drive_service.files().copy(
-        fileId=drive_file_id, body=body).execute()
+        fileId=drive_file_id, 
+        body=body,
+        supportsAllDrives=True).execute()
     presentation_copy_id = drive_response.get('id')
 
     return presentation_copy_id
@@ -103,7 +106,8 @@ def upload_to_folder(
     file = drive_service.files().create(
         body=file_metadata, 
         media_body=media,
-        fields='id').execute()
+        fields='id',
+        supportsAllDrives=True).execute()
 
     return file.get('id')
 
@@ -168,7 +172,8 @@ def update_doc(
             }}
     ]
     docs_service.documents().batchUpdate(
-        documentId=document_id, body={'requests': requests}).execute()
+        documentId=document_id, 
+        body={'requests': requests}).execute()
 
 
 def set_permission(
@@ -179,7 +184,8 @@ def set_permission(
                 'role': 'writer'}
     return drive_service.permissions().create(fileId=file_id,
                                         sendNotificationEmail=False,
-                                        body=permission).execute()
+                                        body=permission,
+                                        supportsAllDrives=True).execute()
 
 
 def get_chart_id(
@@ -189,9 +195,10 @@ def get_chart_id(
     include_grid_data = False 
 
 
-    request = sheets_service.spreadsheets().get(spreadsheetId=spreadsheet_id,
-                                            ranges=ranges,
-                                            includeGridData=include_grid_data)
+    request = sheets_service.spreadsheets().get(
+        spreadsheetId=spreadsheet_id,
+        ranges=ranges,
+        includeGridData=include_grid_data)
     response = request.execute()
 
     chart_id_list = []
@@ -257,7 +264,8 @@ def merge_slides(
         'requests': requests
     }
     slides_service.presentations().batchUpdate(
-        presentationId=presentation_id, body=body).execute()
+        presentationId=presentation_id, 
+        body=body).execute()
 
 
 def create_sheets_chart(
