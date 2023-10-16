@@ -118,7 +118,7 @@ st.subheader('Audience Insights Finder')
 
 utils_codey.generate_sql_and_query(
     state_key=f"{PAGE_KEY_PREFIX}_insight",
-    title="Ask you data",
+    title="Ask your data",
     query=QUERY,
     project_id=PROJECT_ID,
     dataset_id=DATASET_ID,
@@ -126,4 +126,3 @@ utils_codey.generate_sql_and_query(
     bqclient=bqclient,
     default_query=page_cfg.get("audience_query_0", "")
 )
-
