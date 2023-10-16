@@ -54,7 +54,7 @@ DATASTORES = {
     # 'google-ads-support_1111111111': 'default_config'
     # '<UNCOMMENT AND PASTE THE ID HERE>': 'default_config'
 
-    "google-ads-support_1686058481432": "default_config"
+    "google-ads-support_1688070625722": "default_config"
 }
 SEARCH_LOCATION = 'global'
 
