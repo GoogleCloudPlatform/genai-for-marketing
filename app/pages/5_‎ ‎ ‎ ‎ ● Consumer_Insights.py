@@ -61,11 +61,11 @@ with cols[1]:
 
 st.write(
     """
-    This page demonstrates how to use GenApp Builder to find marketing assets. 
+    This page demonstrates how to use Vertex AI Search to find marketing assets. 
     """
 )
 
-st.write('Search for assets using Enterprise Search')
+st.write('Search for assets using Vertex AI Search')
 
 if DATASTORES:
     with st.form(key=f"{PAGE_KEY_PREFIX}_form"):
