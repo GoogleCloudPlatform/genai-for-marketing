@@ -550,16 +550,12 @@ def render_image_edit_prompt(
         else:
             st.image(st.session_state[image_to_edit_key])
 
-        with st.expander('Edit the image with a prompt',
-                         expanded=selected_image_key not in st.session_state):
+        with st.form(key=f"{edit_image_prompt_key}_form"):
             edit_image_prompt = st.text_input(
-                'Provide a prompt using natural language to edit the image',
-                key=f"{edit_image_prompt_key}_text_area")
+                'Provide a prompt using natural language to edit the image')
+            edit_image_button = st.form_submit_button(label='Edit Image')
 
-            edit_image_button = st.button('Edit Image')
         if edit_image_button:
-                st.session_state[edit_image_prompt_key] = st.session_state[
-                    f"{edit_image_prompt_key}_text_area"]
                 bytes_data = st.session_state[image_to_edit_key]
             
                 if bytes_data:
