@@ -312,7 +312,8 @@ def display_campaigns_upload(
 
     with placeholder_for_toggle:
         preview_docs_toggle = st.toggle(
-            label="Preview brief"
+            label="Preview brief",
+            key=str(campaign.unique_uuid)+"_toggle"
         )
 
     with placeholder_for_iframe.container():
