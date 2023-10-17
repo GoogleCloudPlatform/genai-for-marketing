@@ -250,7 +250,7 @@ with tab1:
                         primary_msg=clean(brief["primary_message"]), 
                         comms_channel=clean(brief["comm_channels"]))
             except:
-                del st.session_state[CAMPAIGNS_KEY]
+                del st.session_state[CAMPAIGNS_KEY][campaign_uuid]
                 st.info("Campaign could not be created. Please try again.")
             else:
                 st.success("Brief document uploaded to Google Docs.")
