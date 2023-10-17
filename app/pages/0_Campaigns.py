@@ -226,6 +226,7 @@ with tab1:
                 # local reference
                 brief = st.session_state[CAMPAIGNS_KEY][campaign_uuid].brief 
 
+            try:
                 with st.spinner("Creating Google Drive folder..."):
                     new_folder_id = utils_workspace.create_folder_in_folder(
                         folder_name=f"Marketing_Assets_{int(time.time())}",
@@ -248,8 +249,11 @@ with tab1:
                         brand_statement=clean(brief["brand_statement"]),
                         primary_msg=clean(brief["primary_message"]), 
                         comms_channel=clean(brief["comm_channels"]))
+            except:
+                del st.session_state[CAMPAIGNS_KEY]
+                st.info("Campaign could not be created. Please try again.")
+            else:
                 st.success("Brief document uploaded to Google Docs.")
-
                 st.session_state[CAMPAIGNS_KEY][
                     campaign_uuid].workspace_assets = {}
                 st.session_state[CAMPAIGNS_KEY][
