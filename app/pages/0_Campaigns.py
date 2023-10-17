@@ -210,8 +210,6 @@ with tab1:
                 st.info('Something went wrong with your prompt. Try again.')
             else:
                 campaign_uuid = add_new_campaign(campaign_name)
-                st.success(f"Campaign '{campaign_name}' generated "
-                        f"with the uuid '{campaign_uuid}'")
                 # Store generated assets
                 st.session_state[CAMPAIGNS_KEY][campaign_uuid].brief = {
                     'business_name': BUSINESS_NAME,
@@ -253,6 +251,8 @@ with tab1:
                 del st.session_state[CAMPAIGNS_KEY][campaign_uuid]
                 st.info("Campaign could not be created. Please try again.")
             else:
+                st.success(f"Campaign '{campaign_name}' generated "
+                           f"with the uuid '{campaign_uuid}'")
                 st.success("Brief document uploaded to Google Docs.")
                 st.session_state[CAMPAIGNS_KEY][
                     campaign_uuid].workspace_assets = {}
