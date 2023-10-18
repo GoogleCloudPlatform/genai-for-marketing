@@ -207,7 +207,7 @@ dashboards.Overview = 'https://googledemo.looker.com/embed/dashboards/2131?allow
 
 The `allow_login_screen=true` will open the authentication page from Looker to secure the access to your account.
 
-**[Optional]** If you have your Google Ads and Google Analytics 4 accounts in production, you can deploy the [`Marketing Data Engine`](https://github.com/GoogleCloudPlatform/marketing-data-engine/tree/main) solution to your project, build the Dashboards and link them to the demonstration UI.  
+**[Optional]** If you have your Google Ads and Google Analytics 4 accounts in production, you can deploy the [`Marketing Analytics Jumpstart`](https://github.com/GoogleCloudPlatform/marketing-analytics-jumpstart) solution to your project, build the Dashboards and link them to the demonstration UI.  
 
 
 ### Create a Generative AI Agent
