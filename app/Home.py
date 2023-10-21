@@ -18,6 +18,7 @@ Initial page with an overview architecture and a description of each demo page.
 
 import base64
 import streamlit as st
+from streamlit_modal import Modal
 
 from utils_config import PAGES_CFG
 
@@ -50,3 +51,38 @@ with open(file_name_2, "rb") as fp:
 st.image(image=main_image_1)
 st.divider()
 st.image(image=main_image_2)
+
+st.divider()
+
+open_disclaimer = st.button(label='disclaimer')
+st.markdown(
+    """
+    <style>
+        button {
+            background: none!important;
+            border: none;
+            padding: 0!important;
+            color: black !important;
+            text-decoration: none;
+            cursor: pointer;
+            border: none !important;
+            text-align: center;
+            font-variant: small-caps;
+        }
+        button:hover {
+            text-decoration: none;
+            color: black !important;
+        }
+        button:focus {
+            outline: none !important;
+            box-shadow: none !important;
+            color: black !important;
+        }
+    </style>
+    """, unsafe_allow_html=True,
+)
+
+modal = Modal(key="Disclaimer Key",title="disclaimer")
+if open_disclaimer:
+    with modal.container():
+        st.markdown('This is not an official Google product. This is a functional demo with a purpose to showcase capabilities of Google products.')
