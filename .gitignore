@@ -130,3 +130,5 @@ dmypy.json
 
 .DS_Store
 credential.json
+backend_apis/app/credential.json
+
