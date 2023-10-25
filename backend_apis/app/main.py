@@ -18,15 +18,18 @@ import tomllib
 from . import utils_codey
 from . import utils_search
 from . import utils_workspace
+from . import utils_firebase
 from . import utils_trendspotting as trendspotting
 from datetime import datetime, timedelta
-from fastapi import FastAPI, HTTPException, UploadFile
+from fastapi import FastAPI, HTTPException, UploadFile, Request
+from fastapi.responses import JSONResponse
 from googleapiclient.discovery import build
 from google.cloud import bigquery
 from google.cloud import datacatalog_v1
 from google.cloud import discoveryengine
 from google.oauth2 import service_account
 from proto import Message
+import vertexai
 from vertexai.preview.language_models import TextGenerationModel as bison_latest
 from vertexai.language_models import TextGenerationModel as bison_ga
 from vertexai.preview.vision_models import ImageGenerationModel
@@ -51,7 +54,11 @@ from .body_schema import (
     BriefCreateRequest,
     BriefCreateResponse,
     SlidesCreateRequest,
-    SlidesCreateResponse
+    SlidesCreateResponse,
+    CampaignCreateRequest,
+    CampaignCreateResponse,
+    CampaignListResponse,
+    Campaign
 )
 
 # Load configuration file
@@ -60,6 +67,7 @@ with open("/code/app/config.toml", "rb") as f:
 project_id = config["global"]["project_id"]
 location = config["global"]["location"]
 
+vertexai.init(project=project_id, location=location)
 # Vertex AI Search Client
 search_client = discoveryengine.SearchServiceClient()
 vertexai_search_datastore = config["global"]["vertexai_search_datastore"]
@@ -70,7 +78,7 @@ prompt_nl_sql = config["global"]["prompt_nl_sql"]
 tag_name = config["global"]["tag_name"]
 
 # Trendspotting
-bq_client = bigquery.Client(project="rl-llm-dev")
+bq_client = bigquery.Client(project=project_id)
 datacatalog_client = datacatalog_v1.DataCatalogClient()
 
 # Text models
@@ -98,6 +106,94 @@ slide_page_id_list = config["global"]["slide_page_id_list"]
 
 app = FastAPI()
 
+@app.get(path="/")
+def root():
+    return "Root Get Response!!"
+
+# signup endpoint
+@app.post("/signup", include_in_schema=False)
+async def signup(request: Request):
+   req = await request.json()
+   email = req['email']
+   password = req['password']
+   if email is None or password is None:
+       return HTTPException(detail={'message': 'Error! Missing Email or Password'}, status_code=400)
+   try:
+       userid = utils_firebase.create_user(
+           email=email,
+           password=password
+       )
+       return JSONResponse(content={'message': f'Successfully created user {userid}'}, status_code=200)    
+   except:
+       return HTTPException(detail={'message': 'Error Creating User'}, status_code=400)
+
+#login 
+@app.post("/login", include_in_schema=False)
+async def login(request: Request):
+   req_json = await request.json()
+   email = req_json['email']
+   password = req_json['password']
+   try:
+       user = utils_firebase.authenticate(email, password)
+       jwt = user['token']
+       return JSONResponse(content={'token': jwt}, status_code=200)
+   except:
+       return HTTPException(detail={'message': 'There was an error logging in'}, status_code=400)
+
+# create-campaign
+@app.post("/campaigns")
+async def create_campaign(data: CampaignCreateRequest,request: Request) -> CampaignCreateResponse:
+   """Campaing Creation and content generation with PaLM API
+    Parameters:
+        campaign_name: str
+        theme: str
+        brief: dict = {"gender_select_theme":"Male","age_select_theme":"20-30",objective_select_theme:"Drive Awareness","competitor_select_theme":"Fashion Forward"}
+    Returns:
+        id (str): Response of generated Campaign ID
+    """
+   headers = request.headers
+   jwt = headers.get('authorization')
+   print(f"jwt:{jwt}")
+   userid = utils_firebase.validate(jwt)
+   campaign = utils_firebase.Campaign(name=data.campaign_name,theme=data.theme,brief=data.brief)
+   update_time,campaign_id = utils_firebase.create_campaign(userid=userid,campaign=campaign)
+   print(update_time,campaign_id)
+   return CampaignCreateResponse(id=campaign_id)
+
+# List-campaign
+@app.get("/campaigns")
+async def list_campaign(request: Request) -> CampaignListResponse:
+   headers = request.headers
+   jwt = headers.get('authorization')
+   print(f"jwt:{jwt}")
+   user_id = utils_firebase.validate(jwt)
+   
+   list_of_campaigns = utils_firebase.list_campaigns(user_id=user_id)
+   print(list_of_campaigns)
+   return CampaignListResponse(results=list_of_campaigns)
+
+# Update-campaign
+@app.put("/campaigns/{campaign_id}")
+async def update_campaign(campaign_id:str,data:Campaign, request: Request):
+   headers = request.headers
+   jwt = headers.get('authorization')
+   print(f"jwt:{jwt}")
+   user_id = utils_firebase.validate(jwt)
+   response = utils_firebase.update_campaign(user_id=user_id,campaign_id=campaign_id,data=data)
+   print(response)
+   return JSONResponse(content={'message': 'Successfully Updated'}, status_code=200)
+
+# Delete-campaign
+@app.delete("/campaigns/{campaign_id}")
+async def delete_campaign(campaign_id:str,request: Request):
+   headers = request.headers
+   jwt = headers.get('authorization')
+   print(f"jwt:{jwt}")
+   user_id = utils_firebase.validate(jwt)
+   
+   response = utils_firebase.delete_campaign(user_id=user_id,campaign_id=campaign_id)
+   print(response)
+   return JSONResponse(content={'message': 'Successfully Deleted Campaign'}, status_code=200)
 
 @app.post(path="/generate-text")
 def post_text_bison_generate(data: TextGenerateRequest) -> TextGenerateResponse:
