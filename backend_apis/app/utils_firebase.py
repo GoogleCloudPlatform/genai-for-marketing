@@ -76,7 +76,6 @@ def create_campaign(user_id,campaign:Campaign):
     user_ref = db.collection("users").document(user_id)
     if user_ref.get().exists:
         print("Found user")
-    print(json.dumps(campaign.__dict__,default=to_serializable))
     update_time, campaign_ref = user_ref.collection("campaigns").add(json.loads(json.dumps(campaign.__dict__,default=to_serializable)))
 
     return update_time,campaign_ref.id
