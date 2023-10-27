@@ -130,7 +130,9 @@ class CampaignCreateRequest(BaseModel):
     
 class CampaignCreateResponse(BaseModel):
     id:str
-
+    campaign_name: str
+    theme: str
+    workspace_assets: BriefCreateResponse
 
 class Campaign(BaseModel):
     name: str
@@ -142,7 +144,7 @@ class Campaign(BaseModel):
     ads_insta: dict | None = None
     asset_classes_text: dict | None = None
     asset_classes_images: dict | None = None
-    workspace_assets: dict | None = None
+    workspace_assets: BriefCreateResponse | None = None
     trendspotting_summaries: list | None = None
     audiences: dict | None = None
     campaign_uploaded_images: dict | None = None

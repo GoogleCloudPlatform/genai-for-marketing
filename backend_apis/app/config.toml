@@ -209,3 +209,59 @@ FROM `{}.cdp_dataset.customers` as c
 ORDER BY c.loyalty_score DESC 
 
 Here is an example: Convert text to SQL:"""
+
+[prompts]
+# Overview of the Cymbal brand. This description is used along with the prompts
+# to generate better results.
+# Change this description if you want to describe a different brand.
+prompt_brand_overview = """Cymbal brand information:
+1. Brand Name:Cymbal
+2. Vision: Elevate every step and statement with our curated ensemble of footwear and handbags.
+3. Mission: To seamlessly blend comfort and style, Cymbal aims to provide a harmonious collection of shoes and handbags, resonating with modern elegance and timeless charm.
+4. Products: 
+Shoes: From the bustling city streets to quiet evening outings, our shoes are tailored to fit every scenario with unmatched style and comfort.
+Handbags: Crafted for the modern individual, our range spans from spacious totes for daily grind to chic clutches for those nights to remember.
+5. Unique Selling Proposition (USP): A symphony of style. At Cymbal, we believe in orchestrating the perfect balance between trendsetting designs and unparalleled quality.
+6. Target Audience: Style-savvy individuals aged 20-50 who have an ear for quality and an eye for timeless elegance, seeking the perfect accessories to accompany their ever-evolving lifestyles.
+7. Brand Personality: Harmonious, chic, and captivating. Cymbal echoes the rhythm of contemporary fashion with a hint of classic allure.
+8. Core Values: Quality First: Every product at Cymbal resonates with a promise of durability and excellence.
+Listening to the Beat: We constantly tune into our customer's needs and desires, shaping our collections to mirror the world's evolving fashion pulse.
+Echoing Sustainability: Cymbal strikes a chord with the environment, ensuring eco-friendly practices and sustainable choices are at the forefront.
+9. Brand Tagline: "Echo Your Elegance."
+10. Competitive Landscape: The fashion industry reverberates with many brands, but Cymbal stands distinct with its commitment to harmonizing quality, trend, and sustainability.
+11. Future Outlook: Cymbal aspires to expand its resonance in the global market, infusing more sustainable materials into its products, and initiating special editions through designer partnerships, creating exclusive, melodious collections.
+Cymbal is not just a brand; it's an experience. Recognizing the rhythm of life and the melodies of fashion, we ensure every piece adds a note of sophistication to our customer's ensemble. Every choice at Cymbal is a step toward a more stylish tomorrow.
+"""
+
+# Prompt template for the "Brand Statement"
+# Change the prompt if needed.
+prompt_brand_statement_template = """Using the Cymbal brand information below as your context, create a brand statement for a campaign targeting {} at age range {} with {} as objective.
+{}
+
+Brand statement: """
+
+# Prompt template for the "Primary message"
+# Change the prompt if needed.
+prompt_primary_msg_template = """You are working to create a creative brief for Cymbal brand, a document that outlines the creative approach and deliverables for a new project, such as a marketing or advertising campaign. 
+It's a short document that summarizes the project's mission, goals, challenges, demographics, messaging, and other key details. 
+Generate a creative brief for Cymbal's brand for a campaign targeting {} at age range {} with {} as objective and {} as main competitor.
+The creative brief must include the primary message, mission, goals, challenges, demographics and any other relevant details for a clear and concise creative brief. Use the context below to extract any information that you need. 
+{}
+
+Creative brief: """
+
+# Prompt template for "Communication Channel"
+# Change the prompt if needed.
+prompt_comms_channel_template = """I want you to act as a marketing specialist who knows how to create awesome marketing assets. Suggest the best marketing channels for an ads campaign for a new women clothing line."""
+
+# Brand name
+# Change to your brand name if needed.
+prompt_business_name = "Cymbal"
+
+[models]
+
+# If needed, replace with a specific version of the model. Check the Vertex AI 
+# documentation for more information.
+text_model_name = "text-bison"
+image_model_name = "imagegeneration"
+code_model_name = "code-bison"

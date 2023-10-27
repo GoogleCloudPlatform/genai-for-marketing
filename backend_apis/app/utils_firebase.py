@@ -65,11 +65,15 @@ def authenticate(email,password):
        return 'There was an error logging in'
     
 def validate(jwt):
-    user = auth.verify_id_token(jwt)
-    return user["uid"]
+    try:
+        user = auth.verify_id_token(jwt)
+        return user["uid"]
+    except Exception as e:
+        print(e)
+        return '000'
 
-def create_campaign(userid,campaign:Campaign):
-    user_ref = db.collection("users").document(userid)
+def create_campaign(user_id,campaign:Campaign):
+    user_ref = db.collection("users").document(user_id)
     if user_ref.get().exists:
         print("Found user")
     print(json.dumps(campaign.__dict__,default=to_serializable))
@@ -78,8 +82,8 @@ def create_campaign(userid,campaign:Campaign):
     return update_time,campaign_ref.id
 
 
-def read_campaign(userid,campaignid):
-    campaign_ref = db.collection("users").document(userid).collection("campaigns").document(campaignid)
+def read_campaign(user_id,campaignid):
+    campaign_ref = db.collection("users").document(user_id).collection("campaigns").document(campaignid)
     return campaign_ref.to_dict()
 
 def list_campaigns(user_id):
