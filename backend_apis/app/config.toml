@@ -13,14 +13,14 @@
 # limitations under the License.
 
 [global]
-project_id = "project-1081763"
-location = "us-central1"
+project_id = "<CHANGE TO YOUR PROJECT ID>"
+location = "<CHANGE TO YOUR LOCATION>"
 
 # Provide the path to your JSON credential
 # This credential will be used to interact with Workspace
 # This is the path inside the docker image, example: /app/credential.json
 service_account_json_key = '/code/app/credentials.json'  # Change this path if you copied the file to a different path 
-secret_name = "projects/105848722800/secrets/firebase_config/versions/1"
+secret_name = "projects/{PROJECT_NUMBER}/secrets/firebase_config/versions/1"
 # Audiences
 # Dataset ID of the BigQuery dataset. If you change the dataset_id during the deployment 
 # of this solution, change it here as well.
@@ -30,17 +30,17 @@ dataset_id = "cdp_dataset"
 tag_name = "llmcdptemplate"
 
 # Vertex AI Search Datastore ID
-vertexai_search_datastore = "cloud-website_1696337436443"
-datastores.cloud-website_1696337436443 = "default_config"
+vertexai_search_datastore = "<CHANGE TO YOUR VERTEX AI SEARCH DATASTORE ID>"
+datastores."<CHANGE TO YOUR VERTEX AI SEARCH DATASTORE ID>" = "default_config"
 search_location = "global"
 
 # Workspace integration variables
 # ID of the templates
 # Change this variables according to your Google Workspace settings
-drive_folder_id = '1hQWnEpVVMKxCOOQhwRb5X_j6XcAQzK03' # example: "1MYB0Ybyo9XZERgIcjsdfeqO0SKqhrkvqMx"
-slides_template_id = '1K3cyiIzi6MluyLJe3CAfILl19UUZrN70A8GVY7JFcUQ' # example: '16uQlLkCJ9YRiMU_IoONHsl-vY-uKeoasnWTPlbZZ1D4'
-doc_template_id = '1aaNL1WrbJwxvyhl2h9iXW_pMmtOLAJKgJcqse9esBBE' # example: '1kqvxZLRXIdfM8MVS7css4UoiJ8f0I4dKFj9cP986K4pM'
-sheet_template_id = '1yt5jq5Zi2iYwClJlbBnKQRTfzM3ZLLffY3oxrCGBUhk' # example: '1gIaIWLOeKmnjso7-CAAAcqMlPznpoEXDdEue3DNWr7bw'
+drive_folder_id = "CHANGE TO YOUR DRIVER FOLDER ID" # example: "1MYB0Ybyo9XZERgIcjsdfeqO0SKqhrkvqMx"
+slides_template_id = "CHANGE TO YOUR SLIDES TEMPLATE ID" # example: '16uQlLkCJ9YRiMU_IoONHsl-vY-uKeoasnWTPlbZZ1D4'
+doc_template_id = "CHANGE TO YOUR DOCS TEMPLATE ID" # example: '1kqvxZLRXIdfM8MVS7css4UoiJ8f0I4dKFj9cP986K4pM'
+sheet_template_id = "CHANGE TO YOUR SHEETS TEMPLATE ID" # example: '1gIaIWLOeKmnjso7-CAAAcqMlPznpoEXDdEue3DNWr7bw'
 slide_page_id_list = ["p3","p4","p5","p6","p7","p8"] # LIST OF PAGES WHERE YOU WANT TO INSERT CHARTS FROM THE SHEETS
 
 # Scope for the Workspace API - don't change
