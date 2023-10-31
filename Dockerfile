@@ -34,7 +34,6 @@ RUN pip install streamlit-image-select==0.6.0
 RUN pip install google-cloud-discoveryengine
 RUN pip install google-cloud-translate
 RUN pip install cloudpickle
-RUN pip install streamlit-modal>=0.1.0
 
 # Copy local code to the container image.
 WORKDIR /app
