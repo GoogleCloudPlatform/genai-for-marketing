@@ -36,6 +36,15 @@ tag_name = ""
 
 
 # -----------------------------------------------------------------------------
+# Configurations for page: 0_Campaigns.py
+# -----------------------------------------------------------------------------
+[pages.campaigns]
+# This variable will be used to give permissions to all users under this domain
+# This permission is related to the Workspace Drive folder
+domain = "<YOUR DOMAIN>"
+
+
+# -----------------------------------------------------------------------------
 # Configurations for 5_Consumer_Insights.py
 # -----------------------------------------------------------------------------
 [pages.5_consumer_insights]

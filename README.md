@@ -227,6 +227,7 @@ Next you will create a Generative AI Agent that will assist the users to answer 
 
 Follow the steps below to setup the Workspace integration with this demonstration.
 
+
 #### Create a service account
 - Create a Service Account (SA) in the same project you are deploying the demo and download the JSON API Key. This SA doesn't need any roles / permissions.  
   - Follow this [documentation](https://cloud.google.com/iam/docs/service-accounts-create) to create the service account. Take note of the service account address; it will look like this: `name-of-the-sa@my-project.iam.gserviceaccount.com`.
@@ -235,6 +236,19 @@ Follow the steps below to setup the Workspace integration with this demonstratio
   - [Optional] If your file has a different name and/or you copied it to a different location, change line 27 in [app_config.toml](/app/app_config.toml) to reflect these changes.
  - When you deploy the app to AppEngine, the JSON file will be copied inside the docker image.
  - **IMPORTANT**: For security reasons, DON'T push this credentials to a public Github repository.
+
+
+#### Change the DOMAIN that folders will be shared with
+This demonstration will create folders under Google Drive, Google Docs documents, Google Slides presentations and Google Sheets documents.  
+When we create the Drive folder, we set the permission to all users under a specific domain.
+
+ - Open [override.toml - line 44](/app/override.toml) and change to the domain you want to share the folder (example: mydomain.com).
+   - This is the same domain where you have Workspace set up.
+
+Be aware that this configuration will share the folder with all the users in that domain.  
+If you want to change that behavior, explore different ways of sharing resources from this documentation:  
+https://developers.google.com/drive/api/reference/rest/v3/permissions#resource:-permission
+
 
 #### Google Drive
  - Navigate to [Google Drive](https://drive.google.com/) and create a folder.  
@@ -245,6 +259,7 @@ Follow the steps below to setup the Workspace integration with this demonstratio
  ![Drive ID](/app/images/workspace-drive0.png)
  - Open the configuration file [app_config.toml - line 558](/app/app_config.toml) and change to your folder ID.
  - **IMPORTANT**: Also share this folder with people who will be using the code.
+
 
 #### Google Slides, Google Docs and Google Sheets
  - Copy the content of [templates](/templates) to this newly created folder.

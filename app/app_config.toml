@@ -86,6 +86,10 @@ page_title_icon = "/app/images/logo.png"
 sidebar_image_path = "/app/images/menu_icon_2.png"
 campaigns_key = "Campaigns"
 
+# This variable will be used to give permissions to all users under this domain
+# This permission is related to the Workspace Drive folder
+domain = "<YOUR DOMAIN>"
+
 # Default themes 
 # (optional) Include or remove themes as needed
 prompt_themes = [
