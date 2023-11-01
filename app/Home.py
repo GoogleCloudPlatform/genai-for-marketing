@@ -50,3 +50,10 @@ with open(file_name_2, "rb") as fp:
 st.image(image=main_image_1)
 st.divider()
 st.image(image=main_image_2)
+
+st.divider()
+
+with st.expander("disclaimer: this is not an official Google product"):
+    st.write("""
+This is not an official Google product. This is a functional demo with a purpose to showcase capabilities of Google products.
+""")

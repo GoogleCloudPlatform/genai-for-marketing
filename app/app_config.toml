@@ -66,7 +66,7 @@ code.code_model_name = "code-bison"
 page_title = "Gen AI for Marketing"
 page_icon = "/app/images/favicon.png"
 sidebar_image_path = "/app/images/menu_icon_2.png"
-file_name_1 = "/app/images/intro_home_1.png"
+file_name_1 = "/app/images/intro_home_1.1.png"
 file_name_2 = "/app/images/intro_home_2.png"
 
 
@@ -183,7 +183,7 @@ prompt_competitors = [
 page_title = "Analytics and Insights"
 page_icon = "/app/images/favicon.png"
 sidebar_image_path = "/app/images/menu_icon_2.png"
-file_name = "/app/images/page_1.png"
+file_name = "/app/images/page_1.1.png"
 
 
 # -----------------------------------------------------------------------------
@@ -298,7 +298,7 @@ search_location = "global"
 page_title = "Content Generation"
 page_icon = "/app/images/favicon.png"
 sidebar_image_path = "/app/images/menu_icon_2.png"
-file_name = "/app/images/page_2.png"
+file_name = "/app/images/page_2.1.png"
 
 
 # -----------------------------------------------------------------------------
@@ -540,7 +540,7 @@ local_image_asset = [["/app/images/asset_group_0_0.png","/app/images/asset_group
 page_title = "Activation & Optimization"
 page_icon = "/app/images/favicon.png"
 sidebar_image_path = "/app/images/menu_icon_2.png"
-file_name = "/app/images/page_3.png"
+file_name = "/app/images/page_3.1.png"
 
 # -----------------------------------------------------------------------------
 # Configurations for 12_Review_Activate.py =========
