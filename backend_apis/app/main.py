@@ -28,6 +28,7 @@ from googleapiclient.discovery import build
 from google.cloud import bigquery
 from google.cloud import datacatalog_v1
 from google.cloud import discoveryengine
+from google.cloud import translate_v2 as translate
 from google.oauth2 import service_account
 from proto import Message
 import vertexai
@@ -59,7 +60,11 @@ from .body_schema import (
     CampaignCreateRequest,
     CampaignCreateResponse,
     CampaignListResponse,
-    Campaign
+    Campaign,
+    TranslateRequest,
+    TranslateResponse,
+    ContentCreationRequest,
+    ContentCreationResponse
 )
 
 # Load configuration file
@@ -111,6 +116,14 @@ BRAND_STATEMENT_PROMPT_TEMPLATE =config["prompts"]["prompt_brand_statement_templ
 PRIMARY_MSG_PROMPT_TEMPLATE = config["prompts"]["prompt_primary_msg_template"]
 COMMS_CHANNEL_PROMPT_TEMPLATE = config["prompts"]["prompt_comms_channel_template"]
 BUSINESS_NAME = config["prompts"]["prompt_business_name"]
+EMAIL_TEXT_PROMPT = config["prompts"]["prompt_email_text"]
+IMAGE_GENERATION_PROMPT = config["prompts"]["prompt_image_generation"]
+WEBSITE_PROMPT_TEMPLATE = config["prompts"]["prompt_website_template"]
+IMAGE_PROMPT_TAMPLATE = config["prompts"]["prompt_image_template"]
+AD_PROMPT_TEMPLATE = config["prompts"]["ad_prompt_template"]
+HEADLINE_PROMPT_TEMPLATE = config["prompts"]["headline_prompt_template"]
+LONG_HEADLINE_PROMPT_TEMPLATE = config["prompts"]["load_headline_prompt_template"]
+DESCRIPTION_PROMPT_TEMPLATE = config["prompts"]["description_prompt_template"]
 
 
 app = FastAPI()
@@ -118,36 +131,6 @@ app = FastAPI()
 @app.get(path="/")
 def root():
     return "Root Get Response!!"
-
-# signup endpoint
-@app.post("/signup", include_in_schema=False)
-async def signup(request: Request):
-   req = await request.json()
-   email = req['email']
-   password = req['password']
-   if email is None or password is None:
-       return HTTPException(detail={'message': 'Error! Missing Email or Password'}, status_code=400)
-   try:
-       userid = utils_firebase.create_user(
-           email=email,
-           password=password
-       )
-       return JSONResponse(content={'message': f'Successfully created user {userid}'}, status_code=200)    
-   except:
-       return HTTPException(detail={'message': 'Error Creating User'}, status_code=400)
-
-#login 
-@app.post("/login", include_in_schema=False)
-async def login(request: Request):
-   req_json = await request.json()
-   email = req_json['email']
-   password = req_json['password']
-   try:
-       user = utils_firebase.authenticate(email, password)
-       jwt = user['token']
-       return JSONResponse(content={'token': jwt}, status_code=200)
-   except:
-       return HTTPException(detail={'message': 'There was an error logging in'}, status_code=400)
 
 # create-campaign
 @app.post("/campaigns")
@@ -159,10 +142,12 @@ def create_campaign(data: CampaignCreateRequest,request: Request) -> CampaignCre
             brief: dict = {"gender_select_theme":"Male","age_select_theme":"20-30",objective_select_theme:"Drive Awareness","competitor_select_theme":"Fashion Forward"}
         Returns:
             id (str): Response of generated Campaign ID
+            campaign_name:str
+            workspace_asset: dict
         """
     headers = request.headers
     jwt = headers.get('authorization')
-    user_id = utils_firebase.validate(jwt)
+    user_id = utils_firebase.verify_auth_token(jwt)
     if user_id == '000':
         raise HTTPException(status_code=401, detail="Token Expired")
     
@@ -223,8 +208,8 @@ async def list_campaign(request: Request) -> CampaignListResponse:
     List Existing Campaign for logged in user
     """
     headers = request.headers
-    jwt = headers.get('authorization')
-    user_id = utils_firebase.validate(jwt)
+    token = headers.get('Authorization')
+    user_id = utils_firebase.verify_auth_token(token)
     if user_id == '000':
         raise HTTPException(status_code=401, detail="Token Expired")
    
@@ -239,8 +224,8 @@ async def update_campaign(campaign_id:str,data:Campaign, request: Request):
     Update Campiagn detail in backend storage
     """
     headers = request.headers
-    jwt = headers.get('authorization')
-    user_id = utils_firebase.validate(jwt)
+    token = headers.get('Authorization')
+    user_id = utils_firebase.verify_auth_token(token)
     if user_id == '000':
         raise HTTPException(status_code=401, detail="Token Expired")
     
@@ -255,8 +240,8 @@ async def delete_campaign(campaign_id:str,request: Request):
     Delete Campiagn from backend storage
     """
     headers = request.headers
-    jwt = headers.get('authorization')
-    user_id = utils_firebase.validate(jwt)
+    token = headers.get('Authorization')
+    user_id = utils_firebase.verify_auth_token(token)
     if user_id == '000':
         raise HTTPException(status_code=401, detail="Token Expired")
    
@@ -279,11 +264,6 @@ def post_text_bison_generate(data: TextGenerateRequest,request: Request) -> Text
         text (str): Response from the LLM
         safety_attributes: Safety attributes from LLM
     """
-    headers = request.headers
-    jwt = headers.get('authorization')
-    user_id = utils_firebase.validate(jwt)
-    if user_id == '000':
-        raise HTTPException(status_code=401, detail="Token Expired")
    
     if data.model == "latest":
         llm = llm_latest
@@ -320,11 +300,6 @@ def post_image_generate(data: ImageGenerateRequest,request: Request) -> ImageGen
             image_size (int, int): Size of the image
             images_parameters (dict): Parameters used with the model
     """
-    headers = request.headers
-    jwt = headers.get('authorization')
-    user_id = utils_firebase.validate(jwt)
-    if user_id == '000':
-        raise HTTPException(status_code=401, detail="Token Expired")
     try:
         imagen_responses = imagen.generate_images(
             prompt=data.prompt,
@@ -361,11 +336,6 @@ def post_image_edit(data: ImageEditRequest,request: Request) -> ImageGenerateRes
             image_size (int, int): Size of the image
             images_parameters (dict): Parameters used with the model
     """
-    headers = request.headers
-    jwt = headers.get('authorization')
-    user_id = utils_firebase.validate(jwt)
-    if user_id == '000':
-        raise HTTPException(status_code=401, detail="Token Expired")
     try:
         imagen_responses = imagen.edit_image(
             prompt=data.prompt,
@@ -400,11 +370,6 @@ def get_top_search_term(data: TrendTopRequest,request: Request) -> TrendTopRepon
     Returns:
         top_search_terms: list[dict[int, str]]
     """
-    headers = request.headers
-    jwt = headers.get('authorization')
-    user_id = utils_firebase.validate(jwt)
-    if user_id == '000':
-        raise HTTPException(status_code=401, detail="Token Expired")
     try:
         query = (
             "SELECT term, rank "
@@ -437,11 +402,7 @@ def post_summarize_news(data: NewsSummaryRequest,request: Request) -> NewsSummar
     Returns:
         summaries: list[dict[str, str]]
     """
-    headers = request.headers
-    jwt = headers.get('authorization')
-    user_id = utils_firebase.validate(jwt)
-    if user_id == '000':
-        raise HTTPException(status_code=401, detail="Token Expired")
+
     # Step 1 - Retrieve documents with keywords from GDELT
     # We look at the last 5 days to retrieve News Articles
     end_date = datetime.now()
@@ -487,11 +448,6 @@ def post_audiences(data: AudiencesRequest,request: Request) -> AudiencesResponse
         audiences: dict with emails
         gen_code: SQL code
     """
-    headers = request.headers
-    jwt = headers.get('authorization')
-    user_id = utils_firebase.validate(jwt)
-    if user_id == '000':
-        raise HTTPException(status_code=401, detail="Token Expired")
     # Audiences
     tag_template_name = (f'projects/{project_id}/locations/'
                         f'{location}/tagTemplates/{config["global"]["tag_name"]}')
@@ -528,11 +484,7 @@ def get_dataset_sample(data: AudiencesSampleDataRequest,request: Request) -> Aud
     Returns:
         table_sample: dict
     """
-    headers = request.headers
-    jwt = headers.get('authorization')
-    user_id = utils_firebase.validate(jwt)
-    if user_id == '000':
-        raise HTTPException(status_code=401, detail="Token Expired")
+
     if data.table_name not in ["customers", "events", "transactions"]:
         raise HTTPException(
             status_code=400,
@@ -556,11 +508,6 @@ def post_consumer_insights(data: ConsumerInsightsRequest,request: Request) -> Co
     Returns:
         results: list
     """
-    headers = request.headers
-    jwt = headers.get('authorization')
-    user_id = utils_firebase.validate(jwt)
-    if user_id == '000':
-        raise HTTPException(status_code=401, detail="Token Expired")
     
     datastore_location = "global"
     results = []
@@ -608,11 +555,6 @@ def post_upload_file_drive(file: UploadFile,request: Request):
     Returns:
         file_id: str
     """
-    headers = request.headers
-    jwt = headers.get('authorization')
-    user_id = utils_firebase.validate(jwt)
-    if user_id == '000':
-        raise HTTPException(status_code=401, detail="Token Expired")
     
     try:
         file_id = utils_workspace.upload_to_folder(
@@ -692,11 +634,7 @@ def post_create_slides_upload(data: SlidesCreateRequest,request: Request) -> Sli
         slide_id: str
         sheet_id: str
     """
-    headers = request.headers
-    jwt = headers.get('authorization')
-    user_id = utils_firebase.validate(jwt)
-    if user_id == '000':
-        raise HTTPException(status_code=401, detail="Token Expired")
+
     try:
         slide_id = utils_workspace.copy_drive_file(
             drive_file_id=slides_template_id,
@@ -723,4 +661,121 @@ def post_create_slides_upload(data: SlidesCreateRequest,request: Request) -> Sli
     return SlidesCreateResponse(
         slide_id=slide_id,
         sheet_id=sheet_id
+    )
+
+@app.post(path="/translate")
+def translate_text(data: TranslateRequest,request: Request) -> TranslateResponse:
+    """Translate Text
+    Body:
+        source_text:str
+        source_language_code:str | None = None
+        target_language_code:str 
+    Returns:
+        translated_text :str
+    """
+    text = data.source_text
+    if isinstance(text, bytes):
+        text = text.decode("utf-8")
+    try:
+        translate_client = translate.Client()
+        if data.source_language_code == None:
+            translated_text = translate_client.translate(
+                text,
+                target_language=data.target_language_code
+                )['translatedText']
+        else:
+            translated_text = translate_client.translate(
+                text,
+                source_language=data.source_language_code,
+                target_language=data.target_language_code,
+            )['translatedText']
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=400, 
+            detail="Something went wrong. Please try again."+str(e)
+        )
+
+    return TranslateResponse(
+        translated_text=translated_text
+    )
+
+@app.post(path="/generate-content")
+def generate_content(data: ContentCreationRequest,request: Request) -> TranslateResponse:
+    """Generate Content like Media , Ad or Emails
+    Body:
+        type: str | Email/Webpost/SocialMedia/AssetGroup
+        theme: str
+        context: str | None = None
+        image_generate: bool = True
+    Returns:
+        text_content :str
+        images : list
+    """
+    headers = request.headers
+    token = headers.get('Authorization')
+    user_id = utils_firebase.verify_auth_token(token)
+    if user_id == '000':
+        raise HTTPException(status_code=401, detail="Token Expired")
+    images = []
+    text_content = ''
+    try:
+        if data.type == 'Email':
+            text_content=utils_prompt.async_predict_text_llm(
+                        EMAIL_TEXT_PROMPT.format(
+                            data.theme,
+                            data.context),
+                        TEXT_MODEL_NAME)
+        elif data.type == 'Webpost':
+            text_content=utils_prompt.async_predict_text_llm(
+                        WEBSITE_PROMPT_TEMPLATE.format(
+                            data.theme,
+                            data.context),
+                        TEXT_MODEL_NAME)
+        elif data.type == 'SocialMedia':
+            text_content=utils_prompt.async_predict_text_llm(
+                        AD_PROMPT_TEMPLATE.format(
+                            data.theme,
+                            data.context),
+                        TEXT_MODEL_NAME)
+        elif data.type == 'AssetGroup':
+            async def generate_brief() -> tuple:
+                return await asyncio.gather(
+                    utils_prompt.async_predict_text_llm(
+                        prompt=HEADLINE_PROMPT_TEMPLATE.format(
+                            data.theme,
+                            BRAND_OVERVIEW),
+                        pretrained_model=TEXT_MODEL_NAME,
+                        max_output_tokens=256
+                    ),
+                    utils_prompt.async_predict_text_llm(
+                        prompt=LONG_HEADLINE_PROMPT_TEMPLATE.format(
+                            data.theme,
+                            BRAND_OVERVIEW),
+                        pretrained_model=TEXT_MODEL_NAME,
+                    ),
+                    utils_prompt.async_predict_text_llm(
+                        prompt=DESCRIPTION_PROMPT_TEMPLATE.format(
+                            data.theme,
+                            BRAND_OVERVIEW),
+                        pretrained_model=TEXT_MODEL_NAME)) 
+    
+            generated_tuple = asyncio.run(generate_brief())
+            
+            text_content = "Headline: " + generated_tuple[0] + "\n Long Headline:" + generated_tuple[1] +"\n Description"+ generated_tuple[2]
+        if data.image_generate == True:
+            images = utils_prompt.async_generate_image(
+                    prompt=IMAGE_PROMPT_TAMPLATE.format(
+                            data.theme,)
+            )
+             
+    except Exception as e:
+            raise HTTPException(
+            status_code=400, 
+            detail="Something went wrong. Please try again."+str(e)
+        )
+    
+    return ContentCreationResponse(
+        text_content=text_content,
+        images = images
     )

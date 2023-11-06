@@ -155,3 +155,21 @@ class CampaignList(BaseModel):
 
 class CampaignListResponse(BaseModel):
     results :list[CampaignList] =[]
+
+class TranslateRequest(BaseModel):
+    source_text:str
+    source_language_code:str | None = None
+    target_language_code:str 
+
+class TranslateResponse(BaseModel):
+    translated_text:str
+
+class ContentCreationRequest(BaseModel):
+    type: str
+    theme: str
+    context: str | None = None
+    image_generate: bool = True
+
+class ContentCreationResponse(BaseModel):
+    text_content:str
+    images: list = []

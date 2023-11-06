@@ -32,6 +32,7 @@ location = config["global"]["location"]
 vertexai.init(project=project_id, location=location)
 
 from vertexai.preview.language_models import TextGenerationModel
+from vertexai.preview.vision_models import ImageGenerationModel
 
 async def async_predict_text_llm(
         prompt: str,
@@ -60,4 +61,29 @@ async def async_predict_text_llm(
     if generated_response and generated_response.text:
         return generated_response.text
     return ""
+
+async def async_generate_image(prompt,number_of_images=4):
+    loop = asyncio.get_running_loop()
+    # Image models
+    imagen = ImageGenerationModel.from_pretrained("imagegeneration@002")
+    try:
+        imagen_responses = await loop.run_in_executor(
+            None,
+            functools.partial(
+                imagen.generate_images,
+                    prompt=prompt, 
+                    number_of_images=number_of_images))
+    except Exception as e:
+        print(str(e))
+    else:
+        generated_images = []
+        for image in imagen_responses:
+            generated_images.append(
+                {
+                    "images_base64_string": image._as_base64_string(),
+                    "image_size": image._size,
+                    "images_parameters": image.generation_parameters
+                }
+            )
+        return generated_images
 

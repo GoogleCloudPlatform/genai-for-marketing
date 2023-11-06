@@ -17,7 +17,7 @@ FROM python:3.11-slim
 
 # Allow statements and log messages to immediately appear in the Knative logs
 ENV PYTHONUNBUFFERED True
-ENV GOOGLE_CLOUD_PROJECT {PTOJECT_ID}
+ENV GOOGLE_CLOUD_PROJECT {PROJECT_ID}
 
 WORKDIR /code
 COPY ./requirements.txt /code/requirements.txt

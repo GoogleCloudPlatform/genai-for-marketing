@@ -19,16 +19,21 @@ Utility module for Firestore.
 
 import firebase_admin
 from firebase_admin import firestore,credentials, auth
-import pyrebase
+import os
 from .body_schema import Campaign, CampaignList
 import json
 from google.cloud import secretmanager
 import tomllib
+import google.oauth2.id_token
+import google.auth.transport.requests
 
+#Auth Request
+HTTP_REQUEST = google.auth.transport.requests.Request()
 
 # Load configuration file
 with open("/code/app/config.toml", "rb") as f:
     config = tomllib.load(f)
+
 
 # Fetch Secret Configuration
 secret_client = secretmanager.SecretManagerServiceClient()
@@ -41,41 +46,30 @@ firebaseConfig = json.loads(firebaseConfig)
 # Application Default credentials are automatically created.
 app = firebase_admin.initialize_app()
 db = firestore.client()
-pb = pyrebase.initialize_app(firebaseConfig)
-
 
 def to_serializable(val):
     if hasattr(val, '__dict__'):
         return val.__dict__
     return val
 
-def create_user(email,password):
-    user = auth.create_user(
-        email=email,
-        password=password
+def verify_auth_token(id_token):
+    # Verify Firebase auth.
+    claims = google.oauth2.id_token.verify_firebase_token(
+        id_token, HTTP_REQUEST, audience=os.environ.get("GOOGLE_CLOUD_PROJECT")
     )
-    return user.uid   
-
-def authenticate(email,password):
-    try:
-       user = pb.auth().sign_in_with_email_and_password(email, password)
-       jwt = user['idToken']
-       return {'token': jwt}
-    except:
-       return 'There was an error logging in'
+    if not claims:
+        return "000"
     
-def validate(jwt):
-    try:
-        user = auth.verify_id_token(jwt)
-        return user["uid"]
-    except Exception as e:
-        print(e)
-        return '000'
+    user_id = claims['sub']
+    friendly_id = claims.get("name", claims.get("email", "Unknown"))
+    print(friendly_id)
+    return user_id
 
 def create_campaign(user_id,campaign:Campaign):
     user_ref = db.collection("users").document(user_id)
     if user_ref.get().exists:
         print("Found user")
+    print(json.dumps(campaign.__dict__,default=to_serializable))
     update_time, campaign_ref = user_ref.collection("campaigns").add(json.loads(json.dumps(campaign.__dict__,default=to_serializable)))
 
     return update_time,campaign_ref.id
