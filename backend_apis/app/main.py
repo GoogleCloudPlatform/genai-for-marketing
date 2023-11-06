@@ -146,7 +146,7 @@ def create_campaign(data: CampaignCreateRequest,request: Request) -> CampaignCre
             workspace_asset: dict
         """
     headers = request.headers
-    jwt = headers.get('authorization')
+    jwt = headers.get('Authorization')
     user_id = utils_firebase.verify_auth_token(jwt)
     if user_id == '000':
         raise HTTPException(status_code=401, detail="Token Expired")
