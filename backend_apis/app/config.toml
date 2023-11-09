@@ -290,8 +290,9 @@ prompt_image_template = """Generate an image for {}"""
 # You can change this prompt if needed.
 ad_prompt_template = """I want you to act as a senior social media ads content creator who knows how to create awesome social media content. 
 You are working to create an ad for {}. Use {} characters to write this ad.
-The ad is for people in age range of {} and of the gender {}.
-Generate a social media ad for {}: """
+The ad is for people in age range of {} and for {} gender.
+Generate a social media ad for {}
+{}: """
 
 
 ###########################ASSET-GROUP##################
@@ -311,6 +312,7 @@ Long headlines: """
 # Default prompt template for product description.
 # You can change this prompt if needed.
 description_prompt_template = """Using the Cymbal brand information below as your context, create a product description (90 characters) for {}. Be creative and use all the 90 characters for the long headline.
+{}
 {}
 Product description: """
 

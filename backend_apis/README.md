@@ -51,6 +51,12 @@ You are empowered to extend these APIs, intertwining them with your specific pol
 **Create Slides and populate with Charts** (path="/creative-slides-upload")
  - Create a Google Slides from a template and populate with information from Google Sheets.
 
+**Translate Text using Google Translation API** (path="/translate")
+ - Translate Text using Google Translation API.
+
+**Content-Generation API for Email/Webpost/SocialMedia/AssetGroup**(path="/generate-content")
+ - Generate Text and Image content for Email or Webpost or SocialMedia using Generative AI
+
 ## Firebase Setup
 Connect your app to your Firebase project, do so from the [Firebase console](https://console.firebase.google.com/).
  - Enable Email/Password sign-in:
