@@ -350,7 +350,8 @@ def post_image_generate(data: ImageGenerateRequest,request: Request
     try:
         imagen_responses = imagen.generate_images(
             prompt=data.prompt,
-            number_of_images=data.number_of_images)
+            number_of_images=data.number_of_images,
+            negative_prompt=data.negative_prompt)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     else:
@@ -384,13 +385,18 @@ def post_image_edit(data: ImageEditRequest,request: Request
             image_size (int, int): Size of the image
             images_parameters (dict): Parameters used with the model
     """
+    if not data.mask_bytes:
+        mask = None
+    else:
+        mask = Image(image_bytes=data.mask_bytes)
+
     try:
         imagen_responses = imagen.edit_image(
             prompt=data.prompt,
             base_image=Image(image_bytes=data.base_image_bytes),
-            mask=Image(image_bytes=data.mask_bytes),
-            number_of_images=data.number_of_images
-        )
+            mask=mask,
+            number_of_images=data.number_of_images,
+            negative_prompt=data.negative_prompt)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     else:

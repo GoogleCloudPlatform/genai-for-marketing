@@ -32,6 +32,7 @@ class TextGenerateResponse(BaseModel):
 class ImageGenerateRequest(BaseModel):
     prompt: str
     number_of_images: int = 1
+    negative_prompt: str | None = None
 
 
 class ImageResponse(BaseModel):
@@ -46,9 +47,10 @@ class ImageGenerateResponse(BaseModel):
 
 class ImageEditRequest(BaseModel):
     prompt: str
-    base_image_bytes: str
-    mask_bytes: str | None = None
+    base_image_bytes: bytes
+    mask_bytes: bytes | None = None
     number_of_images: int = 1
+    negative_prompt: str | None = None
 
 
 class TrendTopRequest(BaseModel):
