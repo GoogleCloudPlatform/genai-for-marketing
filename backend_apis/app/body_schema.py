@@ -168,6 +168,9 @@ class ContentCreationRequest(BaseModel):
     type: str
     theme: str
     context: str | None = None
+    no_of_char: int = 500
+    audience_age_range: str = '20-30'
+    audience_gender:str = 'All'
     image_generate: bool = True
 
 class ContentCreationResponse(BaseModel):
