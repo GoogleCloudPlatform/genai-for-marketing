@@ -6,6 +6,18 @@ You are empowered to extend these APIs, intertwining them with your specific pol
 
 ## List of APIs developed in this repository
 
+**Campaign Creation and Generating the brief assets (POST)** (path="/campaigns")
+ - Create Campaing and Generate text with PaLM API (text-bison) latest or 001.
+
+**List all Campaigns created by user (GET)** (path="/campaigns")
+ - List of Campaigns and there details.
+
+**Update Campaign  (PUT)** (path="/campaigns/{campaign_id}")
+ - List of Campaigns and there details.
+
+**Delete Campaign (DELETE)** (path="/campaigns/{campaign_id}")
+ - List of Campaigns and there details.
+
 **Text generation with Vertex AI PaLM API (text-bison)** (path="/generate-text")
  - Generate text with PaLM API (text-bison) latest or 001.
 
@@ -39,6 +51,42 @@ You are empowered to extend these APIs, intertwining them with your specific pol
 **Create Slides and populate with Charts** (path="/creative-slides-upload")
  - Create a Google Slides from a template and populate with information from Google Sheets.
 
+**Translate Text using Google Translation API** (path="/translate")
+ - Translate Text using Google Translation API.
+
+**Content-Generation API for Email/Webpost/SocialMedia/AssetGroup**(path="/generate-content")
+ - Generate Text and Image content for Email or Webpost or SocialMedia using Generative AI
+
+## Firebase Setup
+Connect your app to your Firebase project, do so from the [Firebase console](https://console.firebase.google.com/).
+ - Enable Email/Password sign-in:
+ - In the Firebase console, open the Auth section.
+ - On the Sign in method tab, enable the Email/password sign-in method and click Save
+ - Add a Web App to project by going to Project Setting, it will generate the credentials.
+ - Store credentialds in [Secret Manager](https://cloud.google.com/secret-manager/docs/create-secret-quickstart) and add secret_name in config.toml
+
+## Workspace integration
+
+Follow the steps below to setup the Workspace integration with this demonstration.
+
+#### Create a service account
+- Create a Service Account (SA) in the same project you are deploying the demo and download the JSON API Key. This SA doesn't need any roles / permissions.  
+  - Follow this [documentation](https://cloud.google.com/iam/docs/service-accounts-create) to create the service account. Take note of the service account address; it will look like this: `name-of-the-sa@my-project.iam.gserviceaccount.com`.
+  - Follow this [documentation](https://cloud.google.com/iam/docs/keys-create-delete#creating) to download the key JSON file with the service account credentials.  
+  - Rename the JSON file to `credentials.json` and copy it under [/app](/app) folder.
+  - [Optional] If your file has a different name and/or you copied it to a different location, change line 27 in [app_config.toml](/app/app_config.toml) to reflect these changes.
+ - When you deploy the app to AppEngine, the JSON file will be copied inside the docker image.
+ - **IMPORTANT**: For security reasons, DON'T push this credentials to a public Github repository.
+
+#### Google Drive
+ - Navigate to [Google Drive](https://drive.google.com/) and create a folder.  
+   - This folder will be used to host the templates and assets created in the demo.
+ - Share this folder with the service account address you created in the previous step. Give "Editor" rights to the service account. The share will look like this:
+![Share Drive](/app/images/workspace-drive.png "Share Drive")
+ - Take note of the folder ID. Go into the folder you created and you will be able to find the ID in the URL. The URL will look like this:
+ ![Drive ID](/app/images/workspace-drive0.png)
+ - Open the configuration file [app_config.toml - line 558](/app/app_config.toml) and change to your folder ID.
+ - **IMPORTANT**: Also share this folder with people who will be using the code.
 
 ## How to deploy this APIs to Google Cloud Run
 

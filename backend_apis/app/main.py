@@ -14,19 +14,24 @@
 
 import time
 import tomllib
-
+import asyncio
 from . import utils_codey
 from . import utils_search
 from . import utils_workspace
+from . import utils_firebase
 from . import utils_trendspotting as trendspotting
+from . import utils_prompt
 from datetime import datetime, timedelta
-from fastapi import FastAPI, HTTPException, UploadFile
+from fastapi import FastAPI, HTTPException, UploadFile, Request
+from fastapi.responses import JSONResponse
 from googleapiclient.discovery import build
 from google.cloud import bigquery
 from google.cloud import datacatalog_v1
 from google.cloud import discoveryengine
+from google.cloud import translate_v2 as translate
 from google.oauth2 import service_account
 from proto import Message
+import vertexai
 from vertexai.preview.language_models import TextGenerationModel as bison_latest
 from vertexai.language_models import TextGenerationModel as bison_ga
 from vertexai.preview.vision_models import ImageGenerationModel
@@ -51,7 +56,15 @@ from .body_schema import (
     BriefCreateRequest,
     BriefCreateResponse,
     SlidesCreateRequest,
-    SlidesCreateResponse
+    SlidesCreateResponse,
+    CampaignCreateRequest,
+    CampaignCreateResponse,
+    CampaignListResponse,
+    Campaign,
+    TranslateRequest,
+    TranslateResponse,
+    ContentCreationRequest,
+    ContentCreationResponse
 )
 
 # Load configuration file
@@ -60,6 +73,7 @@ with open("/code/app/config.toml", "rb") as f:
 project_id = config["global"]["project_id"]
 location = config["global"]["location"]
 
+vertexai.init(project=project_id, location=location)
 # Vertex AI Search Client
 search_client = discoveryengine.SearchServiceClient()
 vertexai_search_datastore = config["global"]["vertexai_search_datastore"]
@@ -70,12 +84,16 @@ prompt_nl_sql = config["global"]["prompt_nl_sql"]
 tag_name = config["global"]["tag_name"]
 
 # Trendspotting
-bq_client = bigquery.Client(project="rl-llm-dev")
+bq_client = bigquery.Client(project=project_id)
 datacatalog_client = datacatalog_v1.DataCatalogClient()
 
 # Text models
 llm_latest = bison_latest.from_pretrained(model_name="text-bison@latest")
 llm_ga = bison_ga.from_pretrained(model_name="text-bison@001")
+TEXT_MODEL_NAME = config["models"]["text_model_name"]
+
+#translation
+translate_client = translate.Client()
 
 # Image models
 imagen = ImageGenerationModel.from_pretrained("imagegeneration@002")
@@ -95,12 +113,187 @@ doc_template_id = config["global"]["doc_template_id"]
 sheet_template_id = config["global"]["sheet_template_id"]
 slide_page_id_list = config["global"]["slide_page_id_list"]
 
+#prompts
+BRAND_OVERVIEW = config["prompts"]["prompt_brand_overview"]
+BRAND_STATEMENT_PROMPT_TEMPLATE =config["prompts"]["prompt_brand_statement_template"]
+PRIMARY_MSG_PROMPT_TEMPLATE = config["prompts"]["prompt_primary_msg_template"]
+COMMS_CHANNEL_PROMPT_TEMPLATE = config["prompts"]["prompt_comms_channel_template"]
+BUSINESS_NAME = config["prompts"]["prompt_business_name"]
+EMAIL_TEXT_PROMPT = config["prompts"]["prompt_email_text"]
+IMAGE_GENERATION_PROMPT = config["prompts"]["prompt_image_generation"]
+WEBSITE_PROMPT_TEMPLATE = config["prompts"]["prompt_website_template"]
+IMAGE_PROMPT_TAMPLATE = config["prompts"]["prompt_image_template"]
+AD_PROMPT_TEMPLATE = config["prompts"]["ad_prompt_template"]
+HEADLINE_PROMPT_TEMPLATE = config["prompts"]["headline_prompt_template"]
+LONG_HEADLINE_PROMPT_TEMPLATE = config["prompts"]["load_headline_prompt_template"]
+DESCRIPTION_PROMPT_TEMPLATE = config["prompts"]["description_prompt_template"]
+
 
 app = FastAPI()
 
+@app.get(path="/")
+def root():
+    return "Root Get Response!!"
+
+# create-campaign
+@app.post("/campaigns")
+def create_campaign(data: CampaignCreateRequest,request: Request
+                    ) -> CampaignCreateResponse:
+    """Campaing Creation and content generation with PaLM API
+        Parameters:
+            campaign_name: str
+            theme: str
+            brief: dict = {
+                "gender_select_theme":"Male",
+                "age_select_theme":"20-30",
+                "objective_select_theme":"Drive Awareness",
+                "competitor_select_theme":"Fashion Forward"
+                }
+        Returns:
+            id (str): Response of generated Campaign ID
+            campaign_name:str
+            workspace_asset: dict
+        """
+    headers = request.headers
+    jwt = headers.get('Authorization')
+    user_id = utils_firebase.verify_auth_token(jwt)
+    if user_id == '000':
+        raise HTTPException(status_code=401, detail="Token Expired")
+    
+    gender_select_theme = data.brief.gender_select_theme
+    age_select_theme = data.brief.age_select_theme
+    objective_select_theme = data.brief.objective_select_theme
+    competitor_select_theme = data.brief.competitor_select_theme
+    async def generate_campaign() -> tuple:
+            return await asyncio.gather(
+                utils_prompt.async_predict_text_llm(
+                    BRAND_STATEMENT_PROMPT_TEMPLATE.format(
+                        gender_select_theme, 
+                        age_select_theme,
+                        objective_select_theme,
+                        competitor_select_theme,
+                        BRAND_OVERVIEW),
+                    TEXT_MODEL_NAME),
+                utils_prompt.async_predict_text_llm(
+                    PRIMARY_MSG_PROMPT_TEMPLATE.format(
+                        gender_select_theme, 
+                        age_select_theme,
+                        objective_select_theme,
+                        competitor_select_theme,
+                        BRAND_OVERVIEW),
+                    TEXT_MODEL_NAME),
+                utils_prompt.async_predict_text_llm(
+                    COMMS_CHANNEL_PROMPT_TEMPLATE.format(
+                        gender_select_theme, 
+                        age_select_theme,
+                        objective_select_theme,
+                        competitor_select_theme),
+                    TEXT_MODEL_NAME)) 
+    try:
+        generated_tuple = asyncio.run(generate_campaign())
+        print(generated_tuple)
+        brand_statement = generated_tuple[0] 
+        primary_message = generated_tuple[1]
+        comm_channels = generated_tuple[2]
+        brief_scenario = (
+                    f'Targeting gender: {gender_select_theme}, '
+                    f'Age group: {age_select_theme}, '
+                    f'Campaign objective: {objective_select_theme}, '
+                    f'Competitor: {competitor_select_theme}') 
+        workspace_asset = post_brief_create_upload(BriefCreateRequest(
+            campaign_name=data.campaign_name,
+            business_name=BUSINESS_NAME,
+            brief_scenario=brief_scenario,
+            brand_statement=brand_statement,
+            primary_message=primary_message,
+            comm_channels=comm_channels
+            ))
+    except Exception as e:
+        print("Failed in Creating Content Asset")
+        raise HTTPException(status_code=400, detail=str(e))
+    else:
+        campaign = Campaign(
+            name=data.campaign_name,
+            theme=data.theme,
+            brief=data.brief,
+            workspace_assets=workspace_asset
+            )
+        update_time,campaign_id = utils_firebase.create_campaign(
+            user_id=user_id,
+            campaign=campaign
+            )
+        print(update_time,campaign_id)
+        return CampaignCreateResponse(
+            id=campaign_id,
+            campaign_name=data.campaign_name,
+            theme=data.theme,
+            workspace_assets=workspace_asset
+            )
+
+# List-campaign
+@app.get("/campaigns")
+async def list_campaign(request: Request) -> CampaignListResponse:
+    """
+    List Existing Campaign for logged in user
+    """
+    headers = request.headers
+    token = headers.get('Authorization')
+    user_id = utils_firebase.verify_auth_token(token)
+    if user_id == '000':
+        raise HTTPException(status_code=401, detail="Token Expired")
+   
+    list_of_campaigns = utils_firebase.list_campaigns(user_id=user_id)
+    print(list_of_campaigns)
+    return CampaignListResponse(results=list_of_campaigns)
+
+# Update-campaign
+@app.put("/campaigns/{campaign_id}")
+async def update_campaign(campaign_id:str,data:Campaign, request: Request):
+    """
+    Update Campiagn detail in backend storage
+    """
+    headers = request.headers
+    token = headers.get('Authorization')
+    user_id = utils_firebase.verify_auth_token(token)
+    if user_id == '000':
+        raise HTTPException(status_code=401, detail="Token Expired")
+    
+    response = utils_firebase.update_campaign(
+        user_id=user_id,
+        campaign_id=campaign_id,
+        data=data
+        )
+    print(response)
+    return JSONResponse(
+        content={'message': 'Successfully Updated'},
+        status_code=200
+        )
+
+# Delete-campaign
+@app.delete("/campaigns/{campaign_id}")
+async def delete_campaign(campaign_id:str,request: Request):
+    """
+    Delete Campiagn from backend storage
+    """
+    headers = request.headers
+    token = headers.get('Authorization')
+    user_id = utils_firebase.verify_auth_token(token)
+    if user_id == '000':
+        raise HTTPException(status_code=401, detail="Token Expired")
+   
+    response = utils_firebase.delete_campaign(
+        user_id=user_id,
+        campaign_id=campaign_id
+        )
+    print(response)
+    return JSONResponse(
+        content={'message': 'Successfully Deleted Campaign'}, 
+        status_code=200
+        )
 
 @app.post(path="/generate-text")
-def post_text_bison_generate(data: TextGenerateRequest) -> TextGenerateResponse:
+def post_text_bison_generate(data: TextGenerateRequest,request: Request
+                             ) -> TextGenerateResponse:
     """Text generation with PaLM API
     Parameters:
         model: str = "latest"
@@ -114,12 +307,16 @@ def post_text_bison_generate(data: TextGenerateRequest) -> TextGenerateResponse:
         text (str): Response from the LLM
         safety_attributes: Safety attributes from LLM
     """
+   
     if data.model == "latest":
         llm = llm_latest
     elif data.model == "ga":
         llm = llm_ga
     else:
-        raise HTTPException(status_code=400, detail="Invalid model name. Options: ga | latest.")
+        raise HTTPException(
+            status_code=400, 
+            detail="Invalid model name. Options: ga | latest."
+            )
 
     try:
         llm_response = llm.predict(
@@ -138,7 +335,8 @@ def post_text_bison_generate(data: TextGenerateRequest) -> TextGenerateResponse:
 
 
 @app.post(path="/generate-image")
-def post_image_generate(data: ImageGenerateRequest) -> ImageGenerateResponse:
+def post_image_generate(data: ImageGenerateRequest,request: Request
+                        ) -> ImageGenerateResponse:
     """Image generation with Imagen
     Parameters:
         prompt: str
@@ -152,7 +350,8 @@ def post_image_generate(data: ImageGenerateRequest) -> ImageGenerateResponse:
     try:
         imagen_responses = imagen.generate_images(
             prompt=data.prompt,
-            number_of_images=data.number_of_images)
+            number_of_images=data.number_of_images,
+            negative_prompt=data.negative_prompt)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     else:
@@ -172,7 +371,8 @@ def post_image_generate(data: ImageGenerateRequest) -> ImageGenerateResponse:
 
 
 @app.post(path="/edit-image")
-def post_image_edit(data: ImageEditRequest) -> ImageGenerateResponse:
+def post_image_edit(data: ImageEditRequest,request: Request
+                    ) -> ImageGenerateResponse:
     """Image editing with Imagen
     Parameters:
         prompt: str
@@ -185,13 +385,18 @@ def post_image_edit(data: ImageEditRequest) -> ImageGenerateResponse:
             image_size (int, int): Size of the image
             images_parameters (dict): Parameters used with the model
     """
+    if not data.mask_bytes:
+        mask = None
+    else:
+        mask = Image(image_bytes=data.mask_bytes)
+
     try:
         imagen_responses = imagen.edit_image(
             prompt=data.prompt,
             base_image=Image(image_bytes=data.base_image_bytes),
-            mask=Image(image_bytes=data.mask_bytes),
-            number_of_images=data.number_of_images
-        )
+            mask=mask,
+            number_of_images=data.number_of_images,
+            negative_prompt=data.negative_prompt)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     else:
@@ -211,7 +416,8 @@ def post_image_edit(data: ImageEditRequest) -> ImageGenerateResponse:
 
 
 @app.get(path="/get-top-search-terms")
-def get_top_search_term(data: TrendTopRequest) -> TrendTopReponse:
+def get_top_search_term(data: TrendTopRequest,request: Request
+                        ) -> TrendTopReponse:
     """Get top search terms from Google Trends
     Parameters:
         trends_date: str
@@ -242,7 +448,8 @@ def get_top_search_term(data: TrendTopRequest) -> TrendTopReponse:
 
 
 @app.post(path="/post-summarize-news")
-def post_summarize_news(data: NewsSummaryRequest) -> NewsSummaryResponse:
+def post_summarize_news(data: NewsSummaryRequest,request: Request
+                        ) -> NewsSummaryResponse:
     """Summarize news related to keyword(s)
     Parameters:
         keywords: list[str]
@@ -251,6 +458,7 @@ def post_summarize_news(data: NewsSummaryRequest) -> NewsSummaryResponse:
     Returns:
         summaries: list[dict[str, str]]
     """
+
     # Step 1 - Retrieve documents with keywords from GDELT
     # We look at the last 5 days to retrieve News Articles
     end_date = datetime.now()
@@ -288,7 +496,7 @@ def post_summarize_news(data: NewsSummaryRequest) -> NewsSummaryResponse:
 
 
 @app.post(path="/post-audiences")
-def post_audiences(data: AudiencesRequest) -> AudiencesResponse:
+def post_audiences(data: AudiencesRequest,request: Request) -> AudiencesResponse:
     """Transform a question in NL to SQL and query BQ.
     Parameters:
         question: Question to be asked to BQ.
@@ -325,13 +533,15 @@ def post_audiences(data: AudiencesRequest) -> AudiencesResponse:
 
 
 @app.get(path="/get-dataset-sample")
-def get_dataset_sample(data: AudiencesSampleDataRequest) -> AudiencesSampleDataResponse:
+def get_dataset_sample(data: AudiencesSampleDataRequest,request: Request
+                       ) -> AudiencesSampleDataResponse:
     """Retrieve 3 rows of a BQ table
     Parameters:
         table_name: str
     Returns:
         table_sample: dict
     """
+
     if data.table_name not in ["customers", "events", "transactions"]:
         raise HTTPException(
             status_code=400,
@@ -348,13 +558,15 @@ def get_dataset_sample(data: AudiencesSampleDataRequest) -> AudiencesSampleDataR
 
 
 @app.get(path="/post-consumer-insights")
-def post_consumer_insights(data: ConsumerInsightsRequest) -> ConsumerInsightsResponse:
+def post_consumer_insights(data: ConsumerInsightsRequest,request: Request
+                           ) -> ConsumerInsightsResponse:
     """Query Vertex AI Search and return top 10 results.
     Parameters:
         query: str
     Returns:
         results: list
     """
+    
     datastore_location = "global"
     results = []
     try:
@@ -394,13 +606,14 @@ def post_consumer_insights(data: ConsumerInsightsRequest) -> ConsumerInsightsRes
 
 
 @app.post(path="/post-upload-file-drive")
-def post_upload_file_drive(file: UploadFile):
+def post_upload_file_drive(file: UploadFile,request: Request):
     """Upload file to Google Drive
     Parameters:
         file: UploadFile
     Returns:
         file_id: str
     """
+    
     try:
         file_id = utils_workspace.upload_to_folder(
             drive_service=drive_service,
@@ -433,6 +646,7 @@ def post_brief_create_upload(data: BriefCreateRequest) -> BriefCreateResponse:
         doc_id: str
     """
     try:
+        print("Creating document Assets..")
         new_folder_id = utils_workspace.create_folder_in_folder(
             drive_service=drive_service,
             folder_name=f"Marketing_Assets_{int(time.time())}",
@@ -458,6 +672,7 @@ def post_brief_create_upload(data: BriefCreateRequest) -> BriefCreateResponse:
             primary_msg=data.primary_message,
             comms_channel=data.comm_channels)
     except Exception as e:
+        print(e)
         raise HTTPException(
             status_code=400, 
             detail="Something went wrong. Please try again.")
@@ -469,7 +684,8 @@ def post_brief_create_upload(data: BriefCreateRequest) -> BriefCreateResponse:
 
 
 @app.post(path="/creative-slides-upload")
-def post_create_slides_upload(data: SlidesCreateRequest) -> SlidesCreateResponse:
+def post_create_slides_upload(data: SlidesCreateRequest,request: Request
+                              ) -> SlidesCreateResponse:
     """Create Slides and upload charts from Google Sheets
     Parameters:
         folder_id: str
@@ -477,6 +693,7 @@ def post_create_slides_upload(data: SlidesCreateRequest) -> SlidesCreateResponse
         slide_id: str
         sheet_id: str
     """
+
     try:
         slide_id = utils_workspace.copy_drive_file(
             drive_file_id=slides_template_id,
@@ -503,4 +720,143 @@ def post_create_slides_upload(data: SlidesCreateRequest) -> SlidesCreateResponse
     return SlidesCreateResponse(
         slide_id=slide_id,
         sheet_id=sheet_id
+    )
+
+@app.post(path="/translate")
+def translate_text(data: TranslateRequest,request: Request
+                   ) -> TranslateResponse:
+    """Translate Text
+    Body:
+        source_text:str
+        source_language_code:str | None = None
+        target_language_code:str 
+    Returns:
+        translated_text :str
+    """
+    text = data.source_text
+    if isinstance(text, bytes):
+        text = text.decode("utf-8")
+    try:
+        results = []
+        i = 0
+        while i*128 < len(text):
+            if data.source_language_code == None:
+                result = translate_client.translate(
+                    text[i*128:i*128+128],
+                    target_language=data.target_language_code
+                    )['translatedText']
+            else:
+                result = translate_client.translate(
+                    text[i*128:i*128+128],
+                    source_language=data.source_language_code,
+                    target_language=data.target_language_code,
+                )['translatedText']
+            results.extend(result)
+            i+=1
+    except Exception as e:
+        raise HTTPException(
+            status_code=400, 
+            detail="Something went wrong. Please try again."+str(e)
+        )
+    translated_text = ''.join(results)
+    return TranslateResponse(
+        translated_text=translated_text
+    )
+
+@app.post(path="/generate-content")
+def generate_content(data: ContentCreationRequest,request: Request
+                     ) -> ContentCreationResponse:
+    """Generate Content like Media , Ad or Emails
+    Body:
+        type: str | Email/Webpost/SocialMedia/AssetGroup
+        theme: str
+        context: str | None = None
+        no_of_char: int = 500
+        audience_age_range: str = '20-30'
+        audience_gender:str = 'All'
+        image_generate: bool = True
+    Returns:
+        text_content :str
+        images : list
+    """
+    # headers = request.headers
+    # token = headers.get('Authorization')
+    # user_id = utils_firebase.verify_auth_token(token)
+    # if user_id == '000':
+    #     raise HTTPException(status_code=401, detail="Token Expired")
+    images = []
+    text_content = ''
+    try:
+        if data.type == 'Email':
+            print("Generating Email..")
+            text_content=asyncio.run(utils_prompt.async_predict_text_llm(
+                        EMAIL_TEXT_PROMPT.format(
+                            data.theme,
+                            data.context,
+                        ),
+                        TEXT_MODEL_NAME
+                        )
+                    )
+        elif data.type == 'Webpost':
+            text_content=asyncio.run(utils_prompt.async_predict_text_llm(
+                        WEBSITE_PROMPT_TEMPLATE.format(
+                            data.theme,
+                            data.context),
+                        TEXT_MODEL_NAME))
+        elif data.type == 'SocialMedia':
+            text_content=asyncio.run(utils_prompt.async_predict_text_llm(
+                        AD_PROMPT_TEMPLATE.format(
+                            BUSINESS_NAME,
+                            data.no_of_char,
+                            data.audience_age_range,
+                            data.audience_gender,
+                            data.theme,
+                            data.context,
+                            ),
+                        TEXT_MODEL_NAME))
+        elif data.type == 'AssetGroup':
+            async def generate_brief() -> tuple:
+                return await asyncio.gather(
+                    utils_prompt.async_predict_text_llm(
+                        prompt=HEADLINE_PROMPT_TEMPLATE.format(
+                            data.theme,
+                            BRAND_OVERVIEW),
+                        pretrained_model=TEXT_MODEL_NAME,
+                        max_output_tokens=256
+                    ),
+                    utils_prompt.async_predict_text_llm(
+                        prompt=LONG_HEADLINE_PROMPT_TEMPLATE.format(
+                            data.theme,
+                            BRAND_OVERVIEW),
+                        pretrained_model=TEXT_MODEL_NAME,
+                    ),
+                    utils_prompt.async_predict_text_llm(
+                        prompt=DESCRIPTION_PROMPT_TEMPLATE.format(
+                            data.theme,
+                            BRAND_OVERVIEW,
+                            data.context),
+                        pretrained_model=TEXT_MODEL_NAME)) 
+    
+            generated_tuple = asyncio.run(generate_brief())
+            
+            text_content = (
+                "Headline: " + generated_tuple[0] 
+                + "\n\n Long Headline:" + generated_tuple[1] 
+                + "\n\n Description"+ generated_tuple[2]
+            )
+        if data.image_generate == True:
+            images = asyncio.run(utils_prompt.async_generate_image(
+                    prompt=IMAGE_PROMPT_TAMPLATE.format(
+                            data.theme,)
+            ))
+             
+    except Exception as e:
+            raise HTTPException(
+            status_code=400, 
+            detail="Something went wrong. Please try again."+str(e)
+        )
+    
+    return ContentCreationResponse(
+        text_content=text_content,
+        images = images
     )

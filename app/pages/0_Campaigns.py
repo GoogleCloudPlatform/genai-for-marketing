@@ -44,6 +44,8 @@ utils_styles.sidebar_apply_style(
     image_path=page_cfg["sidebar_image_path"]
 )
 
+DOMAIN = page_cfg["domain"]
+
 # Campaigns unique key
 CAMPAIGNS_KEY = page_cfg["campaigns_key"]
 
@@ -231,7 +233,8 @@ with tab1:
                         parent_folder_id=DRIVE_FOLDER_ID)
                     st.session_state[NEW_FOLDER_KEY] = new_folder_id
                     utils_workspace.set_permission(
-                        file_id=new_folder_id)
+                        file_id=new_folder_id,
+                        domain=DOMAIN)
                 with st.spinner("Uploading Creative Brief to Google Docs..."):
                     doc_id = utils_workspace.copy_drive_file(
                         drive_file_id=DOC_TEMPLATE_ID,

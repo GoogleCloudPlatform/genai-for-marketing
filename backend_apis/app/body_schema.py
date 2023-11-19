@@ -32,6 +32,7 @@ class TextGenerateResponse(BaseModel):
 class ImageGenerateRequest(BaseModel):
     prompt: str
     number_of_images: int = 1
+    negative_prompt: str | None = None
 
 
 class ImageResponse(BaseModel):
@@ -46,9 +47,10 @@ class ImageGenerateResponse(BaseModel):
 
 class ImageEditRequest(BaseModel):
     prompt: str
-    base_image_bytes: str
-    mask_bytes: str | None = None
+    base_image_bytes: bytes
+    mask_bytes: bytes | None = None
     number_of_images: int = 1
+    negative_prompt: str | None = None
 
 
 class TrendTopRequest(BaseModel):
@@ -116,3 +118,63 @@ class SlidesCreateRequest(BaseModel):
 class SlidesCreateResponse(BaseModel):
     slide_id: str
     sheet_id: str
+
+class CampaignBrief(BaseModel):
+    gender_select_theme: str
+    age_select_theme: str
+    objective_select_theme: str
+    competitor_select_theme: str
+
+class CampaignCreateRequest(BaseModel):
+    campaign_name: str
+    theme: str
+    brief: CampaignBrief
+    
+class CampaignCreateResponse(BaseModel):
+    id:str
+    campaign_name: str
+    theme: str
+    workspace_assets: BriefCreateResponse
+
+class Campaign(BaseModel):
+    name: str
+    theme: str = ""
+    brief: CampaignBrief | None = None
+    emails: dict | None = None
+    website_post: dict | None = None
+    ads_threads: dict | None = None
+    ads_insta: dict | None = None
+    asset_classes_text: dict | None = None
+    asset_classes_images: dict | None = None
+    workspace_assets: BriefCreateResponse | None = None
+    trendspotting_summaries: list | None = None
+    audiences: dict | None = None
+    campaign_uploaded_images: dict | None = None
+
+class CampaignList(BaseModel):
+    id:str
+    data:Campaign
+
+class CampaignListResponse(BaseModel):
+    results :list[CampaignList] =[]
+
+class TranslateRequest(BaseModel):
+    source_text:str
+    source_language_code:str | None = None
+    target_language_code:str 
+
+class TranslateResponse(BaseModel):
+    translated_text:str
+
+class ContentCreationRequest(BaseModel):
+    type: str
+    theme: str
+    context: str | None = None
+    no_of_char: int = 500
+    audience_age_range: str = '20-30'
+    audience_gender:str = 'All'
+    image_generate: bool = True
+
+class ContentCreationResponse(BaseModel):
+    text_content:str
+    images: list = []
