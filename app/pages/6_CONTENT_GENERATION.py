@@ -30,7 +30,7 @@ utils_styles.sidebar_apply_style(
     image_path='/app/images/menu_icon_2.png'
 )
 
-file_name = "/app/images/page_2.png"
+file_name = "/app/images/page_2.1.png"
 
 with open(file_name, "rb") as fp:
     contents = fp.read()

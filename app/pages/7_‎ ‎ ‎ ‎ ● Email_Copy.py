@@ -101,7 +101,7 @@ SAMPLE_EMAILS = [
 "user25908@sample_user25908.sample",	
 "user22574@sample_user22574.sample"]
 
-AGE_BUCKET = ['young adult', 'middle-aged', 'senior']
+AGE_BUCKET = ['18-30', '30-45', '45-65']
 
 MALE_NAMES = [
 "James",

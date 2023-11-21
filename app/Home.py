@@ -30,7 +30,7 @@ utils_styles.sidebar_apply_style(
     image_path='/app/images/menu_icon_2.png'
 )
 
-file_name_1 = "/app/images/intro_home_1.png"
+file_name_1 = "/app/images/intro_home_1.1.png"
 file_name_2 = "/app/images/intro_home_2.png"
 
 with open(file_name_1, "rb") as fp:
@@ -46,3 +46,11 @@ with open(file_name_2, "rb") as fp:
 st.image(image=main_image_1)
 st.divider()
 st.image(image=main_image_2)
+
+st.divider()
+
+with st.expander("DISCLAIMER: This is not an official Google product"):
+    st.write("""
+This is not an official Google product. 
+This is a functional demo with a purpose to showcase capabilities of Google products.
+""")
