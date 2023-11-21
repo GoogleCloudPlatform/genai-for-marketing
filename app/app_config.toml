@@ -330,7 +330,7 @@ prompt_image_generation = "Generate an image for an email copy for {}"
 # (optional) Include or remove themes as needed
 # Age buckets that describe your audience
 # You can include or remove these options as needed.
-age_bucket = ['young adult', 'middle-aged', 'senior']
+age_bucket = ['18-30', '30-45', '45-65']
 
 # Default male names to be included in the email copy.
 # We didn't included this in the BigQuery table to not expose any PII.
