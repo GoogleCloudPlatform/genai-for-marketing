@@ -345,7 +345,7 @@ if SELECTED_CAMPAIGN_KEY in st.session_state:
             campaign.website_post = st.data_editor(campaign.website_post)
             st.image(campaign.website_post["website_image"])
             
-            col1, col2, col3 = st.columns([16, 34, 50])
+            col1, col2, col3 = st.columns([20, 37, 43])
 
             with col1:
                 is_button_clicked = st.button(":loudspeaker: Publish")
