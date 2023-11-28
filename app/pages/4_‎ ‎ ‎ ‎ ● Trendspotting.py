@@ -110,7 +110,7 @@ cols_page = st.columns([14,72,14])
 with cols_page[1]:
     # Google Trends retrieval tool ###########
     st.write(
-        "Using the form below, select a date" 
+        "Using the form below, select a date " 
         "to retrieve the top 1 search term(s) in the US."
     )
     with st.form('form_google_trends'):
