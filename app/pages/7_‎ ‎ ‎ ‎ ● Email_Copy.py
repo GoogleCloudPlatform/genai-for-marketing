@@ -359,10 +359,8 @@ if AUDIENCE_DATAFRAME_KEY in st.session_state:
                 generate_emails(number_of_emails=sample_size,
                                 state_key=SAMPLE_EMAILS_KEY,
                                 images=st.session_state[IMAGES_KEY],
-                                theme=str(theme),
+                                theme=str(st.session_state[THEME_KEY]),
                                 audience_dataframe=audience_dataframe))
-
-        
 
 
 if SAMPLE_EMAILS_KEY in st.session_state:

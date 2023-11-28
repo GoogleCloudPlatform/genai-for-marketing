@@ -357,7 +357,9 @@ if UUID_KEY in st.session_state:
         # Create text input for user entry
         with placeholder_for_instagram_custom_theme:
             if instagram_theme_option == "Custom":
-                instagram_theme_other = st.text_input("Enter your custom theme...")
+                instagram_theme_other = st.text_input(
+                    "Enter your custom theme...", 
+                    key="instagram_custom_text_theme")
             else:
                 instagram_theme_other = ""
 
