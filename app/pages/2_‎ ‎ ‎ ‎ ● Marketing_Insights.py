@@ -65,12 +65,12 @@ with cols[1]:
         with st.form(key='generate_marketing_dashboard'):
             option = st.selectbox(
                 'Select a dashboard to be displayed',
-                tuple(DASHBOARDS.keys()))
+                [i.replace("_", " ") for i in DASHBOARDS.keys()])
 
             submit_button = st.form_submit_button(label='Generate Dashboard')
 
         if submit_button:
-            st.session_state[DASHBOARD_KEY] = option
+            st.session_state[DASHBOARD_KEY] = option.replace(" ", "_")
     else:
         st.info('Dashboards not available.')
 
