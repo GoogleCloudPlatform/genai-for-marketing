@@ -35,6 +35,7 @@ TEXT_MODEL_NAME = MODEL_CFG["text"]["text_model_name"]
 PROMPT = PAGES_CFG["3_audiences"]["prompt_nl_sql"]
 PROMPT_PROJECT_ID = [GLOBAL_CFG['project_id']]*130
 CAMPAIGNS_KEY = PAGES_CFG["campaigns"]["campaigns_key"]
+CUSTOM_AUDIENCE_PROMPT_LABEL = "Another question..."
 
 
 def get_tags_from_table(
@@ -231,11 +232,11 @@ def generate_sql_and_query(
             label=("Select one of the options to ask BigQuery tables "
                    "and find your audience"),
             options=PAGES_CFG["3_audiences"][
-                "prompt_examples"] + ["Another question..."],
+                "prompt_examples"] + [CUSTOM_AUDIENCE_PROMPT_LABEL],
             key=f"{state_key}_question_prompt_text_area")
 
     with placeholder_for_custom_question:
-        if question_option == "Another question...":
+        if question_option == CUSTOM_AUDIENCE_PROMPT_LABEL:
             otherQuestion = st.text_input("Enter your custom question")
         else:
             otherQuestion = ""
@@ -243,7 +244,7 @@ def generate_sql_and_query(
     if submit_button:
         question = ""
         reset_page_state(state_key)
-        if question_option == "Another question":
+        if question_option == CUSTOM_AUDIENCE_PROMPT_LABEL:
             if otherQuestion == "":
                 st.info("Please write your custom question...")
                 return None
