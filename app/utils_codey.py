@@ -19,7 +19,7 @@ Utility module for Codey releated demo.
 
 import pandas as pd
 import streamlit as st
-
+import logging
 from google.cloud import bigquery
 from google.cloud import datacatalog_v1
 from pandas import DataFrame
@@ -31,7 +31,7 @@ from vertexai.preview.language_models import TextGenerationModel
 
 
 TEXT_MODEL_NAME = MODEL_CFG["text"]["text_model_name"]
-
+CODE_MODEL_NAME = TEXT_MODEL_NAME # MODEL_CFG["code"]["code_model_name"]
 PROMPT = PAGES_CFG["3_audiences"]["prompt_nl_sql"]
 PROMPT_PROJECT_ID = [GLOBAL_CFG['project_id']]*130
 CAMPAIGNS_KEY = PAGES_CFG["campaigns"]["campaigns_key"]
@@ -186,6 +186,64 @@ def generate_prompt(
 """
 
 
+# Gets an sql query based on a prompt. The function tries to dry run the query and if its 
+# problematic it attempts to fix it. it retries X number of times. Default is set to 3
+def get_valid_query(
+    bqclient, 
+    prompt, 
+    question: str,
+    metadata: list, 
+    retry: int=3):
+
+    counter=0
+    client_code_model = TextGenerationModel.from_pretrained(
+        CODE_MODEL_NAME)
+    
+    job_config = bigquery.QueryJobConfig(dry_run=True, use_query_cache=False)
+    gen_sql = client_code_model.predict(
+                    prompt = prompt,
+                    max_output_tokens = 1024,
+                    temperature=0.1
+                ).text
+    schema = ''
+    for i in metadata:
+        schema += i
+
+    while counter < retry:
+        try:
+            bqclient.query(gen_sql, job_config=job_config)
+            return gen_sql
+        except Exception as e:
+            print(f"attempt {counter}")
+            print(f"ex: --- {e.__dict__}")
+            gen_sql = client_code_model.predict(
+                        prompt = f"""You are an expert in BigQuery SQL syntax. after giving the user an SQL statement you prepared besed on a user question, the user got an error.
+Database Schema: {schema}
+
+User Question: {question}
+
+Errored Query: {gen_sql}
+
+Error: 
+                                                       
+{e}
+
+Use the information from the Schema, the User Question the Errored Query and the Error itself and provide a fix for the query.
+Output only the Fixed SQL query and nothing else. Do not use decorators or ```sql
+
+Here is an example of a valid output
+Fixed SQL: Select * from <TABLE> 
+
+Fixed SQL:""",
+                        max_output_tokens = 1024,
+                        temperature=0.1
+                    ).text
+            print(f"fix: {gen_sql}")
+            print(f"----------------------------------------------------------------------")
+            
+        counter+=1
+    raise Exception("Unable to run query")
+
 def generate_sql_and_query(
         state_key: str,
         title: str,
@@ -265,31 +323,22 @@ def generate_sql_and_query(
                 question, 
                 st.session_state[f"{state_key}_Dataset_Metadata"],
                 f"{state_key}_Prompt_Template")
-
         with st.expander('Prompt'):
             st.text(st.session_state[f"{state_key}_Prompt_Template"])
         
         with st.spinner('Generating the GoogleSQL statement with PaLM'):
-            client_code_model = TextGenerationModel.from_pretrained(
-                TEXT_MODEL_NAME)
             try:
-                gen_code = client_code_model.predict(
-                    prompt = st.session_state[f"{state_key}_Prompt_Template"],
-                    max_output_tokens = 1024,
-                    temperature=0.2
-                ).text
+                st.session_state[f"{state_key}_Gen_Code"] = get_valid_query(bqclient, st.session_state[f"{state_key}_Prompt_Template"], question, st.session_state[f"{state_key}_Dataset_Metadata"], retry=3)
             except Exception as e:
-                print("Error")
-                print(str(e))
+                print("Error: ", str(e))
                 gen_code = ""
-
-
-            if gen_code:
-                st.session_state[f"{state_key}_Gen_Code"] = gen_code
-            elif default_query:
-                st.session_state[
-                    f"{state_key}_Gen_Code"] = default_query.format(
-                    *PROMPT_PROJECT_ID)
+                if default_query:
+                    st.session_state[
+                        f"{state_key}_Gen_Code"] = default_query.format(
+                        *PROMPT_PROJECT_ID)
+                else:
+                    st.error('Unable to generate SQL that matches your input. Please preview the tables to ensure your input question is within the scope of the provided data')
+                    return
 
         try:
             with st.spinner('Querying BigQuery...'):
