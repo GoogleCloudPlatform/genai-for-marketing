@@ -64,10 +64,10 @@ code.code_model_name = "code-bison"
 # - sidebar_image_path: Image that goes in the left-side menu.
 # - file_name_*: Images for this page.
 page_title = "Gen AI for Marketing"
-page_icon = "/app/images/favicon.png"
-sidebar_image_path = "/app/images/menu_icon_2.png"
-file_name_1 = "/app/images/intro_home_1.1.png"
-file_name_2 = "/app/images/intro_home_2.png"
+page_icon = "images/favicon.png"
+sidebar_image_path = "images/menu_icon_2.png"
+file_name_1 = "images/intro_home_1.1.png"
+file_name_2 = "images/intro_home_2.png"
 
 
 # -----------------------------------------------------------------------------
@@ -81,9 +81,9 @@ file_name_2 = "/app/images/intro_home_2.png"
 # - sidebar_image_path: Image that goes in the left-side menu.
 # - page_title_icon: Image that goes on the left side of the main title of this page.
 page_title = "Campaigns"
-page_icon = "/app/images/favicon.png"
-page_title_icon = "/app/images/logo.png"
-sidebar_image_path = "/app/images/menu_icon_2.png"
+page_icon = "images/favicon.png"
+page_title_icon = "images/logo.png"
+sidebar_image_path = "images/menu_icon_2.png"
 campaigns_key = "Campaigns"
 
 # This variable will be used to give permissions to all users under this domain
@@ -170,6 +170,7 @@ prompt_competitors = [
 ]
 
 
+
 # -----------------------------------------------------------------------------
 # Configurations for page: 1_ANALYTICS_&_INSIGHTS.py
 # -----------------------------------------------------------------------------
@@ -181,9 +182,9 @@ prompt_competitors = [
 # - file_name: Images for this page.
 [pages.1_analytics_insights]
 page_title = "Analytics and Insights"
-page_icon = "/app/images/favicon.png"
-sidebar_image_path = "/app/images/menu_icon_2.png"
-file_name = "/app/images/page_1.1.png"
+page_icon = "images/favicon.png"
+sidebar_image_path = "images/menu_icon_2.png"
+file_name = "images/page_1.1.png"
 
 
 # -----------------------------------------------------------------------------
@@ -197,9 +198,9 @@ file_name = "/app/images/page_1.1.png"
 # - page_title_icon: Image that goes on the left side of the main title of this page.
 [pages.2_marketing_insights]
 page_title = "Marketing Insights"
-page_icon = "/app/images/favicon.png"
-sidebar_image_path = "/app/images/menu_icon_2.png"
-page_title_image = "/app/images/marketing_analytics_icon.png"
+page_icon = "images/favicon.png"
+sidebar_image_path = "images/menu_icon_2.png"
+page_title_image = "images/marketing_analytics_icon.png"
 
 # Looker Dashboards
 # The link of the looker Dashboard must follow this format:
@@ -220,9 +221,9 @@ dashboards.Overview = 'https://googledemo.looker.com/embed/dashboards/2131?allow
 # - sidebar_image_path: Image that goes in the left-side menu.
 # - page_title_icon: Image that goes on the left side of the main title of this page.
 page_title = "Audiences"
-page_icon = "/app/images/favicon.png"
-sidebar_image_path = "/app/images/menu_icon_2.png"
-page_title_image = "/app/images/audience_icon.png"
+page_icon = "images/favicon.png"
+sidebar_image_path = "images/menu_icon_2.png"
+page_title_image = "images/audience_icon.png"
 
 # Dataset ID of the BigQuery dataset. If you change the dataset_id during the deployment 
 # of this solution, change it here as well.
@@ -258,9 +259,9 @@ prompt_example_2 = "What are the top 50 customer emails ordered by loyalty score
 # - sidebar_image_path: Image that goes in the left-side menu.
 # - page_title_icon: Image that goes on the left side of the main title of this page.
 page_title = "Trendspotting"
-page_icon = "/app/images/favicon.png"
-sidebar_image_path = "/app/images/menu_icon_2.png"
-page_title_image = "/app/images/trend_icon.png"
+page_icon = "images/favicon.png"
+sidebar_image_path = "images/menu_icon_2.png"
+page_title_image = "images/trend_icon.png"
 
 
 # -----------------------------------------------------------------------------
@@ -274,9 +275,9 @@ page_title_image = "/app/images/trend_icon.png"
 # - sidebar_image_path: Image that goes in the left-side menu.
 # - page_title_icon: Image that goes on the left side of the main title of this page.
 page_title = "Consumer Insights"
-page_icon = "/app/images/favicon.png"
-sidebar_image_path = "/app/images/menu_icon_2.png"
-page_title_image = "/app/images/consumer_icon.png"
+page_icon = "images/favicon.png"
+sidebar_image_path = "images/menu_icon_2.png"
+page_title_image = "images/consumer_icon.png"
 
 # Vertex AI Search datastores and location. 
 # Change the dataset variable to reflect your configuration.
@@ -296,9 +297,9 @@ search_location = "global"
 # - sidebar_image_path: Image that goes in the left-side menu.
 # - file_name_*: Images for this page.
 page_title = "Content Generation"
-page_icon = "/app/images/favicon.png"
-sidebar_image_path = "/app/images/menu_icon_2.png"
-file_name = "/app/images/page_2.1.png"
+page_icon = "images/favicon.png"
+sidebar_image_path = "images/menu_icon_2.png"
+file_name = "images/page_2.1.png"
 
 
 # -----------------------------------------------------------------------------
@@ -312,9 +313,9 @@ file_name = "/app/images/page_2.1.png"
 # - sidebar_image_path: Image that goes in the left-side menu.
 # - page_title_icon: Image that goes on the left side of the main title of this page.
 page_title = "Email Copy"
-page_icon = "/app/images/favicon.png"
-sidebar_image_path = "/app/images/menu_icon_2.png"
-page_title_image = "/app/images/email_icon.png"
+page_icon = "images/favicon.png"
+sidebar_image_path = "images/menu_icon_2.png"
+page_title_image = "images/email_icon.png"
 
 # Default prompt for email copy generation
 # You can change this prompt to generate different email copies.
@@ -388,10 +389,10 @@ female_names = [
 # reference: https://cloud.google.com/translate/docs/languages
 languages =  ["es","zh","cs","da","fr","el","it","ja","pt"]
 
-local_email_image = ["/app/images/email_image_0.png",
- "/app/images/email_image_1.png",
- "/app/images/email_image_2.png",
- "/app/images/email_image_3.png"]
+local_email_image = ["images/email_image_0.png",
+ "images/email_image_1.png",
+ "images/email_image_2.png",
+ "images/email_image_3.png"]
 
 
 # -----------------------------------------------------------------------------
@@ -405,9 +406,9 @@ local_email_image = ["/app/images/email_image_0.png",
 # - sidebar_image_path: Image that goes in the left-side menu.
 # - page_title_icon: Image that goes on the left side of the main title of this page.
 page_title = "Website Post"
-page_icon = "/app/images/favicon.png"
-sidebar_image_path = "/app/images/menu_icon_2.png"
-page_title_image = "/app/images/website_icon.png"
+page_icon = "images/favicon.png"
+sidebar_image_path = "images/menu_icon_2.png"
+page_title_image = "images/website_icon.png"
 
 # Default prompt for website post generation
 # Change this prompt if needed.
@@ -422,10 +423,10 @@ Generate a blog post for {}.
 prompt_image_template = """Generate an image for {}"""
 
 local_images = [
-    "/app/images/website_1.png", 
-    "/app/images/website_2.png", 
-    "/app/images/website_3.png", 
-    "/app/images/website_4.png"
+    "images/website_1.png", 
+    "images/website_2.png", 
+    "images/website_3.png", 
+    "images/website_4.png"
 ]
 
 
@@ -440,9 +441,9 @@ local_images = [
 # - sidebar_image_path: Image that goes in the left-side menu.
 # - page_title_icon: Image that goes on the left side of the main title of this page.
 page_title = "Social Media"
-page_icon = "/app/images/favicon.png"
-sidebar_image_path = "/app/images/menu_icon_2.png"
-page_title_image = "/app/images/social_icon.png"
+page_icon = "images/favicon.png"
+sidebar_image_path = "images/menu_icon_2.png"
+page_title_image = "images/social_icon.png"
 
 # Dafault instagram gender
 instagram_gender_options = ["All", "Men", "Women"]
@@ -462,9 +463,9 @@ Generate a social media ad for {}: """
 # You can change this prompt if needed.
 image_prompt_template = """Generate an image for {}"""
 
-local_image_instagram = ["/app/images/social_instagram_0.png", "/app/images/social_instagram_1.png", "/app/images/social_instagram_2.png", "/app/images/social_instagram_3.png"]
+local_image_instagram = ["images/social_instagram_0.png", "images/social_instagram_1.png", "images/social_instagram_2.png", "images/social_instagram_3.png"]
 
-local_image_threads = ["/app/images/social_threads_0.png", "/app/images/social_threads_1.png", "/app/images/social_threads_2.png", "/app/images/social_threads_3.png"]
+local_image_threads = ["images/social_threads_0.png", "images/social_threads_1.png", "images/social_threads_2.png", "images/social_threads_3.png"]
 
 # -----------------------------------------------------------------------------
 # Configurations for 10_Asset_Group_Pmax.py page
@@ -477,9 +478,9 @@ local_image_threads = ["/app/images/social_threads_0.png", "/app/images/social_t
 # - sidebar_image_path: Image that goes in the left-side menu.
 # - page_title_icon: Image that goes on the left side of the main title of this page.
 page_title = "Asset Group for PMax"
-page_icon = "/app/images/favicon.png"
-sidebar_image_path = "/app/images/menu_icon_2.png"
-page_title_image = "/app/images/asset_icon.png"
+page_icon = "images/favicon.png"
+sidebar_image_path = "images/menu_icon_2.png"
+page_title_image = "images/asset_icon.png"
 
 # Default prompt template for image generation
 # You can change this prompt if needed.
@@ -524,7 +525,7 @@ call_to_action = [
 
 asset_group_description = "Cymbal's new collection of women's handbags is a symphony of style, featuring a harmonious blend of trendsetting designs and unparalleled quality."
 
-local_image_asset = [["/app/images/asset_group_0_0.png","/app/images/asset_group_0_1.png"], ["/app/images/asset_group_1_0.png", "/app/images/asset_group_1_1.png"], ["/app/images/asset_group_2_0.png", "/app/images/asset_group_2_1.png"], ["/app/images/asset_group_3_0.png", "/app/images/asset_group_3_1.png"]]
+local_image_asset = [["images/asset_group_0_0.png","images/asset_group_0_1.png"], ["images/asset_group_1_0.png", "images/asset_group_1_1.png"], ["images/asset_group_2_0.png", "images/asset_group_2_1.png"], ["images/asset_group_3_0.png", "images/asset_group_3_1.png"]]
 
 
 # -----------------------------------------------------------------------------
@@ -538,9 +539,9 @@ local_image_asset = [["/app/images/asset_group_0_0.png","/app/images/asset_group
 # - sidebar_image_path: Image that goes in the left-side menu.
 # - file_name_*: Images for this page.
 page_title = "Activation & Optimization"
-page_icon = "/app/images/favicon.png"
-sidebar_image_path = "/app/images/menu_icon_2.png"
-file_name = "/app/images/page_3.1.png"
+page_icon = "images/favicon.png"
+sidebar_image_path = "images/menu_icon_2.png"
+file_name = "images/page_3.1.png"
 
 # -----------------------------------------------------------------------------
 # Configurations for 12_Review_Activate.py =========
@@ -553,9 +554,9 @@ file_name = "/app/images/page_3.1.png"
 # - sidebar_image_path: Image that goes in the left-side menu.
 # - page_title_icon: Image that goes on the left side of the main title of this page.
 page_title = "Review and Activate"
-page_icon = "/app/images/favicon.png"
-sidebar_image_path = "/app/images/menu_icon_2.png"
-page_title_icon = "/app/images/activate_icon.png"
+page_icon = "images/favicon.png"
+sidebar_image_path = "images/menu_icon_2.png"
+page_title_icon = "images/activate_icon.png"
 
 # ID of the templates
 # Change this variables according to your Google Workspace settings
@@ -586,9 +587,9 @@ workspace_scopes = [
 # - sidebar_image_path: Image that goes in the left-side menu.
 # - page_title_icon: Image that goes on the left side of the main title of this page.
 page_title = "Campaign Performance"
-page_icon = "/app/images/favicon.png"
-sidebar_image_path = "/app/images/menu_icon_2.png"
-page_title_icon = "/app/images/opt_icon.png"
+page_icon = "images/favicon.png"
+sidebar_image_path = "images/menu_icon_2.png"
+page_title_icon = "images/opt_icon.png"
 
 # Infobot version
 # Change with the code snippet provided by your Infobot deployment
@@ -629,9 +630,9 @@ dashboards.Overview = ''
 # - sidebar_image_path: Image that goes in the left-side menu.
 # - file_name_*: Images for this page.
 page_title = "Vertex AI APIs"
-page_icon = "/app/images/favicon.png"
-sidebar_image_path = "/app/images/menu_icon_2.png"
-file_name = "/app/images/favicon.png"
+page_icon = "images/favicon.png"
+sidebar_image_path = "images/menu_icon_2.png"
+file_name = "images/favicon.png"
 
 
 # -----------------------------------------------------------------------------
@@ -645,9 +646,9 @@ file_name = "/app/images/favicon.png"
 # - sidebar_image_path: Image that goes in the left-side menu.
 # - page_title_icon: Image that goes on the left side of the main title of this page.
 page_title = "Text Generation with PaLM"
-page_icon = "/app/images/favicon.png"
-sidebar_image_path = "/app/images/menu_icon_2.png"
-page_title_icon = "/app/images/favicon.png"
+page_icon = "images/favicon.png"
+sidebar_image_path = "images/menu_icon_2.png"
+page_title_icon = "images/favicon.png"
 
 
 # -----------------------------------------------------------------------------
@@ -661,9 +662,9 @@ page_title_icon = "/app/images/favicon.png"
 # - sidebar_image_path: Image that goes in the left-side menu.
 # - page_title_icon: Image that goes on the left side of the main title of this page.
 page_title = "Image Generation"
-page_icon = "/app/images/favicon.png"
-sidebar_image_path = "/app/images/menu_icon_2.png"
-page_title_icon = "/app/images/favicon.png"
+page_icon = "images/favicon.png"
+sidebar_image_path = "images/menu_icon_2.png"
+page_title_icon = "images/favicon.png"
 
 # Pre populated prompts for image generation.
 # You can change this defaults as needed.
