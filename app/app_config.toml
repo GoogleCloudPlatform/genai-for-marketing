@@ -52,6 +52,30 @@ text.text_model_name = "text-bison"
 image.image_model_name = "imagegeneration"
 code.code_model_name = "code-bison"
 
+# -----------------------------------------------------------------------------
+# Configurations for Menu Items
+# -----------------------------------------------------------------------------
+[pages.menu]
+
+items =[
+    '0_Campaigns.py',
+    '1_ANALYTICS_&_INSIGHTS.py',
+    '2_‎ ‎ ‎ ‎ ● Marketing_Insights.py',
+    '3_‎ ‎ ‎ ‎ ● Audiences.py',
+    '4_‎ ‎ ‎ ‎ ● Trendspotting.py',
+    '5_‎ ‎ ‎ ‎ ● Consumer_Insights.py',
+    '6_CONTENT_GENERATION.py',
+    '7_‎ ‎ ‎ ‎ ● Email_Copy.py',
+    '8_‎ ‎ ‎ ‎ ● Website_Post.py',
+    '9_‎ ‎ ‎ ‎ ● Social_Media.py',
+    '10_‎ ‎ ‎ ‎ ● Asset_Group_for_PMax.py',
+    '11_ACTIVATION_&_OPTIMIZATION.py',
+    '12_‎ ‎ ‎ ‎ ● Review_&_Activate.py',
+    '13_‎ ‎ ‎ ‎ ● Campaign_Performance.py',
+    '14_VERTEX AI APIs.py',
+    '15_ ‎ ‎ ‎ ● Text_Generation.py',
+    '16_ ‎ ‎ ‎ ● Image_Generation.py'
+]
 
 # -----------------------------------------------------------------------------
 # Configurations for page: Home.py

@@ -143,6 +143,11 @@ Clone the repository to your notebook instance:
 
 Open the [configuration file](/app/override.toml) and include your project id (line 21) and location (line 22).
 
+### Dissable specific functionality from the applciation
+
+If you do not need all the funcitonality provited by GenAI for Marketing, you can disselect the pages you do not want the engine to use. In order to do that visit the [configuration file](/app/override.toml) and comment out using # the items you want to exclude (lines 32 to 48).
+*Be aware* that some pages have dependencies. for example to send campaing emails I need to be able to create a campaing, there for 0_Campaigns.py should be enabled
+
 ### Prepare BigQuery and Dataplex
 
 Open notebook [`/genai-for-marketing/notebooks/1_environment_setup.ipynb`](/notebooks/1_environment_setup.ipynb) and follow the instructions in it.  
