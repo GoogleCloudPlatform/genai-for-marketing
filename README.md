@@ -147,7 +147,7 @@ Open the [configuration file](/app/app_config.toml) and include your project id 
 
 Open notebook [`/genai-for-marketing/notebooks/1_environment_setup.ipynb`](/notebooks/1_environment_setup.ipynb) and follow the instructions in it.  
 It will execute the following steps:
- - Install dependecies to run the notebook
+ - Install dependencies to run the notebook
  - Create a dataset on BigQuery
  - Create a synthetic CDP dataset and load it to BigQuery
  - Create Tag Template on Dataplex
@@ -158,9 +158,9 @@ Make sure all the steps are executed successfully and you can retrieve the metad
 The metadata should look like this:
 
 ```
-Table: transactions - Column: app_purchase_qnt - Data Type: INT64 - Primary Key: False - Foreing Key: False - Description: The value of the in-app purchase.
+Table: transactions - Column: app_purchase_qnt - Data Type: INT64 - Primary Key: False - Foreign Key: False - Description: The value of the in-app purchase.
 ...
-Table: customers - Column: total_value - Data Type: INT64 - Primary Key: False - Foreing Key: False - Description: The total value of all purchases made by the customer.
+Table: customers - Column: total_value - Data Type: INT64 - Primary Key: False - Foreign Key: False - Description: The total value of all purchases made by the customer.
 ```
 
 
