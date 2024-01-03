@@ -228,6 +228,9 @@ with tab1:
 
             try:
                 with st.spinner("Creating Google Drive folder..."):
+
+                    print(f"Creating Google Drive folder : Marketing_Assets_{int(time.time())}")
+                    print(f"parent folder {DRIVE_FOLDER_ID}")
                     new_folder_id = utils_workspace.create_folder_in_folder(
                         folder_name=f"Marketing_Assets_{int(time.time())}",
                         parent_folder_id=DRIVE_FOLDER_ID)
@@ -236,6 +239,8 @@ with tab1:
                         file_id=new_folder_id,
                         domain=DOMAIN)
                 with st.spinner("Uploading Creative Brief to Google Docs..."):
+                    print(f"Uploading Creative Brief to Google Doc: {DOC_TEMPLATE_ID}")
+
                     doc_id = utils_workspace.copy_drive_file(
                         drive_file_id=DOC_TEMPLATE_ID,
                         parentFolderId=new_folder_id,
@@ -250,8 +255,11 @@ with tab1:
                         brand_statement=clean(brief["brand_statement"]),
                         primary_msg=clean(brief["primary_message"]), 
                         comms_channel=clean(brief["comm_channels"]))
-            except:
+            except Exception as e:
                 del st.session_state[CAMPAIGNS_KEY][campaign_uuid]
+                st.info(DOMAIN)
+                st.info(DRIVE_FOLDER_ID)
+                st.info(e)
                 st.info("Campaign could not be created. Please try again.")
             else:
                 st.success(f"Campaign '{campaign_name}' generated "

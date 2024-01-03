@@ -15,11 +15,36 @@
 """
 Initial page with an overview architecture and a description of each demo page.
 """
-
+import shutil, os
 import base64
 import streamlit as st
-
 from utils_config import PAGES_CFG
+
+
+def setup_pages():
+    pages_path = os.path.join(os.path.dirname(__file__), "pages")
+    templates_path = os.path.join(os.path.dirname(__file__), "pages_templates")
+
+    files = [f for f in os.listdir(pages_path) if os.path.join(pages_path, f)]
+
+    remove_files = set(files).difference(PAGES_CFG["menu"]['items'])
+    copy_files = set(PAGES_CFG["menu"]['items']).difference(files)
+
+    print("remove_files", remove_files)
+    try:
+        for f in remove_files:
+            os.remove(os.path.join(pages_path, f))
+    except Exception as e:
+        print("-->",e)
+
+    print("copy_files", copy_files)
+    try:
+        for f in copy_files:
+            shutil.copy(os.path.join(templates_path, f), os.path.join(pages_path, f))
+    except Exception as e:
+        print("-->",e)
+
+setup_pages()
 
 page_cfg = PAGES_CFG["home"]
 
