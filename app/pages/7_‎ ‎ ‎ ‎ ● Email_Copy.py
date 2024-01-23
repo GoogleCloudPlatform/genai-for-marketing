@@ -53,9 +53,6 @@ utils_styles.sidebar_apply_style(
 PROJECT_ID = GLOBAL_CFG["project_id"]
 LOCATION = GLOBAL_CFG["location"]
 
-vertexai.init(
-    project=PROJECT_ID,
-    location=LOCATION)
 llm = TextGenerationModel.from_pretrained(
     MODEL_CFG["text"]["text_model_name"])
 translate_client = translate.Client()
