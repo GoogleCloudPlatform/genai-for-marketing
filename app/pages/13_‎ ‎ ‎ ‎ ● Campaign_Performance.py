@@ -53,12 +53,13 @@ INFOBOT = page_cfg["infobot"]
 # State variables
 PAGE_KEY_PREFIX = "CampaignPerformance"
 DASHBOARD_KEY = f"{PAGE_KEY_PREFIX}_Dashboard"
+OPT_ICON = page_cfg["page_title_icon"]
 
 cols = st.columns([15,70,15])
 with cols[1]:
     cols = st.columns([10, 90])
     with cols[0]:
-        st.image('/app/images/opt_icon.png')
+        st.image(OPT_ICON)
     with cols[1]:
         st.title('Campaign Performance')
 

@@ -26,6 +26,13 @@ location = "us-central1"
 # This is the path inside the docker image, example: /app/credential.json
 service_account_json_key = '/credentials/credentials.json'  # Change this path if you copied the file to a different path 
 
+# The below objects require DOMAIN WIDE DELEGATION to be implemented for your service account.
+# Leave blank if you don't want to use a shared drive for Workspaces
+shared_drive_id = '' # example: '0AOMyB0Ybyo9XZERgIcjsdfeqO0SKqhrkvqMx 
+
+# Leave blank if you don't want to use delegated credentials for Workspaces
+# Change this email to the user email you are impersonating of your Workspace
+workspace_admin_email = '' # example: 'ben@example.com'
 
 # -----------------------------------------------------------------------------
 # Translation options

@@ -27,9 +27,15 @@ from utils_config import GLOBAL_CFG, PAGES_CFG
 
 
 SCOPES = PAGES_CFG["12_review_activate"]["workspace_scopes"]
-CREDENTIALS = service_account.Credentials.from_service_account_file(
-    filename=GLOBAL_CFG["service_account_json_key"], scopes=SCOPES)
+SHARED_DRIVE_ID = GLOBAL_CFG["shared_drive_id"]
 
+SOURCE_CREDENTIALS = service_account.Credentials.from_service_account_file(
+    filename=GLOBAL_CFG["service_account_json_key"], scopes=SCOPES)
+CREDENTIALS = SOURCE_CREDENTIALS
+
+if len(GLOBAL_CFG["workspace_admin_email"]) > 0:
+    CREDENTIALS= SOURCE_CREDENTIALS.with_subject(
+        GLOBAL_CFG["workspace_admin_email"])
 
 drive_service = build('drive', 'v3', credentials=CREDENTIALS)
 docs_service = build('docs', 'v1', credentials=CREDENTIALS)
@@ -47,9 +53,11 @@ def create_folder_in_folder(
         'parents' : [parent_folder_id],
         'mimeType' : 'application/vnd.google-apps.folder'
     }
-    file = drive_service.files().create(body=file_metadata,
-                                    fields='id',
-                                    supportsAllDrives=True).execute()
+    if len(SHARED_DRIVE_ID) > 0:
+        file_metadata['driveId'] = SHARED_DRIVE_ID 
+    file = drive_service.files().create(body=file_metadata, \
+                                    fields='id', \
+                                    supportsAllDrives = True).execute()
     
     return file.get('id')
 
@@ -73,8 +81,11 @@ def copy_drive_file(drive_file_id: str,
     
     body = {
         'name': copy_title,
-            'parents' : [ parentFolderId  ]
+        'parents' : [ parentFolderId  ]
     }
+
+    if len(SHARED_DRIVE_ID) > 0:
+        body['driveId'] = SHARED_DRIVE_ID 
     drive_response = drive_service.files().copy(
         fileId=drive_file_id, 
         body=body,
@@ -98,6 +109,9 @@ def upload_to_folder(
         'name': upload_name,
         'parents': [folder_id]
     }
+
+    if len(SHARED_DRIVE_ID) > 0:
+        file_metadata['driveId'] = SHARED_DRIVE_ID
     
     media = MediaIoBaseUpload(
         f, 
