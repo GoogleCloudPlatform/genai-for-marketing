@@ -12,6 +12,8 @@ Click the **Start** button to move to the next step.
 ## Prerequisites
 Before start please make sure you have the following prerequisites:
 - A GCP Project, this can be a standalone project or within a GCP organization. If you need to create a new project please follow the instructions [here](https://cloud.google.com/resource-manager/docs/creating-managing-projects)
+- In the Google Cloud console, navigate to the Vertex AI Search and Conversation console.
+- Read and agree to the Terms of Service, then click Continue and activate the API.
 - A user with permissions to execute the installation script with the following permissions at the project project level:
   - Project IAM Admin
   - Service Usage Admin

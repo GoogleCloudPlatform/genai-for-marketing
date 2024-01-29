@@ -5,7 +5,8 @@ from google.cloud import discoveryengine_v1alpha
 from google.cloud import dialogflowcx_v3
 
 #
-# python chat-engine.py --project="gsd-tests-geai-marketing" --app-name=my_app --company-name=my_company --uris="support.google.com/google-ads/*"
+# Usage:
+# python genai_marketing_conversation_app_creation.py --project="my-project-id" --app-name=my_app1 --company-name=my_company --uris="support.oogle.com/google-ads/*" --datastore-storage-folder="gs://gsd-tests-genai-marketing-sample-data/sample-folder/*"
 #
 
 parser = argparse.ArgumentParser()
@@ -15,9 +16,9 @@ parser.add_argument("--location", help="Location to deploy",
 parser.add_argument("--app-name", help="Application name", type=str)
 parser.add_argument("--company-name", help="Name of your company", type=str)
 parser.add_argument(
-    "--uris", help="Datastore uris to index comma separated", type=str)
+    "--uris", help="Datastore uris to index comma separated", type=str, default="")
 parser.add_argument(
-    "--datastore-storage-folder", help="Datastore uris to index comma separated", type=str, default="cloud-samples-data/dialogflow-cx/arc-lifebloo")
+    "--datastore-storage-folders", help="Datastore folders to index, comma separated", type=str, default="")
 parser.add_argument(
     "--agent-name", help="Dialogflow CX agent name", type=str, default="Donate")
 parser.add_argument(
@@ -35,8 +36,8 @@ project_id = dict_args.project
 default_location = dict_args.location
 app_name = dict_args.app_name
 company_name = dict_args.company_name
-uris = dict_args.uris.split(",")
-datastore_storage_folder = dict_args.datastore_storage_folder
+uris = dict_args.uris
+datastore_storage_folders = dict_args.datastore_storage_folders
 agent_config = {
     'name': dict_args.agent_name,
     'identity': dict_args.agent_identity,
@@ -52,42 +53,78 @@ def create_chat_app():
 
     # Initialize Datastore request argument(s) for Search
     parent_collection = f"projects/{project_id}/locations/{default_location}/collections/default_collection"
-    datastore_name = f"{app_name}_datastore"
-    datastore_id = f"{datastore_name}"
+    # Creating multiple datastores with no order
 
-    # check if datastore exists
-    try:
-        datastore = datastore_client.get_data_store(request=discoveryengine_v1alpha.GetDataStoreRequest(
-            name=f"{parent_collection}/dataStores/{datastore_id}",
-        ))
-        print(f"Datastore already exist: {datastore}")
-    except:
-        # Create datastore
-        datastore = discoveryengine_v1alpha.DataStore(
-            display_name=datastore_name,
-            industry_vertical="GENERIC",
-            solution_types=["SOLUTION_TYPE_CHAT"],
-            content_config="PUBLIC_WEBSITE",
-        )
+    datastores = []
+    if (uris != ""):
+        ds = {}
+        ds["name"] = f"{app_name}_web_datastore"
+        ds["id"] = ds["name"]
+        ds["type"] = "web"
+        datastores.append(ds)
+    if (datastore_storage_folders != ""):
+        ds = {}
+        ds["name"] = f"{app_name}_gcs_datastore"
+        ds["id"] = ds["name"]
+        ds["type"] = "gcs"  # this could be changed to unstructured and structured
+        datastores.append(ds)
 
-        datastore_request = discoveryengine_v1alpha.CreateDataStoreRequest(
-            parent=parent_collection,
-            data_store=datastore,
-            create_advanced_site_search=True,
-            data_store_id=datastore_id
-        )
-        print(f"Creating datastore: {datastore_request}")
-        datastore_client.create_data_store(request=datastore_request)
+    if (len(datastores) == 0):
+        raise Exception("Input error: No datastores to create")
 
-        site_search_engine_service_client = discoveryengine_v1alpha.SiteSearchEngineServiceClient()
-        for uri in uris:
-            target_site = discoveryengine_v1alpha.TargetSite()
-            target_site.provided_uri_pattern = uri
-            print(f"Creating Target site: {target_site}")
-            site_search_engine_service_client.create_target_site(request=discoveryengine_v1alpha.CreateTargetSiteRequest(
-                parent=f"{parent_collection}/dataStores/{datastore_id}/siteSearchEngine",
-                target_site=target_site,
+    for ds in datastores:
+        # check if datastore exists
+        try:
+            datastore = datastore_client.get_data_store(request=discoveryengine_v1alpha.GetDataStoreRequest(
+                name=f"{parent_collection}/dataStores/{ds['id']}",
             ))
+            print(f"Datastore already exist: {datastore}")
+        except:
+            # Create datastore
+            if (ds["type"] == "web"):
+                datastore = discoveryengine_v1alpha.DataStore(
+                    display_name=ds["name"],
+                    industry_vertical="GENERIC",
+                    solution_types=["SOLUTION_TYPE_CHAT"],
+                    content_config="PUBLIC_WEBSITE",
+                )
+            if (ds["type"] == "gcs"):
+                datastore = discoveryengine_v1alpha.DataStore(
+                    display_name=ds["name"],
+                    industry_vertical="GENERIC",
+                    solution_types=["SOLUTION_TYPE_CHAT"],
+                    content_config="CONTENT_REQUIRED",
+                )
+            datastore_request = discoveryengine_v1alpha.CreateDataStoreRequest(
+                parent=parent_collection,
+                data_store=datastore,
+                create_advanced_site_search=True,
+                data_store_id=ds['id']
+            )
+            print(f"Creating datastore: {datastore_request}")
+            datastore_client.create_data_store(request=datastore_request)
+            if (ds["type"] == "web"):
+                site_search_engine_service_client = discoveryengine_v1alpha.SiteSearchEngineServiceClient()
+                for uri in uris.split(","):
+                    target_site = discoveryengine_v1alpha.TargetSite()
+                    target_site.provided_uri_pattern = uri
+                    print(f"Creating Target site: {target_site}")
+                    site_search_engine_service_client.create_target_site(request=discoveryengine_v1alpha.CreateTargetSiteRequest(
+                        parent=f"{parent_collection}/dataStores/{ds['id']}/siteSearchEngine",
+                        target_site=target_site,
+                    ))
+            if (ds["type"] == "gcs"):
+                document_client = discoveryengine_v1alpha.DocumentServiceClient()
+                documents_parent = f"{parent_collection}/dataStores/{ds['id']}/branches/default_branch"
+                datastore_storage_folders_array = datastore_storage_folders.split(
+                    ",")
+                document_client.import_documents(request=discoveryengine_v1alpha.ImportDocumentsRequest(
+                    parent=documents_parent,
+                    gcs_source=discoveryengine_v1alpha.GcsSource(
+                        input_uris=datastore_storage_folders_array,
+                        data_schema="content",  # This can be change to document, csv, custom or user_event
+                    )
+                ))
 
     # Creating dialogflow cx agent
     dcx_client = dialogflowcx_v3.AgentsClient()
@@ -134,11 +171,13 @@ def create_chat_app():
         engine_config = discoveryengine_v1alpha.types.Engine.ChatEngineConfig()
         engine_config.dialogflow_agent_to_link = agent.name
         # Engine
+        data_store_ids = [ds['id'] for ds in datastores]
+
         engine = discoveryengine_v1alpha.Engine(
             chat_engine_config=engine_config,
             display_name=chat_engine_name,
             solution_type="SOLUTION_TYPE_CHAT",
-            data_store_ids=[datastore_id],
+            data_store_ids=data_store_ids,
             common_config={'company_name': company_name},
         )
 
@@ -179,14 +218,25 @@ def create_chat_app():
     ))
 
     # Verify domain to attach this datastore
-    data_store_connection = dialogflowcx_v3.types.DataStoreConnection(
-        data_store_type='PUBLIC_WEB',
-        data_store=f"{parent_collection}/dataStores/{datastore_id}"
-    )
+    data_store_connections = []
+    for ds in datastores:
+        if (ds["type"] == "web"):
+            data_store_connection = dialogflowcx_v3.types.DataStoreConnection(
+                data_store_type='PUBLIC_WEB',
+                data_store=f"{parent_collection}/dataStores/{ds['id']}"
+            )
+            data_store_connections.append(data_store_connection)
+        if (ds["type"] == "gcs"):
+            data_store_gsc_connection = dialogflowcx_v3.types.DataStoreConnection(
+                # this value must change for STRUCTURED if the content of the bucket is csv
+                data_store_type="UNSTRUCTURED",
+                data_store=f"{parent_collection}/dataStores/{ds['id']}"
+            )
+            data_store_connections.append(data_store_gsc_connection)
 
     knowledge_connector_settings = dialogflowcx_v3.types.KnowledgeConnectorSettings(
         enabled=True,
-        data_store_connections=[data_store_connection]
+        data_store_connections=data_store_connections
     )
 
     default_flow.knowledge_connector_settings = knowledge_connector_settings
@@ -221,10 +271,10 @@ def create_chat_app():
         name=agent.start_flow,
     ))
 
-    os.putenv("SEARCH_DATASTORE",f"{parent_collection}/dataStores/{datastore_id}")
-    os.putenv("SEARCH_DATASTORE_ID", datastore_id)
-    os.putenv("SEARCH_ENGINE",f"{parent_collection}/engines/{engine_id}")
-    os.putenv("AGENT_ENGINE",agent.name)
+    os.putenv("SEARCH_DATASTORE_IDS", ",".join([
+              f"{parent_collection}/dataStores/{ds['id']}" for ds in datastores]))
+    os.putenv("SEARCH_ENGINE", f"{parent_collection}/engines/{engine_id}")
+    os.putenv("AGENT_ENGINE", agent.name)
 
     with open("marketingEnvValue.json", "r") as jsonFile:
         data = json.load(jsonFile)
@@ -234,7 +284,8 @@ def create_chat_app():
         json.dump(data, jsonFile)
 
     print(f"""Chat engine app results:
-          Datastore: {parent_collection}/dataStores/{datastore_id}
+          Datastores: {",".join([
+              f"{parent_collection}/dataStores/{ds['id']}" for ds in datastores])}
           App: {parent_collection}/engines/{engine_id}
           Dialogflow CX Agent: {agent.name}
           """)

@@ -6,18 +6,44 @@
 
 # Global variables
 #################################
-PROJECT_ID="project-001"          # ID of the project where you want to deploy
+#PROJECT_ID="project-001"          # ID of the project where you want to deploy
 LOCATION="us-central1"            # Name of the region 
-DATASET_NAME="naga_test"          # BigQuery Dataset Name for creation
-SEARCH_APP_NAME="naga_test"       # Vertex Search App Name for creation
-CHAT_BOT_NAME="naga_test_chat"    # Vertex Conversation app Name for creation
-COMPANY_NAME="naga_test"          # Your company name 
+DATASET_NAME="genai_marketing"          # BigQuery Dataset Name for creation
+SEARCH_APP_NAME="genai_marketing"       # Vertex Search App Name for creation
+CHAT_BOT_NAME="genai_marketing"    # Vertex Conversation app Name for creation
+#COMPANY_NAME="genai_marketing"          # Your company name 
 EXISTING_LOOKER_URI=""            # your Existing Looker dashboard URl. leave it empty if you don't have
 SERVICE_ACCOUNT="genai-markting-sa"    # Service account name for creation
-YOUR_DOMAIN="google.com"               # Your domain name. eg user@company.com then company.com 
+#YOUR_DOMAIN="google.com"               # Your domain name. eg user@company.com then company.com 
 GDRIVE_FOLDER_NAME="genai-marketing-assets"      # Google drive folder name for creation
 
 # do not modify below here
+
+
+read -p "Enter Project ID: " PROJECT_ID
+read -p "Enter Company Name: " COMPANY_NAME
+read -p "Enter your Domain name (example.com): " YOUR_DOMAIN
+
+echo -e "\n \n"
+bold=$(tput bold)
+normal=$(tput sgr0)
+echo -e "Here are the names that will be used for creating resources \n"
+echo -e "BIGQUERY DATASET_NAME: ${bold}${DATASET_NAME}${normal} \nSEARCH_APP: ${bold}${SEARCH_APP_NAME}${normal} \nCHAT_BOT_NAME: ${bold}${CHAT_BOT_NAME}${normal} \nSERVICE_ACCOUNT: ${bold}${SERVICE_ACCOUNT}${normal} \nGOOGLE_DRIVE_FOLDER_NAME: ${bold}${GDRIVE_FOLDER_NAME}${normal}"
+echo -e "\nDo you wish to add postfix ? enter 1 for Yes and 2 for No"
+echo -e "\n Note: If you are reruning the automation, use names like earlier"
+select yn in "Yes" "No"; do
+    case $yn in
+        Yes ) read -p "Enter Postfix: " POSTFIX
+              DATASET_NAME="${DATASET_NAME}_${POSTFIX}"
+              SEARCH_APP_NAME="${SEARCH_APP_NAME}_${POSTFIX}"
+              CHAT_BOT_NAME="${CHAT_BOT_NAME}_${POSTFIX}"
+              SERVICE_ACCOUNT="${SERVICE_ACCOUNT}_${POSTFIX}"
+              GDRIVE_FOLDER_NAME="${GDRIVE_FOLDER_NAME}_${POSTFIX}"
+              break ;;
+        No ) echo "Using same names for setup"
+             break ;;
+    esac
+done
 
 SERVICE_ACCOUNT_EMAIL="${SERVICE_ACCOUNT}@${PROJECT_ID}.iam.gserviceaccount.com"   # Do not modify this
 
@@ -27,7 +53,7 @@ gcloud config set project $PROJECT_ID   # Setting the Project in Gcloud
 PROJECT_NUMBER=`gcloud projects describe $PROJECT_ID --format="value(projectNumber)"`     # Getting the project Number  
 
 # Enabling the services
-gcloud services enable run.googleapis.com cloudbuild.googleapis.com compute.googleapis.com cloudresourcemanager.googleapis.com iam.googleapis.com container.googleapis.com cloudapis.googleapis.com cloudtrace.googleapis.com containerregistry.googleapis.com iamcredentials.googleapis.com
+gcloud services enable run.googleapis.com cloudbuild.googleapis.com compute.googleapis.com cloudresourcemanager.googleapis.com iam.googleapis.com container.googleapis.com cloudapis.googleapis.com cloudtrace.googleapis.com containerregistry.googleapis.com iamcredentials.googleapis.com dialogflow.googleapis.com
 gcloud services enable monitoring.googleapis.com logging.googleapis.com notebooks.googleapis.com aiplatform.googleapis.com storage.googleapis.com datacatalog.googleapis.com appengineflex.googleapis.com translate.googleapis.com admin.googleapis.com docs.googleapis.com drive.googleapis.com sheets.googleapis.com slides.googleapis.com
 
 if [ ! -d "genai_for_marketing_automation" ]; then   # Checking the Virtualenv folder exists or not
@@ -94,11 +120,13 @@ if [ ! -f genai-for-marketing/app/credentials.json ]; then
   gcloud iam service-accounts keys create genai-for-marketing/app/credentials.json --iam-account=${SERVICE_ACCOUNT_EMAIL}
 fi
 
-if [ ! -f credentials.json ]; then
-   gcloud iam service-accounts keys create credentials.json --iam-account="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
+if [ -f credentials.json ]; then
+   rm -rf credentials.json
 fi
+gcloud iam service-accounts keys create credentials.json --iam-account="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
+
 export GOOGLE_APPLICATION_CREDENTIALS=credentials.json
-python3 genai_marketing_conversation_app_creation.py --project="${PROJECT_ID}" --location="global" --app-name="${CHAT_BOT_NAME}" --company-name="${COMPANY_NAME}" --uris="support.google.com/google-ads/*" 
+python3 genai_marketing_conversation_app_creation.py --project="${PROJECT_ID}" --location="global" --app-name="${CHAT_BOT_NAME}" --company-name="${COMPANY_NAME}" --uris="support.google.com/google-ads/*" --datastore-storage-folder="gs://cloud-samples-data/gen-app-builder/search/alphabet-investor-pdfs/*"
 
 CHAT_AGENT_ID=`jq -r '.AGENT_ENGINE_NAME' < marketingEnvValue.json | cut -d'/' -f6`
 AGENT_LANGUAGE_CODE=`jq -r '.AGENT_LANGUAGE_CODE' < marketingEnvValue.json`
@@ -144,4 +172,9 @@ network:
   subnetwork_name: default
 EOL
 
+APP_ENGINE_CHECK=`gcloud app services list --filter="SERVICE: default" --format=json | jq .[].id | wc -l`
+if [[ $APP_ENGINE_CHECK == 0 ]]
+then
+   gcloud app create --region=${LOCATION}
+fi
 cd genai-for-marketing && gcloud app deploy --quiet

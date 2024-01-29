@@ -6,7 +6,8 @@ import argparse
 from google.cloud import discoveryengine_v1alpha
 
 #
-# python search-engine.py --project="gsd-tests-geai-marketing" --app-name=my_app --company-name=my_company --uris="cloud.goole.com/*"
+# Usage:
+# python genai_marketing_search_app_creation.py --project="my-project-id" --app-name=my_app --company-name=my_company --uris="cloud.goole.com/*"
 #
 
 parser = argparse.ArgumentParser()
@@ -121,12 +122,6 @@ def create_search_app():
           Datastore: {parent_collection}/dataStores/{datastore_id}
           App: {parent_collection}/engines/{engine_id}
           """)
-
-
-def clean_up():
-    # TODO
-    return
-
 
 if __name__ == "__main__":
     create_search_app()
