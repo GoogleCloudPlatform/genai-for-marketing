@@ -14,13 +14,13 @@ export class SharedService {
   
   constructor(private fs: Firestore, public loginservice: LoginService) { }
   fireBaseConfig = {
-    apiKey: "AIzaSyBssyJ8TV7oIy09YMFLhmj1ZwnzzxhQ4Nk",
-    authDomain: "rl-llm-dev.firebaseapp.com",
-    projectId: "rl-llm-dev",
-    storageBucket: "rl-llm-dev.appspot.com",
-    messagingSenderId: "244831775715",
-    appId: "1:244831775715:web:d649215b84c64c4b97ced6",
-    measurementId: "G-VG39L9XTKZ"
+    apiKey: "",
+    authDomain: "",
+    projectId: "",
+    storageBucket: "",
+    messagingSenderId: "",
+    appId: "",
+    measurementId: ""
   };
 
 
