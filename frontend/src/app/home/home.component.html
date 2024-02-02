@@ -1,0 +1,212 @@
+<div class="wrapper">
+  <!-- Sidebar  -->
+  <nav id="sidebar" class="d-flex flex-column" style="position: fixed; overflow-y:scroll">
+    <div class="sidebar-header">
+      <div class="d-flex flex-column align-items-center">
+        <div class="d-flex logo">
+          <div class="d-flex flex-column align-items-center mb-2">
+            <img src="assets/images/Ellipse 2.svg" class="bi pe-none" width="48" height="48">
+            <img src="assets/images/logo.svg" class="bi pe-none" width="35.294" height="35.294" style="
+            margin-top: -42px;
+            ">
+          </div>
+          <div class="d-flex flex-column">
+            <div class="genAiTitle"> Gen AI</div>
+            <div class="marketingtitle">for
+              Marketing</div>
+          </div>
+        </div>
+        <button class="buttonStartCampOuter">
+          <button class="buttonStartCamp" (click)="startCampaign()">Start a Campaign</button>
+        </button>
+      </div>
+    </div>
+    <div class="components">
+      <ul class="list-unstyled">
+        <li class="active">
+          <a (click)="naviagteToHomePgae()" style="cursor:pointer" [ngClass]="{'highlight':showMainContent}">Home</a>
+          <a (click)="existingCampaigns()" style="cursor:pointer" [ngClass]="{'highlight':showExistingCampaigns}">Campaigns</a>
+        </li>
+      </ul>
+      <mat-divider class="menu-divider"></mat-divider>
+    </div>
+    <div class="components">
+      <ul class="list-unstyled">
+        <li class="active">
+          <span><span class="google-symbols">
+              insights_auto
+            </span> <span class="menu-title">ANALYTICS STUDIO</span></span>
+          <a (click)="naviagteToMarketingInsights()" style="cursor:pointer" [ngClass]="{'highlight':showMarketingInsightPage}">Marketing Insights</a>
+          <a (click)="naviagteToAudiencesPgae()" style="cursor:pointer" [ngClass]="{'highlight':showAudiences}">Audiences</a>
+          <a (click)="navigateToTrendspotting()" style="cursor:pointer" [ngClass]="{'highlight':showTrendspotting}">Trendspotting</a>
+          <a (click)="navigateToConsumerInsights()" style="cursor:pointer" [ngClass]="{'highlight':showConsumerInsights}">Consumer Insights</a>
+        </li>
+      </ul>
+      <mat-divider class="menu-divider"></mat-divider>
+    </div>
+    <div class="components">
+      <ul class="list-unstyled">
+        <li class="active">
+          <span><span class="google-symbols">
+              edit_fix_auto
+            </span> <span class="menu-title">CREATIVE STUDIO</span></span>
+          <a (click)="emailCopy()" style="cursor:pointer" [ngClass]="{'highlight':showEmailCopy}">Email Copy</a>
+          <a (click)="onClickWebsitePost()" style="cursor:pointer" [ngClass]="{'highlight':showWebsitePost}">Website
+            Post</a>
+          <a (click)="socialMedia()" style="cursor:pointer" [ngClass]="{'highlight':showSocialMedia}">Social
+            Media</a>
+          <a (click)="assetGroupPmax()" style="cursor:pointer" [ngClass]="{'highlight':showAssestGroup}">Asset Group
+            for PMax</a>
+        </li>
+      </ul>
+      <mat-divider class="menu-divider"></mat-divider>
+    </div>
+    <div class="components" style="margin-bottom: 66px;">
+      <ul class="list-unstyled">
+        <li class="active">
+          <span class="d-flex align-items-end">
+            <span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none">
+                <path
+                  d="M10.9999 20.1654C10.9999 18.8973 10.7593 17.7056 10.278 16.5904C9.79679 15.4751 9.14367 14.5049 8.31867 13.6799C7.49367 12.8549 6.52353 12.2018 5.40825 11.7206C4.29297 11.2393 3.10131 10.9987 1.83325 10.9987C3.10131 10.9987 4.29297 10.7581 5.40825 10.2768C6.52353 9.79557 7.49367 9.14245 8.31867 8.31745C9.14367 7.49245 9.79679 6.52231 10.278 5.40703C10.7593 4.29175 10.9999 3.10009 10.9999 1.83203C10.9999 3.10009 11.2405 4.29175 11.7218 5.40703C12.203 6.52231 12.8562 7.49245 13.6812 8.31745C14.5062 9.14245 15.4763 9.79557 16.5916 10.2768C17.7069 10.7581 18.8985 10.9987 20.1666 10.9987C18.8985 10.9987 17.7069 11.2393 16.5916 11.7206C15.4763 12.2018 14.5062 12.8549 13.6812 13.6799C12.8562 14.5049 12.203 15.4751 11.7218 16.5904C11.2405 17.7056 10.9999 18.8973 10.9999 20.1654Z"
+                  fill="white" />
+              </svg>
+            </span><span class="menu-title" style="margin-left:2">ACTIVATION STUDIO </span></span>
+          <a (click)="navigateToContentReview()" style="cursor:pointer" [ngClass]="{'highlight':showContentReview}">Content Review &
+            Activation</a>
+          <a (click)="naviagteToCampaignPerformancPgae()" style="cursor: pointer;" [ngClass]="{'highlight':showCampaignPerformace}">Campaign
+            Performance</a>
+          <!-- <a  >Ads Helper Bot</a> -->
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div id="right-header">
+    <div>
+      <app-user-photo></app-user-photo>
+      <!-- <span class="login-user"> <img src="{{photoURL}}" class="rounded-circle img-fluid" width="40" height="40">
+    </span>&nbsp; -->
+      <button class="marketingAssiBtn" (click)="onClickMarketingAssi()">
+        <span class="google-symbols">
+          spark
+        </span>Marketing Assistant</button>
+    </div>
+  </div>
+
+  <div [hidden]="!showchatboot">
+    <df-messenger project-id="gen-app-builder-infobot-demo" agent-id="ba8721e5-2aba-487e-b766-efc1fdf70e21"
+      language-code="en">
+      <df-messenger-chat-bubble expanded=true chat-title="Marketing Assistant">
+      </df-messenger-chat-bubble>
+    </df-messenger>
+    <style>
+      df-messenger {
+        position: absolute;
+        z-index: 999;
+        bottom: 16px;
+        right: 16px;
+        width: 100px;
+        margin-bottom: 20px;
+      }
+
+      df-messenger-chat-bubble {
+        --df-messenger-chat-bubble-close-icon-size: 21px;
+        --df-messenger-chat-bubble-size: 51px;
+        --df-messenger-titlebar-background: #9EA9FD;
+        --df-messenger-chat-background: #FFF;
+        --df-messenger-chat-bubble-background-color: #9EA9FD;
+        --df-messenger-chat-border-radius: 17px;
+        --df-messenger-chat-border: 1px solid #EDEDED;
+      }
+    </style>
+  </div>
+
+  <!-- Page Content  -->
+  <div id="content" *ngIf="showMainContent">
+
+    <div *ngIf="showHomePage">
+
+      <div class="d-flex flex-column align-items-center" style="margin-left: 200px;">
+        <div class="welcome">
+          Welcome to
+        </div>
+        <div class="genaiM">
+          Gen AI for Marketing
+        </div>
+
+        <!-- <div class="one">
+          Supercharge your <a style="color: #8886FF;">creativity</a> and <a style="color: #8886FF;">effectiveness</a> at an
+          unprecedented
+          <a style="color: #8886FF;">scale</a>.
+        </div>
+        <div class="two">
+          Free up time to <a style="color: #8886FF;">focus on strategy and campaigns</a>, not formats.
+
+
+        </div>
+        <div class="three">
+          Deliver <a style="color: #8886FF;">hyper-personalization </a>across an increasingly complex marketing funnel.
+
+        </div> -->
+        <div>
+          <button class="buttonStartC" (click)="startCampaign()" data="Start a Campaign">
+          </button>
+
+        </div>
+        <div class="bar">
+          <svg width="3" height="52" viewBox="0 0 3 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="3" height="52" rx="1.5" fill="#D9D9D9" />
+          </svg>
+        </div>
+        <div>
+          <button class="btnAS" (click)="naviagteToMarketingInsights()"><span class="google-symbols">insights_auto
+            </span> Analytics Studio</button>
+        </div>
+        <div class="bar-1">
+          <svg width="3" height="52" viewBox="0 0 3 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="3" height="52" rx="1.5" fill="#D9D9D9" />
+          </svg>
+        </div>
+        <div>
+          <button class="btnCS" (click)="emailCopy()"><span class="google-symbols">
+              edit_fix_auto
+            </span> Creative Studio</button>
+        </div>
+        <div class="bar-2">
+          <svg width="3" height="52" viewBox="0 0 3 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="3" height="52" rx="1.5" fill="#D9D9D9" />
+          </svg>
+        </div>
+        <div>
+          <button class="btnAso" (click)="navigateToContentReview()"><span class="google-symbols">
+              spark
+            </span> Activation Studio</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="showCampaignform" class="campaignForm">
+    <app-campaign-form></app-campaign-form>
+  </div>
+  <div *ngIf="showExistingCampaigns" class="campaignList">
+    <app-campaign-list></app-campaign-list>
+  </div>
+  <div *ngIf="showCampaignPerformace" class="campaignForm"><app-campaign-performance></app-campaign-performance></div>
+  <div *ngIf="showMarketingInsightPage" class="campaignForm"><app-marketing-insights></app-marketing-insights></div>
+  <div *ngIf="showAudiences" class="campaignForm"><app-audiences></app-audiences></div>
+
+  <div *ngIf="showConsumerInsights" class="campaignForm"><app-consumer-insights></app-consumer-insights></div>
+  <div *ngIf="showTrendspotting" class="campaignForm"><app-trendspotting></app-trendspotting></div>
+  <div *ngIf="showEmailCopy" class="campaignForm"><app-email-copy></app-email-copy></div>
+  <div *ngIf="showSocialMedia" class="campaignForm"><app-social-media-post></app-social-media-post></div>
+  <div *ngIf="showWebsitePost" class="campaignForm"><app-website-post></app-website-post></div>
+  <div *ngIf="showAssestGroup" class="campaignForm"><app-asset-group-pmax></app-asset-group-pmax></div>
+  <div *ngIf="showContentReview" class="campaignForm"><app-content-review></app-content-review></div>
+
+
+  <app-toggel-buttons></app-toggel-buttons>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Google+Symbols:opsz,wght,FILL,GRAD@24,400,0,0" />
+
+</div>

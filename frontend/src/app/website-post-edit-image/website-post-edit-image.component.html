@@ -1,0 +1,57 @@
+<div class="editzone" #editImage>
+    <form [formGroup]="uploadedEditImageForm">
+        <div class="d-flex">
+            <div>
+                <img #scream [src]="imageSrc" style="width: 378px; height: 378px;" hidden>
+                <canvas #myCanvas (mousedown)="onMouseDown($event)" (mouseup)="onMouseUp($event)"
+                    (mousemove)="onMouseMove($event)"
+                    style="border:1px solid grey;"></canvas>
+            </div>
+            <div style="margin-left: 20px; width: 404px;">
+                <p class="edit-image-title">Edit image</p>
+                <!-- <p class="edit-image-headline">Use selection tool to select an object or area in your image.</p> -->
+                <!-- <select class="edit-image-tools-dropdown" name="state"
+                    formControlName="selectedTool">
+                    <option *ngFor="let d of edit_mask_tools">{{d.name}}</option>
+                </select> -->
+                <!-- <mat-slider min="1" max="5" step="0.5" value="1.5">
+                    <input matSliderThumb>
+                </mat-slider> -->
+                <p class="edit-image-prompt-title">
+                    Provide a prompt using natural language to edit the image
+                </p>
+                <div>
+                    <textarea class="edit-image-prompt-area" formControlName="promptMsg" required></textarea>
+                </div>
+                <div>
+                    <button style="margin-right:58px" class="btnGenerateEditImage" type="submit" (click)="generate()"
+                        [disabled]="!uploadedEditImageForm.valid"
+                        [ngClass]="(uploadedEditImageForm.controls.promptMsg.value!='' )? 'btnGenerateEditImage': 'btnGenerateEditImageGrey'">Generate</button>
+
+                </div>
+                <div *ngIf="showGenerateImagesSpinner">
+                    <div class="spinner_loading">
+                        <mat-spinner diameter="20"></mat-spinner>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="showImagesGenerated" class="generatedImagesSection">
+            <div class="d-flex justify-content-around align-items-center">
+                <div *ngFor="let i of promptGeneratedImages">
+                    <div [ngClass]="{'selectedArea': selectButtonId === i.id , 'unselectedArea': selectButtonId != i.id }">
+                    <img [src]="i.image" class="imageDisplay" />
+                    <div class="d-flex justify-content-center align-items-center">
+                        <button id="selectedImage" (click)="onSelectImage(i.image , i.id)" class="btnSelect"
+                            [ngClass]="{'selectBtn': selectButtonId === i.id , 'btnSelectDisable':(selectButtonId!=i.id && selectDisable)}" [disabled]="selectButtonId!=i.id && selectDisable">Select</button>
+                        &nbsp;&nbsp;
+                        <!-- <button class="btnEdit" (click)="loadEditImageCanvasComponent(i.image)">Edit</button> -->
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            
+        </div>
+    </form>
+</div>

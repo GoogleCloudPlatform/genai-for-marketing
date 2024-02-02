@@ -1,0 +1,428 @@
+.title {
+    color: #4E4E4E;
+    font-family: Google Sans;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    width: 657px;
+    height: 26px;
+    flex-shrink: 0;
+    margin-bottom: 30px;
+    // margin: 10px;
+    // margin-left: 120px;
+}
+
+.emailCopy {
+    margin-top: 103px;
+}
+
+.select-theme-dropdowns-campaign {
+    width: 416px;
+    height: 48px;
+    flex-shrink: 0;
+    border-radius: 7px;
+    border: 1px solid transparent;
+    color: #000;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    background: white;
+    border-right: 16px solid transparent;
+    border-left: 16px solid transparent;
+    outline: 1px solid black;
+}
+
+.select {
+    /* Data preview bar */
+
+
+    width: 306px;
+    height: 17px;
+    left: 570px;
+    top: 225px;
+
+
+
+    /* Select a campaign */
+
+
+    left: 39.58%;
+    right: 39.17%;
+    top: 25.03%;
+    bottom: 73.08%;
+
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 15px;
+
+    color: #757575;
+
+
+}
+
+
+.generateBtnSelected {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 24px;
+    gap: 10px;
+
+    width: 200px;
+    height: 44px;
+    left: 997px;
+    float: right;
+    margin-top: -46px;
+
+    background: #1A73E8;
+    border-radius: 100px;
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    letter-spacing: 0.25px;
+    color: #FFFFFF;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+    border-color: transparent;
+    margin-left: 10px;
+}
+
+.generateBtnGrey {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 24px;
+    gap: 10px;
+
+    width: 200px;
+    height: 44px;
+    left: 997px;
+    float: right;
+    margin-top: -46px;
+
+    border-radius: 100px;
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    letter-spacing: 0.25px;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+    border-color: transparent;
+    margin-left: 10px;
+    background: #BEC8D0;
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);
+    color: black;
+}
+
+.postContext {
+    color: #757575;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    margin-top: 20px;
+}
+
+.edit-post-headline-area-callAction {
+    border-radius: 7px;
+    border: 1px solid #E9E9E9;
+    background: #F6F6F6;
+    box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15) inset;
+    height: 60px;
+    flex-shrink: 0;
+    width: 864px;
+    color: #000;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 18px;
+    padding: 15px;
+}
+
+.edit-post-headline-area {
+    border-radius: 7px;
+    border: 1px solid #E9E9E9;
+    background: #F6F6F6;
+    box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15) inset;
+    height: 150px;
+    flex-shrink: 0;
+    width: 864px;
+
+    color: #000;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 18px;
+    padding: 15px;
+}
+
+
+.spinner_loading {
+    margin-right: 58px;
+    margin-top: 30px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+.autoRenewBtn {
+    width: 42px;
+    height: 42px;
+    border-color: transparent;
+    background: #1A73E8;
+    box-shadow: 0px 4px 8px 3px rgba(60, 64, 67, 0.15), 0px 1px 3px rgba(60, 64, 67, 0.3);
+    border-radius: 100px;
+    margin-top: 10px;
+}
+
+.imageDisplay {
+    width: 239px;
+    height: 239px;
+    flex-shrink: 0;
+    border-radius: 7px;
+}
+
+.select-1 {
+    margin-top: -37px;
+    margin-left: 375px;
+    width: 306px;
+    height: 17px;
+    left: 570px;
+    top: 225px;
+
+    left: 39.58%;
+    right: 39.17%;
+    top: 25.03%;
+    bottom: 73.08%;
+
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 15px;
+    color: #757575;
+}
+
+.select-2 {
+    float: right;
+    margin-top: -37px;
+    margin-left: 375px;
+    width: 306px;
+    height: 17px;
+    left: 570px;
+    top: 225px;
+
+    left: 39.58%;
+    right: 39.17%;
+    top: 25.03%;
+    bottom: 73.08%;
+
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 15px;
+
+    color: #757575;
+}
+
+.btnSave {
+    background: #4285F4;
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);
+    border-radius: 28px;
+    left: 837px;
+    top: 1827px;
+
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+
+    align-items: center;
+    text-align: center;
+    letter-spacing: 0.25px;
+    color: #FFFFFF;
+    // margin-left: 425px;
+    // margin-top: 10px;
+    border-color: transparent;
+    width: 134px;
+    height: 37px;
+    flex-shrink: 0;
+}
+
+.selectBtn {
+    background-color: white;
+    border-color: rgb(148, 148, 241);
+    border-radius: 15px;
+    margin-bottom: 5px;
+    margin-left: 35px;
+    border-color: transparent;
+    background: #a1c1f3;
+    //  box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15) inset;
+}
+
+.img-position {
+    position: absolute;
+    left: 97%;
+    top: 4.5%;
+}
+
+.part2 {
+    //  width: 1040px;
+    padding: 15px;
+    width: 903px;
+    height: 381px;
+}
+
+.generatedImagesSection {
+    padding: 15px;
+    width: 864px;
+    height: 335px;
+    border-radius: 7px;
+    border: 1px solid #E9E9E9;
+    background: #F6F6F6;
+    box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15) inset;
+}
+
+.noCampaignMsg {
+    color: #757575;
+    //text-align: center;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.saveToCampaign {
+    color: #757575;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 100px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.button--loading::after {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    border: 4px solid transparent;
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: button-loading-spinner 1s ease infinite;
+}
+
+.buttonLoader {
+    width: 134px;
+    height: 37px;
+    position: relative;
+    padding: 8px 16px;
+    border: none;
+    outline: none;
+    border-radius: 2px;
+    cursor: pointer;
+    background: #4285F4;
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);
+    border-radius: 28px;
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+
+    align-items: center;
+    text-align: center;
+    letter-spacing: 0.25px;
+    color: #FFFFFF;
+    margin-right: 12px
+}
+
+.buttonLoader:active {
+    margin-right: 12px;
+    width: 134px;
+    height: 37px;
+    background: #4285F4;
+    box-shadow: 0px 1px 4px rgba(143, 108, 108, 0.2);
+    border-radius: 28px;
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    align-items: center;
+    text-align: center;
+    letter-spacing: 0.25px;
+    color: #FFFFFF;
+}
+
+.button__text {
+    background: #4285F4;
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);
+    border-radius: 28px;
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+
+    align-items: center;
+    text-align: center;
+    letter-spacing: 0.25px;
+    color: #FFFFFF;
+    transition: all 0.2s;
+}
+
+@keyframes button-loading-spinner {
+    from {
+        transform: rotate(0turn);
+    }
+
+    to {
+        transform: rotate(1turn);
+    }
+}
+
+.watermark {
+    color: #000;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+    /* 142.857% */
+    letter-spacing: 0.25px;
+}

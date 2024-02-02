@@ -1,0 +1,271 @@
+.name {
+    border-radius: 7px;
+    border: 1px solid #E9E9E9;
+    background: #F6F6F6;
+    //box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15) inset;
+    width: 758px;
+    height: 48px;
+    flex-shrink: 0;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    padding-left: 16px;
+    color: #000;
+}
+
+.name-label {
+    width: 112px;
+    height: 17px;
+    flex-shrink: 0;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.theme-label {
+    width: 194px;
+    height: 17px;
+    flex-shrink: 0;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    margin-top: 10px;
+}
+
+.select-theme-dropdowns {
+    color: #000;
+    width: 758px;
+    height: 48px;
+    flex-shrink: 0;
+    border-radius: 7px;
+    border: 1px solid transparent;
+    outline: 1px solid #E9E9E9;
+    background: #F6F6F6;
+    //box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15) inset;
+    padding-left: 16px;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    border-right: 16px solid transparent;
+}
+
+.brief {
+    color: #000;
+    font-family: Google Sans;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    //width: 162px;
+    height: 17px;
+    flex-shrink: 0;
+}
+
+.select-dropdowns {
+    color: #000;
+    width: 362px;
+    height: 48px;
+    flex-shrink: 0;
+    border-radius: 7px;
+    border: 1px solid transparent;
+    outline: 1px solid #E9E9E9;
+    background: #F6F6F6;
+    //box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15) inset;
+    padding-left: 16px;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    border-right: 16px solid transparent;
+}
+
+.generateActive {
+    border-radius: 100px;
+    display: inline-flex;
+    padding: 8px 24px;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    color: #FFFFFF;
+    text-align: center;
+
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    letter-spacing: 0.25px;
+    border: none !important;
+
+    background: var(--blue-600, #1A73E8);
+}
+
+.generate {
+    border-radius: 100px;
+    background: #DADADA;
+    display: inline-flex;
+    padding: 8px 24px;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    color: #757575;
+    text-align: center;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    /* 142.857% */
+    letter-spacing: 0.25px;
+}
+
+.title {
+    color: #4E4E4E;
+    font-family: Google Sans;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    width: 657px;
+    height: 26px;
+    flex-shrink: 0;
+   }
+
+.create-campaign {
+    color: #000;
+    font-family: Google Sans;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    width: 232px;
+    height: 17px;
+    flex-shrink: 0;
+}
+
+.inputs {
+    color: #000;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    width: 162px;
+    height: 17px;
+    flex-shrink: 0;
+    padding-left: 16px;
+}
+
+.createCampaign {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.marketingAssiBtn {
+    border-color: transparent;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0px;
+    gap: 8px;
+    border-radius: 100px;
+    background: linear-gradient(92.89deg, #9EA9FD -10.22%, #DBE8FF 108.58%);
+
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 1;
+    width: 181px;
+    height: 40px;
+
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    text-align: center;
+    letter-spacing: 0.1px;
+
+    color: #FFFFFF;
+    float: right;
+    margin-right: 10px;
+}
+
+.spinner_loading {
+    margin-top: 30px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: center;
+}
+
+.campaign-success {
+    color: rgb(23, 114, 51);
+    background-color: rgba(33, 195, 84, 0.1);
+    width: 758px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50px;
+}
+
+.generate-success {
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+}
+
+.login-user {
+    float: right;
+    margin-right: 26px;
+    margin-top: 28px;
+}
+
+.styleSelect select {
+    background: transparent;
+  width: 168px;
+  padding: 5px;
+  font-size: 16px;
+  line-height: 1;
+  border: 0;
+  border-radius: 0;
+  height: 34px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  color: #000;
+  }
+  
+  .styleSelect {
+    color: #000;
+    width: 362px;
+    height: 48px;
+    flex-shrink: 0;
+    border-radius: 7px;
+    border: 1px solid #E9E9E9;
+    background: #F6F6F6;
+    //box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15) inset;
+    padding-left: 16px;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    
+    overflow: hidden;
+    background: url("/src/assets/images/arrow-down.png") no-repeat right #F6F6F6;
+   // border: 2px solid #000;
+  }

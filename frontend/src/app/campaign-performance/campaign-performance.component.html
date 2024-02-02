@@ -1,0 +1,118 @@
+<div class="title">
+  Campaign Performance
+</div>
+
+<!-- <div class="subTitle">This page presents visualizations of marketing data in the form of Looker Dashboards</div> -->
+<div class="dropdownLabel"><label for="theme" class="select-label">Select as dashboard to be displayed</label></div>
+
+<!-- <mat-form-field>
+    <mat-label>Select the dashboard n Explore data</mat-label>
+    <mat-select>
+      @for (data of datas; track data) {
+        <mat-option [value]="data.value">{{data.viewValue}}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>  -->
+<div class="row" style=" display: flex;align-items: center;align-content: center;justify-content: center;">
+
+  <div class="col-12">
+
+    <!-- <select class="select-theme-dropdowns"  ngModel> 
+      <option *ngFor="let data of datas"   [ngValue]="data">{{data.viewValue}}</option>
+    </select> -->
+    <select class="select-theme-dropdowns" name="state" ngModel (ngModelChange)="onClick($event)">
+      <!-- <option *ngFor="let state of datas" [ngValue]="state">
+        {{ state.viewValue }}
+      </option> -->
+
+      <option value="Overview">Overview</option>
+      <option value="Web Traffic">Web Traffic</option>
+      <option value="Store Performance">Store Performance</option>
+      <option value="Campaign Performance">Campaign Performance</option>
+      <option value="Campaign Comparison">Campaign Comparison</option>
+      <option value="Product Performance">Product Performance</option>
+      <option value="Propensity to Purchase Predictions">Propensity to Purchase Predictions</option>
+      <option value="Customer Lifetime Value">Customer Lifetime Value</option>
+      <option value="Demand Forecasting">Demand Forecasting</option>
+      <option value="Sentiment Analysis">Sentiment Analysis</option>
+      <option value="Audience Registry">Audience Registry</option>
+      <option value="Product Availability-Detailed View">Product Availability-Detailed View</option>
+      <option value="Predicted User LTV Revenue-Detailed View">Predicted User LTV Revenue-Detailed View</option>
+      <option value="Purchase Prediction-Detailed View">Purchase Prediction-Detailed View</option>
+      <option value="Product Data-Detailed View">Product Data-Detailed View</option>
+    </select>
+  </div>
+
+
+</div>
+
+<div *ngIf="overview" class="overviewcss">
+  <iframe width="950" height="950"
+    src="https://googledemo.looker.com/embed/dashboards/2131?allow_login_screen=true"></iframe>
+</div>
+<div *ngIf="webTraffic" class="overviewcss">
+  <iframe width="950" height="950"
+    src="https://googledemo.looker.com/embed/dashboards/2141?allow_login_screen=true"></iframe>
+</div>
+<div *ngIf="storePerformance" class="overviewcss">
+  <iframe width="950" height="950"
+    src="https://googledemo.looker.com/embed/dashboards/2140?allow_login_screen=true"></iframe>
+</div>
+
+<div *ngIf="campaignPerformance" class="overviewcss">
+  <iframe width="950" height="950"
+    src="https://googledemo.looker.com/embed/dashboards/2127?allow_login_screen=true"></iframe>
+</div>
+<div *ngIf="campaignComparison" class="overviewcss">
+  <iframe width="950" height="600"
+    src="https://googledemo.looker.com/embed/dashboards/2128?allow_login_screen=true"></iframe>
+</div>
+<div *ngIf="productPerformance" class="overviewcss">
+  <iframe width="950" height="950"
+    src="https://googledemo.looker.com/embed/dashboards/2135?allow_login_screen=true"></iframe>
+</div>
+
+<div *ngIf="propensitytoPurchasePredictions" class="overviewcss">
+  <iframe width="950" height="950"
+    src="https://googledemo.looker.com/embed/dashboards/2136?allow_login_screen=true"></iframe>
+</div>
+
+<div *ngIf="customerLifetimeValue" class="overviewcss">
+  <iframe width="950" height="950"
+    src="https://googledemo.looker.com/embed/dashboards/2129?allow_login_screen=true"></iframe>
+</div>
+<div *ngIf="demandForecasting" class="overviewcss">
+  <iframe width="950" height="950"
+    src="https://googledemo.looker.com/embed/dashboards/2130?allow_login_screen=true"></iframe>
+</div>
+
+<div *ngIf="sentimentAnalysis" class="overviewcss">
+  <iframe width="950" height="950"
+    src="https://googledemo.looker.com/embed/dashboards/2139?allow_login_screen=true"></iframe>
+</div>
+
+
+<div *ngIf="audienceRegistry" class="overviewcss">
+  <iframe width="950" height="950"
+    src="https://googledemo.looker.com/embed/dashboards/2126?allow_login_screen=true"></iframe>
+</div>
+
+<div *ngIf="productAvailabilityDetailedView" class="overviewcss">
+  <iframe width="950" height="950"
+    src="https://googledemo.looker.com/embed/dashboards/2133?allow_login_screen=true"></iframe>
+</div>
+
+<div *ngIf="predictedUserLTVRevenueDetailedView" class="overviewcss">
+  <iframe width="950" height="950"
+    src="https://googledemo.looker.com/embed/dashboards/2132?allow_login_screen=true"></iframe>
+</div>
+
+<div *ngIf="PurchasePredictionDetailedView" class="overviewcss">
+  <iframe width="950" height="950"
+    src="https://googledemo.looker.com/embed/dashboards/2138?allow_login_screen=true"></iframe>
+</div>
+
+<div *ngIf="ProductDataDetailedView" class="overviewcss">
+  <iframe width="950" height="950"
+    src="https://googledemo.looker.com/embed/dashboards/2134?allow_login_screen=true"></iframe>
+</div>

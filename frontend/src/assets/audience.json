@@ -1,0 +1,40 @@
+{
+  "data": [
+    {
+      "customer_id": 3042,
+      "email": "user3042@sample_user3042.sample",
+      "city": "Brea",
+      "state": "California",
+      "channel": "email",
+      "total_purchases": 14,
+      "total_value": 746,
+      "total_emails": 52,
+      "loyalty_score": 84,
+      "is_media_follower": false
+    },
+    {
+      "customer_id": 9735,
+      "email": "user9735@sample_user9735.sample",
+      "city": "Brea",
+      "state": "California",
+      "channel": "email",
+      "total_purchases": 76,
+      "total_value": 34,
+      "total_emails": 99,
+      "loyalty_score": 52,
+      "is_media_follower": false
+    },
+    {
+      "customer_id": 10813,
+      "email": "user10813@sample_user10813.sample",
+      "city": "Brea",
+      "state": "California",
+      "channel": "email",
+      "total_purchases": 28,
+      "total_value": 973,
+      "total_emails": 86,
+      "loyalty_score": 26,
+      "is_media_follower": false
+    }
+  ]
+}

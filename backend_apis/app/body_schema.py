@@ -36,6 +36,7 @@ class ImageGenerateRequest(BaseModel):
 
 
 class ImageResponse(BaseModel):
+    id: int
     images_base64_string: str
     image_size: tuple
     images_parameters: dict
@@ -47,9 +48,9 @@ class ImageGenerateResponse(BaseModel):
 
 class ImageEditRequest(BaseModel):
     prompt: str
-    base_image_bytes: bytes
-    mask_bytes: bytes | None = None
-    number_of_images: int = 1
+    base_image_base64: str
+    mask_base64: str | None = None
+    number_of_images: int = 3
     negative_prompt: str | None = None
 
 
@@ -78,6 +79,7 @@ class AudiencesRequest(BaseModel):
 class AudiencesResponse(BaseModel):
     audiences: dict
     gen_code: str
+    prompt: str
 
 
 class AudiencesSampleDataRequest(BaseModel):
@@ -85,7 +87,7 @@ class AudiencesSampleDataRequest(BaseModel):
 
 
 class AudiencesSampleDataResponse(BaseModel):
-    table_sample: dict
+    data: list
     table_name: str
 
 
@@ -145,18 +147,20 @@ class Campaign(BaseModel):
     ads_threads: dict | None = None
     ads_insta: dict | None = None
     asset_classes_text: dict | None = None
-    asset_classes_images: dict | None = None
+    asset_classes_images: list | None = None
     workspace_assets: BriefCreateResponse | None = None
     trendspotting_summaries: list | None = None
     audiences: dict | None = None
     campaign_uploaded_images: dict | None = None
+    status: str = "Active"
 
 class CampaignList(BaseModel):
     id:str
     data:Campaign
-
+    
 class CampaignListResponse(BaseModel):
     results :list[CampaignList] =[]
+
 
 class TranslateRequest(BaseModel):
     source_text:str
@@ -176,5 +180,36 @@ class ContentCreationRequest(BaseModel):
     image_generate: bool = True
 
 class ContentCreationResponse(BaseModel):
-    text_content:str
+    generated_content:dict
     images: list = []
+
+class CampaignStatusUpdate(BaseModel):
+    key :str
+    status: str
+
+class BulkEmailGenRequest(BaseModel):
+    theme:str
+    audience:list
+    image_context:str = None
+    no_of_emails:int = 10
+
+class PersionalizedEmail(BaseModel):
+    email: str
+    first_name: str
+    text: str
+    translation: str
+    language: str = 'English'
+    generated_image: str = None
+
+class BulkEmailGenResponse(BaseModel):
+    persionalized_emails: list[PersionalizedEmail]
+
+class ExportGoogleDocRequest(BaseModel):
+    folder_id: str
+    doc_name: str
+    text: str
+    image_prefix: str
+    images: list
+
+class ExportGoogleDocResponse(BaseModel):
+    doc_id: str

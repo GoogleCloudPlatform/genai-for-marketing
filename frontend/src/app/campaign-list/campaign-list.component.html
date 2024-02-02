@@ -1,0 +1,98 @@
+<div>
+    <div style="margin-top:100px;">
+        <div class="headline">
+            Campaigns
+        </div>
+        <div class="campaign-list">
+            <div>
+                <p-table #dt1 [value]="ELEMENT_DATA" [paginator]="true" [rows]="5" [rowHover]="true"
+                    [showCurrentPageReport]="true"
+                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                    [rowsPerPageOptions]="[5, 10, 20]" (sortFunction)='customSort($event)' [customSort]='true'
+                    [globalFilterFields]="['name','theme','status']" (onRowSelect)="onRowSelect($event)"
+                    (onRowUnselect)="onRowUnselect($event)" tableStyleClass="campaign-border">
+                    <ng-template pTemplate="caption">
+                        <div class="flex">
+                            <span class="p-input-icon-left ml-auto">
+                                <i class="pi pi-search"></i>
+                                <input pInputText type="text" class="campaignSearch"
+                                    (input)="dt1.filterGlobal($any($event.target).value, 'contains')"
+                                    placeholder="Search" />
+                            </span>
+                        </div>
+                    </ng-template>
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <!-- <th style="width: 1%">
+                                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                            </th> -->
+                            <th pSortableColumn="name" style="width:28%">Campaign Name <p-sortIcon field="name">
+                                </p-sortIcon>
+                            </th>
+                            <th pSortableColumn="theme" style="width:40%">Theme <p-sortIcon field="theme">
+                                </p-sortIcon>
+                            </th>
+                            <th pSortableColumn="status" style="width:15%">Status <p-sortIcon field="status">
+                                </p-sortIcon></th>
+                            <th style="width:21%">Actions</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-product let-ind="rowIndex">
+                        <tr [pSelectableRow]="product">
+                            <!-- <td>
+                                <p-tableCheckbox [value]="product" (click)="onSelection(ind, product, select.checked)"
+                                    #select></p-tableCheckbox>
+                            </td> -->
+                            <td (click)="onNameSelection(ind, product)" class="campaignName"><b>{{ product.name }}</b>
+                            </td>
+                            <td class="campaignValue">{{ product.theme }}</td>
+                            <td>
+                                <span
+                                    [ngClass]="{'status-active': product.status === 'Active', 'status-inactive' : product.status === 'InActive' ,'status-pending':product.status === 'pending' }">
+                                    {{ product.status }} </span>
+                            </td>
+                            <td>
+                                <button pButton pRipple class="p-button-rounded upload-btn" *ngIf="!showUploadSpinner">
+                                    <label class="uploadLabel">
+                                        <input #imageInput class="imageUpload" type="file" accept="image/*"
+                                            (change)="imageUpload(imageInput , product , ind)">
+                                        <span class="google-symbols">
+                                            upload
+                                        </span>
+                                    </label>
+                                </button>
+
+                                <button type="button" class="buttonLoader"
+                                    *ngIf="showUploadSpinner && ind==checkedCampaignRowId">
+                                    <span class="button--loading"></span>
+                                </button>
+
+                                <button pButton pRipple icon="pi pi-trash" class="p-button-rounded delete-btn"
+                                    (click)="deleteProduct(product)"></button>
+                            </td>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage" *ngIf="!ELEMENT_DATA">
+                        <tr>
+                            <td colspan="8">No campaigns found.</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="showProgress">
+    <div class="spinner_loading">
+        <mat-spinner diameter="40"></mat-spinner>
+    </div>
+</div>
+<div *ngIf="docPreviewUrl" class="doc-preview" #docPreview>
+    <p>
+        <a href="{{editBrief}}" target="_blank">Edit brief in Google Docs ↗</a> |
+        <a href="{{exploreFiles}}" target="_blank">Explore files in Google Drive ↗</a>
+    </p>
+    <iframe [src]="docPreviewUrl | safe" style="width:863px;height:93vh;">
+    </iframe>
+</div>

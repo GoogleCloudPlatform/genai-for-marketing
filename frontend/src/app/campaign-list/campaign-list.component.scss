@@ -1,0 +1,545 @@
+table {
+    width: 100%;
+}
+
+.campaign-list {
+    display: flex;
+    align-items: center;
+    align-content: center;
+   // width : 998px;
+   // justify-content: center;
+}
+
+#dt1 {
+    width: 1250px
+}
+
+.example-container {
+    display: flex;
+    flex-direction: column;
+    min-width: 300px;
+}
+
+.example-header {
+    float: right;
+    min-height: 64px;
+    margin-top: 50px;
+}
+
+.mat-form-field {
+    font-size: 14px;
+    width: 100%;
+}
+
+.mat-table {
+    overflow: auto;
+    max-height: 500px;
+}
+
+.campaign-border {
+    border: 1px solid #BEC8D0;
+}
+
+.headline {
+    display: flex;
+    width: 657px;
+    //height: 26px;
+    align-items: center;
+    flex-shrink: 0;
+    color: #4E4E4E;
+    font-family: 'Google Sans';
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    margin-left: 20px;
+}
+
+.search-block {
+    right: 0;
+    @extend header !optional;
+    background: #fff;
+
+    &.active {
+        width: 100%;
+    }
+
+    .search-control {
+        flex: 1;
+        font-size: 1rem;
+        border: 0;
+        outline: none;
+    }
+
+    display: flex;
+    height: 36px;
+    padding: 9px 8px;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.status-active {
+    background: #F0FFF8;
+    color: #18AB56;
+    width: 82px;
+    padding: 8px 12px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    align-self: stretch;
+    text-align: center !important;
+    border-radius: 8px;
+    color: #18AB56;
+    font-family: Google Sans;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+
+
+.status-inactive {
+    background: #FFF0F0;
+    box-shadow: 0px -1px 0px 0px #E0E7ED;
+    color: #EB5757;
+    width: 82px;
+    padding: 16px 12px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    align-self: stretch;
+    text-align: center !important;
+    border-radius: 40%;
+}
+
+.status-pending {
+    background: #FEFFE5;
+    color: #FFBC10;
+    padding: 16px 12px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    align-self: stretch;
+    text-align: center !important;
+}
+
+
+::ng-deep .mat-header-cell {
+    background: #F9F9F9;
+}
+
+tr {
+    border: 1px solid #BEC8D0;
+}
+
+.card {
+    border: none !important;
+    font-size: 14px;
+    font-family: 'Google Sans';
+}
+
+::ng-deep .p-datatable .p-datatable-header {
+    background: #FFFFFF;
+    color: #374151;
+    border: none !important;
+    border-width: 1px 0 1px 0;
+    padding: 1rem 1rem;
+    font-weight: 700;
+}
+
+::ng-deep .p-menubar {
+    padding: 0.5rem;
+    background: none !important;
+    color: #4b5563;
+    border: none !important;
+    border-radius: 6px;
+}
+
+::ng-deep .p-menubar .p-submenu-list {
+    padding: none !important;
+    background: #ffffff;
+    border: 0 none;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    width: 8rem !important;
+}
+
+u1 {
+    padding: 0 !important
+}
+
+::ng-deep .p-button-rounded {
+    border-radius: 50% !important;
+}
+
+::ng-deep .custom-style {
+    background-color: brown;
+    color: white;
+}
+
+.spinner_loading {
+    margin-right: 58px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.doc-preview {
+    margin-top: 30px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.login-user {
+    float: right;
+    margin-top: 26px;
+    margin-right: -184px;
+}
+
+.imageUpload {
+    display: none;
+    cursor: pointer;
+}
+
+.uploadLabel {
+    cursor: pointer;
+}
+
+.img-position {
+    position: absolute;
+    left: 97%;
+    top: 4.5%;
+}
+
+.upload-btn {
+    padding-left: 12px;
+    height: 3rem;
+    width: 3rem;
+    background: #DADADA;
+    border: none;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.upload-btn:hover {
+    padding-left: 12px;
+    height: 3rem;
+    width: 3rem;
+    border: none;
+    margin-right: 10px;
+    cursor: pointer;
+    background-color: rgb(66, 133, 244);
+}
+
+.delete-btn {
+    height: 3rem;
+    width: 3rem;
+    background: #DADADA;
+    border: none;
+}
+
+.delete-btn:hover {
+    height: 3rem;
+    width: 3rem;
+    background-color: rgb(66, 133, 244);
+    border: none;
+}
+
+:host ::ng-deep .p-menu {
+    top: 200px !important;
+    left: 808.41px !important;
+
+    a {
+        text-decoration: none !important;
+    }
+
+    ul {
+        padding-left: 0 !important;
+    }
+}
+
+::ng-deep .p-datatable .p-datatable-header {
+    padding-right: 0px !important;
+}
+
+::ng-deep p-table {
+    width: 998px;
+    display: inline;
+    border-radius: 8px;
+}
+
+.button--loading::after {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    border: 4px solid transparent;
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: button-loading-spinner 1s ease infinite;
+}
+
+@keyframes button-loading-spinner {
+    from {
+        transform: rotate(0turn);
+    }
+
+    to {
+        transform: rotate(1turn);
+    }
+}
+
+::ng-deep .p-paginator .p-paginator-last {
+    display: none;
+}
+
+::ng-deep .p-paginator .p-paginator-first {
+    display: none;
+}
+
+::ng-deep .p-datatable .p-datatable-thead>tr>th {
+    color: #333 !important;
+    font-family: 'GOOGLE SANS';
+    font-size: 14px !important;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    background: #F9F9F9;
+}
+
+::ng-deep .p-datatable>.p-datatable-wrapper {
+    overflow: auto;
+    border-radius: 6px;
+    border: 1px solid #E9E9E9;
+}
+//table round borders//
+tbody, td, tr{
+    border-color: #E0E7ED;
+    border-style: solid;
+    border-width: 1px 0px 0px 0px;
+}
+thead , th{
+    border-color: transparent;
+    border-style: solid;
+    border-width: 1px 0px 0px 0px;
+}
+//table round borders//
+.campaignName {
+    color: #333;
+    font-family: 'Google Sans';
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 150%;
+    /* 21px */
+}
+
+.campaignValue {
+    color: #828282;
+    font-family: 'Google Sans';
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    /* 21px */
+}
+
+::ng-deep .p-paginator .p-paginator-current {
+    color: #333;
+    font-family: 'Google Sans';
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    margin-right: 450px
+}
+
+::ng-deep .p-datatable-header .p-inputtext{
+    border : 1px solid #E0E7ED;
+}
+
+::ng-deep .p-paginator .p-paginator-pages .p-paginator-page {
+    border-radius: 8px;
+    background: #F1F7FF;
+    height: 32px;
+    padding: 4px 10px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    min-width: 2rem;
+    margin-right: 10px
+}
+
+::ng-deep .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
+    border-radius: 8px;
+    background: #81B7FF;
+    height: 32px;
+    padding: 4px 10px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    min-width: 2rem;
+    margin-right: 10px
+}
+
+::ng-deep .p-paginator .p-paginator-prev {
+    border-radius: 8px;
+    background: #F1F7FF;
+    height: 32px;
+    padding: 4px 10px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    min-width: 2rem;
+    margin-right: 10px
+}
+
+::ng-deep .p-paginator .p-paginator-next {
+    border-radius: 8px;
+    background: #F1F7FF;
+    height: 32px;
+    padding: 4px 10px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    min-width: 2rem;
+    margin-right: 10px
+}
+
+::ng-deep .p-paginator .p-dropdown {
+    display: flex;
+    height: 36px;
+    //padding: 9px 12px;
+    align-items: center;
+    //gap: 8px;
+    border-radius: 8px;
+    border: 1px solid #E0E7ED;
+    background: #FFF;
+    color: #333;
+    font-family: 'Google Sans';
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+::ng-deep .p-dropdown-items-wrapper ul {
+    padding-left: 0px !important
+}
+
+
+.button--loading::after {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    border: 4px solid transparent;
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: button-loading-spinner 1s ease infinite;
+}
+
+.buttonLoader {
+    // width: 134px;
+    // height: 37px;
+    position: relative;
+    padding: 8px 16px;
+    border: none;
+    outline: none;
+    border-radius: 2px;
+    cursor: pointer;
+    background: #4285F4;
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);
+    border-radius: 28px;
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+
+    align-items: center;
+    text-align: center;
+    letter-spacing: 0.25px;
+    color: #FFFFFF;
+
+    padding-left: 12px;
+    height: 3rem;
+    width: 3rem;
+    border: none;
+    margin-right: 10px;
+    cursor: pointer;
+    background-color: rgb(66, 133, 244);
+
+}
+
+.buttonLoader:active {
+    // margin-right:12px;
+    // width: 134px;
+    // height: 37px;
+    // background: #4285F4;
+    // box-shadow: 0px 1px 4px rgba(143, 108, 108, 0.2);
+    //border-radius: 28px;
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    align-items: center;
+    text-align: center;
+    letter-spacing: 0.25px;
+    color: #FFFFFF;
+
+    padding-left: 12px;
+    height: 3rem;
+    width: 3rem;
+    border: none;
+    margin-right: 10px;
+    cursor: pointer;
+    background-color: rgb(66, 133, 244);
+}
+
+
+@keyframes button-loading-spinner {
+    from {
+        transform: rotate(0turn);
+    }
+
+    to {
+        transform: rotate(1turn);
+    }
+}
+
+.campaignSearch {
+    color: #BDBDBD;
+    font-family: 'Google Sans';
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    background: #F9F9F9;
+}
+
+.campaign-border {
+    border: none !important;
+    border-collapse: separate;
+}
+
+::ng-deep .p-datatable.p-datatable-hoverable-rows .p-datatable-tbody>tr:not(.p-highlight):hover {
+    background: #EFF6FF !important;
+}

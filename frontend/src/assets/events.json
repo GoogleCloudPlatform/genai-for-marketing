@@ -1,0 +1,22 @@
+{
+    "data": [
+        {
+            "customer_id": 4812,
+            "event_id": 559995,
+            "event_date": "2022-09-14",
+            "event_type": "email-open"
+        },
+        {
+            "customer_id": 10730,
+            "event_id": 1255410,
+            "event_date": "2022-09-14",
+            "event_type": "email-open"
+        },
+        {
+            "customer_id": 11477,
+            "event_id": 1343577,
+            "event_date": "2022-09-14",
+            "event_type": "email-open"
+        }
+    ]
+}

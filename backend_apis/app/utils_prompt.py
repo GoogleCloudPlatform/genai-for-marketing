@@ -65,7 +65,7 @@ async def async_predict_text_llm(
 async def async_generate_image(prompt,number_of_images=4):
     loop = asyncio.get_running_loop()
     # Image models
-    imagen = ImageGenerationModel.from_pretrained("imagegeneration@002")
+    imagen = ImageGenerationModel.from_pretrained(config["models"]["image_model_name"])
     try:
         imagen_responses = await loop.run_in_executor(
             None,

@@ -1,0 +1,218 @@
+<div class="container" style="height: 100%;" class="d-flex flex-column">
+    <div class="emailCopy d-flex flex-column">
+        <p class="title">Social Media Posts</p>
+        <div *ngIf="!showCampaignDropdown" class="noCampaignMsg">
+            Please generate a campaign first by going to the Campaigns page before using this page.
+        </div>
+        <div *ngIf="showCampaignDropdown">
+            <div>
+                <span class="campaign-title">Campaign</span>
+                <select class="select-theme-dropdowns-campaign" name="state" ngModel
+                    (ngModelChange)="onClickCampaign($event)">
+                    <option *ngFor="let d of CAMPAIGN_DATA">{{d.name}}</option>
+                </select>
+
+                <mat-divider style="width:1010px; margin-left: 0px;"></mat-divider>
+            </div>
+        </div>
+        <div *ngIf="selectedCampaignFromDropdown">
+            <form class="d-flex align-items-center">
+                <mat-label class="destinations-label">Select destinations</mat-label>
+                <mat-chip-listbox class="mat-chip-list-stacked" aria-label="media selection">
+                    <mat-chip (click)="isSelectedChip(elm.name)" color="primary" [selected]="index === 0"
+                        *ngFor="let elm of chipLists; let index = index" [value]="elm.name"
+                        [ngClass]="selectedDestination === elm.name ? 'selected-destination-chip': 'non-selected-chip'">
+                        {{elm.name}}
+                    </mat-chip>
+                </mat-chip-listbox>
+            </form>
+
+            <div *ngIf="showGenerateImageAsset">
+                <button style="margin-right:30px" class="btnUploadImage" type="submit"
+                    [ngClass]="{'generateActiveBtn': genrateImageClicked === true}" (click)="onGenarteImage()">Generate
+                    image</button>
+                <button style="margin-right:30px" class="btnUploadImage" (click)="onUploadImageAssets()"
+                    [ngClass]="{'generateActive': uploadImageAssetsClicked === true}" type="submit">Upload image
+                    assets</button>
+            </div>
+            <div *ngIf="showGenerateImageData">
+                <div>
+                    <br>
+                    <label class="drop-down-labels" for="otherTheme">Provide a context on how to generate your image</label>
+                </div>
+                <div>
+                    <input type="text" id="otherTheme" placeholder="" class="askQuestionInput" [(ngModel)]='promptVal'>
+                </div>
+            </div>
+            <form [formGroup]="socialMediaForm" *ngIf="showGenerateImageData">
+                <div *ngIf="showGenerateImageAsset" style="margin-top: 15px; width:903px" class="d-flex justify-content-between">
+                    <div class="d-flex flex-column" >
+                        <label class="drop-down-labels">Aspect Ratio</label>
+                        <select class="select-theme-dropdowns-1" name="aspectRation" formControlName="aspectRation">
+                            <!-- <option label="Aspect Ratio"></option> -->
+                            <option value="1:1">1:1</option>
+                            <option value="3:4">3:4</option>
+                            <option value="4:3">4:3</option>
+                            <option value="16:9">16:9</option>
+                        </select>
+                    </div>
+                    <div class="d-flex flex-column" >
+                        <label class="drop-down-labels">Content Type</label>
+                        <select class="select-theme-dropdowns-1" name="contentType" formControlName="contentType">
+                            <!-- <option label="Content Type"></option> -->
+                            <option value="Photo">Photo</option>
+                            <option value="Art">Art</option>
+                        </select>
+                    </div>
+                    <div class="d-flex flex-column" >
+                        <label class="drop-down-labels">Color Tone</label>
+
+                        <select class="select-theme-dropdowns-1" name="colorTone" formControlName="colorTone">
+                            <!-- <option label="Color Tone"></option> -->
+                            <option value="None">None</option>
+                            <option value="Black and white"> Black and white</option>
+                            <option value="Cool tone">Cool tone</option>
+                            <option value="Golden">Golden</option>
+                            <option value="Monochromatic">Monochromatic</option>
+                            <option value="Muted color"> Muted color</option>
+                            <option value="Pastel color"> Pastel color</option>
+                            <option value="Toned image"> Toned image</option>
+                        </select>
+                    </div>
+                    <div class="d-flex flex-column" >
+                        <label class="drop-down-labels">Lighting</label>
+                        <select class="select-theme-dropdowns-1" name="lighting" formControlName="lighting">
+                            <!-- <option label="Lighting"></option> -->
+                            <option value="None">None</option>
+                            <option value="Backlighting">Backlighting</option>
+                            <option value="Dramatic light">Dramatic light</option>
+                            <option value="Golden hour"> Golden hour</option>
+                            <option value="Long-time exposure"> Long-time exposure</option>
+                            <option value="Low lighting">Low lighting</option>
+                            <option value="Multiexposure">Multiexposure</option>
+                            <option value="Studio light">Studio light</option>
+                            <option value="Surreal lighting">Surreal lighting</option>
+
+                        </select>
+                    </div>
+                    <div class="d-flex flex-column" >
+                        <label class="drop-down-labels">Composition</label>
+
+                        <select class="select-theme-dropdowns-1" name="state" formControlName="compostion">
+                            <!-- <option label="Composition"></option> -->
+                            <option value="None">None</option>
+                            <option value="Wide angle"> Wide angle</option>
+                            <option value="Closeup">Closeup</option>
+                            <option value="Knolling">Knolling</option>
+                            <option value="Landscape photography">Landscape photography</option>
+                            <option value="Macrophotography">Macrophotography</option>
+                            <option value="Photographed through window">Photographed through window</option>
+                            <option value="Shallow depth of field"> Shallow depth of field</option>
+                            <option value="Shot from above">Shot from above</option>
+                            <option value="Shot from belowe">Shot from below</option>
+                            <option value=" Surface detail"> Surface detail</option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+            <div *ngIf="showUploadImageData" style="padding: 15px 0px;">
+                <div>
+                    <div class="dropzone" appFileDragNDrop (filesChangeEmiter)="onFileChange($any($event))">
+                        <div class="text-wrapper">
+                            <div class="centered" *ngIf="!fileUploaded">
+                                <input type="file" name="file" id="file"
+                                    (change)="onFileChange($any($event.target).files)" multiple>
+                                <label for="file" class="dropLabel"> Drop files here! or
+                                    <p class="textLink">Select file</p>
+                                </label>
+                            </div>
+                            <div *ngIf="files">
+                                <div class="row fileItem" *ngFor="let f of files; let ind = index">
+                                    <div class="col-sm-12 fileItemText">
+                                        <span>{{f.name}}</span>
+                                        <p class="fileSize">{{formatBytes(f.size)}} .Uploaded</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="showGenerateImageData" class="d-flex justify-content-center align-items-center" style="width:903px">
+                <button  type="submit" (click)="generateSocialMediaImage()"
+                    [ngClass]="promptVal != '' ? 'onGenerateBtnSelected': 'btnGenrateEmailCopy'">Generate</button>
+            </div>
+
+            <div *ngIf="showGenerateButtonForUpload" class="d-flex justify-content-center align-items-center" style="width:903px">
+                <button  type="submit" (click)="generateSocialMediaPosts()"
+                    [ngClass]="fileUploaded ? 'onGenerateBtnSelected': 'btnGenrateSocialMedia'" [disabled]="!fileUploaded">Generate</button>
+            </div>
+            <br>
+            <div style="width:903px">
+                <p class="socialMediaP">Social Media Post will be generated from campaign brief, analytics studio &
+                    generated images
+                </p>
+            </div>
+            <div *ngIf="showPostSection" style="margin-bottom: 30px;">
+                <div style="margin-bottom: 30px;">
+                    <p class="postContext">Post Copy</p>
+                    <textarea class="edit-post-prompt-area" [(ngModel)]="textContent" (ngModelChange)="updateSocialMediaText($event)"></textarea>
+                </div>
+                <div style="margin-bottom: 30px;">
+                    <p class="postHashtags">Hashtags:</p>
+                    <textarea class="edit-post-hashtag-area" [(ngModel)]="hashtagValue" (ngModelChange)="updateHashTagVal($event)"></textarea>
+                </div>
+            </div>
+
+            <div *ngIf="showImageSection && images" class="generatedImagesSection">
+                <div class="d-flex justify-content-around align-items-center">
+                    <div *ngFor="let i of images">
+                        <img [src]="i.image" class="imageDisplay" />
+                        <div class="d-flex justify-content-start align-items-center">
+                            <button id="selectedImage" (click)="onClickSelect(i.image , i.id)" class="btnSelect"
+                                [ngClass]="{'selectBtn': selectButtonId === i.id , 'btnSelectDisable':(selectButtonId!=i.id && selectDisable)}" [disabled]="selectButtonId!=i.id && selectDisable">Select</button>
+                            &nbsp;&nbsp;
+                            <button class="btnSelect" (click)="loadEditImageCanvasComponent(i.image)" [ngClass]="{'btnEdit': selectButtonId === i.id , 'btnSelectDisable':(selectButtonId!=i.id && selectDisable)}" [disabled]="selectButtonId!=i.id && selectDisable">Edit</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center" *ngIf="!showImagesUploaded">
+                    <span class="watermark"><svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 21 21" fill="none">
+                        <path
+                            d="M9 16V10H11V16H9ZM10 9C9.71667 9 9.47917 8.90417 9.2875 8.7125C9.09583 8.52083 9 8.28333 9 8C9 7.71667 9.09583 7.47917 9.2875 7.2875C9.47917 7.09583 9.71667 7 10 7C10.2833 7 10.5208 7.09583 10.7125 7.2875C10.9042 7.47917 11 7.71667 11 8C11 8.28333 10.9042 8.52083 10.7125 8.7125C10.5208 8.90417 10.2833 9 10 9ZM17.85 9.5L19.5 7.85C19.6667 8.35 19.7917 8.8625 19.875 9.3875C19.9583 9.9125 20 10.45 20 11C20 12.3833 19.7375 13.6833 19.2125 14.9C18.6875 16.1167 17.975 17.175 17.075 18.075C16.175 18.975 15.1167 19.6875 13.9 20.2125C12.6833 20.7375 11.3833 21 10 21C8.61667 21 7.31667 20.7375 6.1 20.2125C4.88333 19.6875 3.825 18.975 2.925 18.075C2.025 17.175 1.3125 16.1167 0.7875 14.9C0.2625 13.6833 0 12.3833 0 11C0 9.61667 0.2625 8.31667 0.7875 7.1C1.3125 5.88333 2.025 4.825 2.925 3.925C3.825 3.025 4.88333 2.3125 6.1 1.7875C7.31667 1.2625 8.61667 1 10 1C10.55 1 11.0875 1.04167 11.6125 1.125C12.1375 1.20833 12.65 1.33333 13.15 1.5L11.5 3.15C11.25 3.1 11.0042 3.0625 10.7625 3.0375C10.5208 3.0125 10.2667 3 10 3C7.76667 3 5.875 3.775 4.325 5.325C2.775 6.875 2 8.76667 2 11C2 13.2333 2.775 15.125 4.325 16.675C5.875 18.225 7.76667 19 10 19C12.2333 19 14.125 18.225 15.675 16.675C17.225 15.125 18 13.2333 18 11C18 10.7333 17.9875 10.4792 17.9625 10.2375C17.9375 9.99583 17.9 9.75 17.85 9.5ZM15.5 11C15.5 9.46667 14.9667 8.16667 13.9 7.1C12.8333 6.03333 11.5333 5.5 10 5.5C11.5333 5.5 12.8333 4.96667 13.9 3.9C14.9667 2.83333 15.5 1.53333 15.5 0C15.5 1.53333 16.0333 2.83333 17.1 3.9C18.1667 4.96667 19.4667 5.5 21 5.5C19.4667 5.5 18.1667 6.03333 17.1 7.1C16.0333 8.16667 15.5 9.46667 15.5 11Z"
+                            fill="#041E49" />
+                    </svg>
+                    Images watermarked by SynthID</span>
+                    <div style="float: right;">
+                        <button class="genImageBtn" (click)="generateSocialMediaImage()">
+                            <img src="assets/images/Vector.svg" alt="auto renew logo" style="margin-bottom: 2px;">
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="editImageSection" style="padding: 15px;" id="editImage">
+                <app-social-media-edit-canvas [imageSrc]="imageSrc"
+                    [selectedCampaignFromDropdown]="selectedCampaignFromDropdown"
+                    (imageBase64Change)="updateCanvasImage($event)" (showSaveButton)="showSaveButton($event)"></app-social-media-edit-canvas>
+            </div>
+
+            <div *ngIf="showProgress" style="width:903px">
+                <div class="spinner_loading">
+                    <mat-spinner diameter="20"></mat-spinner>
+                </div>
+            </div>
+
+        </div>
+        <div *ngIf="(showEmailContents && images && showSaveBtn) || (images && showSaveBtn) || showSaveBtn" style="margin-bottom : 30px; margin-top:20px" class="d-flex saveToCampaign align-items-center justify-content-center">
+            <button style="margin-right:12px" class="btnSave" (click)="saveImageToDrive()" type="submit" *ngIf="!saveSpinner">Save</button>
+            <button style="margin-right:12px" type="button" class="buttonLoader" *ngIf="saveSpinner">
+                <span class="button--loading"></span>
+            </button>
+           
+            to
+            "{{campaignName}}"
+        </div>
+    </div>
+</div>

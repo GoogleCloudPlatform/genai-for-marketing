@@ -13,14 +13,12 @@
 # limitations under the License.
 
 [global]
-project_id = "<CHANGE TO YOUR PROJECT ID>"
-location = "<CHANGE TO YOUR LOCATION>"
+project_id = "YOUR-PROJECT-ID"
+location = "us-central1"
 
-# Provide the path to your JSON credential
-# This credential will be used to interact with Workspace
-# This is the path inside the docker image, example: /app/credential.json
-service_account_json_key = '/code/app/credentials.json'  # Change this path if you copied the file to a different path 
-secret_name = "projects/{PROJECT_NUMBER}/secrets/firebase_config/versions/1"
+# Provide the path to the secret with the Workspace Service Account key
+# Change this variable to your secret
+secret_name_workspace = "projects/YOUR-PROJECT-NUMBER/secrets/SECRET-NAME/versions/X"
 # Audiences
 # Dataset ID of the BigQuery dataset. If you change the dataset_id during the deployment 
 # of this solution, change it here as well.
@@ -30,18 +28,23 @@ dataset_id = "cdp_dataset"
 tag_name = "llmcdptemplate"
 
 # Vertex AI Search Datastore ID
-vertexai_search_datastore = "<CHANGE TO YOUR VERTEX AI SEARCH DATASTORE ID>"
-datastores."<CHANGE TO YOUR VERTEX AI SEARCH DATASTORE ID>" = "default_config"
+# Change these variable to your Vertex AI
+vertexai_search_datastore = "google-ads-support_1686058481432"
+datastores."google-ads-support_1686058481432" = "default_config"
 search_location = "global"
 
 # Workspace integration variables
 # ID of the templates
 # Change this variables according to your Google Workspace settings
-drive_folder_id = "CHANGE TO YOUR DRIVER FOLDER ID" # example: "1MYB0Ybyo9XZERgIcjsdfeqO0SKqhrkvqMx"
-slides_template_id = "CHANGE TO YOUR SLIDES TEMPLATE ID" # example: '16uQlLkCJ9YRiMU_IoONHsl-vY-uKeoasnWTPlbZZ1D4'
-doc_template_id = "CHANGE TO YOUR DOCS TEMPLATE ID" # example: '1kqvxZLRXIdfM8MVS7css4UoiJ8f0I4dKFj9cP986K4pM'
-sheet_template_id = "CHANGE TO YOUR SHEETS TEMPLATE ID" # example: '1gIaIWLOeKmnjso7-CAAAcqMlPznpoEXDdEue3DNWr7bw'
+drive_folder_id = "1S1eQxSsiJihIuMg9Bv67oy5IMZt77Njt" # example: "1MYB0Ybyo9XZERgIcjsdfeqO0SKqhrkvqMx"
+slides_template_id = "1sLZbvTV-P2uwVB2qRsB2SX-KFWEr8EW2DpV11K9jN2U" # example: '16uQlLkCJ9YRiMU_IoONHsl-vY-uKeoasnWTPlbZZ1D4'
+doc_template_id = "1AxR38-873r-kKKWNhTmmXN3pYVE2NsIWyQ3UvXIHp-k" # example: '1kqvxZLRXIdfM8MVS7css4UoiJ8f0I4dKFj9cP986K4pM'
+sheet_template_id = "158OqDodTuti4J7oazzO_xdI4pyYVk6PlArhOdFegTSw" # example: '1gIaIWLOeKmnjso7-CAAAcqMlPznpoEXDdEue3DNWr7bw'
 slide_page_id_list = ["p3","p4","p5","p6","p7","p8"] # LIST OF PAGES WHERE YOU WANT TO INSERT CHARTS FROM THE SHEETS
+
+# GCS Asset bucket
+# Change this variable to your bucket
+asset_bkt="genai-for-marketing-assets"
 
 # Scope for the Workspace API - don't change
 workspace_scopes = [
@@ -55,38 +58,10 @@ workspace_scopes = [
 
 # Prompt used to generate SQL from questions using natural language.
 # You can change this prompt if needed. 
-prompt_nl_sql = """This is a task converting text into GoogleSQL statement. We will first given the dataset schema and then ask a question in text. You are asked to generate SQL statement.
-Here is an example: Convert text to SQL:
-[SCHEMA details for table `{}.cdp_dataset.customers`]
-Full table name: `{}.cdp_dataset.customers` - Column: cart_total - Data Type: FLOAT64 - Primary Key: False - foreign Key: False - Description: The value of the items in the customer's shopping cart.
-Full table name: `{}.cdp_dataset.customers` - Column: channel - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The channel through which the customer was acquired.
-Full table name: `{}.cdp_dataset.customers` - Column: city - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The city where the customer lives.
-Full table name: `{}.cdp_dataset.customers` - Column: customer_id - Data Type: INT64 - Primary Key: True - foreign Key: False - Description: A unique identifier of the customer.
-Full table name: `{}.cdp_dataset.customers` - Column: email - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The customer's email address.
-Full table name: `{}.cdp_dataset.customers` - Column: is_media_follower - Data Type: BOOL - Primary Key: False - foreign Key: False - Description: Whether the customer is a social media follower.
-Full table name: `{}.cdp_dataset.customers` - Column: last_activity_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date of the customer's last account activity.
-Full table name: `{}.cdp_dataset.customers` - Column: last_purchase_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date the customer made their last purchase.
-Full table name: `{}.cdp_dataset.customers` - Column: last_sign_up_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date the customer signed up.
-Full table name: `{}.cdp_dataset.customers` - Column: loyalty_score - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: A score that measures the customer's engagement with the company.
-Full table name: `{}.cdp_dataset.customers` - Column: state - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The state where the customer lives.
-Full table name: `{}.cdp_dataset.customers` - Column: total_emails - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The total number of emails opened by the customer.
-Full table name: `{}.cdp_dataset.customers` - Column: total_purchases - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The total number of purchases made by the customer.
-Full table name: `{}.cdp_dataset.customers` - Column: total_value - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The total value of all purchases made by the customer.
-[SCHEMA details for table `{}.cdp_dataset.transactions`]
-Full table name: `{}.cdp_dataset.transactions` - Column: app_purchase_qnt - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The value of the in-app purchase.
-Full table name: `{}.cdp_dataset.transactions` - Column: customer_id - Data Type: INT64 - Primary Key: False - foreign Key: True - Description: A unique identifier of the customer.
-Full table name: `{}.cdp_dataset.transactions` - Column: product_id - Data Type: INT64 - Primary Key: False - foreign Key: True - Description: The code of the inventory item that was purchased.
-Full table name: `{}.cdp_dataset.transactions` - Column: product_name - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The name of the product that was purchased.
-Fulll table name: `{}.cdp_dataset.transactions` - Column: transaction_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date the transaction was made.
-Full table name: `{}.cdp_dataset.transactions` - Column: transaction_id - Data Type: INT64 - Primary Key: True - foreign Key: False - Description: A unique identifier for the transaction.
-Full table name: `{}.cdp_dataset.transactions` - Column: transaction_value - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The total value of the transaction.
-Full table name: `{}.cdp_dataset.transactions` - Column: transation_qnt - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The quantity of items purchased in the transaction.
-Full table name: `{}.cdp_dataset.transactions` - Column: transation_type - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The type of transaction (e.g., purchase, refund, etc.).
-[SCHEMA details for table `{}.cdp_dataset.events`]:
-Full table name: `{}.cdp_dataset.events` - Column: customer_id - Data Type: INT64 - Primary Key: False - foreign Key: True - Description: A unique identifier of the customer.
-Full table name: `{}.cdp_dataset.events` - Column: event_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date of the event.
-Full table name: `{}.cdp_dataset.events` - Column: event_id - Data Type: INT64 - Primary Key: True - foreign Key: False - Description: A unique identifier for the event.
-Full table name: `{}.cdp_dataset.events` - Column: event_type - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The type of event.
+prompt_nl_sql = """You are GoogleSQL expert, This is a task converting text into GoogleSQL statement. We will first give the dataset schema and then ask a question in text. You are asked to generate SQL statement.
+Below is the dataset schema:
+{}
+
 [Q]: What is the city and state with the most customer transactions?
 [SQL]: SELECT c.city, c.state, SUM(t.transaction_qnt) as total_transactions
 FROM `{}.cdp_dataset.customers` AS c
@@ -95,74 +70,12 @@ ON c.customer_id = t.customer_id
 GROUP BY c.city, c.state
 ORDER BY total_transactions DESC
 
-Here is an example: Convert text to SQL:
-[SCHEMA details for table `{}.cdp_dataset.customers`]
-Full table name: `{}.cdp_dataset.customers` - Column: cart_total - Data Type: FLOAT64 - Primary Key: False - foreign Key: False - Description: The value of the items in the customer's shopping cart.
-Full table name: `{}.cdp_dataset.customers` - Column: channel - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The channel through which the customer was acquired.
-Full table name: `{}.cdp_dataset.customers` - Column: city - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The city where the customer lives.
-Full table name: `{}.cdp_dataset.customers` - Column: customer_id - Data Type: INT64 - Primary Key: True - foreign Key: False - Description: A unique identifier of the customer.
-Full table name: `{}.cdp_dataset.customers` - Column: email - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The customer's email address.
-Full table name: `{}.cdp_dataset.customers` - Column: is_media_follower - Data Type: BOOL - Primary Key: False - foreign Key: False - Description: Whether the customer is a social media follower.
-Full table name: `{}.cdp_dataset.customers` - Column: last_activity_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date of the customer's last account activity.
-Full table name: `{}.cdp_dataset.customers` - Column: last_purchase_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date the customer made their last purchase.
-Full table name: `{}.cdp_dataset.customers` - Column: last_sign_up_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date the customer signed up.
-Full table name: `{}.cdp_dataset.customers` - Column: loyalty_score - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: A score that measures the customer's engagement with the company.
-Full table name: `{}.cdp_dataset.customers` - Column: state - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The state where the customer lives.
-Full table name: `{}.cdp_dataset.customers` - Column: total_emails - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The total number of emails opened by the customer.
-Full table name: `{}.cdp_dataset.customers` - Column: total_purchases - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The total number of purchases made by the customer.
-Full table name: `{}.cdp_dataset.customers` - Column: total_value - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The total value of all purchases made by the customer.
-[SCHEMA details for table `{}.cdp_dataset.transactions`]
-Full table name: `{}.cdp_dataset.transactions` - Column: app_purchase_qnt - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The value of the in-app purchase.
-Full table name: `{}.cdp_dataset.transactions` - Column: customer_id - Data Type: INT64 - Primary Key: False - foreign Key: True - Description: A unique identifier of the customer.
-Full table name: `{}.cdp_dataset.transactions` - Column: product_id - Data Type: INT64 - Primary Key: False - foreign Key: True - Description: The code of the inventory item that was purchased.
-Full table name: `{}.cdp_dataset.transactions` - Column: product_name - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The name of the product that was purchased.
-Full table name: `{}.cdp_dataset.transactions` - Column: transaction_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date the transaction was made.
-Full table name: `{}.cdp_dataset.transactions` - Column: transaction_id - Data Type: INT64 - Primary Key: True - foreign Key: False - Description: A unique identifier for the transaction.
-Full table name: `{}.cdp_dataset.transactions` - Column: transaction_value - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The total value of the transaction.
-Full table name: `{}.cdp_dataset.transactions` - Column: transation_qnt - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The quantity of items purchased in the transaction.
-Full table name: `{}.cdp_dataset.transactions` - Column: transation_type - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The type of transaction (e.g., purchase, refund, etc.).
-[SCHEMA details for table `{}.cdp_dataset.events`]:
-Full table name: `{}.cdp_dataset.events` - Column: customer_id - Data Type: INT64 - Primary Key: False - foreign Key: True - Description: A unique identifier of the customer.
-Full table name: `{}.cdp_dataset.events` - Column: event_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date of the event.
-Full table name: `{}.cdp_dataset.events` - Column: event_id - Data Type: INT64 - Primary Key: True - foreign Key: False - Description: A unique identifier for the event.
-Full table name: `{}.cdp_dataset.events` - Column: event_type - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The type of event.
 [Q]: What are the customer emails ordered by the quantity of purchases by the customer in the city of Atlanta and the state of Georgia?
 [SQL]: SELECT c.email, c.total_purchases 
 FROM `{}.cdp_dataset.customers` as c
 WHERE c.city = "Atlanta" AND c.state = "Georgia"
 ORDER BY c.total_purchases DESC
 
-Here is an example: Convert text to SQL:
-[SCHEMA details for table `{}.cdp_dataset.customers`]
-Full table name: `{}.cdp_dataset.customers` - Column: cart_total - Data Type: FLOAT64 - Primary Key: False - foreign Key: False - Description: The value of the items in the customer's shopping cart.
-Full table name: `{}.cdp_dataset.customers` - Column: channel - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The channel through which the customer was acquired.
-Full table name: `{}.cdp_dataset.customers` - Column: city - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The city where the customer lives.
-Full table name: `{}.cdp_dataset.customers` - Column: customer_id - Data Type: INT64 - Primary Key: True - foreign Key: False - Description: A unique identifier of the customer.
-Full table name: `{}.cdp_dataset.customers` - Column: email - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The customer's email address.
-Full table name: `{}.cdp_dataset.customers` - Column: is_media_follower - Data Type: BOOL - Primary Key: False - foreign Key: False - Description: Whether the customer is a social media follower.
-Full table name: `{}.cdp_dataset.customers` - Column: last_activity_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date of the customer's last account activity.
-Full table name: `{}.cdp_dataset.customers` - Column: last_purchase_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date the customer made their last purchase.
-Full table name: `{}.cdp_dataset.customers` - Column: last_sign_up_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date the customer signed up.
-Full table name: `{}.cdp_dataset.customers` - Column: loyalty_score - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: A score that measures the customer's engagement with the company.
-Full table name: `{}.cdp_dataset.customers` - Column: state - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The state where the customer lives.
-Full table name: `{}.cdp_dataset.customers` - Column: total_emails - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The total number of emails opened by the customer.
-Full table name: `{}.cdp_dataset.customers` - Column: total_purchases - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The total number of purchases made by the customer.
-Full table name: `{}.cdp_dataset.customers` - Column: total_value - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The total value of all purchases made by the customer.
-[SCHEMA details for table `{}.cdp_dataset.transactions`]
-Full table name: `{}.cdp_dataset.transactions` - Column: app_purchase_qnt - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The value of the in-app purchase.
-Full table name: `{}.cdp_dataset.transactions` - Column: customer_id - Data Type: INT64 - Primary Key: False - foreign Key: True - Description: A unique identifier of the customer.
-Full table name: `{}.cdp_dataset.transactions` - Column: product_id - Data Type: INT64 - Primary Key: False - foreign Key: True - Description: The code of the inventory item that was purchased.
-Full table name: `{}.cdp_dataset.transactions` - Column: product_name - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The name of the product that was purchased.
-Full table name: `{}.cdp_dataset.transactions` - Column: transaction_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date the transaction was made.
-Full table name: `{}.cdp_dataset.transactions` - Column: transaction_id - Data Type: INT64 - Primary Key: True - foreign Key: False - Description: A unique identifier for the transaction.
-Full table name: `{}.cdp_dataset.transactions` - Column: transaction_value - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The total value of the transaction.
-Full table name: `{}.cdp_dataset.transactions` - Column: transation_qnt - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The quantity of items purchased in the transaction.
-Full table name: `{}.cdp_dataset.transactions` - Column: transation_type - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The type of transaction (e.g., purchase, refund, etc.).
-[SCHEMA details for table `{}.cdp_dataset.events`]:
-Full table name: `{}.cdp_dataset.events` - Column: customer_id - Data Type: INT64 - Primary Key: False - foreign Key: True - Description: A unique identifier of the customer.
-Full table name: `{}.cdp_dataset.events` - Column: event_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date of the event.
-Full table name: `{}.cdp_dataset.events` - Column: event_id - Data Type: INT64 - Primary Key: True - foreign Key: False - Description: A unique identifier for the event.
-Full table name: `{}.cdp_dataset.events` - Column: event_type - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The type of event.
 [Q]: What are the customer emails ordered by the total transactions in app by the customer in the city of Atlanta and the state of Georgia?
 [SQL]: SELECT c.email, SUM(t.app_purchase_qnt) as total_app_purchase
 FROM `{}.cdp_dataset.customers` as c
@@ -172,43 +85,12 @@ WHERE c.city = "Atlanta" AND c.state = "Georgia"
 GROUP BY c.email, c.city, c.state
 ORDER BY total_app_purchase DESC
 
-Here is an example: Convert text to SQL:
-[SCHEMA details for table `{}.cdp_dataset.customers`]
-Full table name: `{}.cdp_dataset.customers` - Column: cart_total - Data Type: FLOAT64 - Primary Key: False - foreign Key: False - Description: The value of the items in the customer's shopping cart.
-Full table name: `{}.cdp_dataset.customers` - Column: channel - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The channel through which the customer was acquired.
-Full table name: `{}.cdp_dataset.customers` - Column: city - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The city where the customer lives.
-Full table name: `{}.cdp_dataset.customers` - Column: customer_id - Data Type: INT64 - Primary Key: True - foreign Key: False - Description: A unique identifier of the customer.
-Full table name: `{}.cdp_dataset.customers` - Column: email - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The customer's email address.
-Full table name: `{}.cdp_dataset.customers` - Column: is_media_follower - Data Type: BOOL - Primary Key: False - foreign Key: False - Description: Whether the customer is a social media follower.
-Full table name: `{}.cdp_dataset.customers` - Column: last_activity_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date of the customer's last account activity.
-Full table name: `{}.cdp_dataset.customers` - Column: last_purchase_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date the customer made their last purchase.
-Full table name: `{}.cdp_dataset.customers` - Column: last_sign_up_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date the customer signed up.
-Full table name: `{}.cdp_dataset.customers` - Column: loyalty_score - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: A score that measures the customer's engagement with the company.
-Full table name: `{}.cdp_dataset.customers` - Column: state - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The state where the customer lives.
-Full table name: `{}.cdp_dataset.customers` - Column: total_emails - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The total number of emails opened by the customer.
-Full table name: `{}.cdp_dataset.customers` - Column: total_purchases - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The total number of purchases made by the customer.
-Full table name: `{}.cdp_dataset.customers` - Column: total_value - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The total value of all purchases made by the customer.
-[SCHEMA details for table `{}.cdp_dataset.transactions`]
-Full table name: `{}.cdp_dataset.transactions` - Column: app_purchase_qnt - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The value of the in-app purchase.
-Full table name: `{}.cdp_dataset.transactions` - Column: customer_id - Data Type: INT64 - Primary Key: False - foreign Key: True - Description: A unique identifier of the customer.
-Full table name: `{}.cdp_dataset.transactions` - Column: product_id - Data Type: INT64 - Primary Key: False - foreign Key: True - Description: The code of the inventory item that was purchased.
-Full table name: `{}.cdp_dataset.transactions` - Column: product_name - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The name of the product that was purchased.
-Full table name: `{}.cdp_dataset.transactions` - Column: transaction_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date the transaction was made.
-Full table name: `{}.cdp_dataset.transactions` - Column: transaction_id - Data Type: INT64 - Primary Key: True - foreign Key: False - Description: A unique identifier for the transaction.
-Full table name: `{}.cdp_dataset.transactions` - Column: transaction_value - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The total value of the transaction.
-Full table name: `{}.cdp_dataset.transactions` - Column: transation_qnt - Data Type: INT64 - Primary Key: False - foreign Key: False - Description: The quantity of items purchased in the transaction.
-Full table name: `{}.cdp_dataset.transactions` - Column: transation_type - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The type of transaction (e.g., purchase, refund, etc.).
-[SCHEMA details for table `{}.cdp_dataset.events`]:
-Full table name: `{}.cdp_dataset.events` - Column: customer_id - Data Type: INT64 - Primary Key: False - foreign Key: True - Description: A unique identifier of the customer.
-Full table name: `{}.cdp_dataset.events` - Column: event_date - Data Type: DATE - Primary Key: False - foreign Key: False - Description: The date of the event.
-Full table name: `{}.cdp_dataset.events` - Column: event_id - Data Type: INT64 - Primary Key: True - foreign Key: False - Description: A unique identifier for the event.
-Full table name: `{}.cdp_dataset.events` - Column: event_type - Data Type: STRING - Primary Key: False - foreign Key: False - Description: The type of event.
 [Q]: Retrieve top 10 customer emails ordered by loyalty score
 [SQL]: SELECT c.email
 FROM `{}.cdp_dataset.customers` as c
 ORDER BY c.loyalty_score DESC 
 
-Here is an example: Convert text to SQL:"""
+"""
 
 [prompts]
 # Overview of the Cymbal brand. This description is used along with the prompts
@@ -264,7 +146,7 @@ prompt_business_name = "Cymbal"
 
 prompt_email_text = """User information: {}
 Theme: {}
-Using the user information, generate a personalized email with the theme mentioned above for the user"""
+Using the user information, generate a personalized email with the theme mentioned above for the user from Cymbal"""
 
 # Default prompt for image generation
 # This image will be included with the generated email copy.
@@ -277,7 +159,7 @@ prompt_image_generation = "Generate an image for an email copy for {}"
 prompt_website_template = """I want you to act as a senior content creator who knows how to create awesome website content. 
 You are working to create a blog post for an informational website. 
 It presents information in reverse chronological order and it's written in an informal or conversational style.
-Generate a blog post for {}.
+Generate a blog post for {} by Cymbal.
 """
 
 # Default prompt for image generation.
@@ -290,8 +172,8 @@ prompt_image_template = """Generate an image for {}"""
 # You can change this prompt if needed.
 ad_prompt_template = """I want you to act as a senior social media ads content creator who knows how to create awesome social media content. 
 You are working to create an ad for {}. Use {} characters to write this ad.
-The ad is for people in age range of {} and for {} gender.
-Generate a social media ad for {}
+The ad is for people in age range of {} and for {} gender.You are also capable of writing social media hashtags.
+Generate a social media ad post including hashtags in the last line for theme {}
 {}: """
 
 
@@ -323,3 +205,68 @@ Product description: """
 text_model_name = "text-bison"
 image_model_name = "imagegeneration"
 code_model_name = "code-bison"
+
+[data_sample]
+
+# Default themes for email copy generation
+# (optional) Include or remove themes as needed
+# Age buckets that describe your audience
+# You can include or remove these options as needed.
+age_bucket = ['18-30', '30-45', '45-65']
+
+# Default male names to be included in the email copy.
+# We didn't included this in the BigQuery table to not expose any PII.
+# You can change this names if you want.
+male_names = [
+"James",
+"Robert",
+"John",
+"Michael",
+"David",
+"William",
+"Richard",
+"Joseph",
+"Thomas",
+"Christopher",
+"Charles",
+"Daniel",
+"Matthew",
+"Anthony",
+"Mark",
+"Donald",
+"Steven",
+"Andrew",
+"Paul",
+"Joshua"]
+
+# Default female names to be included in the email copy.
+# We didn't included this in the BigQuery table to not expose any PII.
+# You can change this names if you want.
+female_names = [
+"Mary",
+"Patricia",
+"Jennifer",
+"Linda",
+"Elizabeth",
+"Barbara",
+"Susan",
+"Jessica",
+"Sarah",
+"Karen",
+"Lisa",
+"Nancy",
+"Betty",
+"Sandra",
+"Margaret",
+"Ashley",
+"Kimberly",
+"Emily",
+"Carol",
+"Michelle"]
+
+# Default languages that will be used to translate the generated email copy.
+# These languages will be chosen randomly.
+# You can include or remove languages as needed.
+# reference: https://cloud.google.com/translate/docs/languages
+languages =  ["es","zh","cs","da","fr","el","it","ja","pt"]
+languages_map = {"es"= "Spanish","zh"= "Chinese","cs"= "Czech","da"= "Danish","fr"= "French","el"= "Greek","it"= "Italian","ja"= "Japanese","pt"= "Portuguese"}

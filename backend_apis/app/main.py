@@ -18,12 +18,16 @@ import asyncio
 from . import utils_codey
 from . import utils_search
 from . import utils_workspace
+from . import utils_gcs
 from . import utils_firebase
 from . import utils_trendspotting as trendspotting
 from . import utils_prompt
+from . import bulk_email_util
 from datetime import datetime, timedelta
-from fastapi import FastAPI, HTTPException, UploadFile, Request
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, HTTPException, UploadFile, Request, APIRouter
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 from googleapiclient.discovery import build
 from google.cloud import bigquery
 from google.cloud import datacatalog_v1
@@ -36,6 +40,9 @@ from vertexai.preview.language_models import TextGenerationModel as bison_latest
 from vertexai.language_models import TextGenerationModel as bison_ga
 from vertexai.preview.vision_models import ImageGenerationModel
 from vertexai.vision_models import Image
+from google.cloud import secretmanager
+import json
+import base64
 
 from .body_schema import (
     TextGenerateRequest,
@@ -43,13 +50,11 @@ from .body_schema import (
     ImageGenerateRequest,
     ImageEditRequest,
     ImageGenerateResponse,
-    TrendTopRequest,
     TrendTopReponse,
     NewsSummaryRequest,
     NewsSummaryResponse,
     AudiencesRequest,
     AudiencesResponse,
-    AudiencesSampleDataRequest,
     AudiencesSampleDataResponse,
     ConsumerInsightsRequest,
     ConsumerInsightsResponse,
@@ -64,7 +69,12 @@ from .body_schema import (
     TranslateRequest,
     TranslateResponse,
     ContentCreationRequest,
-    ContentCreationResponse
+    ContentCreationResponse,
+    CampaignStatusUpdate,
+    BulkEmailGenRequest,
+    BulkEmailGenResponse,
+    ExportGoogleDocRequest,
+    ExportGoogleDocResponse
 )
 
 # Load configuration file
@@ -72,6 +82,7 @@ with open("/code/app/config.toml", "rb") as f:
     config = tomllib.load(f)
 project_id = config["global"]["project_id"]
 location = config["global"]["location"]
+bucket_name = config["global"]["asset_bkt"]
 
 vertexai.init(project=project_id, location=location)
 # Vertex AI Search Client
@@ -88,8 +99,8 @@ bq_client = bigquery.Client(project=project_id)
 datacatalog_client = datacatalog_v1.DataCatalogClient()
 
 # Text models
-llm_latest = bison_latest.from_pretrained(model_name="text-bison@latest")
-llm_ga = bison_ga.from_pretrained(model_name="text-bison@001")
+llm_latest = bison_latest.from_pretrained(model_name="text-bison")
+llm_ga = bison_ga.from_pretrained(model_name="text-bison@002")
 TEXT_MODEL_NAME = config["models"]["text_model_name"]
 
 #translation
@@ -99,13 +110,19 @@ translate_client = translate.Client()
 imagen = ImageGenerationModel.from_pretrained("imagegeneration@002")
 
 # Workspace integration
-CREDENTIALS = service_account.Credentials.from_service_account_file(
-    filename=config["global"]["service_account_json_key"], 
+# Fetch Secret Configuration
+secret_client = secretmanager.SecretManagerServiceClient()
+secret_name = config['global']['secret_name_workspace']
+secret_response = secret_client.access_secret_version(name=secret_name)
+workspace_cred = secret_response.payload.data.decode("UTF-8")
+workspace_cred = json.loads(workspace_cred)
+CREDENTIALS = service_account.Credentials.from_service_account_info(
+    info=workspace_cred, 
     scopes=config["global"]["workspace_scopes"])
-drive_service = build('drive', 'v3', credentials=CREDENTIALS)
-docs_service = build('docs', 'v1', credentials=CREDENTIALS)
-sheets_service = build('sheets', 'v4', credentials=CREDENTIALS)
-slides_service = build('slides', 'v1', credentials=CREDENTIALS)
+# drive_service = build('drive', 'v3', credentials=CREDENTIALS)
+# docs_service = build('docs', 'v1', credentials=CREDENTIALS)
+# sheets_service = build('sheets', 'v4', credentials=CREDENTIALS)
+# slides_service = build('slides', 'v1', credentials=CREDENTIALS)
 
 drive_folder_id = config["global"]["drive_folder_id"]
 slides_template_id = config["global"]["slides_template_id"]
@@ -128,19 +145,52 @@ HEADLINE_PROMPT_TEMPLATE = config["prompts"]["headline_prompt_template"]
 LONG_HEADLINE_PROMPT_TEMPLATE = config["prompts"]["load_headline_prompt_template"]
 DESCRIPTION_PROMPT_TEMPLATE = config["prompts"]["description_prompt_template"]
 
+router = APIRouter(prefix="/marketing-api")
+app = FastAPI(docs_url="/marketing-api/docs")
 
-app = FastAPI()
+origins = [
+    "http://localhost:5000",
+    "http://localhost:8080",
+    "https://genai-mkt-frontend-dev.web.app",
+    "https://genai-mkt-frontend-dev.firebaseapp.com"
+]
 
-@app.get(path="/")
-def root():
-    return "Root Get Response!!"
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.get(path="/marketing/")
+@app.get("/marketing/campaign-form")
+@app.get(path="/marketing/user-journey")
+@app.get(path="/marketing/home")
+@app.get(path="/marketing/marketing-insights")
+async def angular() -> FileResponse:
+    """
+    ## Angular app
+
+    ### Returns:
+    - Angular app index.html with the right route
+
+    """
+    return FileResponse("/static/index.html")
+
+
+app.mount(
+    path="/marketing", app=StaticFiles(directory="/static", html=True), name="static"
+)
+
 
 # create-campaign
-@app.post("/campaigns")
-def create_campaign(data: CampaignCreateRequest,request: Request
+@router.post("/users/{user_id}/campaigns")
+def create_campaign(user_id: str,data: CampaignCreateRequest
                     ) -> CampaignCreateResponse:
     """Campaing Creation and content generation with PaLM API
         Parameters:
+            user_id: str
             campaign_name: str
             theme: str
             brief: dict = {
@@ -154,11 +204,6 @@ def create_campaign(data: CampaignCreateRequest,request: Request
             campaign_name:str
             workspace_asset: dict
         """
-    headers = request.headers
-    jwt = headers.get('Authorization')
-    user_id = utils_firebase.verify_auth_token(jwt)
-    if user_id == '000':
-        raise HTTPException(status_code=401, detail="Token Expired")
     
     gender_select_theme = data.brief.gender_select_theme
     age_select_theme = data.brief.age_select_theme
@@ -230,34 +275,36 @@ def create_campaign(data: CampaignCreateRequest,request: Request
             workspace_assets=workspace_asset
             )
 
-# List-campaign
-@app.get("/campaigns")
-async def list_campaign(request: Request) -> CampaignListResponse:
+# List-campaigns
+@router.get("/users/{user_id}/campaigns")
+async def list_campaigns(user_id: str) -> CampaignListResponse:
     """
     List Existing Campaign for logged in user
     """
-    headers = request.headers
-    token = headers.get('Authorization')
-    user_id = utils_firebase.verify_auth_token(token)
-    if user_id == '000':
-        raise HTTPException(status_code=401, detail="Token Expired")
-   
     list_of_campaigns = utils_firebase.list_campaigns(user_id=user_id)
     print(list_of_campaigns)
     return CampaignListResponse(results=list_of_campaigns)
 
+# get-campaign
+@router.get("/users/{user_id}/campaigns/{campaign_id}")
+async def get_campaign(user_id: str,campaign_id:str) -> Campaign:
+    """
+    List Existing Campaign for logged in user
+    """
+    campaign_resp = utils_firebase.read_campaign(user_id=user_id,campaign_id=campaign_id)
+    if campaign_resp == {}:
+        raise HTTPException(
+            status_code=400, 
+            detail="Invalid user_id or campaign does not exists."
+            )
+    return Campaign(**campaign_resp)
+
 # Update-campaign
-@app.put("/campaigns/{campaign_id}")
-async def update_campaign(campaign_id:str,data:Campaign, request: Request):
+@router.put("/users/{user_id}/campaigns/{campaign_id}")
+async def update_campaign(user_id: str,campaign_id:str,data:Campaign):
     """
     Update Campiagn detail in backend storage
     """
-    headers = request.headers
-    token = headers.get('Authorization')
-    user_id = utils_firebase.verify_auth_token(token)
-    if user_id == '000':
-        raise HTTPException(status_code=401, detail="Token Expired")
-    
     response = utils_firebase.update_campaign(
         user_id=user_id,
         campaign_id=campaign_id,
@@ -270,17 +317,11 @@ async def update_campaign(campaign_id:str,data:Campaign, request: Request):
         )
 
 # Delete-campaign
-@app.delete("/campaigns/{campaign_id}")
-async def delete_campaign(campaign_id:str,request: Request):
+@router.delete("/users/{user_id}/campaigns/{campaign_id}")
+async def delete_campaign(user_id: str,campaign_id:str):
     """
     Delete Campiagn from backend storage
     """
-    headers = request.headers
-    token = headers.get('Authorization')
-    user_id = utils_firebase.verify_auth_token(token)
-    if user_id == '000':
-        raise HTTPException(status_code=401, detail="Token Expired")
-   
     response = utils_firebase.delete_campaign(
         user_id=user_id,
         campaign_id=campaign_id
@@ -291,8 +332,26 @@ async def delete_campaign(campaign_id:str,request: Request):
         status_code=200
         )
 
-@app.post(path="/generate-text")
-def post_text_bison_generate(data: TextGenerateRequest,request: Request
+# Update-Status
+@router.put("/users/{user_id}/campaigns/{campaign_id}/status/")
+async def update_status(user_id: str,campaign_id:str,data:CampaignStatusUpdate):
+    """
+    Update Campiagn Creative Component Status in backend storage
+    """
+    response = utils_firebase.update_status(
+        user_id=user_id,
+        campaign_id=campaign_id,
+        key=data.key,
+        status=data.status
+        )
+    print(response)
+    return JSONResponse(
+        content={'message': 'Successfully Activated'},
+        status_code=200
+        )
+
+@router.post(path="/generate-text")
+def post_text_bison_generate(data: TextGenerateRequest,
                              ) -> TextGenerateResponse:
     """Text generation with PaLM API
     Parameters:
@@ -334,8 +393,8 @@ def post_text_bison_generate(data: TextGenerateRequest,request: Request
         )
 
 
-@app.post(path="/generate-image")
-def post_image_generate(data: ImageGenerateRequest,request: Request
+@router.post(path="/generate-image")
+def post_image_generate(data: ImageGenerateRequest,
                         ) -> ImageGenerateResponse:
     """Image generation with Imagen
     Parameters:
@@ -343,6 +402,7 @@ def post_image_generate(data: ImageGenerateRequest,request: Request
         number_of_images: int = 1
     Returns:
         List of images with:
+            id: image id
             images_base64_string (str): Image as base64 string
             image_size (int, int): Size of the image
             images_parameters (dict): Parameters used with the model
@@ -356,44 +416,48 @@ def post_image_generate(data: ImageGenerateRequest,request: Request
         raise HTTPException(status_code=400, detail=str(e))
     else:
         generated_images = []
+        i=0
         for image in imagen_responses:
             generated_images.append(
-                {
+                {   
+                    "id": i ,
                     "images_base64_string": image._as_base64_string(),
                     "image_size": image._size,
                     "images_parameters": image.generation_parameters
                 }
             )
+            i=i+1
 
     return ImageGenerateResponse(
         generated_images=generated_images
     )
 
 
-@app.post(path="/edit-image")
-def post_image_edit(data: ImageEditRequest,request: Request
+@router.post(path="/edit-image")
+def post_image_edit(data: ImageEditRequest
                     ) -> ImageGenerateResponse:
     """Image editing with Imagen
     Parameters:
         prompt: str
-        base_image_bytes: bytes
-        mask_bytes: bytes | None = None
+        base_image_base64: str
+        mask_base64: str | None = None
         number_of_images: int = 1
     Returns:
         List of images with:
+            id: imageid
             images_base64_string (str): Image as base64 string
             image_size (int, int): Size of the image
             images_parameters (dict): Parameters used with the model
     """
-    if not data.mask_bytes:
+    if not data.mask_base64:
         mask = None
     else:
-        mask = Image(image_bytes=data.mask_bytes)
+        mask = Image(image_bytes=base64.b64decode(data.mask_base64))
 
     try:
         imagen_responses = imagen.edit_image(
             prompt=data.prompt,
-            base_image=Image(image_bytes=data.base_image_bytes),
+            base_image=Image(image_bytes=base64.b64decode(data.base_image_base64)),
             mask=mask,
             number_of_images=data.number_of_images,
             negative_prompt=data.negative_prompt)
@@ -401,22 +465,25 @@ def post_image_edit(data: ImageEditRequest,request: Request
         raise HTTPException(status_code=400, detail=str(e))
     else:
         generated_images = []
+        i = 0
         for image in imagen_responses:
             generated_images.append(
-                {
+                {   
+                    "id" : i,
                     "images_base64_string": image._as_base64_string(),
                     "image_size": image._size,
                     "images_parameters": image.generation_parameters
                 }
             )
+            i=i+1
 
     return ImageGenerateResponse(
         generated_images=generated_images
     )
 
 
-@app.get(path="/get-top-search-terms")
-def get_top_search_term(data: TrendTopRequest,request: Request
+@router.get(path="/get-top-search-terms/{trends_date}")
+def get_top_search_term(trends_date: str
                         ) -> TrendTopReponse:
     """Get top search terms from Google Trends
     Parameters:
@@ -429,7 +496,7 @@ def get_top_search_term(data: TrendTopRequest,request: Request
         query = (
             "SELECT term, rank "
             "FROM `bigquery-public-data.google_trends.top_terms` "
-            f"WHERE refresh_date = '{data.trends_date}' "
+            f"WHERE refresh_date = '{trends_date}' "
             "GROUP BY 1,2 "
             "ORDER by rank ASC"
         )
@@ -447,7 +514,7 @@ def get_top_search_term(data: TrendTopRequest,request: Request
         )
 
 
-@app.post(path="/post-summarize-news")
+@router.post(path="/post-summarize-news")
 def post_summarize_news(data: NewsSummaryRequest,request: Request
                         ) -> NewsSummaryResponse:
     """Summarize news related to keyword(s)
@@ -495,8 +562,8 @@ def post_summarize_news(data: NewsSummaryRequest,request: Request
     )
 
 
-@app.post(path="/post-audiences")
-def post_audiences(data: AudiencesRequest,request: Request) -> AudiencesResponse:
+@router.post(path="/post-audiences")
+def post_audiences(data: AudiencesRequest) -> AudiencesResponse:
     """Transform a question in NL to SQL and query BQ.
     Parameters:
         question: Question to be asked to BQ.
@@ -512,8 +579,8 @@ def post_audiences(data: AudiencesRequest,request: Request) -> AudiencesResponse
         ' WHERE table_name NOT LIKE "%metadata%"')
 
     try:
-        audiences, gen_code = utils_codey.generate_sql_and_query(
-            llm=llm_latest,
+        audiences, gen_code, prompt = utils_codey.generate_sql_and_query(
+            llm=llm_ga,
             datacatalog_client=datacatalog_client,
             prompt_template=prompt_nl_sql,
             query_metadata=query_metadata,
@@ -523,17 +590,19 @@ def post_audiences(data: AudiencesRequest,request: Request) -> AudiencesResponse
             tag_template_name=tag_template_name,
             bqclient=bq_client
         )
+        crm_data = bulk_email_util.generate_information(audiences).to_dict('records')
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-
+    
     return AudiencesResponse(
-        audiences=audiences,
-        gen_code=gen_code
+        audiences={"data":audiences,"crm_data":crm_data},
+        gen_code=gen_code,
+        prompt=prompt
     )
 
 
-@app.get(path="/get-dataset-sample")
-def get_dataset_sample(data: AudiencesSampleDataRequest,request: Request
+@router.get(path="/get-dataset-sample/{table_name}")
+def get_dataset_sample(table_name: str
                        ) -> AudiencesSampleDataResponse:
     """Retrieve 3 rows of a BQ table
     Parameters:
@@ -542,23 +611,26 @@ def get_dataset_sample(data: AudiencesSampleDataRequest,request: Request
         table_sample: dict
     """
 
-    if data.table_name not in ["customers", "events", "transactions"]:
+    if table_name not in ["customers", "events", "transactions"]:
         raise HTTPException(
             status_code=400,
             detail="Provide a valid table name."
         )
 
-    query = f"SELECT * FROM `{project_id}.{dataset_id}.{data.table_name}` LIMIT 3"
-    result_query = bq_client.query(query=query).to_dataframe()
+    query = f"SELECT * FROM `{project_id}.{dataset_id}.{table_name}` LIMIT 3"
+    result_job = bq_client.query(query=query)
+    result = []
+    for row in result_job:
+        result.append(dict(row.items()))
 
     return AudiencesSampleDataResponse(
-        table_name=data.table_name,
-        table_sample=result_query.to_dict()
+        table_name=table_name,
+        data=result
     )
 
 
-@app.get(path="/post-consumer-insights")
-def post_consumer_insights(data: ConsumerInsightsRequest,request: Request
+@router.post(path="/post-consumer-insights")
+def post_consumer_insights(data: ConsumerInsightsRequest
                            ) -> ConsumerInsightsResponse:
     """Query Vertex AI Search and return top 10 results.
     Parameters:
@@ -605,8 +677,8 @@ def post_consumer_insights(data: ConsumerInsightsRequest,request: Request
     )
 
 
-@app.post(path="/post-upload-file-drive")
-def post_upload_file_drive(file: UploadFile,request: Request):
+@router.post(path="/post-upload-file-drive/{folder_id}")
+def post_upload_file_drive(folder_id: str,file: UploadFile):
     """Upload file to Google Drive
     Parameters:
         file: UploadFile
@@ -616,9 +688,9 @@ def post_upload_file_drive(file: UploadFile,request: Request):
     
     try:
         file_id = utils_workspace.upload_to_folder(
-            drive_service=drive_service,
+            credentials = CREDENTIALS,
             f=file.file,
-            folder_id=drive_folder_id,
+            folder_id=folder_id,
             upload_name=file.filename,
             mime_type=file.content_type
         )
@@ -630,8 +702,31 @@ def post_upload_file_drive(file: UploadFile,request: Request):
         file.file.close()
     return file_id
 
+@router.post(path="/post-upload-file-gcs/{folder_id}")
+def post_upload_file_gcs(folder_id: str,file: UploadFile):
+    """Upload file to Google Drive
+    Parameters:
+        file: UploadFile
+    Returns:
+        file_path: str
+    """
+    
+    try:
+        file_path = utils_gcs.upload_to_gcs(
+            project_id= project_id,
+            bucket_name= bucket_name,
+            file=file.file,
+            destination_blob_name=f"{folder_id}/{file.filename}"
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=400,
+            detail="Something went wrong. Please try again.")
+    finally:
+        file.file.close()
+    return file_path
 
-@app.post(path="/creative-brief-create-upload")
+@router.post(path="/creative-brief-create-upload")
 def post_brief_create_upload(data: BriefCreateRequest) -> BriefCreateResponse:
     """Create a creative brief document and upload to Google Drive
     Parameters:
@@ -648,22 +743,22 @@ def post_brief_create_upload(data: BriefCreateRequest) -> BriefCreateResponse:
     try:
         print("Creating document Assets..")
         new_folder_id = utils_workspace.create_folder_in_folder(
-            drive_service=drive_service,
+            credentials = CREDENTIALS,
             folder_name=f"Marketing_Assets_{int(time.time())}",
             parent_folder_id=drive_folder_id)
         
         utils_workspace.set_permission(
-            drive_service=drive_service,
+            credentials = CREDENTIALS,
             file_id=new_folder_id)
 
         doc_id = utils_workspace.copy_drive_file(
-            drive_service=drive_service,
+            credentials = CREDENTIALS,
             drive_file_id=doc_template_id,
             parentFolderId=new_folder_id,
             copy_title=f"GenAI Marketing Brief")
 
         utils_workspace.update_doc(
-            docs_service=docs_service,
+            credentials = CREDENTIALS,
             document_id=doc_id,
             campaign_name=data.campaign_name,
             business_name=data.business_name,
@@ -675,7 +770,7 @@ def post_brief_create_upload(data: BriefCreateRequest) -> BriefCreateResponse:
         print(e)
         raise HTTPException(
             status_code=400, 
-            detail="Something went wrong. Please try again.")
+            detail="Something went wrong. Please try again."+str(e))
 
     return BriefCreateResponse(
         new_folder_id=new_folder_id,
@@ -683,8 +778,8 @@ def post_brief_create_upload(data: BriefCreateRequest) -> BriefCreateResponse:
     )
 
 
-@app.post(path="/creative-slides-upload")
-def post_create_slides_upload(data: SlidesCreateRequest,request: Request
+@router.post(path="/creative-slides-upload")
+def post_create_slides_upload(data: SlidesCreateRequest
                               ) -> SlidesCreateResponse:
     """Create Slides and upload charts from Google Sheets
     Parameters:
@@ -696,25 +791,29 @@ def post_create_slides_upload(data: SlidesCreateRequest,request: Request
 
     try:
         slide_id = utils_workspace.copy_drive_file(
+            credentials = CREDENTIALS,
             drive_file_id=slides_template_id,
             parentFolderId=data.folder_id,
             copy_title="Marketing Assets")
         
         sheet_id = utils_workspace.copy_drive_file(
+            credentials = CREDENTIALS,
             drive_file_id=sheet_template_id,
             parentFolderId=data.folder_id,
             copy_title="GenAI Marketing Data Source")     
 
         utils_workspace.merge_slides(
+            credentials = CREDENTIALS,
             presentation_id=slide_id,
             spreadsheet_id=sheet_id,
             spreadsheet_template_id=sheet_template_id,
-            slide_page_id_list=sheet_template_id)
+            slide_page_id_list=slide_page_id_list
+            )
 
     except Exception as e:
         raise HTTPException(
             status_code=400, 
-            detail="Something went wrong. Please try again."
+            detail="Something went wrong. Please try again."+str(e)
         )
 
     return SlidesCreateResponse(
@@ -722,8 +821,8 @@ def post_create_slides_upload(data: SlidesCreateRequest,request: Request
         sheet_id=sheet_id
     )
 
-@app.post(path="/translate")
-def translate_text(data: TranslateRequest,request: Request
+@router.post(path="/translate")
+def translate_text(data: TranslateRequest
                    ) -> TranslateResponse:
     """Translate Text
     Body:
@@ -763,8 +862,8 @@ def translate_text(data: TranslateRequest,request: Request
         translated_text=translated_text
     )
 
-@app.post(path="/generate-content")
-def generate_content(data: ContentCreationRequest,request: Request
+@router.post(path="/generate-content")
+def generate_content(data: ContentCreationRequest
                      ) -> ContentCreationResponse:
     """Generate Content like Media , Ad or Emails
     Body:
@@ -779,32 +878,28 @@ def generate_content(data: ContentCreationRequest,request: Request
         text_content :str
         images : list
     """
-    # headers = request.headers
-    # token = headers.get('Authorization')
-    # user_id = utils_firebase.verify_auth_token(token)
-    # if user_id == '000':
-    #     raise HTTPException(status_code=401, detail="Token Expired")
+    
     images = []
-    text_content = ''
+    generated_content = {}
     try:
         if data.type == 'Email':
             print("Generating Email..")
-            text_content=asyncio.run(utils_prompt.async_predict_text_llm(
+            generated_content["text"]=asyncio.run(utils_prompt.async_predict_text_llm(
                         EMAIL_TEXT_PROMPT.format(
-                            data.theme,
                             data.context,
+                            data.theme
                         ),
                         TEXT_MODEL_NAME
                         )
                     )
         elif data.type == 'Webpost':
-            text_content=asyncio.run(utils_prompt.async_predict_text_llm(
+            generated_content["text"]=asyncio.run(utils_prompt.async_predict_text_llm(
                         WEBSITE_PROMPT_TEMPLATE.format(
                             data.theme,
                             data.context),
                         TEXT_MODEL_NAME))
         elif data.type == 'SocialMedia':
-            text_content=asyncio.run(utils_prompt.async_predict_text_llm(
+            generated_content["text"]=asyncio.run(utils_prompt.async_predict_text_llm(
                         AD_PROMPT_TEMPLATE.format(
                             BUSINESS_NAME,
                             data.no_of_char,
@@ -839,11 +934,13 @@ def generate_content(data: ContentCreationRequest,request: Request
     
             generated_tuple = asyncio.run(generate_brief())
             
-            text_content = (
-                "Headline: " + generated_tuple[0] 
-                + "\n\n Long Headline:" + generated_tuple[1] 
-                + "\n\n Description"+ generated_tuple[2]
-            )
+            generated_content["headlines"] = generated_tuple[0] 
+            generated_content["long_headlines"] = generated_tuple[1] 
+            generated_content["description"] = generated_tuple[2]
+            generated_content["scenario"] = data.theme
+            generated_content["business_name"] = BUSINESS_NAME
+            generated_content["call_to_action"] = "Shop Now"
+            
         if data.image_generate == True:
             images = asyncio.run(utils_prompt.async_generate_image(
                     prompt=IMAGE_PROMPT_TAMPLATE.format(
@@ -857,6 +954,76 @@ def generate_content(data: ContentCreationRequest,request: Request
         )
     
     return ContentCreationResponse(
-        text_content=text_content,
+        generated_content=generated_content,
         images = images
     )
+
+
+@router.post(path="/bulk-email-generate")
+def post_bulk_email_generate(data: BulkEmailGenRequest) -> BulkEmailGenResponse:
+    """
+    Parameters:
+        audience : list[dict]
+        theme : str
+        image_context: str
+    Returns:
+        persionlized_emails : list[dict]
+    """
+    
+    try:
+        emails = asyncio.run(bulk_email_util.generate_emails(number_of_emails=data.no_of_emails,
+                                    theme=data.theme,
+                                    audience_data=data.audience,
+                                    image_context = data.image_context))
+        
+    except Exception as e:
+            raise HTTPException(
+            status_code=400, 
+            detail="Something went wrong. Please try again."+str(e)
+        )
+    
+    return BulkEmailGenResponse(
+        persionalized_emails=emails
+    )
+
+@router.post(path="/export-google-doc")
+def post_export_google_doc(data:ExportGoogleDocRequest) -> ExportGoogleDocResponse:
+    """
+    Parameters:
+        audience : list[dict]
+        theme : str
+    Returns:
+        audience: list
+        persionlized_emails : list[dict]
+    """
+    
+    try:
+        file_id = utils_workspace.create_doc(credentials = CREDENTIALS,
+                                             folder_id=data.folder_id,
+                                             doc_name=data.doc_name,
+                                             text=data.text)
+        i=0
+        for img in data.images:
+            file = utils_gcs.download_from_gcs(project_id=project_id,
+                                               bucket_name=bucket_name,
+                                               source_blob_name='/'.join(img.split('/')[1:]))
+            utils_workspace.upload_to_folder(credentials= CREDENTIALS,
+                                             f=file,
+                                             folder_id=data.folder_id,
+                                             upload_name=str(data.image_prefix)+"_"+str(i),
+                                             mime_type='application/octet-stream'
+                                             )
+            i=i+1
+        
+    except Exception as e:
+            raise HTTPException(
+            status_code=400, 
+            detail="Something went wrong. Please try again."+str(e)
+        )
+    
+    return ExportGoogleDocResponse(
+        doc_id = file_id
+    )
+
+
+app.include_router(router=router)
