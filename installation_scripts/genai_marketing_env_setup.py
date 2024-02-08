@@ -10,7 +10,7 @@ DATASET_ID = sys.argv[3]
 # Tag template 
 TAG_TEMPLATE_ID = 'llmcdptemplate'
 TAG_TEMPLATE_PATH = f"projects/{PROJECT_ID}/locations/{LOCATION}/tagTemplates/{TAG_TEMPLATE_ID}"
-
+TRAKING_USER_AGENT = "cloud-solutions/genai-for-marketing-deploy-v1.1.0"
 # Set the project id
 #! gcloud config set project {PROJECT_ID}
 
@@ -18,8 +18,10 @@ TAG_TEMPLATE_PATH = f"projects/{PROJECT_ID}/locations/{LOCATION}/tagTemplates/{T
 # Create BigQuery Dataset talktodata on your project
 from google.cloud import bigquery
 from google.cloud import datacatalog_v1
+from google.api_core.client_info import ClientInfo
 
-bq_client = bigquery.Client(project=PROJECT_ID)
+bq_client = bigquery.Client(project=PROJECT_ID,
+                            client_info=ClientInfo(user_agent=TRAKING_USER_AGENT))
 datacatalog_client = datacatalog_v1.DataCatalogClient()
 
 dataset_id = "{}.{}".format(bq_client.project, DATASET_ID)
