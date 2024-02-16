@@ -1,0 +1,33 @@
+[
+    {
+      "name": "dataset_id",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "table_id",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "column_id",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "description",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "is_primary_key",
+      "type": "BOOLEAN",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "is_foreign_key",
+      "type": "BOOLEAN",
+      "mode": "NULLABLE"
+    }
+  ]
+  
