@@ -50,7 +50,7 @@ You can overwrite default parameters as regions or some specific values by editi
 ### Start the deployment
 Start the deployment using the following command:
 ```bash
-sh installation_scripts/genai_marketing_automation.sh
+cd installation_scripts && sh genai_marketing_automation.sh
 ```
 
 The shell script will prompt you for:
