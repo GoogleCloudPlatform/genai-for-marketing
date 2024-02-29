@@ -17,7 +17,7 @@ variable "region" {
 
 variable "dataset_name" {
   type        = string
-  default     = "genai_marketing"
+  default     = "gai_marketing"
   description = "BigQuery dataset name"
 }
 
@@ -40,7 +40,7 @@ variable "chat_bot_name" {
 
 variable "genai_marketing_service_account" {
   type        = string
-  default     = "genai-markting-sa"
+  default     = "genai-marketing-sa2"
   description = "Service account name"
 
 }
@@ -65,4 +65,14 @@ variable "gdrive_folder_name" {
   type        = string
   default     = "genai-marketing-assets"
   description = "Google drive folder name"
+}
+
+variable "datastore_uris" {
+  type    = string
+  default = "cloud.goole.com/*"
+}
+
+variable "datastore_storage_folder" {
+  type = string
+  default = "gs://cloud-samples-data/gen-app-builder/search/alphabet-investor-pdfs/*"
 }
