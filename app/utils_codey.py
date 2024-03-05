@@ -19,7 +19,6 @@ Utility module for Codey releated demo.
 
 import pandas as pd
 import streamlit as st
-import traceback
 
 from google.cloud import bigquery
 from google.cloud import datacatalog_v1
@@ -281,7 +280,6 @@ def generate_sql_and_query(
             except Exception as e:
                 print("Error")
                 print(str(e))
-                traceback.print_tb(e.__traceback__)
                 gen_code = ""
 
             gen_code = gen_code.replace("```sql","").replace("```","")
@@ -308,7 +306,6 @@ def generate_sql_and_query(
                     result_query.result()
                 except Exception as e:
                     print(str(e))
-                    traceback.print_tb(e.__traceback__)
                     st.session_state[
                         f"{state_key}_Result_Final_Query"
                     ] = pd.DataFrame({'Empty' : []})
