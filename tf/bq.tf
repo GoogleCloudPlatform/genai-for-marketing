@@ -91,7 +91,7 @@ resource "null_resource" "bq_tagging" {
   }
 
   provisioner "local-exec" {
-    command = "source venv/bin/activate; python3 -c 'from aux_data import bq_tag_generation; bq_tag_generation.create_template_and_tag_bq(\"${var.project_id}\",\"${var.dataset_name}\",\"${google_data_catalog_tag_template.tag_template.tag_template_id}\",\"${var.location}\")'"
+    command = "source venv/bin/activate; python3 -c 'from aux_data import bq_tag_generation; bq_tag_generation.tag_metadata_from_bq(\"${var.project_id}\",\"${var.dataset_name}\",\"${google_data_catalog_tag_template.tag_template.name}\",\"${google_data_catalog_tag_template.tag_template.tag_template_id}\")'"
   }
   depends_on = [null_resource.py_venv, module.bigquery, google_data_catalog_tag_template.tag_template]
 

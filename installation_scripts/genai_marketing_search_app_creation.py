@@ -27,7 +27,8 @@ project_id = dict_args.project
 default_location = dict_args.location
 app_name = dict_args.app_name
 company_name = dict_args.company_name
-uris = dict_args.uris.split(",")
+uris = dict_args.uris
+
 
 
 def create_search_app():
@@ -64,15 +65,7 @@ def create_search_app():
 
         datastore_client.create_data_store(request=datastore_request)
         
-        site_search_engine_service_client = discoveryengine_v1alpha.SiteSearchEngineServiceClient()
-        for uri in uris:
-            target_site = discoveryengine_v1alpha.TargetSite()
-            target_site.provided_uri_pattern = uri
-            print(f"Creating Target site: {target_site}")
-            site_search_engine_service_client.create_target_site(request=discoveryengine_v1alpha.CreateTargetSiteRequest(
-                parent=f"{parent_collection}/dataStores/{datastore_id}/siteSearchEngine",
-                target_site=target_site,
-            ))
+        create_target_site(project_id, default_location, datastore_id, uris)
 
     # Creating search engine client
     engine_client = discoveryengine_v1alpha.EngineServiceClient()
@@ -122,6 +115,23 @@ def create_search_app():
           Datastore: {parent_collection}/dataStores/{datastore_id}
           App: {parent_collection}/engines/{engine_id}
           """)
+
+def create_target_site(project_id, default_location, datastore_id, uris):
+    parent_collection = f"projects/{project_id}/locations/{default_location}/collections/default_collection"
+    site_search_engine_service_client = discoveryengine_v1alpha.SiteSearchEngineServiceClient()
+    uris=uris.split(",")
+    for uri in uris:
+        target_site = discoveryengine_v1alpha.TargetSite()
+        target_site.provided_uri_pattern = uri
+        print(f"Creating Target site: {target_site}")
+        try:
+            site_search_engine_service_client.create_target_site(request=discoveryengine_v1alpha.CreateTargetSiteRequest(
+                parent=f"{parent_collection}/dataStores/{datastore_id}/siteSearchEngine",
+                target_site=target_site,
+            ))
+        except:
+            print(f"Target site already exist: {uri}")
+
 
 if __name__ == "__main__":
     create_search_app()

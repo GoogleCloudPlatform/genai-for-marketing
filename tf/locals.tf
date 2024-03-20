@@ -23,7 +23,11 @@ locals {
     "docs.googleapis.com",
     "drive.googleapis.com",
     "sheets.googleapis.com",
-    "slides.googleapis.com"
+    "slides.googleapis.com",
+    "firebase.googleapis.com",
+    "discoveryengine.googleapis.com",
+    "secretmanager.googleapis.com"
+
   ]
   tables = [
     {

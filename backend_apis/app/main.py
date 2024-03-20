@@ -163,25 +163,25 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get(path="/marketing/")
-@app.get("/marketing/campaign-form")
-@app.get(path="/marketing/user-journey")
-@app.get(path="/marketing/home")
-@app.get(path="/marketing/marketing-insights")
-async def angular() -> FileResponse:
-    """
-    ## Angular app
+#@app.get(path="/marketing/")
+#@app.get("/marketing/campaign-form")
+#@app.get(path="/marketing/user-journey")
+#@app.get(path="/marketing/home")
+#@app.get(path="/marketing/marketing-insights")
+#async def angular() -> FileResponse:
+#    """
+#    ## Angular app
 
     ### Returns:
-    - Angular app index.html with the right route
+#    - Angular app index.html with the right route
 
-    """
-    return FileResponse("/static/index.html")
+#    """
+#    return FileResponse("/static/index.html")
 
 
-app.mount(
-    path="/marketing", app=StaticFiles(directory="/static", html=True), name="static"
-)
+#app.mount(
+#    path="/marketing", app=StaticFiles(directory="/static", html=True), name="static"
+#)
 
 
 # create-campaign

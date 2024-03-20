@@ -9,6 +9,12 @@ variable "location" {
   description = "Location of the resources"
 }
 
+variable "genai_location" {
+  default     = "global"
+  type        = string
+  description = "Location of the resources"
+}
+
 variable "region" {
   default     = "us-central1"
   type        = string
@@ -68,11 +74,11 @@ variable "gdrive_folder_name" {
 }
 
 variable "datastore_uris" {
-  type    = string
-  default = "cloud.goole.com/*"
+  type    = list(string)
+  default = ["cloud.google.com/*"]
 }
 
 variable "datastore_storage_folder" {
-  type = string
+  type    = string
   default = "gs://cloud-samples-data/gen-app-builder/search/alphabet-investor-pdfs/*"
 }
