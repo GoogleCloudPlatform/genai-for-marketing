@@ -78,7 +78,7 @@ from .body_schema import (
 )
 
 # Load configuration file
-with open("/code/app/config.toml", "rb") as f:
+with open("app/config.toml", "rb") as f:
     config = tomllib.load(f)
 project_id = config["global"]["project_id"]
 location = config["global"]["location"]
@@ -149,10 +149,9 @@ router = APIRouter(prefix="/marketing-api")
 app = FastAPI(docs_url="/marketing-api/docs")
 
 origins = [
-    "http://localhost:5000",
-    "http://localhost:8080",
-    "https://genai-mkt-frontend-dev.web.app",
-    "https://genai-mkt-frontend-dev.firebaseapp.com"
+    "http://localhost:4200", # Angular default
+    f"https://{config['global']['project_id']}.web.app", # default deployment using firebase
+    f"https://{config['global']['project_id']}.firebaseapp.com"
 ]
 
 app.add_middleware(
@@ -163,25 +162,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-#@app.get(path="/marketing/")
-#@app.get("/marketing/campaign-form")
-#@app.get(path="/marketing/user-journey")
-#@app.get(path="/marketing/home")
-#@app.get(path="/marketing/marketing-insights")
-#async def angular() -> FileResponse:
-#    """
-#    ## Angular app
-
-    ### Returns:
-#    - Angular app index.html with the right route
-
-#    """
-#    return FileResponse("/static/index.html")
-
-
-#app.mount(
-#    path="/marketing", app=StaticFiles(directory="/static", html=True), name="static"
-#)
+@app.get(path="/healthcheck")
+async def healthcheck():
+    return {"status": "ok"}
 
 
 # create-campaign
@@ -204,7 +187,7 @@ def create_campaign(user_id: str,data: CampaignCreateRequest
             campaign_name:str
             workspace_asset: dict
         """
-    
+    print(f"Creating campaing with: {data}")
     gender_select_theme = data.brief.gender_select_theme
     age_select_theme = data.brief.age_select_theme
     objective_select_theme = data.brief.objective_select_theme
