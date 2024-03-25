@@ -275,6 +275,13 @@ https://developers.google.com/drive/api/reference/rest/v3/permissions#resource:-
    - From the Google Drive folder open the Google Sheets.
    - In Google Sheets, click in `File` and `Save as Google Sheets`. Take note of the Sheets ID from the URL.
    - Open the configuration file [app_config.toml - line 561](/app/app_config.toml) and change to your Sheets ID.
+
+
+#### OPTIONAL: Domain Wide Delegation for Service Account
+**IMPORTANT**: This step is only required if you want to use the Workspace integration with a service account for your Organisation.
+- Take note of the Client ID of the service account you created in the previous step. You can find it in the JSON file you downloaded or in the [IAM page](https://console.cloud.google.com/iam-admin/serviceaccounts) of your project. It will look like this: `111122223333444455551`
+- Follow this [documentation](https://developers.google.com/workspace/guides/create-credentials#optional_set_up_domain-wide_delegation_for_a_service_account) to enable Domain Wide Delegation for your service account.
+- This step will allow the service account to impersonate users in your domain and in turn, access their Workspace resources and Shared Drives.
  
 
 ### Deploy the demonstration to App Engine
