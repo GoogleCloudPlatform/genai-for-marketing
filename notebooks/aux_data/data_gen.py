@@ -147,7 +147,8 @@ def create_and_populate_transactions(num_customers: int = 50000) -> Dict:
 
 def generate_and_populate_dataset(
         PROJECT_ID: str,
-        DATASET_ID: str
+        DATASET_ID: str,
+        create_tables: bool = True
 ):
     bq_client = bigquery.Client(project=PROJECT_ID)
 
@@ -198,12 +199,13 @@ def generate_and_populate_dataset(
         bigquery.SchemaField('is_foreign_key', 'BOOLEAN', mode='NULLABLE')
     ]
 
-    print('Creating tables ...')
-    for table_id, table_schema in zip(['customers', 'events', 'transactions', 'metadata'], 
-                        [customers_schema, events_schema, transactions_schema, metadata_schema]):
-        table_id = f'{PROJECT_ID}.{DATASET_ID}.{table_id}'
-        table = bigquery.Table(table_id, schema=table_schema)
-        table = bq_client.create_table(table)
+    if(create_tables):
+        print('Creating tables ...')
+        for table_id, table_schema in zip(['customers', 'events', 'transactions', 'metadata'], 
+                            [customers_schema, events_schema, transactions_schema, metadata_schema]):
+            table_id = f'{PROJECT_ID}.{DATASET_ID}.{table_id}'
+            table = bigquery.Table(table_id, schema=table_schema)
+            table = bq_client.create_table(table)
 
 
     print('Generating and populating METADATA table ...')    

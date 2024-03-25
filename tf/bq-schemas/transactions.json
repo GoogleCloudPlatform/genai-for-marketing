@@ -1,0 +1,53 @@
+[
+    {
+      "name": "transaction_id",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "customer_id",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "transaction_quantity",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "transaction_value",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "transaction_type",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "app_purchase_quantity",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "is_online",
+      "type": "BOOLEAN",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "transaction_date",
+      "type": "DATE",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "product_name",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "product_id",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+    }
+  ]
+  

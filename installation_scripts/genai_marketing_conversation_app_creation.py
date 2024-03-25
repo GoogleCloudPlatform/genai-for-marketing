@@ -104,27 +104,12 @@ def create_chat_app():
             print(f"Creating datastore: {datastore_request}")
             datastore_client.create_data_store(request=datastore_request)
             if (ds["type"] == "web"):
-                site_search_engine_service_client = discoveryengine_v1alpha.SiteSearchEngineServiceClient()
-                for uri in uris.split(","):
-                    target_site = discoveryengine_v1alpha.TargetSite()
-                    target_site.provided_uri_pattern = uri
-                    print(f"Creating Target site: {target_site}")
-                    site_search_engine_service_client.create_target_site(request=discoveryengine_v1alpha.CreateTargetSiteRequest(
-                        parent=f"{parent_collection}/dataStores/{ds['id']}/siteSearchEngine",
-                        target_site=target_site,
-                    ))
+                datastore_id = ds['id']
+                create_target_site(project_id, default_location, datastore_id, uris)
             if (ds["type"] == "gcs"):
-                document_client = discoveryengine_v1alpha.DocumentServiceClient()
-                documents_parent = f"{parent_collection}/dataStores/{ds['id']}/branches/default_branch"
-                datastore_storage_folders_array = datastore_storage_folders.split(
-                    ",")
-                document_client.import_documents(request=discoveryengine_v1alpha.ImportDocumentsRequest(
-                    parent=documents_parent,
-                    gcs_source=discoveryengine_v1alpha.GcsSource(
-                        input_uris=datastore_storage_folders_array,
-                        data_schema="content",  # This can be change to document, csv, custom or user_event
-                    )
-                ))
+                folders_array = datastore_storage_folders.split(",")
+                datastore_id = ds['id']
+                load_storage_datastore(project_id,default_location,datastore_id, folders_array)
 
     # Creating dialogflow cx agent
     dcx_client = dialogflowcx_v3.AgentsClient()
@@ -290,6 +275,31 @@ def create_chat_app():
           Dialogflow CX Agent: {agent.name}
           """)
 
+def load_storage_datastore(project_id,default_location,datastore_id, folders_array):
+    parent_collection = f"projects/{project_id}/locations/{default_location}/collections/default_collection"
+    document_client = discoveryengine_v1alpha.DocumentServiceClient()
+    documents_parent = f"{parent_collection}/dataStores/{datastore_id}/branches/default_branch"
+    
+    document_client.import_documents(request=discoveryengine_v1alpha.ImportDocumentsRequest(
+        parent=documents_parent,
+        gcs_source=discoveryengine_v1alpha.GcsSource(
+            input_uris=datastore_storage_folders_array,
+            data_schema="content",  # This can be change to document, csv, custom or user_event
+        )
+    ))
+
+def create_target_site(project_id, default_location, datastore_id, uris):
+    parent_collection = f"projects/{project_id}/locations/{default_location}/collections/default_collection"
+    site_search_engine_service_client = discoveryengine_v1alpha.SiteSearchEngineServiceClient()
+    uris=uris.split(",")
+    for uri in uris:
+        target_site = discoveryengine_v1alpha.TargetSite()
+        target_site.provided_uri_pattern = uri
+        print(f"Creating Target site: {target_site}")
+        site_search_engine_service_client.create_target_site(request=discoveryengine_v1alpha.CreateTargetSiteRequest(
+            parent=f"{parent_collection}/dataStores/{datastore_id}/siteSearchEngine",
+            target_site=target_site,
+        ))
 
 if __name__ == "__main__":
     create_chat_app()
