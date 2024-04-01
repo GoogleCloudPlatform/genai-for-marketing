@@ -16,8 +16,3 @@ module "genai_run_service_account" {
 resource "google_service_account_key" "sa_key" {
   service_account_id = module.genai_run_service_account.service_account.name
 }
-
-/*resource "local_file" "credentials_file" {
-  content  = base64decode(google_service_account_key.sa_key.private_key)
-  filename = "${path.module}/credentials.json"
-}*/
