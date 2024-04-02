@@ -1,0 +1,23 @@
+[
+    {
+      "name": "customer_id",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "event_id",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "event_date",
+      "type": "DATE",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "event_type",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    }
+  ]
+  

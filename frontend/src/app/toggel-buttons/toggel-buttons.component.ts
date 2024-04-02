@@ -4,6 +4,7 @@ import { ArchitectureDiagramComponent } from '../architecture-diagram/architectu
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { LoginService } from '../services/login.service';
+import { environment } from '../../environments/environments';
 
 @Component({
   selector: 'app-toggel-buttons',
@@ -12,12 +13,15 @@ import { LoginService } from '../services/login.service';
 })
 export class ToggelButtonsComponent {
   photoURL: string | undefined;
+  userProjectId: string | undefined;
   subscription: Subscription | undefined;
   // constructor(public dialog:MatDialog){}
   constructor(public _router: Router, public loginService: LoginService, public dialog:MatDialog) {
     this.subscription = this.loginService.getUserDetails().subscribe(message => {
       this.photoURL = message?.photoURL
-    });}
+    });
+    this.userProjectId = environment.firebaseConfig.projectId
+  }
   showArchitetureDig(): void {
     const dialogRef = this.dialog.open(ArchitectureDiagramComponent,{
       disableClose: true ,  height:"auto"

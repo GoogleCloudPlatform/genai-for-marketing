@@ -1,0 +1,72 @@
+[
+    {
+      "name": "customer_id",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "email",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "city",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "state",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "channel",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "total_purchases",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "total_value",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "total_emails",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "loyalty_score",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "is_media_follower",
+      "type": "BOOLEAN",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "last_sign_up_date",
+      "type": "DATE",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "last_purchase_date",
+      "type": "DATE",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "last_activity_date",
+      "type": "DATE",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "cart_total",
+      "type": "FLOAT",
+      "mode": "NULLABLE"
+    }
+  ]
