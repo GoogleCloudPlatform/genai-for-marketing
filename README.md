@@ -1,5 +1,8 @@
 # Generative AI for Marketing using Google Cloud
 
+**Update: There is a new version under v2.0 branch.
+https://github.com/GoogleCloudPlatform/genai-for-marketing/tree/v2.0**
+
 This repository provides a deployment guide showcasing the application of Google Cloud's Generative AI for marketing scenarios. It offers detailed, step-by-step guidance for setting up and utilizing the Generative AI tools, including examples of their use in crafting marketing materials like blog posts and social media content.
 
 Additionally, supplementary Jupyter notebooks are provided to aid users in grasping the concepts explored in the demonstration.
