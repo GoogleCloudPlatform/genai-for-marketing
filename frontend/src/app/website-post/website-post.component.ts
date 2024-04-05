@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { LoginService } from '../services/login.service';
 import { CampaignService } from '../services/campaign.service';
-import { AsyncSubject, Observable, Subscription } from 'rxjs';
+import { Observable, Subscription, map, of, startWith } from 'rxjs';
 import { AudiencesService } from '../services/audiences.service';
 import { EmailCopyService } from '../services/email-copy.service';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -10,11 +10,17 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BOLD_BUTTON, CUSTOM, EditorConfig, FONT_SIZE_SELECT, FORE_COLOR, IMAGE_INPUT, INDENT_BUTTON, ITALIC_BUTTON, JUSTIFY_CENTER_BUTTON, JUSTIFY_FULL_BUTTON, JUSTIFY_LEFT_BUTTON, JUSTIFY_RIGHT_BUTTON, LINK_INPUT, ORDERED_LIST_BUTTON, OUTDENT_BUTTON, SEPARATOR, STRIKE_THROUGH_BUTTON, ST_BUTTONS, SUBSCRIPT_BUTTON, SUPERSCRIPT_BUTTON, UNDERLINE_BUTTON, UNDO_BUTTON, UNLINK_BUTTON, UNORDERED_LIST_BUTTON } from 'ngx-simple-text-editor';
 import { WebsitePostService } from '../services/website-post.service';
+import { FormControl } from '@angular/forms';
 export interface EmailCopy {
   images_base64_string?: any;
 }
 export interface CampaignNames {
   name: string;
+}
+
+export interface TranslationLanguage {
+  language_code: string;
+  language_name: string;
 }
 @Component({
   selector: 'app-website-post',
@@ -30,6 +36,56 @@ export class WebsitePostComponent {
   CampaignResults: any;
   CAMPAIGN_DATA: CampaignNames[] = []
   CAMPAIGN_DATA1: any[] = [];
+  languageControl!: FormControl<TranslationLanguage | null | undefined>;
+  filteredOptions!: Observable<TranslationLanguage[]>;
+  selectedLang: any = '';
+  langCodes = [
+    { 'language_code': 'da-DK', 'language_name': 'da-DK-Neural2-D' },
+    { 'language_code': 'en-AU', 'language_name': 'en-AU-Neural2-D' },
+    { 'language_code': 'en-IN', 'language_name': 'en-IN-Neural2-A' },
+    { 'language_code': 'en-IN', 'language_name': 'en-IN-Neural2-B' },
+    { 'language_code': 'en-IN', 'language_name': 'en-IN-Neural2-C' },
+    { 'language_code': 'en-IN', 'language_name': 'en-IN-Neural2-D' },
+    { 'language_code': 'en-GB', 'language_name': 'en-GB-Neural2-A' },
+    { 'language_code': 'en-GB', 'language_name': 'en-GB-Neural2-B' },
+    { 'language_code': 'en-GB', 'language_name': 'en-GB-Neural2-C' },
+    { 'language_code': 'en-GB', 'language_name': 'en-GB-Neural2-D' },
+    { 'language_code': 'en-GB', 'language_name': 'en-GB-Neural2-F' },
+
+    { 'language_code': 'fil-PH', 'language_name': 'fil-ph-Neural2-A' },
+    { 'language_code': 'fil-PH', 'language_name': 'fil-ph-Neural2-D' },
+    { 'language_code': 'fr-CA', 'language_name': 'fr-CA-Neural2-A' },
+    { 'language_code': 'fr-CA', 'language_name': 'fr-CA-Neural2-B' },
+    { 'language_code': 'fr-CA', 'language_name': 'fr-CA-Neural2-C' },
+    { 'language_code': 'fr-CA', 'language_name': 'fr-CA-Neural2-D' },
+    { 'language_code': 'fr-FR', 'language_name': 'fr-FR-Neural2-A' },
+    { 'language_code': 'fr-FR', 'language_name': 'fr-FR-Neural2-B' },
+    { 'language_code': 'fr-FR', 'language_name': 'fr-FR-Neural2-C' },
+    { 'language_code': 'fr-FR', 'language_name': 'fr-FR-Neural2-D' },
+    { 'language_code': 'fr-FR', 'language_name': 'fr-FR-Neural2-E' },
+    { 'language_code': 'fr-FR', 'language_name': 'fr-FR-Polyglot-1' },
+
+    { 'language_code': 'de-DE', 'language_name': 'de-DE-Neural2-A' },
+    { 'language_code': 'de-DE', 'language_name': 'de-DE-Neural2-B' },
+    { 'language_code': 'de-DE', 'language_name': 'de-DE-Neural2-C' },
+    { 'language_code': 'de-DE', 'language_name': 'de-DE-Neural2-D' },
+    { 'language_code': 'de-DE', 'language_name': 'de-DE-Neural2-F' },
+    { 'language_code': 'de-DE', 'language_name': 'de-DE-Polyglot-1' },
+
+    { 'language_code': 'hi-IN', 'language_name': 'hi-IN-Neural2-A' },
+    { 'language_code': 'hi-IN', 'language_name': 'hi-IN-Neural2-B' },
+    { 'language_code': 'hi-IN', 'language_name': 'hi-IN-Neural2-C' },
+    { 'language_code': 'hi-IN', 'language_name': 'hi-IN-Neural2-D' },
+
+    { 'language_code': 'it-IT', 'language_name': 'it-IT-Neural2-A' },
+    { 'language_code': 'it-IT', 'language_name': 'it-IT-Neural2-C' },
+
+    { 'language_code': 'ja-JP', 'language_name': 'ja-JP-Neural2-B' },
+    { 'language_code': 'ja-JP', 'language_name': 'ja-JP-Neural2-C' },
+    { 'language_code': 'ja-JP', 'language_name': 'ja-JP-Neural2-D' }
+
+
+  ]
   filtered!: any;
   id: any;
   campaignData: any;
@@ -80,6 +136,7 @@ export class WebsitePostComponent {
   campaignName: any;
   showSaveBtn: boolean = false;
   selectDisable: boolean = false;
+  audio_url: any;
   constructor(public loginService: LoginService, public audiencesSerive: AudiencesService,
     public websitePostService: WebsitePostService, private domSanitizer: DomSanitizer, private snackBar: MatSnackBar,
     public campaignServ: CampaignService, public dialog: MatDialog, private _snackBar: MatSnackBar,) {
@@ -92,6 +149,13 @@ export class WebsitePostComponent {
   }
   ngOnInit() {
     this.getCampaign();
+    this.languageControl = new FormControl<TranslationLanguage | null | undefined>(this.langCodes.find(i => i.language_code === 'en-IN'));
+    this.filteredOptions = of(this.langCodes)
+  }
+
+  private _filter(name: string): TranslationLanguage[] {
+    const filterValue = name.toLowerCase();
+    return this.langCodes.filter(option => option.language_name.toLowerCase().includes(filterValue));
   }
 
   onClickMarketingAssi() {
@@ -109,7 +173,6 @@ export class WebsitePostComponent {
       this.CAMPAIGN_DATA1 = res.results;
       this.CAMPAIGN_DATA = this.CampaignResults?.map((res: any) => {
         return { name: res.data.name, id: res.id };
-
       })
       this.campaignId = this.CampaignResults[0].id;
     });
@@ -140,8 +203,8 @@ export class WebsitePostComponent {
     this.clearExistingData();
     this.fileUploaded = false;
     this.editImageSection = false;
-    this.selectedImage ='';
-    this.images=[]
+    this.selectedImage = '';
+    this.images = []
   }
   onUploadImageAssets() {
     this.uploadImageAssetsClicked = true
@@ -155,7 +218,7 @@ export class WebsitePostComponent {
     this.images = [];
     this.fileUploaded = false;
     this.clearExistingGenImageData();
-    this.selectedImage=''
+    this.selectedImage = ''
   }
 
   clearExistingGenImageData() {
@@ -263,7 +326,7 @@ export class WebsitePostComponent {
 
   saveImageToDrive() {
     this.showSaveSpinner = true;
-    if(this.selectedImage?.changingThisBreaksApplicationSecurity){
+    if (this.selectedImage?.changingThisBreaksApplicationSecurity) {
       this.selectedImage = this.selectedImage?.changingThisBreaksApplicationSecurity
     }
     if (!this.selectedImage) {
@@ -382,5 +445,25 @@ export class WebsitePostComponent {
 
   showSaveButton(val: boolean) {
     this.showSaveBtn = val
+  }
+
+  changeLang(event: any) {
+    this.audio_url = "";
+    let selectedCampaign = this.CampaignResults.filter((c: any) => c.id === this.campaignId);
+    let folder_id = selectedCampaign[0].data.workspace_assets.new_folder_id
+    let today = new Date();
+    this.languageControl.patchValue(event);
+    let obj = {
+      "text": this.textContent,
+      "prefix": `${folder_id}/webpost_audio_${today.toISOString()}`,
+      "language_code": event.language_code,
+      "language_name": event.language_name
+    }
+    this.websitePostService.generateTextToSpeech(obj).subscribe((res: any) => {
+      let str = res.audio_uri
+      let newstr = str.replace("gs://", "https://storage.googleapis.com/");
+      console.log(newstr)
+      this.audio_url = newstr
+    })
   }
 }

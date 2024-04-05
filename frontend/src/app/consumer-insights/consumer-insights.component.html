@@ -1,4 +1,3 @@
-
 <div style=" display: flex; justify-content: center;flex-direction: column;">
     <div class="title">
         <p style="margin-bottom:30px">Consumer Insights</p>
@@ -21,17 +20,21 @@
         </div>
     </form>
     <div class="row"
-        style=" display: flex;align-items: center;align-content: center;justify-content: center; width:793px">
+        style="display: flex;align-items: center;align-content: center;justify-content: center; width:793px">
         <div *ngIf="generateSuccessMsg" class="summarize-results">
             <!-- <div class="generate-success">
                 <p class="campaign-success">Query executed successfully. Retrieving results.</p>
             </div> -->
-            <div class="insight-results-label">Results</div>
+            <div class="insight-results-label d-flex">
+                <span class="col-2" style="padding:0px">Results</span>
+                <span class="col-10" style="padding:0px" *ngIf="insightResults">{{llm_summary}}</span>
+            </div>
             <br>
             <div *ngFor="let res of insightResults ; let ind = index" class="insight-results">
                 <p><span class="insights-title"> {{res.title}} </span><br>
-                <span class="insights-link"><a href='{{res.link}}' target="_blank"> {{res.link}}</a> </span><br>
-                <span class="insights-body"> {{res.snippet}} </span></p>
+                    <span class="insights-link"><a href='{{res.link}}' target="_blank"> {{res.link}}</a> </span><br>
+                    <span class="insights-body"> {{res.snippet}} </span>
+                </p>
                 <br>
             </div>
         </div>

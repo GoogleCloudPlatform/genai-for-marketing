@@ -36,7 +36,8 @@
     margin-top: 10px;
     padding: 0px 3px;
     border: none;
-    background: linear-gradient(to right, #B69DFC, #BDE3FF, #F37148, #F7C002);
+    //  background: linear-gradient(to right, #B69DFC, #BDE3FF, #F37148, #F7C002);
+    background: linear-gradient(to right, #B79EFD, #BDE1FF, #B69DFC);
     position: relative;
     z-index: 1;
     display: flex;
@@ -176,7 +177,8 @@
     height: 48px;
     border: none;
     outline: none;
-    background: linear-gradient(to right, #B69DFC, #BDE3FF, #F37148, #F7C002);
+    //  background: linear-gradient(to right, #B69DFC, #BDE3FF, #F37148, #F7C002);
+    background: linear-gradient(to right, #B79EFD, #BDE1FF, #B69DFC);
     box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.15);
     border-radius: 32.5px;
     position: relative;
@@ -208,7 +210,6 @@
     font-weight: 500;
     font-size: 16px;
     line-height: 22px;
-    /* identical to box height, or 138% */
     text-align: center;
     letter-spacing: -0.02em;
     color: #000000;
@@ -299,7 +300,7 @@
     margin-top: 1rem;
 }
 
-.marketingAssiBtn {
+.marketingAssiBtn1 {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -328,6 +329,77 @@
     color: #FFFFFF;
     float: right;
     margin-right: 10px;
+}
+
+.marketingAssiBtn {
+    border: none;
+    outline: none;
+    //  background: linear-gradient(to right, #B69DFC, #BDE3FF, #F37148, #F7C002);
+    background: linear-gradient(to right, #B69DFC, #BDE3FF, #FFB8A1, #F7C002);
+    // box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.15);
+    border-radius: 32.5px;
+    position: relative;
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 22px;
+    text-align: center;
+    letter-spacing: -0.02em;
+    color: #000000;
+    margin-bottom: 1rem;
+    margin-right: 20px;
+    z-index: 1;
+    padding: 10px 16px 10px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+    width: 100%;
+}
+
+.marketingAssBtnTitle {
+    color: #000;
+    text-align: center;
+    font-family: 'Google Sans';
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    letter-spacing: 0.1px;
+}
+
+.marketingAssiBtn::before {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    bottom: 2px;
+    left: 2px;
+    background: #FFFFFF;
+    content: "";
+    border-radius: 30.5px;
+    color: #000;
+    text-align: center;
+    font-family: "Google Sans";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    letter-spacing: 0.1px;
+    z-index: -1;
+    transition: 200ms
+}
+
+.marketingAssiBtn::after {
+    content: attr(data);
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 22px;
+    text-align: center;
+    color: #000000;
+    transition: 200ms
 }
 
 .home {
@@ -455,16 +527,19 @@ a:active[aria-expanded="true"] {
     background: #4E4E4E;
     width: 240px;
 }
+
 .highlight {
     color: #FFF;
     background: #4E4E4E !important;
     width: 240px;
 }
+
 #sidebar ul li>a:active {
     color: #FFF;
     background: #4E4E4E;
     width: 240px;
 }
+
 a[data-toggle="collapse"] {
     position: relative;
 }

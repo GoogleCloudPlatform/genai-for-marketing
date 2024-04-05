@@ -19,6 +19,11 @@ location = "us-central1"
 # Provide the path to the secret with the Workspace Service Account key
 # Change this variable to your secret
 secret_name_workspace = "projects/YOUR-PROJECT-NUMBER/secrets/SECRET-NAME/versions/X"
+
+# Provide the path to the secret with the Firebase key
+# Change this variable to your secret
+secret_name_firebase = "projects/YOUR-PROJECT-NUMBER/secrets/SECRET-NAME/versions/X"
+
 # Audiences
 # Dataset ID of the BigQuery dataset. If you change the dataset_id during the deployment 
 # of this solution, change it here as well.

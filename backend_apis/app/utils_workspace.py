@@ -185,9 +185,9 @@ def set_permission(
 
 
 def get_chart_id(
-        credentials,
+        sheets_service,
         spreadsheet_id):
-    sheets_service = build('sheets', 'v4', credentials=credentials)
+    
     spreadsheet_id = spreadsheet_id  
     ranges = [] 
     include_grid_data = False 

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormGroup, FormControl } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { CampaignService } from '../services/campaign.service';
 import { LoginService } from '../services/login.service';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -11,7 +11,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 })
 export class CampaignFormComponent {
   userId: any;
-  showchatboot: boolean = false;
+  showchatbot: boolean = false;
   showProgress: boolean = false;
   userLoggedIn: boolean = false;
   photoURL: any;
@@ -24,13 +24,13 @@ export class CampaignFormComponent {
   }
   docPreviewUrl: any = ''
   campaignForm = new FormGroup({
-    name: new FormControl(),
-    theme: new FormControl(),
+    name: new FormControl('',Validators.required),
+    theme: new FormControl('',Validators.required),
     otherTheme: new FormControl(),
-    ageGroup: new FormControl(),
-    gender: new FormControl(),
-    goal: new FormControl(),
-    competitor: new FormControl()
+    ageGroup: new FormControl('',Validators.required),
+    gender: new FormControl('',Validators.required),
+    goal: new FormControl('',Validators.required),
+    competitor: new FormControl('',Validators.required)
   });
 
   onSubmit() {
@@ -60,13 +60,19 @@ export class CampaignFormComponent {
       this.showProgress = true;
       this.campaignServ.createCampaign(obj, this.userId).subscribe((res: any) => {
         this.docPreviewUrl = `https://docs.google.com/file/d/${res?.workspace_assets?.doc_id}/preview`;
-        this.showProgress = false;
+        const checkbox = document.getElementById(
+          'loader',
+        ) as HTMLInputElement | null;
+
+        if (checkbox != null) {
+          checkbox.checked = true;
+        }
         this.clear()
       });
     }
   }
   onClickMarketingAssi() {
-    this.showchatboot = true
+    this.showchatbot = true
   }
   clear() {
     this.campaignForm.reset()

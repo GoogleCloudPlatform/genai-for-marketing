@@ -6,9 +6,8 @@
         <div class="d-flex logo">
           <div class="d-flex flex-column align-items-center mb-2">
             <img src="assets/images/Ellipse 2.svg" class="bi pe-none" width="48" height="48">
-            <img src="assets/images/logo.svg" class="bi pe-none" width="35.294" height="35.294" style="
-            margin-top: -42px;
-            ">
+            <img src="assets/images/logo.svg" class="bi pe-none" width="35.294" height="35.294"
+              style="margin-top: -42px;">
           </div>
           <div class="d-flex flex-column">
             <div class="genAiTitle"> Gen AI</div>
@@ -25,7 +24,8 @@
       <ul class="list-unstyled">
         <li class="active">
           <a (click)="naviagteToHomePgae()" style="cursor:pointer" [ngClass]="{'highlight':showMainContent}">Home</a>
-          <a (click)="existingCampaigns()" style="cursor:pointer" [ngClass]="{'highlight':showExistingCampaigns}">Campaigns</a>
+          <a (click)="existingCampaigns()" style="cursor:pointer"
+            [ngClass]="{'highlight':showExistingCampaigns}">Campaigns</a>
         </li>
       </ul>
       <mat-divider class="menu-divider"></mat-divider>
@@ -36,10 +36,14 @@
           <span><span class="google-symbols">
               insights_auto
             </span> <span class="menu-title">ANALYTICS STUDIO</span></span>
-          <a (click)="naviagteToMarketingInsights()" style="cursor:pointer" [ngClass]="{'highlight':showMarketingInsightPage}">Marketing Insights</a>
-          <a (click)="naviagteToAudiencesPgae()" style="cursor:pointer" [ngClass]="{'highlight':showAudiences}">Audiences</a>
-          <a (click)="navigateToTrendspotting()" style="cursor:pointer" [ngClass]="{'highlight':showTrendspotting}">Trendspotting</a>
-          <a (click)="navigateToConsumerInsights()" style="cursor:pointer" [ngClass]="{'highlight':showConsumerInsights}">Consumer Insights</a>
+          <a (click)="naviagteToMarketingInsights()" style="cursor:pointer"
+            [ngClass]="{'highlight':showMarketingInsightPage}">Marketing Insights</a>
+          <a (click)="naviagteToAudiencesPgae()" style="cursor:pointer"
+            [ngClass]="{'highlight':showAudiences}">Audiences</a>
+          <a (click)="navigateToTrendspotting()" style="cursor:pointer"
+            [ngClass]="{'highlight':showTrendspotting}">Trendspotting</a>
+          <a (click)="navigateToConsumerInsights()" style="cursor:pointer"
+            [ngClass]="{'highlight':showConsumerInsights}">Consumer Insights</a>
         </li>
       </ul>
       <mat-divider class="menu-divider"></mat-divider>
@@ -71,10 +75,12 @@
                   d="M10.9999 20.1654C10.9999 18.8973 10.7593 17.7056 10.278 16.5904C9.79679 15.4751 9.14367 14.5049 8.31867 13.6799C7.49367 12.8549 6.52353 12.2018 5.40825 11.7206C4.29297 11.2393 3.10131 10.9987 1.83325 10.9987C3.10131 10.9987 4.29297 10.7581 5.40825 10.2768C6.52353 9.79557 7.49367 9.14245 8.31867 8.31745C9.14367 7.49245 9.79679 6.52231 10.278 5.40703C10.7593 4.29175 10.9999 3.10009 10.9999 1.83203C10.9999 3.10009 11.2405 4.29175 11.7218 5.40703C12.203 6.52231 12.8562 7.49245 13.6812 8.31745C14.5062 9.14245 15.4763 9.79557 16.5916 10.2768C17.7069 10.7581 18.8985 10.9987 20.1666 10.9987C18.8985 10.9987 17.7069 11.2393 16.5916 11.7206C15.4763 12.2018 14.5062 12.8549 13.6812 13.6799C12.8562 14.5049 12.203 15.4751 11.7218 16.5904C11.2405 17.7056 10.9999 18.8973 10.9999 20.1654Z"
                   fill="white" />
               </svg>
-            </span><span class="menu-title" style="margin-left:2">ACTIVATION STUDIO </span></span>
-          <a (click)="navigateToContentReview()" style="cursor:pointer" [ngClass]="{'highlight':showContentReview}">Content Review &
+            </span><span class="menu-title" style="margin-left:2px">ACTIVATION STUDIO </span></span>
+          <a (click)="navigateToContentReview()" style="cursor:pointer"
+            [ngClass]="{'highlight':showContentReview}">Content Review &
             Activation</a>
-          <a (click)="naviagteToCampaignPerformancPgae()" style="cursor: pointer;" [ngClass]="{'highlight':showCampaignPerformace}">Campaign
+          <a (click)="naviagteToCampaignPerformancPgae()" style="cursor: pointer;"
+            [ngClass]="{'highlight':showCampaignPerformace}">Campaign
             Performance</a>
           <!-- <a  >Ads Helper Bot</a> -->
         </li>
@@ -83,20 +89,33 @@
   </nav>
 
   <div id="right-header">
-    <div>
-      <app-user-photo></app-user-photo>
+    <div class="d-flex">
+
       <!-- <span class="login-user"> <img src="{{photoURL}}" class="rounded-circle img-fluid" width="40" height="40">
     </span>&nbsp; -->
       <button class="marketingAssiBtn" (click)="onClickMarketingAssi()">
-        <span class="google-symbols">
-          spark
-        </span>Marketing Assistant</button>
+        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 25 25" fill="none">
+          <path
+            d="M12.5 22.5C12.5 21.1167 12.2375 19.8167 11.7125 18.6C11.1875 17.3833 10.475 16.325 9.575 15.425C8.675 14.525 7.61667 13.8125 6.4 13.2875C5.18333 12.7625 3.88333 12.5 2.5 12.5C3.88333 12.5 5.18333 12.2375 6.4 11.7125C7.61667 11.1875 8.675 10.475 9.575 9.575C10.475 8.675 11.1875 7.61667 11.7125 6.4C12.2375 5.18333 12.5 3.88333 12.5 2.5C12.5 3.88333 12.7625 5.18333 13.2875 6.4C13.8125 7.61667 14.525 8.675 15.425 9.575C16.325 10.475 17.3833 11.1875 18.6 11.7125C19.8167 12.2375 21.1167 12.5 22.5 12.5C21.1167 12.5 19.8167 12.7625 18.6 13.2875C17.3833 13.8125 16.325 14.525 15.425 15.425C14.525 16.325 13.8125 17.3833 13.2875 18.6C12.7625 19.8167 12.5 21.1167 12.5 22.5Z"
+            fill="url(#paint0_linear_1909_19187)" />
+          <defs>
+            <linearGradient id="paint0_linear_1909_19187" x1="2.04891e-07" y1="0.416667" x2="16.25" y2="21.6667"
+              gradientUnits="userSpaceOnUse">
+              <stop stop-color="#B79EFD" />
+              <stop offset="0.291667" stop-color="#BDE1FF" />
+              <stop offset="1" stop-color="#B69DFC" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <span class="marketingAssBtnTitle">Marketing Assistant</span>
+      </button>
+      <app-user-photo></app-user-photo>
     </div>
   </div>
 
   <div [hidden]="!showchatboot">
-    <df-messenger project-id="gen-app-builder-infobot-demo" agent-id="ba8721e5-2aba-487e-b766-efc1fdf70e21"
-      language-code="en">
+    <df-messenger project-id="gen-app-builder-infobot-demo" agent-id="4f924b68-f027-4787-91b6-d00d99a4ccdd"
+      language-code="en" max-query-length="-1">
       <df-messenger-chat-bubble expanded=true chat-title="Marketing Assistant">
       </df-messenger-chat-bubble>
     </df-messenger>

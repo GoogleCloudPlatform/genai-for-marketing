@@ -70,7 +70,7 @@ export class ContentReviewComponent {
   bulEmailTextContentEnglish!: any;
   activeEnglishButton: boolean = true
   activeETranslatedButton: boolean = false
-  bulkEmailImageContent: string ='';
+  bulkEmailImageContent: string = '';
   bulkEmailLanguage: any;
 
   constructor(public loginService: LoginService, public audiencesSerive: AudiencesService, public snackBar: MatSnackBar,
@@ -100,7 +100,7 @@ export class ContentReviewComponent {
         return { name: res.data.name, id: res.id };
       })
       this.campaignId = this.campaignResults[0].id;
-     // this.selectedCampaignFromDropdown = [this.campaignResults[0]]
+      // this.selectedCampaignFromDropdown = [this.campaignResults[0]]
     });
   }
 
@@ -137,10 +137,10 @@ export class ContentReviewComponent {
         this.bulEmailTextContent = this.visibleEmails[0].text;
         this.bulEmailTextContentTraslate = this.visibleEmails[0].translation
         this.bulkEmailLanguage = this.visibleEmails[0].language
-      } else{
+      } else {
         this.bulEmailTextContent = element.data.emails?.text;
         this.bulkEmailImageContent = `https://storage.mtls.cloud.google.com/${element.data.emails?.gcs_path}`
-        
+
       }
       this.activationSatus = element.data.status
       this.exploreFiles = `http://drive.google.com/corp/drive/folders/${element.data.workspace_assets.new_folder_id}/`
@@ -173,13 +173,13 @@ export class ContentReviewComponent {
     });
   }
 
-  export(docName: any, textData: any, image_prefix : any , images : any) {
+  export(docName: any, textData: any, image_prefix: any, images: any) {
     let obj = {
       "folder_id": this.folderId,
       "doc_name": docName,
       "text": textData,
-      "image_prefix" : image_prefix,
-      "images" :images
+      "image_prefix": image_prefix,
+      "images": images
     }
     this.contentReview.export(obj, this.userId, this.campaignId).subscribe((res: any) => {
       this.showExportFileLink = true
@@ -190,29 +190,37 @@ export class ContentReviewComponent {
     });
   }
 
-  exportEmails(docName: any, textData: any , image_prefix : any , images : any) {
-    let gcs_paths =[];
+  exportEmails(docName: any, textData: any, image_prefix: any, images: any) {
+    let gcs_paths = [];
 
-    for(let i=0;i<images.length;i++){
+    for (let i = 0; i < images.length; i++) {
       gcs_paths.push(images[i].gcs_path)
     }
     let persionalized_emails = this.selectedCampaignFromDropdown[0].data.emails.persionalized_emails;
     let concatenated_text = '';
     for (let i = 0; i < persionalized_emails.length; i++) {
-      concatenated_text = concatenated_text +'\n' + persionalized_emails[i].email+ '\n' + persionalized_emails[i].first_name+ '\n' + persionalized_emails[i].text + '\n' + persionalized_emails[i].translation +'\n\n';
+      concatenated_text = concatenated_text + '\n' + persionalized_emails[i].email + '\n' + persionalized_emails[i].first_name + '\n' + persionalized_emails[i].text + '\n' + persionalized_emails[i].translation + '\n\n';
     }
     let obj = {
       "folder_id": this.folderId,
       "doc_name": docName,
       "text": textData + '\n' + concatenated_text,
-      "image_prefix" : image_prefix,
-      "images" :gcs_paths
+      "image_prefix": image_prefix,
+      "images": gcs_paths
     }
     this.contentReview.export(obj, this.userId, this.campaignId).subscribe((res: any) => {
       this.showExportFileLink = true
     });
   }
+  exportToGoogleSlides() {
 
+    let obj = {
+      "folder_id": this.folderId,
+    }
+    this.contentReview.exportToGoogleSlides(obj).subscribe((res: any) => {
+      this.showSnackbar("Google Slides Exported Successfully", 'Close', '2000')
+    });
+  }
   onClickActive(key: any) {
     let obj = {
       "key": key,
@@ -240,7 +248,7 @@ export class ContentReviewComponent {
 
   builEmailContents(ind: any, item: any) {
     this.bulEmailfiltered = this.bulEmailfiltered_DATA.filter((a: any) => a.email === item.email)
-    this.bulEmailfiltered.forEach((element: { data: any; text: any, translation: any ,gcs_path : any, language : any}) => {
+    this.bulEmailfiltered.forEach((element: { data: any; text: any, translation: any, gcs_path: any, language: any }) => {
       this.bulEmailTextContent = element.text;
       this.bulkEmailImageContent = `https://storage.mtls.cloud.google.com/${element.gcs_path}`
       this.bulEmailTextContentTraslate = element.translation

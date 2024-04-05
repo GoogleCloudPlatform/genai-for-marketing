@@ -29,4 +29,6 @@ pyrebase4
 google-cloud-secret-manager
 google-cloud-translate
 google-cloud-storage
+google-cloud-texttospeech
 google-auth
+lxml[html_clean]
