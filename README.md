@@ -18,10 +18,13 @@ The architecture of all the demos that are implemented in this application is as
 └── templates
 ```
 
-- [`/app`](/app): Source code for demo app.  
-- [`/backend_apis`](/backend_apis): Source code for backend APIs.
+- [`/app`](/app): Architecture diagrams.  
+- [`/backend_apis`](/backend_apis): Source code for backend APIs.  
+- [`/frontend`](/frontend): Source code for the front end UI.  
 - [`/notebooks`](/notebooks): Sample notebooks demonstrating the concepts covered in this demonstration.  
-- [`/templates`](/templates): Workspace Slides, Docs and Sheets templates used in the demonstration.
+- [`/templates`](/templates): Workspace Slides, Docs and Sheets templates used in the demonstration.  
+- [`/installation_scripts`](/installation_scripts): Installation scripts used by Terraform.  
+- [`/tf`](/tf): Terraform installation scripts.
 
 
 ## Demonstrations
