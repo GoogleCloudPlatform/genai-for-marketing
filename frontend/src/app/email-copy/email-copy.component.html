@@ -1,0 +1,379 @@
+<div class="container" style="height: 100%;" class="d-flex flex-column">
+
+    <div class="emailCopy d-flex flex-column">
+        <p class="title">Email Copy</p>
+        <div *ngIf="!showCampaignDropdown" class="noCampaignMsg">
+            Please generate a campaign first by going to the Campaigns page and then create an audience in the
+            Audiences page before using this page.
+        </div>
+        <div *ngIf="showCampaignDropdown">
+            <div>
+                <span class="campaign-title">Campaign</span>
+                <select class="select-theme-dropdowns-campaign" name="state" ngModel
+                    (ngModelChange)="onClickCampaign($event)">
+                    <option *ngFor="let d of CAMPAIGN_DATA">{{d.name}}</option>
+                </select>
+            </div>
+        </div>
+        <div *ngIf="showAudienceMessage"
+            style=" height: 17px; color: #757575; font-size: 12px; font-family: Google Sans; font-weight: 500;margin-top: 10px; word-wrap: break-word">
+            Create an audience in the Audiences page before using this page.
+        </div>
+
+        <div style="margin-top: 25px;">
+            <mat-divider style="width:910px;"></mat-divider>
+        </div>
+        <p *ngIf="showCampaignData && audiences"
+            style="height: 17px; color: #757575; font-size: 14px; font-family: Google Sans; font-weight: 500;margin-top: 10px; word-wrap: break-word">
+            Preview of email addresses queried from Audiences</p>
+
+        <div *ngIf="showCampaignData && audiences" style="margin-bottom: 10px;">
+            <span
+                style="color: #757575; font-size: 14px; font-family: Google Sans; font-weight: 700; word-wrap: break-word">Note:</span>
+            <span
+                style="color: #757575; font-size: 14px; font-family: Google Sans; font-weight: 400; word-wrap: break-word">
+                This email will be generated based on the audience queried in Audiences, and Insights found in
+                Marketing and Insights
+            </span>
+        </div>
+        <div class="tableP" *ngIf="showCampaignData && audiences">
+
+            <div class="example-container mat-elevation-z8">
+                <table mat-table [dataSource]="dataSource">
+                    <!-- <ng-container matColumnDef="index">
+                        <th mat-header-cell *matHeaderCellDef> </th>
+                        <td mat-cell *matCellDef="let element; let i = index">{{i + 1}}</td>
+                    </ng-container>
+                    <ng-container matColumnDef="email">
+                        <th mat-header-cell *matHeaderCellDef> email </th>
+                        <td mat-cell *matCellDef="let element"> {{element.email}} </td>
+                    </ng-container>
+                    <ng-container matColumnDef="first_name">
+                        <th mat-header-cell *matHeaderCellDef> first_name </th>
+                        <td mat-cell *matCellDef="let element"> {{element.first_name}} </td>
+                    </ng-container>
+                    <ng-container matColumnDef="language">
+                        <th mat-header-cell *matHeaderCellDef> language </th>
+                        <td mat-cell *matCellDef="let element"> {{element.language}} </td>
+                    </ng-container>
+                    <ng-container matColumnDef="age_group">
+                        <th mat-header-cell *matHeaderCellDef> age_group </th>
+                        <td mat-cell *matCellDef="let element"> {{element.age_group}} </td>
+                    </ng-container>
+                    <ng-container matColumnDef="gender">
+                        <th mat-header-cell *matHeaderCellDef> gender </th>
+                        <td mat-cell *matCellDef="let element"> {{element.gender}} </td>
+                    </ng-container>
+                    <ng-container matColumnDef="city">
+                        <th mat-header-cell *matHeaderCellDef> city </th>
+                        <td mat-cell *matCellDef="let element"> {{element.city}} </td>
+                    </ng-container> -->
+
+                    <ng-container [matColumnDef]="column" *ngFor="let column of displayedColumns ; let i =index">
+                        <th mat-header-cell *matHeaderCellDef class="emailHeader"> {{column}} </th>
+                        <td mat-cell *matCellDef="let element" class="emailBody"> {{element[column]}} </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+            </div>
+        </div>
+        <!-- <div *ngIf="showCampaignData && audiences" class="container" class="note">
+            <div style="padding: 10px;">
+                <span
+                    style="color: #4285F4; font-size: 12px; font-family: Google Sans; font-weight: 700; word-wrap: break-word">Note:</span>
+                <span
+                    style="color: #4285F4; font-size: 12px; font-family: Google Sans; font-weight: 400; word-wrap: break-word">
+                    This email will be generated based on the audience queried in Audiences, and Insights found in
+                    Marketing and Insights
+                </span>
+            </div>
+        </div> -->
+        <div *ngIf="showCampaignData && audiences">
+            <button style="margin-right:30px" class="btnaddImage" type="submit"
+                [ngClass]="{'generateActiveBtn': genrateImageClicked === true}" (click)="onGenerateImage()">Generate
+                image</button>
+            <button style="margin-right:30px" class="btnUploadImage" (click)="onUploadImageAssets()"
+                [ngClass]="{'generateActive': uploadImageAssetsClicked === true}" type="submit">Upload image
+                assets</button>
+        </div>
+        <div *ngIf="showGenarateImagedata">
+            <div>
+                <br>
+                <label for="otherTheme" class="drop-down-labels">Provide a context on how to generate your image</label>
+            </div>
+            <div>
+                <input type="text" id="otherTheme" placeholder="" class="askQuestionInput" [(ngModel)]='contextVal'>
+            </div>
+        </div>
+
+        <div *ngIf="showGenarateImagedata && !showAudienceMessage" style="margin-top: 15px; width:903px"
+            class="d-flex justify-content-between">
+            <div class="d-flex flex-column">
+                <label class="drop-down-labels"> Aspect Ratio</label>
+                <select class="select-theme-dropdowns-1" name="state" [(ngModel)]="aspectsRatio"
+                    (ngModelChange)="onClickAspectRation($event)">
+                    <!-- <option value="" disabled selected>Aspect Ratio</option> -->
+                    <option value="1:1" selected>1:1</option>
+                    <option value="3:4">3:4</option>
+                    <option value="4:3">4:3</option>
+                    <option value="16:9">16:9</option>
+                </select>
+            </div>
+            <div class="d-flex flex-column">
+                <label class="drop-down-labels">Content Type</label>
+                <select class="select-theme-dropdowns-1" name="state" [(ngModel)]="ContentType"
+                    (ngModelChange)="onClickContentType($event)">
+                    <option value="Photo" selected>Photo</option>
+                    <option value="Art">Art</option>
+                </select>
+            </div>
+            <div class="d-flex flex-column">
+                <label class="drop-down-labels">Color & Tone</label>
+                <select class="select-theme-dropdowns-1" name="state" [(ngModel)]="colorTone"
+                    (ngModelChange)="onClickColorTone($event)">
+                    <option value="None">None</option>
+                    <option value="Black and white"> Black and white</option>
+                    <option value="Cool tone" selected>Cool tone</option>
+                    <option value="Golden">Golden</option>
+                    <option value="Monochromatic">Monochromatic</option>
+                    <option value="Muted color"> Muted color</option>
+                    <option value="Pastel color"> Pastel color</option>
+                    <option value="Toned image"> Toned image</option>
+                </select>
+            </div>
+            <div class="d-flex flex-column">
+                <label class="drop-down-labels">Lighting</label>
+                <select class="select-theme-dropdowns-1" name="state" [(ngModel)]="lighting"
+                    (ngModelChange)="onClickLighting($event)">
+                    <option value="None">None</option>
+                    <option value="Backlighting">Backlighting</option>
+                    <option value="Dramatic light">Dramatic light</option>
+                    <option value="Golden hour" selected>Golden hour</option>
+                    <option value="Long-time exposure">Long-time exposure</option>
+                    <option value="Low lighting">Low lighting</option>
+                    <option value="Multiexposure">Multiexposure</option>
+                    <option value="Studio light">Studio light</option>
+                    <option value="Surreal lighting">Surreal lighting</option>
+                </select>
+            </div>
+            <div class="d-flex flex-column">
+                <label class="drop-down-labels">Composition</label>
+                <select class="select-theme-dropdowns-1" name="state" [(ngModel)]="campostion"
+                    (ngModelChange)="onClickCampostion($event)">
+                    <option value="None">None</option>
+                    <option value="Closeup">Closeup</option>
+                    <option value="Knolling">Knolling</option>
+                    <option value="Landscape photography">Landscape photography</option>
+                    <option value="Macrophotography">Macrophotography</option>
+                    <option value="Photographed through window">Photographed through window</option>
+                    <option value="Shallow depth of field"> Shallow depth of field</option>
+                    <option value="Shot from above">Shot from above</option>
+                    <option value="Shot from belowe">Shot from below</option>
+                    <option value="Surface detail"> Surface detail</option>
+                    <option value="Wide angle" selected>Wide angle</option>
+                </select>
+            </div>
+        </div>
+        <br>
+        <div *ngIf="showUploadImageData" style="width: 100%;padding: 15px 0px;">
+            <div>
+                <div class="dropzone" appFileDragNDrop (filesChangeEmiter)="onFileChange($any($event))">
+                    <div class="text-wrapper">
+                        <div class="centered" *ngIf="!fileUploaded">
+                            <input type="file" name="file" id="file" (change)="onFileChange($any($event.target).files)"
+                                multiple>
+                            <label for="file" class="dropLabel"> Drop files here! or
+                                <p class="textLink">Select file</p>
+                            </label>
+                        </div>
+                        <div *ngIf="files">
+                            <div class="row fileItem" *ngFor="let f of files; let ind = index">
+                                <div class="col-sm-12 fileItemText">
+                                    <span>{{f.name}}</span>
+                                    <p class="fileSize">{{formatBytes(f.size)}} .Uploaded</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="showCampaignData && !uploadImageAssetsClicked && audiences"
+            class="d-flex justify-content-center align-items-center">
+            <button type="submit" (click)="generateEmailText()"
+                [ngClass]="contextVal != '' ? 'onGenerateBtnSelected': 'btnGenrateEmailCopy'">Generate</button>
+        </div>
+        <div *ngIf="showCampaignData && uploadImageAssetsClicked && audiences"
+            class="d-flex justify-content-center align-items-center">
+            <button type="submit" (click)="generateEmailText()"
+                [ngClass]="fileUploaded ? 'onGenerateBtnSelected': 'btnGenrateEmailCopy'"
+                [disabled]="!fileUploaded">Generate</button>
+        </div>
+        <br>
+        <div *ngIf="showCampaignData && audiences">
+            <p class="emailP">Email copy will be generated from campaign brief, analytics studio & generated images</p>
+        </div>
+        <div *ngIf="showProgress" style="margin-top:20px">
+            <div class="spinner_loading">
+                <mat-spinner diameter="20"></mat-spinner>
+            </div>
+        </div>
+
+        <div *ngIf="showEmailContents">
+            <p class="result">Email Copy</p>
+        </div>
+        <div *ngIf="showEmailContents">
+            <!-- <st-editor [(ngModel)]="textContent" [config]="config"
+                style=" width: 903px; white-space: pre-wrap;"></st-editor> -->
+            <!-- <div [innerHTML]="textContent"></div>  -->
+            <textarea class="singleEmailTextarea" [(ngModel)]="textContent" (ngModelChange)="updateEmailText($event)"
+                style=" width: 903px; white-space: pre-wrap; overflow: auto; height:486px"></textarea>
+
+        </div>
+        <br>
+        <div *ngIf="(showEmailContents && (images.length>0) && !uploadImageAssetsClicked)"
+            class="generatedImagesSection">
+            <div class="d-flex justify-content-around align-items-center">
+                <div *ngFor="let i of images">
+                    <img [src]="i.image" class="imageDisplay" />
+                    <!-- <div class="d-flex justify-content-center align-items-center">
+                        <button id="selectedImage" (click)="onClickSelect(i.image , i.id)"
+                            [ngClass]="{'selectBtn': selectButtonId === i.id , 'btnSelect':selectButtonId!=i.id}">Select</button>
+                        &nbsp;&nbsp;
+                        <button class="btnEdit" (click)="loadEditImageCanvasComponent(i.image)">Edit</button>
+                    </div> -->
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center"
+                *ngIf="!showImagesUploaded && images.length > 0">
+                <span class="watermark"><svg xmlns="http://www.w3.org/2000/svg" width="21" height="21"
+                        viewBox="0 0 21 21" fill="none">
+                        <path
+                            d="M9 16V10H11V16H9ZM10 9C9.71667 9 9.47917 8.90417 9.2875 8.7125C9.09583 8.52083 9 8.28333 9 8C9 7.71667 9.09583 7.47917 9.2875 7.2875C9.47917 7.09583 9.71667 7 10 7C10.2833 7 10.5208 7.09583 10.7125 7.2875C10.9042 7.47917 11 7.71667 11 8C11 8.28333 10.9042 8.52083 10.7125 8.7125C10.5208 8.90417 10.2833 9 10 9ZM17.85 9.5L19.5 7.85C19.6667 8.35 19.7917 8.8625 19.875 9.3875C19.9583 9.9125 20 10.45 20 11C20 12.3833 19.7375 13.6833 19.2125 14.9C18.6875 16.1167 17.975 17.175 17.075 18.075C16.175 18.975 15.1167 19.6875 13.9 20.2125C12.6833 20.7375 11.3833 21 10 21C8.61667 21 7.31667 20.7375 6.1 20.2125C4.88333 19.6875 3.825 18.975 2.925 18.075C2.025 17.175 1.3125 16.1167 0.7875 14.9C0.2625 13.6833 0 12.3833 0 11C0 9.61667 0.2625 8.31667 0.7875 7.1C1.3125 5.88333 2.025 4.825 2.925 3.925C3.825 3.025 4.88333 2.3125 6.1 1.7875C7.31667 1.2625 8.61667 1 10 1C10.55 1 11.0875 1.04167 11.6125 1.125C12.1375 1.20833 12.65 1.33333 13.15 1.5L11.5 3.15C11.25 3.1 11.0042 3.0625 10.7625 3.0375C10.5208 3.0125 10.2667 3 10 3C7.76667 3 5.875 3.775 4.325 5.325C2.775 6.875 2 8.76667 2 11C2 13.2333 2.775 15.125 4.325 16.675C5.875 18.225 7.76667 19 10 19C12.2333 19 14.125 18.225 15.675 16.675C17.225 15.125 18 13.2333 18 11C18 10.7333 17.9875 10.4792 17.9625 10.2375C17.9375 9.99583 17.9 9.75 17.85 9.5ZM15.5 11C15.5 9.46667 14.9667 8.16667 13.9 7.1C12.8333 6.03333 11.5333 5.5 10 5.5C11.5333 5.5 12.8333 4.96667 13.9 3.9C14.9667 2.83333 15.5 1.53333 15.5 0C15.5 1.53333 16.0333 2.83333 17.1 3.9C18.1667 4.96667 19.4667 5.5 21 5.5C19.4667 5.5 18.1667 6.03333 17.1 7.1C16.0333 8.16667 15.5 9.46667 15.5 11Z"
+                            fill="#041E49" />
+                    </svg>
+                    Images watermarked by SynthID</span>
+                <div style="float: right;">
+                    <button class="genImageBtn" (click)="generateEmailCopy()">
+                        <img src="assets/images/Vector.svg" alt="auto renew logo" style="margin-bottom: 2px;">
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="editImageSection" style="padding: 15px;" id="editImage">
+            <app-edit-image-canvas [imageSrc]="imageSrc" [selectedCampaignFromDropdown]="selectedCampaignFromDropdown"
+                (imageBase64Change)="updateCanvasImage($event)"
+                (showSaveButton)="showSaveButton($event)"></app-edit-image-canvas>
+        </div>
+        <br>
+        <div *ngIf="(showEmailContents && images) || (showImagesUploaded && fileUploaded)">
+            <p class="bulkEmailGenerateTitle">Bulk Email Generation</p>
+            <p class="bulkEmailGenerateInfo">Generate Personalized Emails in bulk based on audience information</p>
+            <div class="d-flex justify-content-center align-items-center">
+                <button class="btnBulkEmailGenerate" type="submit" (click)="bulkEmail()">Bulk Generate</button>
+            </div>
+        </div>
+        <br>
+        <div *ngIf="showProgress2">
+            <div class="spinner_loading">
+                <mat-spinner diameter="20"></mat-spinner>
+            </div>
+        </div>
+        <div
+            *ngIf="(showButtonBulkEMail && showEmailContents && images && visibleEmails) || (showButtonBulkEMail && images && visibleEmails)">
+            <p class="result">Email Copy</p>
+        </div>
+        <div *ngIf="(showButtonBulkEMail && showEmailContents && images && visibleEmails) || (showButtonBulkEMail && images && visibleEmails)"
+            class="d-flex">
+            <div class="d-flex align-items-center col-8">
+                <button *ngIf="startIndex > 0" class="arrowNext google-symbols" (click)="showPrevious()">
+                    chevron_left
+                </button>
+                <button *ngFor="let item of visibleEmails; let ind = index" class="bulkEmailButton"
+                    (click)="builEmailContents(ind,item)"
+                    [ngClass]="{'bulkEButtonActive': activeEButton[ind] === true}">Email-{{ind+startIndex+1}}</button>
+                <button *ngIf="(visibleEmails.length < bulEmails.length) && (visibleEmails.length > 1) "
+                    class="arrowNext google-symbols" (click)="showNext()">
+                    chevron_right
+                </button>
+            </div>
+            <div class="d-flex col-4">
+                <button class="bulkEmailButtonEnglish" (click)="translated()"
+                    [ngClass]="{'bulkEmailButtonActive': activeETranslatedButton === true}">{{bulkEmailLanguage}}</button>
+                <button class="bulkEmailButtonEnglish" (click)="english()"
+                    [ngClass]="{'bulkEmailButtonActive': activeEnglishButton === true}">English</button>
+            </div>
+        </div>
+        <br>
+        <div *ngIf="(visibleEmails && showEmailContents && images) || (showButtonBulkEMail && images && visibleEmails)"
+            class="d-flex">
+            <!-- <st-editor [(ngModel)]="bulEmailTextContent" [config]="config"
+                style=" width: 520px; white-space: pre-wrap; height: 450px; overflow: auto;"></st-editor> -->
+            <textarea class="singleEmailTextarea" [(ngModel)]="bulEmailTextContent"
+                (ngModelChange)="updateBulkEmailText($event)"
+                style=" width: 500px; white-space: pre-wrap; height: 450px; overflow: auto; margin:10px"></textarea>
+
+            <div style="margin:10px" *ngIf="bulkEmailImageContent">
+                <img src={{bulkEmailImageContent}} style="width:420px; height: 450px;">
+            </div>
+            <div style="margin:10px ; width:420px; height: 450px;" *ngIf="!bulkEmailImageContent" class="d-flex justify-content-center align-items-center">
+
+                <svg width="100" height="100" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M24.4623 17.1706H25.0613L26.7684 15.4635L26.8523 14.7387C25.8743 13.8755 24.6924 13.2759 23.4183 12.9965C22.1442 12.7171 20.8198 12.7671 19.5704 13.1418C18.321 13.5165 17.1877 14.2035 16.2776 15.138C15.3675 16.0725 14.7107 17.2235 14.3691 18.4824C14.5593 18.4045 14.77 18.3919 14.9681 18.4465L18.3824 17.8834C18.3824 17.8834 18.5561 17.5959 18.646 17.6139C19.3776 16.8104 20.3886 16.317 21.4721 16.2346C22.5556 16.1522 23.6296 16.4871 24.4743 17.1706H24.4623Z"
+                        fill="#EA4335" />
+                    <path
+                        d="M29.2003 18.4814C28.8079 17.0364 28.0022 15.7374 26.8821 14.7437L24.4861 17.1396C24.9855 17.5477 25.3857 18.0637 25.6565 18.649C25.9273 19.2342 26.0617 19.8733 26.0495 20.518V20.9433C26.3296 20.9433 26.6069 20.9984 26.8656 21.1056C27.1243 21.2128 27.3594 21.3699 27.5574 21.5679C27.7554 21.7659 27.9125 22.001 28.0196 22.2597C28.1268 22.5184 28.182 22.7957 28.182 23.0757C28.182 23.3558 28.1268 23.6331 28.0196 23.8918C27.9125 24.1505 27.7554 24.3856 27.5574 24.5836C27.3594 24.7816 27.1243 24.9387 26.8656 25.0458C26.6069 25.153 26.3296 25.2082 26.0495 25.2082H21.7847L21.3594 25.6394V28.1972L21.7847 28.6225H26.0495C27.2405 28.6317 28.4028 28.2574 29.3645 27.5549C30.3262 26.8524 31.0363 25.859 31.3897 24.7216C31.743 23.5843 31.7209 22.3634 31.3266 21.2395C30.9323 20.1157 30.1868 19.1487 29.2003 18.4814Z"
+                        fill="#4285F4" />
+                    <path
+                        d="M17.5144 28.5996H21.7793V25.1853H17.5144C17.2106 25.1853 16.9103 25.1199 16.6339 24.9937L16.0349 25.1793L14.3158 26.8865L14.166 27.4855C15.1301 28.2135 16.3064 28.6049 17.5144 28.5996Z"
+                        fill="#34A853" />
+                    <path
+                        d="M17.5136 17.5235C16.358 17.5304 15.2335 17.898 14.297 18.5751C13.3605 19.2521 12.6588 20.2048 12.29 21.2999C11.9213 22.3951 11.9037 23.5781 12.2399 24.6837C12.5761 25.7893 13.2492 26.7624 14.1652 27.4669L16.6391 24.993C16.3247 24.851 16.0495 24.6348 15.837 24.363C15.6245 24.0912 15.4812 23.7719 15.4193 23.4326C15.3573 23.0932 15.3786 22.7439 15.4814 22.4145C15.5841 22.0852 15.7652 21.7858 16.0092 21.5418C16.2531 21.2979 16.5526 21.1168 16.8819 21.014C17.2112 20.9113 17.5605 20.89 17.8999 20.9519C18.2393 21.0138 18.5585 21.1572 18.8303 21.3696C19.1021 21.5821 19.3183 21.8573 19.4603 22.1717L21.9342 19.6978C21.415 19.019 20.7457 18.4695 19.9789 18.0923C19.212 17.7151 18.3682 17.5204 17.5136 17.5235Z"
+                        fill="#FBBC05" />
+                    <defs>
+                        <filter id="filter0_d_306_1933" x="0" y="0" width="44" height="44" filterUnits="userSpaceOnUse"
+                            color-interpolation-filters="sRGB">
+                            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                            <feColorMatrix in="SourceAlpha" type="matrix"
+                                values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+                            <feOffset dy="1" />
+                            <feGaussianBlur stdDeviation="1" />
+                            <feComposite in2="hardAlpha" operator="out" />
+                            <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0" />
+                            <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_306_1933" />
+                            <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_306_1933"
+                                result="shape" />
+                        </filter>
+                    </defs>
+                </svg>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="(showEmailContents && images && visibleEmails && !showImagesUploaded)"
+        class="d-flex saveToCampaign align-items-center justify-content-center">
+        <button style="margin-right:12px" class="btnSave" (click)="saveGenerateImageToGCS()" type="submit"
+            *ngIf="!saveSpinner">Save</button>
+        <button type="button" class="buttonLoader" *ngIf="saveSpinner">
+            <span class="button--loading"></span>
+        </button>
+        to
+        "{{campaignName}}"
+    </div>
+
+    <div *ngIf="(showImagesUploaded && visibleEmails)"
+        class="d-flex saveToCampaign align-items-center justify-content-center">
+        <button style="margin-right:12px" class="btnSave" (click)="saveUploadImageToGCS()" type="submit"
+            *ngIf="!saveSpinner">Save</button>
+        <button type="button" class="buttonLoader" *ngIf="saveSpinner">
+            <span class="button--loading"></span>
+        </button>
+        to
+        "{{campaignName}}"
+    </div>
+</div>

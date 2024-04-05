@@ -15,15 +15,16 @@
 
 FROM python:3.11-slim
 
+ARG PROJECT_ID=your-project-id
 # Allow statements and log messages to immediately appear in the Knative logs
 ENV PYTHONUNBUFFERED True
-ENV GOOGLE_CLOUD_PROJECT {PROJECT_ID}
+ENV GOOGLE_CLOUD_PROJECT $PROJECT_ID
 
-WORKDIR /code
-COPY ./requirements.txt /code/requirements.txt
-RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+WORKDIR /
+COPY ./requirements.txt /requirements.txt
+RUN pip install --no-cache-dir --upgrade -r /requirements.txt
 
-COPY ./app /code/app
+COPY ./app /app
 
 # Remove --reload
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080", "--reload"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]

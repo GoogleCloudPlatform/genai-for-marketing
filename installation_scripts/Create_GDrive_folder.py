@@ -23,10 +23,6 @@ service_account_email = dict_args.service_account_email
 def create_folder(folder_name):
   """Create a folder and prints the folder ID
   Returns : Folder Id
-
-  Load pre-authorized user credentials from the environment.
-  TODO(developer) - See https://developers.google.com/identity
-  for guides on implementing OAuth2 for the application.
   """
   creds, _ = google.auth.default()
 
@@ -95,10 +91,6 @@ def share_file(real_folder_id, real_user):
 def upload_with_conversion(folder_id,source_file,destination_file,file_type):
   """Upload file with conversion
   Returns: ID of the file uploaded
-
-  Load pre-authorized user credentials from the environment.
-  TODO(developer) - See https://developers.google.com/identity
-  for guides on implementing OAuth2 for the application.
   """
   creds, _ = google.auth.default()
 
@@ -140,11 +132,6 @@ def upload_with_conversion(folder_id,source_file,destination_file,file_type):
     print(f"An error occurred: {error}")
     file = None
 
-  
-
-
-
-
 if __name__ == "__main__":
 
     creds, _ = google.auth.default()
@@ -165,13 +152,13 @@ if __name__ == "__main__":
     MarketingDocID=upload_with_conversion(GDRIVE_FOLDER_ID,"genai-for-marketing/templates/[template] Gen AI for Marketing Google Doc Template.docx","Gen AI for Marketing Google Doc Template.docx","text/doc")
     MarketingPptID=upload_with_conversion(GDRIVE_FOLDER_ID,"genai-for-marketing/templates/[template] Marketing Assets.pptx","Marketing Assets.pptx","text/ppt")
     
-    with open("marketingEnvValue.json", "r") as jsonFile:
+    with open("create_gdrive_folder_results.json", "r") as jsonFile:
         data = json.load(jsonFile)
         data["GDRIVE_FOLDER_ID"] = GDRIVE_FOLDER_ID
         data["MarketingExcelID"] = MarketingExcelID
         data["MarketingDocID"] = MarketingDocID
         data["MarketingPptID"] = MarketingPptID
-    with open("marketingEnvValue.json", "w") as jsonFile:
+    with open("create_gdrive_folder_results.json", "w") as jsonFile:
         json.dump(data, jsonFile)
     
     

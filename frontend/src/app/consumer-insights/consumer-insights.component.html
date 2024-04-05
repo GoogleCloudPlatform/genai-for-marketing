@@ -1,0 +1,42 @@
+<div style=" display: flex; justify-content: center;flex-direction: column;">
+    <div class="title">
+        <p style="margin-bottom:30px">Consumer Insights</p>
+    </div>
+
+    <!-- <div class="subTitle">
+        <p>This page demonstrates how to use Enterprise Search to find external insights from marketing
+            research sources.</p>
+    </div> -->
+
+    <form [formGroup]="insightsForm" (ngSubmit)="onSubmit()">
+        <div>
+            <label for="name" class="insightsLabel">Search for external insights</label>
+            <input type="text" class="form-control name" id="name" placeholder="" formControlName="name" required>
+        </div>
+        <div style="margin-top: 10px;">
+            <button class="btn"
+                [ngClass]="{'generateActive': insightsForm.valid === true, 'generate' : insightsForm.valid === false }"
+                style="margin-left:350px" [disabled]="!insightsForm.valid" type="submit">Search</button>
+        </div>
+    </form>
+    <div class="row"
+        style="display: flex;align-items: center;align-content: center;justify-content: center; width:793px">
+        <div *ngIf="generateSuccessMsg" class="summarize-results">
+            <!-- <div class="generate-success">
+                <p class="campaign-success">Query executed successfully. Retrieving results.</p>
+            </div> -->
+            <div class="insight-results-label d-flex">
+                <span class="col-2" style="padding:0px">Results</span>
+                <span class="col-10" style="padding:0px" *ngIf="insightResults">{{llm_summary}}</span>
+            </div>
+            <br>
+            <div *ngFor="let res of insightResults ; let ind = index" class="insight-results">
+                <p><span class="insights-title"> {{res.title}} </span><br>
+                    <span class="insights-link"><a href='{{res.link}}' target="_blank"> {{res.link}}</a> </span><br>
+                    <span class="insights-body"> {{res.snippet}} </span>
+                </p>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>

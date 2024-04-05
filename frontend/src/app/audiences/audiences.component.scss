@@ -1,0 +1,635 @@
+.login-user {
+    //float: right;
+    margin-left: 1215px;
+    margin-top: 23px;
+}
+
+.title {
+    /* headlines */
+    //position: absolute;
+    width: 231px;
+    height: 26px;
+    // margin-left: 65px;
+    margin-top: 103px;
+    color: #4E4E4E;
+    font-family: Google Sans;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+
+.subTitle {
+    width: 558px;
+    height: 17px;
+    //margin-left: 65px;
+    margin-top: 30px;
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 50;
+    font-size: 16px;
+    line-height: 18px;
+    color: #000000;
+}
+
+.preview {
+    margin-top: 30px;
+    width: 871px;
+    height: 18px;
+    color: #000;
+    font-family: Google Sans;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    letter-spacing: 0.25px;
+}
+
+.perviewDesc {
+    //width: 205px;
+    height: 17px;
+    left: 403px;
+    top: 305px;
+    margin-top: 10px;
+    left: 27.99%;
+    right: 58.54%;
+    top: 33.93%;
+    bottom: 64.18%;
+
+    color: #757575;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    margin-bottom: 10px;
+}
+
+.btnPreviewTables {
+    /* Button */
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 24px;
+    gap: 8px;
+
+    //position: absolute;
+    width: 155px;
+    height: 38px;
+    left: 403px;
+    //top: 328px;
+
+    /* Grey/White */
+    background: #FFFFFF;
+    box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
+    border-radius: 4px;
+
+    /* Component Labels/Button */
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    /* identical to box height, or 143% */
+    display: flex;
+    align-items: center;
+    text-align: center;
+    letter-spacing: 0.25px;
+
+    /* Blue/600 */
+    color: #1A73E8;
+    margin-top: 5px;
+    //margin-left: 38px;
+
+    /* Inside auto layout */
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+
+}
+
+.tableHeading {
+    width: 194px;
+    height: 17px;
+    left: 403px;
+    //top: 365px;
+    left: 27.99%;
+    right: 58.54%;
+    //top: 28.69%;
+    bottom: 69.97%;
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 15px;
+    color: #757575;
+    margin-bottom: 10px;
+}
+
+.tableHeadingEvents {
+    width: 194px;
+    //height: 17px;
+    left: 403px;
+    top: 365px;
+    margin-top: 32px;
+    left: 27.99%;
+    right: 58.54%;
+    top: 28.69%;
+    bottom: 69.97%;
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 15px;
+    color: #757575;
+    padding-bottom: 10px;
+}
+
+td {
+    border-width: 0.5px;
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 200;
+    font-size: 12px;
+    padding: 2px;
+    text-align: center;
+}
+
+th {
+    border-width: 0.5px;
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 12px;
+    padding: 2px;
+    text-align: center;
+}
+
+.insights {
+    width: 871px;
+    height: 18px;
+    left: 404px;
+    top: 447px;
+
+    color: #000;
+    font-family: Google Sans;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    //margin-left: 65px;
+    margin-top: 30px;
+    letter-spacing: 0.25px;
+}
+
+.askQ {
+    /* Ask a question using natural language to the dataset above */
+
+    //margin-left: 65px;
+    margin-top: 20px;
+    left: 28.12%;
+    right: 48.19%;
+    top: 78.69%;
+    bottom: 19.97%;
+
+    color: #757575;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.marketingAssiBtn {
+
+    /* Auto layout */
+    border-color: transparent;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0px;
+    gap: 8px;
+
+    //position: absolute;
+
+    border-radius: 100px;
+    background: linear-gradient(92.89deg, #9EA9FD -10.22%, #DBE8FF 108.58%);
+
+    /* Inside auto layout */
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 1;
+
+    /* label-text */
+    width: 181px;
+    height: 40px;
+
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    /* identical to box height, or 143% */
+    text-align: center;
+    letter-spacing: 0.1px;
+
+    color: #FFFFFF;
+
+
+    /* Inside auto layout */
+    float: right;
+    margin-right: 10px;
+    //margin-top: 7px;
+}
+
+.select-theme-dropdowns {
+    width: 793px;
+    height: 48px;
+    flex-shrink: 0;
+    border-radius: 7px;
+    border: 1px solid transparent;
+    outline: 1px solid black;
+    background: white;
+    //box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15) inset;
+    border-right: 16px solid transparent;
+    margin-left: -12px;
+    color: #000;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+    /* 142.857% */
+    letter-spacing: 0.25px;
+    padding-left: 10px
+}
+
+.select-theme-dropdowns-campaign {
+    width: 793px;
+    height: 48px;
+    flex-shrink: 0;
+    border-radius: 7px;
+    border: 1px solid transparent;
+    outline: 1px solid black;
+    background: white;
+    //box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15) inset;
+    border-right: 16px solid transparent;
+    // margin-left: 110px;
+    color: #000;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+    /* 142.857% */
+    letter-spacing: 0.25px;
+    padding-left: 10px
+}
+
+.askQuestionInput {
+    width: 793px;
+    height: 48px;
+    flex-shrink: 0;
+    border-radius: 7px;
+    border: 1px solid black;
+    //background: #F6F6F6;
+    //box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15) inset;
+    background: white;
+    color: #000;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+    /* 142.857% */
+    letter-spacing: 0.25px;
+    padding-left: 10px;
+    margin-left: -12px;
+}
+
+.labelAskQ {
+    //margin-left: 55px;
+    color: #757575;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.btnGenerate {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 24px;
+    gap: 10px;
+
+    border-color: transparent;
+    width: 110px;
+    height: 41px;
+    left: 821px;
+    top: 1139px;
+
+    background: #1A73E8;
+    border-radius: 100px;
+
+    /* Component Labels/Button */
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    /* identical to box height, or 143% */
+    display: flex;
+    align-items: center;
+    text-align: center;
+    letter-spacing: 0.25px;
+
+    /* Grey/White */
+    color: #FFFFFF;
+
+
+    /* Inside auto layout */
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+    //margin-left: 1px;
+    margin-top: 10px;
+    width: 134px;
+    //height: 37px;
+}
+
+.generateBtnGrey {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 24px;
+    gap: 10px;
+
+    border-color: transparent;
+    width: 110px;
+    height: 41px;
+    left: 821px;
+    top: 1139px;
+    border-radius: 100px;
+    background: #DADADA;
+    /* Component Labels/Button */
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    /* identical to box height, or 143% */
+    display: flex;
+    align-items: center;
+    text-align: center;
+    letter-spacing: 0.25px;
+
+    /* Grey/White */
+    color: #000;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+    //margin-left: 1px;
+    margin-top: 10px;
+    width: 134px;
+}
+
+.askQuestion {
+    /* Ask a question using natural language to the dataset above */
+    left: 34.51%;
+    right: 41.81%;
+    top: 56.2%;
+    bottom: 43.01%;
+    color: #757575;
+    // margin-left: 115px;
+    margin-top: 15px;
+
+    color: #757575;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.spinner_loading {
+    margin-left: 418px;
+    margin-top: 7px;
+    margin-bottom: 5px;
+    //display: flex;
+    // justify-content: center;
+}
+
+.sqlData {
+    /* Screenshot 2023-07-28 at 9.25 1 */
+
+
+    width: 541px;
+    height: 139px;
+    left: 494px;
+    top: 1243px;
+
+    //background: url(Screenshot 2023-07-28 at 9.25.png);
+    filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.15));
+    border-radius: 11px;
+}
+
+
+.container,
+.container-lg,
+.container-md,
+.container-sm,
+.container-xl,
+.container-xxl {
+    max-width: 500px;
+    background-color: #E9E9EE;
+    margin-left: 112px;
+    margin-top: 18px;
+    border-radius: 7px;
+    padding: 16px;
+}
+
+.tableP {
+    //margin-left: 116px;
+    width: 350px;
+}
+
+.img-position {
+    position: absolute;
+    left: 97%;
+    top: 4.5%;
+}
+
+.saveButton {
+    // margin-left: 118px;
+    margin-top: 30px;
+    margin-bottom: 10px;
+    color: #757575;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.btnSave {
+    background: #4285F4;
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);
+    border-radius: 28px;
+
+    left: 837px;
+    top: 1827px;
+
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    /* identical to box height, or 143% */
+
+    align-items: center;
+    text-align: center;
+    letter-spacing: 0.25px;
+
+    color: #FFFFFF;
+    border-color: transparent;
+    width: 134px;
+    height: 37px;
+    flex-shrink: 0;
+}
+
+.spinner_loading-preview-table {
+    margin-left: 45px;
+    margin-top: 5px;
+}
+
+.example-container {
+    height: 340px;
+    overflow: auto;
+}
+
+table {
+    //width: 100%;
+    border-color: gainsboro;
+}
+
+td[_ngcontent-ng-c4253341424] {
+    border-width: 0.1px;
+    border-color: gainsboro;
+    width: 0.1%;
+    white-space: nowrap;
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 12px;
+}
+
+th[_ngcontent-ng-c4253341424] {
+    width: 0.1%;
+    white-space: nowrap;
+    border-width: 0.1px;
+    border-color: gainsboro;
+}
+
+.campaignSelected {
+    color: #757575;
+    font-family: Google Sans;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+select option {
+    color: #000;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+    /* 142.857% */
+    letter-spacing: 0.25px;
+}
+
+.sqlQuery {
+    color: #000;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+    /* 142.857% */
+    letter-spacing: 0.25px;
+    border-radius: 7px;
+    border: 1px solid #E9E9E9;
+    background: #F6F6F6;
+    box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15) inset;
+    max-width: 793px;
+    min-height: 139px;
+    flex-shrink: 0;
+    padding: 10px;
+    margin-top: 16px
+}
+
+.copyBtn {
+    border: none;
+    float: right;
+    background: transparent;
+}
+
+.table-headers {
+    color: #333 !important;
+    font-family: 'GOOGLE SANS';
+    font-size: 14px !important;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    background: #F9F9F9;
+}
+
+// table round corners //
+table tr:last-child td:first-child {
+    border: 2px solid inherit;
+    border-bottom-left-radius: 10px;
+}
+
+table tr:last-child td:last-child {
+    border: 2px solid inherit;
+    border-bottom-right-radius: 10px;
+}
+
+table tr:first-child th:first-child {
+    border: 2px solid inherit;
+    border-top-left-radius: 10px;
+}
+
+table tr:first-child th:last-child {
+    border: 2px solid inherit;
+    border-top-right-radius: 10px;
+}
+
+table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+// table round corners//
+
+.promptPanel {
+    color: #000;
+    font-family: "Google Sans";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+    letter-spacing: 0.25px;
+    width: 793px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    white-space: break-spaces;
+}

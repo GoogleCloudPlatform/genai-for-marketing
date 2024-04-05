@@ -1,0 +1,38 @@
+{
+    "data": [
+        {
+            "transaction_id": 3963468,
+            "customer_id": 34284,
+            "transaction_qnt": 1,
+            "transaction_value": 3481,
+            "transaction_type": "online-purchase",
+            "app_purchase_qnt": 8,
+            "is_online": false,
+            "transaction_date": "2022-09-14",
+            "product_name": "Coat"
+            
+        },
+        {
+            "transaction_id": 3963468,
+            "customer_id": 37908,
+            "transaction_qnt": 7,
+            "transaction_value": 1821,
+            "transaction_type": "online-purchase",
+            "app_purchase_qnt": 2,
+            "is_online": false,
+            "transaction_date": "2022-09-14",
+            "product_name": "Coat"
+        },
+        {
+            "transaction_id": 3963468,
+            "customer_id": 39751,
+            "transaction_qnt": 4,
+            "transaction_value": 4682,
+            "transaction_type": "recurrent-customer",
+            "app_purchase_qnt": 9,
+            "is_online": false,
+            "transaction_date": "2022-09-14",
+            "product_name": "Coat"
+        }
+    ]
+}

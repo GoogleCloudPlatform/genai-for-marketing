@@ -1,0 +1,445 @@
+.title {
+    color: #4E4E4E;
+    font-family: Google Sans;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    width: 657px;
+    height: 26px;
+    flex-shrink: 0;
+    // margin: 10px;
+    margin-bottom: 30px;
+}
+
+.marketingAssiBtn {
+    border-color: transparent;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0px;
+    gap: 8px;
+
+    //position: absolute;
+
+    border-radius: 100px;
+    background: linear-gradient(92.89deg, #9EA9FD -10.22%, #DBE8FF 108.58%);
+
+    /* Inside auto layout */
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 1;
+
+    /* label-text */
+    width: 181px;
+    height: 40px;
+
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    /* identical to box height, or 143% */
+    text-align: center;
+    letter-spacing: 0.1px;
+
+    color: #FFFFFF;
+
+    /* Inside auto layout */
+    float: right;
+    margin-right: 10px;
+    //    margin-top: 7px;
+}
+
+.generate-success {
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+}
+
+.campaign-list {
+    // margin-top: 130px;
+    display: flex;
+    //  align-items: center;
+    //  align-content: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.trendspotting {
+    margin-top: 103px;
+    // display: flex;
+    // flex-direction: row;
+    // flex-wrap: wrap;
+    // align-content: flex-start;
+    // justify-content: center;
+}
+
+.trendspotting-text {
+    color: #000;
+    font-family: Google Sans;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    width: 920px;
+}
+
+.google-trends-dataset-text {
+    color: #757575;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    width: 920px;
+}
+
+.google-trends-dataset {
+    color: #000;
+    font-family: Google Sans;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    width: 920px;
+}
+
+.top-search-form-text {
+    color: #757575;
+    font-family: Google Sans;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.top-search-title {
+    color: #000;
+    font-family: Google Sans;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+
+.top-search-date-text {
+    color: #757575;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.generateActive {
+    border-radius: 100px;
+    // background: #DADADA;
+    display: inline-flex;
+    padding: 8px 24px;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    color: #FFFFFF;
+    text-align: center;
+
+    /* Component Labels/Button */
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    /* 142.857% */
+    letter-spacing: 0.25px;
+    border: none !important;
+
+    background: var(--blue-600, #1A73E8);
+
+}
+
+.generate {
+    border-radius: 100px;
+    background: #DADADA;
+    display: inline-flex;
+    padding: 8px 24px;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    color: #757575;
+    text-align: center;
+
+    /* Component Labels/Button */
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    /* 142.857% */
+    letter-spacing: 0.25px;
+}
+
+.result {
+    color: #000;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    margin-left: 60px;
+
+    input {
+        height: 48px;
+        width: 350px;
+        border-radius: 7px;
+        border: 1px solid #E9E9E9;
+        background: #F6F6F6;
+        box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15) inset;
+    }
+}
+
+.date-picker {
+    color: #000;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+
+
+    height: 48px;
+    width: 350px;
+    border-radius: 7px;
+    border: 1px solid #E9E9E9;
+    background: #F6F6F6;
+    box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15) inset;
+
+}
+
+.summarization-title {
+    color: #000;
+    font-family: Google Sans;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    width: 920px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+.max-summarization {
+    color: #757575;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.summarization-text {
+    color: #757575;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.toggle-less {
+    display: flex;
+    width: 40px;
+    padding: 8px 12px 8px 12px;
+    align-items: center;
+    gap: 8px;
+    border-radius: 4px;
+    background: var(--blue-600, #1A73E8);
+    border: none;
+}
+
+.toggle-more {
+    display: flex;
+    width: 40px;
+    padding: 8px 12px 8px 12px;
+    align-items: center;
+    gap: 8px;
+    border-radius: 4px;
+    background: var(--blue-600, #1A73E8);
+    border: none;
+}
+
+.counterResult {
+    height: 48px;
+    flex-shrink: 0;
+    color: #000;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    //margin-left: 100px;
+
+    input {
+        height: 48px;
+        width: 84px;
+        border-radius: 7px;
+        border: 1px solid black;
+        background: white;
+        box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15) inset;
+    }
+}
+
+.keyword1 {
+    width: 260px;
+    height: 48px;
+    flex-shrink: 0;
+    color: #757575;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    margin-right: 20px;
+
+    input {
+        height: 48px;
+        width: 260px;
+        border-radius: 7px;
+        border: 1px solid black;
+        background: white;
+        /* box-shadow: 0 0 3px #00000026 inset; */
+    }
+}
+
+.keyword {
+    //  width: 84px;
+    width: 260px;
+    height: 48px;
+    flex-shrink: 0;
+    color: #757575;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    margin-right: 20px;
+
+    input {
+        height: 48px;
+        width: 260px;
+        border-radius: 7px;
+        border: 1px solid black;
+        background: white;
+        /* box-shadow: 0 0 3px #00000026 inset; */
+    }
+}
+
+.summarizeBtn {
+    display: flex;
+    justify-content: center;
+    margin: 50px;
+}
+
+.summarize-results {
+    border-radius: 7px;
+    border: 1px solid #E9E9E9;
+    background: #F6F6F6;
+    box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15) inset;
+    width: 832px;
+    //   height: 282px;
+    flex-shrink: 0;
+}
+
+.select-theme-dropdowns-campaign {
+    width: 793px;
+    height: 48px;
+    flex-shrink: 0;
+    border-radius: 7px;
+    border: 1px solid transparent;
+    outline: 1px solid black;
+    border-right: 16px solid transparent;
+    color: #000;
+    font-family: Google Sans;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    background: white;
+}
+
+.saveButton {
+    color: #757575;
+    font-family: Google Sans;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.btnSave {
+
+    background: #4285F4;
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);
+    border-radius: 28px;
+
+    /* Save */
+
+    left: 837px;
+    top: 1827px;
+
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    /* identical to box height, or 143% */
+
+    align-items: center;
+    text-align: center;
+    letter-spacing: 0.25px;
+
+    color: #FFFFFF;
+    width: 68px;
+    height: 37px;
+    margin-top: 10px;
+    border-color: transparent;
+    width: 119px;
+}
+
+.spinner_loading {
+    margin-right: 58px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.img-position {
+    position: absolute;
+    left: 97%;
+    top: 4.5%;
+}
+
+.summarize-results {
+    color: #000;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 20px;
+
+    a {
+        color: #000;
+        font-family: Google Sans;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: normal;
+    }
+}

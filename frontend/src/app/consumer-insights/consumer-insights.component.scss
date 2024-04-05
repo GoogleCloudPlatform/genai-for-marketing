@@ -1,0 +1,177 @@
+.title {
+    width: 231px;
+    height: 26px;
+    // margin-left: 30px;
+    margin-top: 103px;
+    left: 0%;
+    right: 0%;
+    top: 0%;
+    bottom: 0%;
+    color: #4E4E4E;
+    font-family: Google Sans;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+
+.login-user {
+    //float: right;
+    margin-left: 1215px;
+    margin-top: 23px;
+}
+
+.subTitle {
+    //    color: #000;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    margin-top: 50px;
+}
+
+.insightsLabel {
+    margin-top: 30px;
+    color: #757575;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    margin-bottom:7px
+}
+
+input {
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.name {
+    border-radius: 7px;
+    border: 1px solid black;
+    background: white;
+    /* box-shadow: 0 0 3px #00000026 inset; */
+    width: 793px;
+    height: 48px;
+    flex-shrink: 0;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+
+.generateActive {
+    border-radius: 100px;
+    // background: #DADADA;
+    display: inline-flex;
+    padding: 8px 24px;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    color: #FFFFFF;
+    text-align: center;
+
+    /* Component Labels/Button */
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    /* 142.857% */
+    letter-spacing: 0.25px;
+    border: none !important;
+
+    background: var(--blue-600, #1A73E8);
+
+}
+
+.generate {
+    border-radius: 100px;
+    background: #DADADA;
+    display: inline-flex;
+    padding: 8px 24px;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    color: #757575;
+    text-align: center;
+
+    /* Component Labels/Button */
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    /* 142.857% */
+    letter-spacing: 0.25px;
+}
+
+.campaign-success {
+    color: rgb(23, 114, 51);
+    background-color: rgba(33, 195, 84, 0.1);
+    width: 501px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50px;
+}
+
+.generate-success {
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+}
+
+.insight-results-label {
+    color: #757575;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    margin-top:30px
+}
+
+.img-position {
+    position: absolute;
+    left: 97%;
+    top: 4.5%;
+}
+
+.insights-title {
+    color: #000;
+    font-family: Google Sans;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 18px;
+    width: 730px;
+}
+
+.insights-link {
+    color: #757575;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 18px;
+    text-decoration-line: underline;
+    width: 730px;
+}
+
+.insights-body {
+    color: #000;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 18px;
+    width: 730px;
+}

@@ -1,0 +1,358 @@
+.name {
+    border-radius: 7px;
+    border: 1px solid #E9E9E9;
+    background: #F6F6F6;
+    //box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15) inset;
+    width: 758px;
+    height: 48px;
+    flex-shrink: 0;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    padding-left: 16px;
+    color: #000;
+}
+
+.name-label {
+    width: 112px;
+    height: 17px;
+    flex-shrink: 0;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.theme-label {
+    width: 194px;
+    height: 17px;
+    flex-shrink: 0;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    margin-top: 10px;
+}
+
+.select-theme-dropdowns {
+    color: #000;
+    width: 758px;
+    height: 48px;
+    flex-shrink: 0;
+    border-radius: 7px;
+    border: 1px solid transparent;
+    outline: 1px solid #E9E9E9;
+    background: #F6F6F6;
+    //box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15) inset;
+    padding-left: 16px;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    border-right: 16px solid transparent;
+}
+
+.brief {
+    color: #000;
+    font-family: Google Sans;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    //width: 162px;
+    height: 17px;
+    flex-shrink: 0;
+}
+
+.select-dropdowns {
+    color: #000;
+    width: 362px;
+    height: 48px;
+    flex-shrink: 0;
+    border-radius: 7px;
+    border: 1px solid transparent;
+    outline: 1px solid #E9E9E9;
+    background: #F6F6F6;
+    //box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15) inset;
+    padding-left: 16px;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    border-right: 16px solid transparent;
+}
+
+.generateActive {
+    border-radius: 100px;
+    display: inline-flex;
+    padding: 8px 24px;
+    align-items: center;
+    gap: 10px;
+    color: #000;
+    text-align: center;
+    font-family: "Google Sans";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    letter-spacing: 0.25px;
+    background: var(--blue-600, #1A73E8);
+    border: 2px solid var(--logo, #B79EFD);
+    background: linear-gradient(143deg, rgba(183, 158, 253, 0.15) -11.32%, rgba(189, 225, 255, 0.15) 16.51%, rgba(182, 157, 252, 0.15) 84.1%);
+}
+
+.generate {
+    border-radius: 100px;
+    background: #D9D9D9;
+    display: inline-flex;
+    padding: 8px 24px;
+    align-items: center;
+    gap: 10px;
+    color: #757575;
+    text-align: center;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    letter-spacing: 0.25px;
+    border: none;
+}
+
+.title {
+    color: #4E4E4E;
+    font-family: Google Sans;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    width: 657px;
+    height: 26px;
+    flex-shrink: 0;
+}
+
+.marketingAssiBtn {
+    border-color: transparent;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0px;
+    gap: 8px;
+    border-radius: 100px;
+    background: linear-gradient(92.89deg, #9EA9FD -10.22%, #DBE8FF 108.58%);
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 1;
+    width: 181px;
+    height: 40px;
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    text-align: center;
+    letter-spacing: 0.1px;
+    color: #FFFFFF;
+    float: right;
+    margin-right: 10px;
+}
+
+.campaign-success {
+    color: rgb(23, 114, 51);
+    background-color: rgba(33, 195, 84, 0.1);
+    width: 758px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50px;
+}
+
+.generate-success {
+    margin-top: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+}
+
+.login-user {
+    float: right;
+    margin-right: 26px;
+    margin-top: 28px;
+}
+
+.styleSelect select {
+    background: transparent;
+    width: 168px;
+    padding: 5px;
+    font-size: 16px;
+    line-height: 1;
+    border: 0;
+    border-radius: 0;
+    height: 34px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    color: #000;
+}
+
+.styleSelect {
+    color: #000;
+    width: 362px;
+    height: 48px;
+    flex-shrink: 0;
+    border-radius: 7px;
+    border: 1px solid #E9E9E9;
+    background: #F6F6F6;
+    //box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15) inset;
+    padding-left: 16px;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+
+    overflow: hidden;
+    background: url("/src/assets/images/arrow-down.png") no-repeat right #F6F6F6;
+    // border: 2px solid #000;
+}
+
+.campaignform {
+    margin-top: 30px;
+    display: flex;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+}
+
+.spinner_loading {
+    margin-top: 30px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: center;
+}
+.saveCampaignForm {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: end;
+    align-items: center
+}
+
+.loader {
+    width: 32px;
+    height: 32px;
+    padding: 3px;
+    /* the border thickness */
+    background: linear-gradient(#B79EFD 100%, #BDE1FF 100%, #B69DFC 100%);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    --_m:
+        conic-gradient(#0000, #000),
+        linear-gradient(#000 0 0) content-box;
+    -webkit-mask: var(--_m);
+    mask: var(--_m);
+    -webkit-mask-composite: source-out;
+    mask-composite: subtract;
+    box-sizing: border-box;
+    animation: load 1s linear infinite;
+}
+
+@keyframes load {
+    to {
+        transform: rotate(1turn)
+    }
+}
+
+input:checked~#loader {
+    animation: none;
+    transition: border 0.5s ease-out;
+}
+
+input:checked~#loader .check {
+    display: block;
+}
+
+#loader {
+    width: 32px;
+    height: 32px;
+    position: relative;
+    border-radius: 50%;
+    animation: spin 1.2s linear infinite, colorChange 3s linear infinite;
+    background: linear-gradient(white, white) padding-box, linear-gradient(to right, #B79EFD, #BDE1FF, #B69DFC) border-box;
+    border-radius: 50em;
+    border: 4px solid transparent;
+}
+
+#loader .check {
+    top: 54%;
+    left: 6px;
+    width: 6px;
+    content: "";
+    height: 14px;
+    display: none;
+    position: absolute;
+    transform-origin: left top;
+    animation: check 0.8s ease;
+    border-top: 2px solid #B79EFD;
+    border-right: 2px solid #B79EFD;
+    transform: scaleX(-1) rotate(135deg);
+}
+
+@keyframes check {
+    0% {
+        height: 0;
+        width: 0;
+        opacity: 1;
+    }
+
+    20% {
+        height: 0;
+        width: 6px;
+        opacity: 1;
+    }
+
+    40% {
+        height: 14px;
+        width: 6px;
+        opacity: 1;
+    }
+
+    100% {
+        height: 14px;
+        width: 6px;
+        opacity: 1;
+    }
+}
+
+@keyframes colorChange {
+    40% {
+        border-left: 2px solid #FFF;
+    }
+
+    60% {
+        border-left: 2px solid #FFF;
+    }
+
+    80% {
+        border-left: 2px solid #FFF;
+    }
+
+    100% {
+        border-left: 2px solid #FFF;
+    }
+}
+
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}

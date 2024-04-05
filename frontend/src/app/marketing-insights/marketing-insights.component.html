@@ -1,0 +1,31 @@
+<div class="title">
+    Marketing Insights
+</div>
+
+<!-- <div class="subTitle">Visualize marketing data through Looker Dashboards.</div> -->
+<div class="dropdownLabel"><label for="theme">Visualize marketing data through Looker dashboards.</label></div>
+
+<div class="dashboardLabel"><label for="theme">Select a dashboard and explore data</label></div>
+  <div class="row" style=" display: flex;align-items: center;align-content: center;justify-content: center;">
+  
+  <div class="col-12">
+    
+    
+    <select class="select-theme-dropdowns" name="state" ngModel (ngModelChange)="onClick($event)">
+     
+      <!-- Include the title of th Dashboard here -->
+      <!-- The following is just one example. Each Dashboard must have a link below. -->
+      <option value="Overview">Overview</option>
+
+    </select>
+</div>
+
+
+</div>
+
+<!-- Include the link to the Dashboard here -->
+<!-- The following is just one example -->
+<div *ngIf="overview" class="overviewcss">
+  <iframe width="1000" height="1000" src="https://googledemo.looker.com/embed/dashboards/2131?allow_login_screen=true" ></iframe>
+</div>
+

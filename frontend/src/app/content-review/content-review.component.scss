@@ -1,0 +1,426 @@
+.campaign-title {
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    width: 71px;
+    height: 16px;
+    position: absolute;
+    text-align: center;
+    color: #4285F4;
+    word-wrap: break-word;
+    margin-top: 2px;
+}
+
+.showGenerateAssetGroupBtn {
+    display: inline-flex;
+    padding: 8px 24px;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    border-radius: 100px;
+    background: var(--blue-600, #1A73E8);
+}
+
+.postContext {
+    color: #000;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    margin-top: 20px;
+}
+
+.edit-post-headline-area {
+    border-radius: 7px;
+    border: 1px solid #E9E9E9;
+    background: #F6F6F6;
+    box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15) inset;
+    min-height: 300px;
+    flex-shrink: 0;
+    width: 864px;
+    color: #000;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 18px;
+    padding: 15px;
+    white-space: pre-line;
+}
+
+.select-theme-dropdowns {
+    width: 793px;
+    height: 48px;
+    flex-shrink: 0;
+    border-radius: 7px;
+    border: 1px solid transparent;
+    outline: 1px solid #E9E9E9;
+    //background: #F6F6F6;
+    //box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15) inset;
+    border-right: 16px solid transparent;
+    margin-left: 55px;
+    padding: 3px;
+}
+
+.select-theme-dropdowns-campaign {
+    width: 293px;
+    height: 28px;
+    flex-shrink: 0;
+    border-radius: 14px;
+    border: 0;
+    border: 1px solid transparent;
+    outline: 1px solid black;
+    background: white;
+    //box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15) inset;
+    color: #000;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    margin-left: 81px;
+    padding: 3px;
+    border-right: 16px solid transparent;
+}
+
+.title {
+    color: #4E4E4E;
+    font-family: Google Sans;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    margin-bottom: 30px;
+}
+
+.select-theme-dropdowns-1 {
+    display: flex;
+    width: 138px;
+    height: 37px;
+    padding: 8px 16px;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    border-radius: 100px;
+    border: 0;
+    margin-bottom: 20px;
+    //color: #4285F4;
+    background-color: white;
+    margin-left: 20px;
+    color: #767676;
+    border: 1px solid transparent;
+    outline: 1px solid #E9E9E9;
+    /* Component Labels/Button */
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    /* 142.857% */
+    letter-spacing: 0.25px;
+    border-right: 16px solid transparent;
+}
+
+.content-title {
+    margin-top: 120px;
+}
+
+.login-user {
+    //float: right;
+    margin-left: 1215px;
+    margin-top: 23px;
+}
+
+.img-position {
+    position: absolute;
+    left: 95%;
+    top: 9%;
+}
+
+
+.btnGenrateEmailCopy {
+    border-radius: 100px;
+    border: 1px solid #4285F4;
+    display: inline-flex;
+    padding: 8px 24px;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    color: #4285F4;
+    background-color: white;
+    margin-left: 5px;
+    text-align: center;
+    /* Component Labels/Button */
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    /* 142.857% */
+    letter-spacing: 0.25px;
+}
+
+.spinner_loading {
+    margin-right: 58px;
+    margin-top: 30px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+.generateActiveBtn {
+    border-radius: 100px;
+    display: inline-flex;
+    padding: 8px 24px;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    border-radius: 100px;
+    border: 1px solid #34A853;
+    background: #48D36D;
+    margin-left: 5px;
+    color: #FFF;
+    text-align: center;
+
+    /* Component Labels/Button */
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    /* 142.857% */
+    letter-spacing: 0.25px;
+}
+
+.fa-arrow-left {
+    background: white;
+    color: black;
+    border: none;
+}
+
+.fa-arrow-right {
+    background: white;
+    color: black;
+    border: none;
+}
+
+.arrowNext {
+    background: white;
+    color: black;
+    border: none;
+}
+
+
+.bulkEmailButtonEnglish {
+    background-color: #E9E9E9;
+    border-color: transparent;
+    border-radius: 7px;
+    float: right;
+    margin-right: 10px;
+    color: #757575;
+    text-align: center;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    // line-height: 20px;
+    width: 146px;
+    // height: 20px;
+    /* 142.857% */
+}
+
+.bulkEmailButtonActive {
+    background-color: #E2F3FF;
+    border-color: transparent;
+    border-radius: 7px;
+    //margin-left: 10px;
+    float: right;
+    color: #000;
+    text-align: center;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    //line-height: 20px;
+    width: 146px;
+    // height: 20px;
+    /* 142.857% */
+}
+
+.bulkEButtonActive {
+    background-color: #E2F3FF;
+    border-color: transparent;
+    border-radius: 7px;
+    color: #000;
+    text-align: center;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    //line-height: 20px;
+    width: 146px;
+    // height: 20px;
+    /* 142.857% */
+}
+
+.bulkEmailGenerateInfo {
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    margin-top: 10px;
+}
+
+.btnBulkEmailGenerate {
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    /* identical to box height, or 143% */
+
+    align-items: center;
+    text-align: center;
+    letter-spacing: 0.25px;
+    width: 80px;
+    height: 30px;
+    border-color: transparent;
+    letter-spacing: 0.25px;
+    color: white;
+    width: 155px;
+    height: 40px;
+    background: #379ff5;
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);
+    border-radius: 25px;
+    margin-top: 10px;
+    border-color: transparent;
+}
+
+
+.bulkEmailButton {
+    background-color: #E9E9E9;
+    border-color: transparent;
+    border-radius: 7px;
+    margin-left: 10px;
+    margin-right: 10px;
+    color: #757575;
+    text-align: center;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    //line-height: 20px;
+    //display: flex;
+    width: 146px;
+    // height: 20px;
+    // flex-direction: column;
+    // justify-content: center;
+    /* 142.857% */
+}
+
+st-editor {
+    white-space: pre-wrap;
+    height: 300px;
+    flex-shrink: 0;
+    width: 903px;
+
+    color: #000;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 18px;
+    //  padding: 15px;
+}
+
+.noCampaignMsg {
+    color: #757575;
+    //text-align: center;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+::ng-deep .st-toolbar[_ngcontent-ng-c3772410157] {
+    background: #F6F6F6;
+    background-color: #FFF !important;
+    box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.15);
+    border-radius: 11px !important;
+    border: 0px !important;
+    padding: 5px !important;
+    margin: 10px !important;
+}
+
+::ng-deep .st-area {
+    background-color: #F6F6F6 !important;
+    border: none !important;
+    margin: 10px !important;
+}
+
+::ng-deep .st-editor-container {
+    border-radius: 7px;
+    border: 1px solid #E9E9E9;
+    background: #F6F6F6;
+    box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15) inset;
+    background-color: #F6F6F6 !important;
+}
+
+.headline {
+    color: #757575;
+    font-family: Google Sans;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.bulkEmailTextarea {
+    border-radius: 7px;
+    border: 1px solid #E9E9E9;
+    background: #F6F6F6;
+    box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15) inset;
+    background-color: #F6F6F6 !important;
+    display: block;
+    //width: 1040px;
+    //padding: 15px;
+    color: #000;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 16px;
+    padding: 10px
+}
+
+.googleSlidesBtn {
+    border-radius: 100px;
+    border: 1px solid #4285F4;
+    display: inline-flex;
+    padding: 8px 24px;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    color: #4285F4;
+    text-align: center;
+
+    /* Component Labels/Button */
+    font-family: "Google Sans";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    /* 142.857% */
+    letter-spacing: 0.25px;
+    margin-top:20px
+}

@@ -1,0 +1,126 @@
+.expand_button {
+  position: absolute;
+  left: 50%;
+  top: 80%;
+  right: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.e-button {
+  color: transparent;
+  padding-left: 10px;
+  padding-right: 10px;
+  position: relative;
+  float: right;
+  overflow: hidden;
+  max-width: 52px;
+  -webkit-transition: max-width 0.3s ease-in-out;
+  -moz-transition: max-width 0.3s ease-in-out;
+  -o-transition: max-width 0.3s ease-in-out;
+  transition: max-width 0.3s linear;
+
+  border-radius: 60px;
+  text-align: center;
+  /* M3/label/large */
+  font-family: Roboto;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  /* 142.857% */
+  letter-spacing: 0.1px;
+}
+
+.e-button-text {
+  white-space: nowrap;
+  color: black;
+  padding-right: 10px;
+}
+
+.e-button-userJourney {
+  color: transparent;
+  background-color: black;
+  padding-right: 10px;
+  position: relative;
+  float: right;
+  overflow: hidden;
+  max-width: 34px;
+  -webkit-transition: max-width 0.3s ease-in-out;
+  -moz-transition: max-width 0.3s ease-in-out;
+  -o-transition: max-width 0.3s ease-in-out;
+  transition: max-width 0.3s linear;
+  padding-left: 4px;
+  border-radius: 60px;
+  color: #414244;
+
+  text-align: center;
+  font-family: Roboto;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: 0.1px;
+}
+
+.e-button:hover {
+  background-color: white;
+  color: #fff;
+  max-width: 280px;
+  box-shadow: 0px 15px 20px rgba(133, 134, 134, 0.4);
+
+  circle {
+    display: none !important;
+  }
+}
+
+.e-button-userJourney-text {
+  white-space: nowrap;
+  color: white;
+}
+
+.e-button-userJourney:hover {
+  background-color: black;
+  color: black;
+  max-width: 280px;
+}
+
+.abc {
+  // background: #ffffff;
+  width: 19.64px;
+  height: 15.8px;
+
+  position: absolute;
+  left: 98.32%;
+  right: 2.99%;
+  top: 48%;
+  bottom: 72.38%;
+}
+
+.demo {
+  // background: #ffffff;
+  width: 19.64px;
+  height: 15.8px;
+
+  position: absolute;
+  left: 98.32%;
+  right: 2.99%;
+  top: 56%;
+  bottom: 72.38%;
+}
+
+.userJourney {
+  // background: white;
+  width: 19.64px;
+  height: 15.8px;
+
+  position: absolute;
+  left: 98.1%;
+  right: 2.99%;
+  top: 41.5%;
+  bottom: 72.38%;
+}
+
+
+::ng-deep .p-carousel .p-carousel-indicators {
+  display: none !important;
+}

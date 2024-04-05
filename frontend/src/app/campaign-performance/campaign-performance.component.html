@@ -1,0 +1,40 @@
+<div class="title">
+  Campaign Performance
+</div>
+
+<!-- <div class="subTitle">This page presents visualizations of marketing data in the form of Looker Dashboards</div> -->
+<div class="dropdownLabel"><label for="theme" class="select-label">Select as dashboard to be displayed</label></div>
+
+<!-- <mat-form-field>
+    <mat-label>Select the dashboard n Explore data</mat-label>
+    <mat-select>
+      @for (data of datas; track data) {
+        <mat-option [value]="data.value">{{data.viewValue}}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>  -->
+<div class="row" style=" display: flex;align-items: center;align-content: center;justify-content: center;">
+
+  <div class="col-12">
+
+    <!-- <select class="select-theme-dropdowns"  ngModel> 
+      <option *ngFor="let data of datas"   [ngValue]="data">{{data.viewValue}}</option>
+    </select> -->
+    <select class="select-theme-dropdowns" name="state" ngModel (ngModelChange)="onClick($event)">
+
+      <!-- Include the title of th Dashboard here -->
+      <!-- The following is just one example. Each Dashboard must have a link below. -->
+      <option value="Overview">Overview</option>
+
+    </select>
+  </div>
+
+
+</div>
+
+<!-- Include the link to the Dashboard here -->
+<!-- The following is just one example -->
+<div *ngIf="overview" class="overviewcss">
+  <iframe width="950" height="950"
+    src="https://googledemo.looker.com/embed/dashboards/2131?allow_login_screen=true"></iframe>
+</div>

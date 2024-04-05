@@ -157,13 +157,12 @@ def generate_prompt(
     Returns:
         The prompt.
     """
-    PROMPT_PROJECT_ID = [project_id]*130
+    PROMPT_PROJECT_ID = [project_id]*7
     context = ''
     for i in metadata:
         context += i
 
-    return (f"{prompt.format(*PROMPT_PROJECT_ID)} \n"
-             f"{context} \n"
+    return (f"{prompt.format(context,*PROMPT_PROJECT_ID)} \n"
              f"[Q]: {question} \n"
              "[SQL]:")
 
@@ -217,8 +216,11 @@ def generate_sql_and_query(
     gen_code = llm.predict(
         prompt = prompt,
         max_output_tokens = 1024,
-        temperature=0.2
-    ).text
-
-    result_query = bqclient.query(gen_code)
-    return result_query.result().to_dataframe().to_dict(), gen_code
+        temperature=0.3
+    ).text.replace("```","")
+    gen_code = gen_code[gen_code.find("SELECT"):]
+    result = []
+    result_job = bqclient.query(gen_code)
+    for row in result_job:
+        result.append(dict(row.items()))
+    return result, gen_code, prompt

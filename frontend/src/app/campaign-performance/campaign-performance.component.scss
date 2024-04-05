@@ -1,0 +1,134 @@
+.title {
+    /* headlines */
+
+    width: 280px;
+    height: 26px;
+    //margin-left: 68px;
+    margin-top: 103px;
+    /* Marketing Insights */
+
+    left: 0%;
+    right: 0%;
+    top: 0%;
+    bottom: 0%;
+
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 30px;
+
+    color: #4E4E4E;
+}
+
+.login-user {
+    // float: right;
+    margin-left: 1215px;
+    margin-top: 23px;
+}
+
+.subTitle {
+    width: 695px;
+    height: 17px;
+    // margin-left: 32px;
+    margin-top: 28px;
+
+    //font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 18px;
+
+    color: #000000;
+}
+
+.select-theme-dropdowns {
+    width: 793px;
+    height: 48px;
+    flex-shrink: 0;
+    border-radius: 7px;
+    border: 1px solid transparent;
+    outline: 1px solid black;
+    //background: #F6F6F6;
+    //box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15) inset;
+    border-right: 16px solid transparent;
+    padding-left: 16px;
+    color: #000;
+    font-family: "Google Sans";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    background: white;
+}
+
+.dropdownLabel {
+    // margin-left: 32px;
+    margin-top: 30px;
+}
+
+.overviewcss {
+    width: 100%;
+    // margin-left: 400px;
+    margin-top: 50px;
+    //  margin-left: 29px;
+    margin-bottom: 30px;
+
+}
+
+.marketingAssiBtn {
+    border-color: transparent;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0px;
+    gap: 8px;
+
+    //position: absolute;
+
+    border-radius: 100px;
+    background: linear-gradient(92.89deg, #9EA9FD -10.22%, #DBE8FF 108.58%);
+
+    /* Inside auto layout */
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 1;
+
+    /* label-text */
+    width: 181px;
+    height: 40px;
+
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    /* identical to box height, or 143% */
+    text-align: center;
+    letter-spacing: 0.1px;
+
+    color: #FFFFFF;
+
+    /* Inside auto layout */
+    float: right;
+    margin-right: 10px;
+    //    margin-top: 7px;
+
+}
+
+.img-position {
+    position: absolute;
+    left: 97%;
+    top: 4.5%;
+}
+
+.select-label {
+    color: #757575;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}

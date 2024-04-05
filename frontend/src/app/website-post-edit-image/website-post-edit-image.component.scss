@@ -1,0 +1,379 @@
+.editzone {
+    width: 899px;
+    height: 96px;
+    flex-shrink: 0;
+    //  height: 200px;
+    display: table;
+    //  width: 800px;
+    background-color: #eee;
+    // border: dotted 1px #aaa;
+    border-radius: 6px;
+    background: #FFF;
+
+}
+
+.btnGenrateEmailCopy {
+    left: 830px;
+    top: 1818px;
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    /* identical to box height, or 143% */
+
+    align-items: center;
+    text-align: center;
+    letter-spacing: 0.25px;
+    width: 80px;
+    height: 30px;
+    margin-left: 376px;
+    margin-top: 10px;
+    margin-bottom: 30px;
+    border-color: transparent;
+    letter-spacing: 0.25px;
+    color: black;
+
+    width: 155px;
+    height: 40px;
+    background: #BEC8D0;
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);
+    border-radius: 25px;
+    margin-left: 409px;
+    margin-top: 40px;
+    border-color: transparent;
+}
+
+.spinner_loading {
+    margin-right: 58px;
+    margin-top: 30px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+.generateActive {
+    left: 830px;
+    top: 1818px;
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    /* identical to box height, or 143% */
+
+    align-items: center;
+    text-align: center;
+    letter-spacing: 0.25px;
+    width: 80px;
+    height: 30px;
+    margin-left: 425px;
+    margin-top: 10px;
+    border-color: transparent;
+    letter-spacing: 0.25px;
+    color: black;
+
+    width: 155px;
+    height: 40px;
+    background: gainsboro;
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    margin-left: 0px;
+    margin-top: 23px;
+    border-color: transparent;
+    border-radius: 7px;
+    background: #a1c1f3;
+    //  box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15) inset;
+}
+
+.edit-image-title {
+    color: #000;
+    font-family: Google Sans;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 20px;
+    /* 142.857% */
+    letter-spacing: 0.25px;
+}
+
+.edit-image-headline {
+    color: #000;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+    /* 142.857% */
+    letter-spacing: 0.25px;
+    width: 404px;
+}
+
+.edit-slider {
+
+    display: flex;
+    width: 180px;
+    padding: 8px;
+    justify-content: center;
+    align-items: center;
+}
+
+.edit-image-prompt-title {
+    color: #000;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    /* 142.857% */
+    letter-spacing: 0.25px;
+}
+
+.edit-image-prompt-area {
+    border-radius: 7px;
+    border: 1px solid #E9E9E9;
+    background: #F6F6F6;
+    box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15) inset;
+    width: 395px;
+    height: 97px;
+    flex-shrink: 0;
+    padding: 10px;
+    color: #000;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    letter-spacing: 0.25px;
+}
+
+.edit-image-tools-dropdown {
+    width: 404px;
+    height: 48px;
+    flex-shrink: 0;
+    border-radius: 7px;
+    border: 1px solid #E9E9E9;
+    //background: #F6F6F6;
+    box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15) inset;
+    // margin-left: 110px;
+}
+
+.btnGenerateEditImage {
+    left: 830px;
+    top: 1818px;
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    /* identical to box height, or 143% */
+
+    align-items: center;
+    text-align: center;
+    letter-spacing: 0.25px;
+    width: 80px;
+    height: 30px;
+    margin-top: 10px;
+    border-color: transparent;
+    letter-spacing: 0.25px;
+    color: black;
+    width: 155px;
+    height: 40px;
+    background: #BEC8D0;
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);
+    border-radius: 25px;
+    margin-top: 40px;
+    border-color: transparent;
+    background: #4285F4;
+    color: #FFF;
+}
+
+canvas {
+    border: 1px solid #000;
+}
+
+.imageDisplay {
+    height: 239px;
+    width: 239px;
+    // margin-left: 45px;
+    margin-bottom: 5px;
+    margin-top: 20px;
+    border-radius: 7px;
+}
+
+.btnSave {
+    /* Group 1151 */
+    left: 830px;
+    top: 1818px;
+    /* Rectangle 561 */
+    left: 830px;
+    top: 1818px;
+    background: #4285F4;
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);
+    border-radius: 28px;
+    /* Save */
+    left: 837px;
+    top: 1827px;
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    /* identical to box height, or 143% */
+
+    align-items: center;
+    text-align: center;
+    letter-spacing: 0.25px;
+
+    color: #FFFFFF;
+    width: 68px;
+    height: 30px;
+    margin-left: 425px;
+    margin-top: 10px;
+    border-color: transparent;
+}
+
+.selectBtn {
+    background-color: white;
+    border-color: rgb(148, 148, 241);
+    border-radius: 15px;
+    margin-bottom: 5px;
+    border-color: transparent;
+
+    background: #a1c1f3;
+    color: #4285F4;
+    text-align: center;
+
+    /* Component Labels/Button */
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    /* 142.857% */
+    letter-spacing: 0.25px;
+    //  box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15) inset;
+    display: inline-flex;
+    padding: 8px 24px;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    border-radius: 100px;
+    border: 1px solid #4285F4;
+}
+
+.btnSelect {
+    background-color: white;
+    border-color: rgb(148, 148, 241);
+
+    border-radius: 15px;
+    margin-bottom: 5px;
+    display: inline-flex;
+    padding: 8px 24px;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    border-radius: 100px;
+    border: 1px solid #4285F4;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    /* 142.857% */
+    letter-spacing: 0.25px;
+}
+
+.btnSelectDisable {
+    background-color: lightgray;
+    border-color: rgb(176, 176, 184);
+
+    border-radius: 15px;
+    margin-bottom: 5px;
+    display: inline-flex;
+    padding: 8px 24px;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    border-radius: 100px;
+    border: 1px solid lightgray;
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    /* 142.857% */
+    letter-spacing: 0.25px;
+
+}
+
+.btnEdit {
+    background-color: white;
+    border-color: rgb(121, 121, 252);
+    border-radius: 15px;
+    margin-bottom: 5px;
+    //color: #4285F4;
+    text-align: center;
+
+    /* Component Labels/Button */
+    font-family: Google Sans;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    /* 142.857% */
+    letter-spacing: 0.25px;
+    display: inline-flex;
+    padding: 8px 24px;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    border-radius: 100px;
+    border: 1px solid #4285F4;
+}
+
+.textarea {
+    padding: 15px;
+}
+
+.btnGenerateEditImageGrey {
+    left: 830px;
+    top: 1818px;
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    /* identical to box height, or 143% */
+
+    align-items: center;
+    text-align: center;
+    letter-spacing: 0.25px;
+    width: 80px;
+    height: 30px;
+    margin-top: 10px;
+    border-color: transparent;
+    letter-spacing: 0.25px;
+    color: black;
+    width: 155px;
+    height: 40px;
+    background: #BEC8D0;
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);
+    border-radius: 25px;
+    margin-top: 40px;
+    border-color: transparent;
+}
+
+.generatedImagesSection {
+    padding: 15px;
+    width: 903px;
+    //height: 381px;
+    border-radius: 7px;
+    border: 1px solid #E9E9E9;
+    background: #F6F6F6;
+    box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15) inset;
+}

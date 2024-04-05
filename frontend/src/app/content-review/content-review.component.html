@@ -1,0 +1,309 @@
+<div class="container" style="height: 100%;">
+    <div class="content-title">
+        <p class="title">Content Review and Activation</p>
+        <div *ngIf="!showCampaignDropdown" class="noCampaignMsg">
+            Please generate a campaign first by going to the Campaigns page before using this page.
+        </div>
+        <div *ngIf="showCampaignDropdown">
+            <div>
+                <span class="campaign-title">Campaign</span>
+                <select class="select-theme-dropdowns-campaign" name="state" ngModel
+                    (ngModelChange)="onClickCampaign($event)">
+                    <option *ngFor="let d of CAMPAIGN_DATA">{{d.name}}</option>
+                </select>
+                <div class="Line16" style="margin-top:20px; width: 1002px; height: 0px; border: 1px #E9E9E9 solid">
+                </div>
+            </div>
+        </div>
+        <div class="d-flex ">
+            <div style="margin-bottom: 30px;" *ngFor="let selectedCampaign of selectedCampaignFromDropdown">
+                <div style="margin-top:20px; width: 1071px; color: black; font-size: 14px; font-family: Google Sans; font-weight: 400; word-wrap: break-word"
+                    *ngIf="!selectedCampaign.data.emails && !selectedCampaign.data.website_post && !selectedCampaign.data.ads_insta && !selectedCampaign.data.ads_threads && !selectedCampaign.data.asset_classes_text">
+                    Please generate content first using Creative Studio and then use this page to review and activate.
+                </div>
+                <!-- <div *ngIf="selectedCampaign.data.emails || selectedCampaign.data.website_post || selectedCampaign.data.ads_insta || selectedCampaign.data.ads_threads || selectedCampaign.data.asset_classes_text"
+                    style="margin-top:20px; width: 1071px; color: black; font-size: 14px; font-family: Google Sans; font-weight: 700; word-wrap: break-word">
+                    <span>Review</span>
+                    <span style="margin-left:866px;">Activation</span>
+                </div> -->
+                <div *ngIf="selectedCampaign">
+                    <button class="googleSlidesBtn" (click)="exportToGoogleSlides()">
+                        Export to Google Slides
+                    </button>
+                </div>
+                <div *ngIf="showExportFileLink">
+                    <p style="font-family: 'Google Sans';font-size: 14px; margin-top:10px">
+                        <a href="{{exploreFiles}}" target="_blank">Explore files in Google Drive ↗</a>
+                    </p>
+                </div>
+
+                <div *ngIf="selectedCampaign.data?.emails" style="margin-bottom: 30px;" class="d-flex">
+
+                    <div class="d-flex flex-column" style="width:864px">
+                        <p class="postContext">Email Copy</p>
+                        <!-- <textarea class="edit-post-headline-area">{{selectedCampaign.data.emails.text}}</textarea> -->
+                        <div class="d-flex">
+                            <div class="d-flex align-items-center col-8">
+                                <button *ngIf="startIndex > 0" class="arrowNext google-symbols"
+                                    (click)="showPrevious()">
+                                    chevron_left
+                                </button>
+                                <button *ngFor="let item of visibleEmails; let ind = index"
+                                    (click)="builEmailContents(ind,item)"
+                                    [ngClass]="{'bulkEButtonActive': activeEButton[ind] === true , 'bulkEmailButton':activeEButton[ind] === false}">Email-{{ind+startIndex+1}}</button>
+                                <button *ngIf="(visibleEmails.length < bulEmails.length) && (visibleEmails.length > 1) "
+                                    class="arrowNext google-symbols" (click)="showNext()">
+                                    chevron_right
+                                </button>
+                            </div>
+                            <div class="d-flex col-4" *ngIf="visibleEmails">
+                                <button class="bulkEmailButtonEnglish" (click)="translated()"
+                                    [ngClass]="{'bulkEmailButtonActive': activeETranslatedButton === true}">{{bulkEmailLanguage}}</button>
+                                <button class="bulkEmailButtonEnglish" (click)="english()"
+                                    [ngClass]="{'bulkEmailButtonActive': activeEnglishButton === true}">English</button>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="d-flex">
+                            <div class="bulkEmailTextarea"
+                                style=" width: 500px; white-space: pre-wrap; height: 450px; overflow: auto; margin: 0px 10px;">
+                                <p> {{bulEmailTextContent}}</p>
+                            </div>
+                            <div style="margin: 0px 10px;" *ngIf="bulkEmailImageContent">
+                                <img src={{bulkEmailImageContent}} style="width:350px; height: 450px;">
+                            </div>
+
+                            <div style="margin:10px ; width:350px; height: 450px;" *ngIf="!bulkEmailImageContent"
+                                class="d-flex justify-content-center align-items-center">
+
+                                <svg width="100" height="100" viewBox="0 0 44 44" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M24.4623 17.1706H25.0613L26.7684 15.4635L26.8523 14.7387C25.8743 13.8755 24.6924 13.2759 23.4183 12.9965C22.1442 12.7171 20.8198 12.7671 19.5704 13.1418C18.321 13.5165 17.1877 14.2035 16.2776 15.138C15.3675 16.0725 14.7107 17.2235 14.3691 18.4824C14.5593 18.4045 14.77 18.3919 14.9681 18.4465L18.3824 17.8834C18.3824 17.8834 18.5561 17.5959 18.646 17.6139C19.3776 16.8104 20.3886 16.317 21.4721 16.2346C22.5556 16.1522 23.6296 16.4871 24.4743 17.1706H24.4623Z"
+                                        fill="#EA4335" />
+                                    <path
+                                        d="M29.2003 18.4814C28.8079 17.0364 28.0022 15.7374 26.8821 14.7437L24.4861 17.1396C24.9855 17.5477 25.3857 18.0637 25.6565 18.649C25.9273 19.2342 26.0617 19.8733 26.0495 20.518V20.9433C26.3296 20.9433 26.6069 20.9984 26.8656 21.1056C27.1243 21.2128 27.3594 21.3699 27.5574 21.5679C27.7554 21.7659 27.9125 22.001 28.0196 22.2597C28.1268 22.5184 28.182 22.7957 28.182 23.0757C28.182 23.3558 28.1268 23.6331 28.0196 23.8918C27.9125 24.1505 27.7554 24.3856 27.5574 24.5836C27.3594 24.7816 27.1243 24.9387 26.8656 25.0458C26.6069 25.153 26.3296 25.2082 26.0495 25.2082H21.7847L21.3594 25.6394V28.1972L21.7847 28.6225H26.0495C27.2405 28.6317 28.4028 28.2574 29.3645 27.5549C30.3262 26.8524 31.0363 25.859 31.3897 24.7216C31.743 23.5843 31.7209 22.3634 31.3266 21.2395C30.9323 20.1157 30.1868 19.1487 29.2003 18.4814Z"
+                                        fill="#4285F4" />
+                                    <path
+                                        d="M17.5144 28.5996H21.7793V25.1853H17.5144C17.2106 25.1853 16.9103 25.1199 16.6339 24.9937L16.0349 25.1793L14.3158 26.8865L14.166 27.4855C15.1301 28.2135 16.3064 28.6049 17.5144 28.5996Z"
+                                        fill="#34A853" />
+                                    <path
+                                        d="M17.5136 17.5235C16.358 17.5304 15.2335 17.898 14.297 18.5751C13.3605 19.2521 12.6588 20.2048 12.29 21.2999C11.9213 22.3951 11.9037 23.5781 12.2399 24.6837C12.5761 25.7893 13.2492 26.7624 14.1652 27.4669L16.6391 24.993C16.3247 24.851 16.0495 24.6348 15.837 24.363C15.6245 24.0912 15.4812 23.7719 15.4193 23.4326C15.3573 23.0932 15.3786 22.7439 15.4814 22.4145C15.5841 22.0852 15.7652 21.7858 16.0092 21.5418C16.2531 21.2979 16.5526 21.1168 16.8819 21.014C17.2112 20.9113 17.5605 20.89 17.8999 20.9519C18.2393 21.0138 18.5585 21.1572 18.8303 21.3696C19.1021 21.5821 19.3183 21.8573 19.4603 22.1717L21.9342 19.6978C21.415 19.019 20.7457 18.4695 19.9789 18.0923C19.212 17.7151 18.3682 17.5204 17.5136 17.5235Z"
+                                        fill="#FBBC05" />
+                                    <defs>
+                                        <filter id="filter0_d_306_1933" x="0" y="0" width="44" height="44"
+                                            filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                                            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                                            <feColorMatrix in="SourceAlpha" type="matrix"
+                                                values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+                                            <feOffset dy="1" />
+                                            <feGaussianBlur stdDeviation="1" />
+                                            <feComposite in2="hardAlpha" operator="out" />
+                                            <feColorMatrix type="matrix"
+                                                values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0" />
+                                            <feBlend mode="normal" in2="BackgroundImageFix"
+                                                result="effect1_dropShadow_306_1933" />
+                                            <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_306_1933"
+                                                result="shape" />
+                                        </filter>
+                                    </defs>
+                                </svg>
+                            </div>
+                            <!-- <st-editor [(ngModel)]="bulEmailTextContent" [config]="config"></st-editor> -->
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-column">
+                        <p style="margin-bottom: 38px;"></p>
+                        <div class="d-flex" style="margin-top: 70px;">
+                            <div class="d-flex flex-column">
+                                <select class="select-theme-dropdowns-1" name="colorTone">
+                                    <option value="Google Drive" selected>Google Drive</option>
+                                </select>
+                                <button style="margin-left:20px" class="btnGenrateEmailCopy" download="file.txt"
+                                    type="submit"
+                                    (click)="exportEmails('Export Emails' , selectedCampaign.data.emails.text ,'email_images',selectedCampaign.data?.emails?.persionalized_emails)">Export</button>
+                                <button style="margin-left:20px" class="btnGenrateEmailCopy" type="submit"
+                                    [disabled]="activateButton['emails']" (click)="onClickActive('emails')"
+                                    [ngClass]="{'generateActiveBtn': activateButton['emails'] === true}"><span
+                                        *ngIf="activateButton['emails'] else prompt">Activated</span>
+                                    <ng-template #prompt>Activate</ng-template></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <p *ngIf="selectedCampaign.data?.website_post" class="postContext">Website Post</p>
+
+                <div *ngIf="selectedCampaign.data?.website_post" style="margin-bottom: 30px;" class="d-flex">
+
+                    <div class="d-flex flex-column">
+                        <div class="edit-post-headline-area">
+                            <div>
+                                {{selectedCampaign.data?.website_post.text}}
+                            </div>
+                            <br>
+                            <div class="d-flex justify-content-center">
+                                <!-- https://storage.mtls.cloud.google.com/genai-for-marketing-assets/1XMraYAFfImprQhOrcLJY9HhAXSDY0qd_/website_post_image.png -->
+                                <img src="https://storage.mtls.cloud.google.com/{{selectedCampaign.data?.website_post.gcs_path}}"
+                                    height="290px" width="290px" style="border-radius: 10px;">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <p style="margin-bottom: 38px;"></p>
+                        <div class="d-flex">
+                            <div class="d-flex flex-column"><select class="select-theme-dropdowns-1" name="colorTone">
+                                    <option value="Google Drive" selected>Google Drive</option>
+                                </select>
+                                <button style="margin-left:20px" class="btnGenrateEmailCopy" type="submit"
+                                    (click)="export('Export WebsitePost' , selectedCampaign.data.website_post.text ,'website_post_image',[selectedCampaign.data.website_post?.gcs_path])">Export</button>
+                                <button style="margin-left:20px" class="btnGenrateEmailCopy" type="submit"
+                                    (click)="onClickActive('website_post')" [disabled]="activateButton['website_post']"
+                                    [ngClass]="{'generateActiveBtn': activateButton['website_post'] === true}"><span
+                                        *ngIf="activateButton['website_post'] else prompt">Activated</span>
+                                    <ng-template #prompt>Activate</ng-template></button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <p *ngIf="selectedCampaign.data?.ads_insta" class="postContext">Social Media - Instagram</p>
+
+                <div *ngIf="selectedCampaign.data?.ads_insta" style="margin-bottom: 30px;" class="d-flex">
+                    <div class="edit-post-headline-area">
+                        <div>
+                            {{selectedCampaign.data?.ads_insta.text}}
+                        </div>
+                        <br>
+                        <div class="d-flex justify-content-center">
+                            <img src="https://storage.mtls.cloud.google.com/{{selectedCampaign.data?.ads_insta.gcs_path}}"
+                                height="290px" width="290px" style="border-radius: 10px;">
+
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <p style="margin-bottom: 38px;"></p>
+                        <div class="d-flex">
+                            <div class="d-flex flex-column"><select class="select-theme-dropdowns-1" name="colorTone">
+                                    <option value="Google Drive" selected>Google Drive</option>
+
+                                </select>
+                                <button style="margin-left:20px" class="btnGenrateEmailCopy" type="submit"
+                                    (click)="export('Export SocialMedia-Insta' , selectedCampaign.data?.ads_insta.text , 'social_media_image', [selectedCampaign.data?.ads_insta?.gcs_path])">Export</button>
+
+                                <button style="margin-left:20px" class="btnGenrateEmailCopy"
+                                    (click)="onClickActive('ads_insta')" [disabled]="activateButton['ads_insta']"
+                                    type="submit"
+                                    [ngClass]="{'generateActiveBtn': activateButton['ads_insta'] === true}"><span
+                                        *ngIf="activateButton['ads_insta'] else prompt">Activated</span>
+                                    <ng-template #prompt>Activate</ng-template></button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <p *ngIf="selectedCampaign.data?.ads_threads" class="postContext">Social Media - Threads</p>
+
+                <div *ngIf="selectedCampaign.data?.ads_threads" style="margin-bottom: 30px;" class="d-flex">
+
+                    <div class="edit-post-headline-area">
+                        <div>
+                            {{selectedCampaign.data?.ads_threads.text}}
+                        </div>
+                        <br>
+                        <div class="d-flex justify-content-center">
+                            <img src="https://storage.mtls.cloud.google.com/{{selectedCampaign.data?.ads_threads.gcs_path}}"
+                                height="290px" width="290px" style="border-radius: 10px;">
+
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <p style="margin-bottom: 38px;"></p>
+                        <div class="d-flex">
+                            <div class="d-flex flex-column"><select class="select-theme-dropdowns-1" name="colorTone">
+                                    <option value="Google Drive" selected>Google Drive</option>
+
+                                </select>
+                                <button style="margin-left:20px" class="btnGenrateEmailCopy" type="submit"
+                                    (click)="export('Export SocialMedia-Threads' , selectedCampaign.data?.ads_threads.text , 'social_media_image', [selectedCampaign.data?.ads_threads.gcs_path])">Export</button>
+
+                                <button style="margin-left:20px" class="btnGenrateEmailCopy"
+                                    (click)="onClickActive('ads_threads')" [disabled]="activateButton['ads_threads']"
+                                    type="submit"
+                                    [ngClass]="{'generateActiveBtn': activateButton['ads_threads'] === true}"><span
+                                        *ngIf="activateButton['ads_threads'] else prompt">Activated</span>
+                                    <ng-template #prompt>Activate</ng-template></button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <p *ngIf="selectedCampaign.data?.asset_classes_text" class="postContext">Asset Group PMax</p>
+
+                <div *ngIf="selectedCampaign.data?.asset_classes_text" style="margin-bottom: 30px;" class="d-flex">
+
+                    <div class="d-flex flex-column">
+
+                        <!-- <textarea class="edit-post-headline-area">Headlines
+{{selectedCampaign.data.asset_classes_text.headlines}}
+
+Long Headline
+{{selectedCampaign.data.asset_classes_text.long_headlines}}
+
+Description
+{{selectedCampaign.data.asset_classes_text.description}}
+
+Call to Action
+{{selectedCampaign.data.asset_classes_text.call_to_action}}
+                            </textarea> -->
+                        <div>
+                            <div contenteditable="true" class="edit-post-headline-area">
+                                <div class="d-flex flex-column">
+                                    <span class="headline">Headline</span><br>
+                                    {{selectedCampaign.data?.asset_classes_text.headlines}}<br><br>
+
+                                    <span class="headline">Long Headline</span><br>
+                                    {{selectedCampaign.data?.asset_classes_text.long_headlines}}<br><br>
+
+                                    <span class="headline">Description</span><br>
+                                    {{selectedCampaign.data?.asset_classes_text.description}}<br><br>
+
+                                    <span class="headline">Call to Action</span><br>
+                                    {{selectedCampaign.data?.asset_classes_text.call_to_action}}<br><br>
+                                </div>
+                                <div class="d-flex justify-content-center align-items-center">
+                                    <div *ngFor="let img of selectedCampaign.data?.asset_classes_images" class="d-flex"
+                                        style="padding:5px">
+                                        <img src="https://storage.mtls.cloud.google.com/{{img}}" height="250px"
+                                            width="250px" style="border-radius: 10px;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <p style="margin-bottom: 38px;"></p>
+                        <div class="d-flex">
+                            <div class="d-flex flex-column"><select class="select-theme-dropdowns-1" name="colorTone">
+                                    <option value="Google Drive" selected>Google Drive</option>
+                                    <!-- <option value="Text">Text</option> -->
+                                </select>
+                                <button style="margin-left:20px" class="btnGenrateEmailCopy" type="submit"
+                                    (click)="export('Export AssetGroupPMax' , selectedCampaign.data?.asset_classes_text.headlines, 'asset_classes_images', selectedCampaign.data?.asset_classes_images)">Export</button>
+
+                                <button style="margin-left:20px" class="btnGenrateEmailCopy"
+                                    (click)="onClickActive('asset_classes_text')"
+                                    [disabled]="activateButton['asset_classes_text']" type="submit"
+                                    [ngClass]="{'generateActiveBtn': activateButton['asset_classes_text'] === true}"><span
+                                        *ngIf="activateButton['asset_classes_text'] else prompt">Activated</span>
+                                    <ng-template #prompt>Activate</ng-template></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

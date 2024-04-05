@@ -1,0 +1,218 @@
+<div class="title">
+    Audiences
+</div>
+
+<div class="subTitle">Extract data from BigQuery using natural language and the PaLM API.
+</div>
+
+<div class="preview">Data preview</div>
+<div class="perviewDesc">Preview of the CDP dataset tables</div>
+<div><button class="btnPreviewTables" (click)="onClickPreviewTable()">Preview Tables</button></div>
+<br>
+<div *ngIf="showProgressPreviewTable">
+    <div class="spinner_loading-preview-table">
+        <mat-spinner diameter="20"></mat-spinner>
+    </div>
+</div>
+<div *ngIf="showTables">
+    <div *ngIf="audiences">
+        <div class="tableHeading">Preview for table: Customers</div>
+        <div style="width:900px ; overflow: auto;">
+            <table style="width:900px">
+                <tbody>
+                    <tr class="table-headers">
+                        <th></th>
+                        <th *ngFor="let field of audiences[0] | keyvalue">{{field.key}}</th>
+                    </tr>
+                    <tr *ngFor="let item of audiences ; let i=index">
+                        <td>{{i + 1}}</td>
+                        <td *ngFor="let field of item | keyvalue">{{field.value}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div *ngIf="eventsData">
+        <div class="tableHeadingEvents">Preview for table: Events</div>
+        <!-- <p-table #dt1 [value]="eventsData" [rows]="5" [showCurrentPageReport]="true" styleClass="p-datatable-sm">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th style='width:15px;'></th>
+                    <th style='flex: 0 0 20px;'>customer_id</th>
+                    <th style='flex: 0 0 20px;'>event_id </th>
+                    <th style='flex: 0 0 20px;'>event_date</th>
+                    <th style='flex: 0 0 20px;'>event_type</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-event let-rowIndex="rowIndex">
+                <tr>
+                    <td>
+                        <div>{{rowIndex + 1}}</div>
+                    </td>
+                    <td>{{event.customer_id}}</td>
+                    <td> <span>{{event.event_id}}</span> </td>
+                    <td> <span>{{event.event_date}}</span></td>
+                    <td> {{event.event_type}} </td>
+                </tr>
+            </ng-template>
+        </p-table> -->
+        <div style="width:900px ; overflow: auto;">
+            <table style="width:900px">
+                <tbody>
+                    <tr class="table-headers">
+                        <th></th>
+                        <th *ngFor="let field of eventsData[0] | keyvalue">{{field.key}}</th>
+                    </tr>
+                    <tr *ngFor="let item of eventsData ; let i=index">
+                        <td>{{i + 1}}</td>
+                        <td *ngFor="let field of item | keyvalue">{{field.value}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div *ngIf="transactionsData">
+        <div class="tableHeadingEvents">Preview for table: Transactions</div>
+
+        <!-- <p-table #dt1 [value]="transactionsData" [rows]="5" [showCurrentPageReport]="true" styleClass="p-datatable-sm">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th style='width:15px;'></th>
+                    <th style='flex: 0 0 20px;'>transaction_id</th>
+                    <th style='flex: 0 0 20px;'>customer_id </th>
+                    <th style='flex: 0 0 20px;'>transaction_qnt</th>
+                    <th style='flex: 0 0 20px;'>transaction_value</th>
+                    <th style='flex: 0 0 20px;'>transaction_type</th>
+                    <th style='flex: 0 0 20px;'>app_purchase_qnt</th>
+                    <th style='flex: 0 0 20px;'>is_online</th>
+                    <th style='flex: 0 0 20px;'>transaction_date</th>
+                    <th style='flex: 0 0 20px;'>product_name</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-tData let-rowIndex="rowIndex">
+                <tr>
+                    <td>
+                        <div>{{rowIndex + 1}}</div>
+                    </td>
+                    <td>{{tData.transaction_id}}</td>
+                    <td> <span>{{tData.customer_id}}</span> </td>
+                    <td> <span>{{tData.transaction_qnt}}</span></td>
+                    <td> {{tData.transaction_value}} </td>
+                    <td> {{tData.transaction_type}} </td>
+                    <td> {{tData.app_purchase_qnt}} </td>
+                    <td> {{tData.is_online}} </td>
+                    <td> {{tData.transaction_date}} </td>
+                    <td> {{tData.product_name}} </td>
+                </tr>
+            </ng-template>
+        </p-table> -->
+        <div style="width:900px ; overflow: auto;">
+            <table style="width:900px">
+                <tbody>
+                    <tr class="table-headers">
+                        <th></th>
+                        <th *ngFor="let field of transactionsData[0] | keyvalue">{{field.key}}</th>
+                    </tr>
+                    <tr *ngFor="let item of transactionsData ; let i=index">
+                        <td>{{i + 1}}</td>
+                        <td *ngFor="let field of item | keyvalue">{{field.value}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="insights">Audience Insights Finder</div>
+<div class="askQ">Ask a question using natural language to the dataset above
+</div>
+
+<div class="col-12">
+    <select class="select-theme-dropdowns" name="state" ngModel (ngModelChange)="onClick($event)">
+        <option
+            value="What are the customer emails ordered by the sum of transactions value by customers in New York City?">
+            What are the customer emails ordered by the sum of transactions value by customers in New York City?
+        </option>
+        <option value="What are the top 50 customer emails ordered by the loyalty score and emails opened?">What are the
+            top 50 customer emails ordered by the loyalty score and emails opened?</option>
+        <option value="What are the top 50 customer emails ordered by loyalty score?">What are the top 50 customer
+            emails ordered by loyalty score?</option>
+        <option value="Another question...">Another question...</option>
+    </select>
+</div>
+
+<div *ngIf="showCustomQuestion">
+    <label for="otherTheme" class="labelAskQ">Enter your custom
+        question...</label>
+</div>
+
+<div class="col-12" *ngIf="showCustomQuestion">
+    <input class="askQuestionInput" type="text" id="otherTheme" placeholder="" [(ngModel)]="otherTheme">
+</div>
+<div>
+    <button style="margin-right:58px" [ngClass]="dropdownValue ? 'btnGenerate': 'generateBtnGrey'" (click)="generate()"
+        [disabled]="!dropdownValue" type="submit" [disabled]="showCustomQuestion && !otherTheme">Generate</button>
+</div>
+<div *ngIf="showProgress">
+    <div class="spinner_loading">
+        <mat-spinner diameter="20"></mat-spinner>
+    </div>
+</div>
+<div class="promptPanel" *ngIf="promptResponse" #audienceRes>
+    <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                Prompt
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <p>{{promptResponse}}</p>
+    </mat-expansion-panel>
+</div>
+
+<div class="askQuestion" *ngIf="showData">Resulting query generated by PaLM 2
+</div>
+
+<div class="sqlQuery" *ngIf="showData">
+    <button [cdkCopyToClipboard]="genrateCode" class="copyBtn" (click)="showContentCopiedMsg()"><span
+            class="google-symbols">
+            content_copy
+        </span></button>
+    <app-prism [code]="genrateCode" language="sql"></app-prism>
+</div>
+<br>
+<div *ngIf="showData" class="askQuestion">Resulting table (limited by 50 rows)</div> <br>
+<div class="tableP" *ngIf="showData">
+    <div class="example-container">
+        <table>
+            <tbody>
+                <tr class="table-headers">
+                    <th></th>
+                    <th *ngFor="let field of audienceResData[0] | keyvalue">{{field.key}}</th>
+                </tr>
+                <tr *ngFor="let item of audienceResData ; let i=index">
+                    <td>{{i+1}}</td>
+                    <td *ngFor="let field of item | keyvalue">{{field.value}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div>
+    <div *ngIf="showData" style="margin-bottom: 30px;">
+        <div class="saveButton">Choose a Campaign to save the audience</div>
+
+        <div>
+            <select class="select-theme-dropdowns-campaign" name="state" ngModel
+                (ngModelChange)="onClickCampaign($event)">
+                <option *ngFor="let d of CAMPAIGN_DATA">{{d.name}}</option>
+            </select>
+        </div>
+        <div *ngIf="showSaveButton" class="d-flex align-items-center justify-content-center" style="margin:12px 0px">
+            <button style="margin-right:12px" class="btnSave" (click)="save()" type="submit">Save</button><span
+                class="campaignSelected">to
+                "{{campaignName}}"</span>
+        </div>
+    </div>
+</div>

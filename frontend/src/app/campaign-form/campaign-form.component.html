@@ -1,0 +1,136 @@
+<div>
+    <div style="margin-top:100px;">
+        <span class="title">Campaign Brief Generation </span>
+
+        <div class="campaignform">
+            <div style="margin-left:120px">
+                <form [formGroup]="campaignForm" (ngSubmit)="onSubmit()">
+                    <div class="d-flex flex-column">
+                        <div class="d-flex flex-column">
+                            <div>
+                                <label for="name" class="form-label name-label">Campaign Name</label>
+                            </div>
+                            <div>
+                                <input type="text" class="form-control name" id="name" placeholder=""
+                                    formControlName="name" required>
+                                <!-- <div *ngIf="campaignForm.controls['name'].invalid && campaignForm.controls['name'].touched"
+                                    class="alert alert-danger">
+                                    <div
+                                        *ngIf="campaignForm.controls['name'].invalid && campaignForm.controls['name'].touched">
+                                        Campaign Name is required.
+                                    </div>
+                                </div> -->
+                            </div>
+                        </div>
+                        <h4 class="mb-3 mt-3 brief">Creative brief inputs</h4>
+
+                        <div class="d-flex flex-column">
+                            <div>
+                                <label for="theme" class="form-label theme-label">Select a theme</label>
+                            </div>
+                            <div>
+                                <select class="select-theme-dropdowns" id="theme" formControlName="theme" required>
+                                    <option>Sales of new women's handbags at Cymbal</option>
+                                    <option>Introducing a new line of men's leather shoes</option>
+                                    <option>New opening of Cymbal concept shoe store in NYC</option>
+                                    <option>Cymbal shoes retail brand in NYC</option>
+                                    <option>Another theme...</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-12" *ngIf="campaignForm.controls.theme.value === 'Another theme...'"
+                            style="padding:0px">
+                            <label for="otherTheme" class="form-label theme-label">Enter your custom
+                                theme...</label>
+                            <input type="text" class="form-control name" id="otherTheme" placeholder=""
+                                formControlName="otherTheme" required>
+                        </div>
+
+                        <div>
+                            <div class="d-flex justify-content-between">
+                                <div class="d-flex flex-column">
+                                    <label for="goal" class="form-label theme-label">Select goal</label>
+                                    <select class=" select-dropdowns" id="goal" formControlName="goal" required>
+                                        <option>Drive Awareness</option>
+                                        <option>Increasing Traffic</option>
+                                        <option>Increasing Engagement</option>
+                                        <option>Increasing Sales</option>
+                                    </select>
+                                </div>
+                                <div class="d-flex flex-column">
+                                    <label for="ageGroup" class="form-label theme-label">Select the targeted age
+                                        group
+                                    </label>
+                                    <select class="select-dropdowns" id="ageGroup" formControlName="ageGroup" required>
+                                        <option>20-30</option>
+                                        <option>30-40</option>
+                                        <option>40-50</option>
+                                        <option>50-60</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <div class="d-flex flex-column">
+                                    <label for="gender" class="form-label theme-label">Select targeted
+                                        gender</label>
+                                    <select class="select-dropdowns" id="gender" formControlName="gender" required>
+                                        <option>Women</option>
+                                        <option>Men</option>
+                                    </select>
+
+                                </div>
+                                <div class="d-flex flex-column">
+                                    <label for="competitor" class="form-label theme-label">Select the chief
+                                        competitor</label>
+                                    <select class="select-dropdowns" id="competitor" formControlName="competitor"
+                                        required>
+                                        <option>Fashion Forward</option>
+                                        <option>Style Setter</option>
+                                        <option>Wardrobe Wonder</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="saveCampaignForm">
+                                <button
+                                    [ngClass]="{'generateActive': campaignForm.valid === true, 'generate' : campaignForm.valid === false }"
+                                    [disabled]="!campaignForm.valid" type="submit">
+                                    <span *ngIf="!campaignForm.valid">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                                            viewBox="0 0 12 12" fill="none">
+                                            <path
+                                                d="M9.20833 4.33333L8.53125 2.84375L7.04167 2.16667L8.53125 1.48958L9.20833 0L9.88542 1.48958L11.375 2.16667L9.88542 2.84375L9.20833 4.33333ZM9.20833 11.9167L8.53125 10.4271L7.04167 9.75L8.53125 9.07292L9.20833 7.58333L9.88542 9.07292L11.375 9.75L9.88542 10.4271L9.20833 11.9167ZM4.33333 10.2917L2.97917 7.3125L0 5.95833L2.97917 4.60417L4.33333 1.625L5.6875 4.60417L8.66667 5.95833L5.6875 7.3125L4.33333 10.2917ZM4.33333 7.66458L4.875 6.5L6.03958 5.95833L4.875 5.41667L4.33333 4.25208L3.79167 5.41667L2.62708 5.95833L3.79167 6.5L4.33333 7.66458Z"
+                                                fill="#757575" />
+                                        </svg>
+                                    </span>
+                                    <span *ngIf="campaignForm.valid">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                                            viewBox="0 0 12 12" fill="none">
+                                            <path
+                                                d="M9.20833 4.33333L8.53125 2.84375L7.04167 2.16667L8.53125 1.48958L9.20833 0L9.88542 1.48958L11.375 2.16667L9.88542 2.84375L9.20833 4.33333ZM9.20833 11.9167L8.53125 10.4271L7.04167 9.75L8.53125 9.07292L9.20833 7.58333L9.88542 9.07292L11.375 9.75L9.88542 10.4271L9.20833 11.9167ZM4.33333 10.2917L2.97917 7.3125L0 5.95833L2.97917 4.60417L4.33333 1.625L5.6875 4.60417L8.66667 5.95833L5.6875 7.3125L4.33333 10.2917ZM4.33333 7.66458L4.875 6.5L6.03958 5.95833L4.875 5.41667L4.33333 4.25208L3.79167 5.41667L2.62708 5.95833L3.79167 6.5L4.33333 7.66458Z"
+                                                fill="black" />
+                                        </svg>
+                                    </span>
+                                    Generate
+                                </button>
+                            </div>
+                            <div *ngIf="showProgress" class="d-flex justify-content-center mb-3">
+                                <input type="checkbox" id="loader" style="display: none;" disabled>
+                                <label for="loader" id="loader">
+                                    <div class="check"></div>
+                                </label>
+                            </div>
+                            <div *ngIf="docPreviewUrl" class="generate-success">
+                                <p class="campaign-success"> Campaign created successfully!</p>
+                            </div>
+                            <div *ngIf="docPreviewUrl" class="spinner_loading">
+                                <iframe [src]="docPreviewUrl | safe" style="width:758px;height:93vh;">
+                                </iframe>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

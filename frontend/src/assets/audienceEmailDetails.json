@@ -1,0 +1,20 @@
+{
+    "audiences": [
+      {
+        
+        "email": "user36410@sample_user36410.sample",
+        "total_transaction_value": 855492
+        
+      
+      },
+      {
+        "email": "user39537@sample_user39537.sample",
+        "total_transaction_value": 855492
+      },
+      {
+        
+        "email": "user10813@sample_user42907.sample",
+        "total_transaction_value": 855492
+      }
+    ]
+  }
