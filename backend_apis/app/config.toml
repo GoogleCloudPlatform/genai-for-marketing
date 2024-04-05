@@ -20,10 +20,6 @@ location = "us-central1"
 # Change this variable to your secret
 secret_name_workspace = "projects/YOUR-PROJECT-NUMBER/secrets/SECRET-NAME/versions/X"
 
-# Provide the path to the secret with the Firebase key
-# Change this variable to your secret
-secret_name_firebase = "projects/YOUR-PROJECT-NUMBER/secrets/SECRET-NAME/versions/X"
-
 # Audiences
 # Dataset ID of the BigQuery dataset. If you change the dataset_id during the deployment 
 # of this solution, change it here as well.
@@ -34,17 +30,16 @@ tag_name = "llmcdptemplate"
 
 # Vertex AI Search Datastore ID
 # Change these variable to your Vertex AI
-vertexai_search_datastore = "google-ads-support_1686058481432"
-datastores."google-ads-support_1686058481432" = "default_config"
+vertexai_search_datastore = "<YOUR VERTEX SEARCH ID>"
 search_location = "global"
 
 # Workspace integration variables
 # ID of the templates
 # Change this variables according to your Google Workspace settings
-drive_folder_id = "1S1eQxSsiJihIuMg9Bv67oy5IMZt77Njt" # example: "1MYB0Ybyo9XZERgIcjsdfeqO0SKqhrkvqMx"
-slides_template_id = "1sLZbvTV-P2uwVB2qRsB2SX-KFWEr8EW2DpV11K9jN2U" # example: '16uQlLkCJ9YRiMU_IoONHsl-vY-uKeoasnWTPlbZZ1D4'
-doc_template_id = "1AxR38-873r-kKKWNhTmmXN3pYVE2NsIWyQ3UvXIHp-k" # example: '1kqvxZLRXIdfM8MVS7css4UoiJ8f0I4dKFj9cP986K4pM'
-sheet_template_id = "158OqDodTuti4J7oazzO_xdI4pyYVk6PlArhOdFegTSw" # example: '1gIaIWLOeKmnjso7-CAAAcqMlPznpoEXDdEue3DNWr7bw'
+drive_folder_id = "" # example: "1MYB0Ybyo9XZERgIcjsdfeqO0SKqhrkvqMx"
+slides_template_id = "" # example: '16uQlLkCJ9YRiMU_IoONHsl-vY-uKeoasnWTPlbZZ1D4'
+doc_template_id = "" # example: '1kqvxZLRXIdfM8MVS7css4UoiJ8f0I4dKFj9cP986K4pM'
+sheet_template_id = "" # example: '1gIaIWLOeKmnjso7-CAAAcqMlPznpoEXDdEue3DNWr7bw'
 slide_page_id_list = ["p3","p4","p5","p6","p7","p8"] # LIST OF PAGES WHERE YOU WANT TO INSERT CHARTS FROM THE SHEETS
 
 # GCS Asset bucket
@@ -60,6 +55,8 @@ workspace_scopes = [
     'https://www.googleapis.com/auth/drive.resource',
     'https://www.googleapis.com/auth/documents']
 
+# Domain that Workspace will share the documents
+domain = "<YOUR DOMAIN HERE>"
 
 # Prompt used to generate SQL from questions using natural language.
 # You can change this prompt if needed. 

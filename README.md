@@ -14,8 +14,11 @@ The architecture of all the demos that are implemented in this application is as
 .
 ├── app
 └── backend_apis
+└── frontend
 └── notebooks
 └── templates
+└── installation_scripts
+└── tf
 ```
 
 - [`/app`](/app): Architecture diagrams.  
@@ -144,7 +147,7 @@ Clone the repository to your notebook instance:
 
 ### Update the configuration with information of your project
 
-Open the [configuration file](/app/app_config.toml) and include your project id (line 21) and location (line 22).
+Open the [configuration file](/backend_apis/app/config.toml) and include your project id (line 16) and location (line 17).
 
 ### Prepare BigQuery and Dataplex
 
@@ -177,53 +180,32 @@ After you finished creating the Vertex AI Search datastore, navigate back to the
 Example:  
 ![Vertex AI Search ID](./app/images/es_id.png)
 
-Open this [configuration file - line 282](/app/app_config.toml) and include the datastore ID. To do that create a variable that follows this pattern:  
-> datastores.<datastore ID> = "default_config".  
-The resulting code should look like this:  
-
-```
-# Vertex AI Search datastores and location. 
-# Change the dataset variable to reflect your configuration.
-# Sample datastore ID
-# datastores.<datastore ID> = 'default_config'
-datastores.google-ads-support_1686058481432 = "default_config"
-```
-
+Open the [configuration file - line 33](/backend_apis/app/config.toml) and include the datastore ID. 
 **Don't forget to save the configuration file.**
 
 
 ### Add your Looker Dashboards
 
-In order to render your Looker Dashboards in the UI, you need to update a configuration file with the links to them.
+In order to render your Looker Dashboards in the UI, you need to update a HTML file with links to them.
 
-Open the [configuration file](/app/app_config.toml) and include links to the Looker dashboards for Marketing Insights (line 205) and Campaign Performance (line 615).  
-The resulting code should look like this:  
+1) Open this [HTML file - lines 18 and 28](/frontend/src/app/marketing-insights/marketing-insights.component.html) and include links to the Looker dashboards for Marketing Insights.
 
-```
-# Looker Dashboards
-# The link of the looker Dashboard must follow this format:
-# https://<LOOKER INSTANCE URL>/embed/dashboards/<DASHBOARD NUMBER>?allow_login_screen=true
-# Include your Dashboards following this patter:
-# dashboards.<Name of your dashboard, no spaces> = '<link to your dashboard>'
-dashboards.Overview = 'https://googledemo.looker.com/embed/dashboards/2131?allow_login_screen=true'
-```
+2) 1) Open this [HTML file - lines 27 and 37](/frontend/src/app/campaign-performance/campaign-performance.component.html) and include links to the Looker dashboards for Marketing Insights.
 
-The `allow_login_screen=true` will open the authentication page from Looker to secure the access to your account.
+The `allow_login_screen=true` in the URL will open the authentication page from Looker to secure the access to your account.
 
 **[Optional]** If you have your Google Ads and Google Analytics 4 accounts in production, you can deploy the [`Marketing Analytics Jumpstart`](https://github.com/GoogleCloudPlatform/marketing-analytics-jumpstart) solution to your project, build the Dashboards and link them to the demonstration UI.  
 
 
-### Create a Generative AI Agent
+### Create a Generative AI DataStore Agent
 
 Next you will create a Generative AI Agent that will assist the users to answer questions about Google Ads, etc.
-- Follow the steps described in this [Codelab](https://codelabs.developers.google.com/codelabs/dialogflow-generator#0) to build your own Generative AI Agent.
+- Follow the steps described in this [Documentation](https://cloud.google.com/dialogflow/vertex/docs/concept/data-store-agent) to build your own Datastore Agent.
   - Execute these steps in the same project you will deploy this demo.
-  - In step 3 of this Codelab you can provide a different URL to be indexed by the Generative AI Agent, for example `support.google.com/google-ads/*`.
-  - [Optional] Use LLMs to generate answers when no answer is found. If you have questions, please refer to this [documentation](https://cloud.google.com/dialogflow/cx/docs/concept/generative-agent).
-- Enable [Dialogflow Messenger integration](https://cloud.google.com/dialogflow/cx/docs/concept/integration/dialogflow-messenger) and copy the HTML code snippet provided by the platform.  
+- Enable [Dialogflow Messenger integration](https://cloud.google.com/dialogflow/cx/docs/concept/integration/dialogflow-messenger) and copy the `project-id` and `agent-id` from the HTML code snippet provided by the platform.  
   - The HTML code snippet looks like this: 
   ![HTML Code](/app/images/dialogflow-integration.png "HTML Code")
-  - Open the [configuration file - line 592](/app/app_config.toml) and replace the HTML code snipped with the one created in your deployment.
+- Open the [HTML file - line 117](/frontend/src/app/home/home.component.html) and replace the variables with the `project-id` and `agent-id`.
 
 
 ### Workspace integration
@@ -231,21 +213,22 @@ Next you will create a Generative AI Agent that will assist the users to answer 
 Follow the steps below to setup the Workspace integration with this demonstration.
 
 
-#### Create a service account
+#### Create a service account and upload the content to Secret Manager
 - Create a Service Account (SA) in the same project you are deploying the demo and download the JSON API Key. This SA doesn't need any roles / permissions.  
   - Follow this [documentation](https://cloud.google.com/iam/docs/service-accounts-create) to create the service account. Take note of the service account address; it will look like this: `name-of-the-sa@my-project.iam.gserviceaccount.com`.
   - Follow this [documentation](https://cloud.google.com/iam/docs/keys-create-delete#creating) to download the key JSON file with the service account credentials.  
-  - Rename the JSON file to `credentials.json` and copy it under [/app](/app) folder.
-  - [Optional] If your file has a different name and/or you copied it to a different location, change line 27 in [app_config.toml](/app/app_config.toml) to reflect these changes.
- - When you deploy the app to AppEngine, the JSON file will be copied inside the docker image.
- - **IMPORTANT**: For security reasons, DON'T push this credentials to a public Github repository.
+- Upload the content of this Service Account to a Secret in Google Cloud Secret Manager.
+  - Follow the steps in the [documentation](https://cloud.google.com/secret-manager/docs/create-secret-quickstart) to accomplish that
+  - Open the [configuration file - line 21](/backend_apis/app/config.toml) and replace with the full path to your Secret in Secret Manager.
+
+> **IMPORTANT**: For security reasons, DON'T push this credentials to a public Github repository.
 
 
 #### Change the DOMAIN that folders will be shared with
 This demonstration will create folders under Google Drive, Google Docs documents, Google Slides presentations and Google Sheets documents.  
 When we create the Drive folder, we set the permission to all users under a specific domain.
 
- - Open [override.toml - line 44](/app/override.toml) and change to the domain you want to share the folder (example: mydomain.com).
+ - Open [config.toml - line 59](/backend_apis/app/config.toml) and change to the domain you want to share the folder (example: mydomain.com).
    - This is the same domain where you have Workspace set up.
 
 Be aware that this configuration will share the folder with all the users in that domain.  
@@ -260,7 +243,7 @@ https://developers.google.com/drive/api/reference/rest/v3/permissions#resource:-
 ![Share Drive](/app/images/workspace-drive.png "Share Drive")
  - Take note of the folder ID. Go into the folder you created and you will be able to find the ID in the URL. The URL will look like this:
  ![Drive ID](/app/images/workspace-drive0.png)
- - Open the configuration file [app_config.toml - line 558](/app/app_config.toml) and change to your folder ID.
+ - Open the configuration file [app_config.toml - line 39](/backend_apis/app/config.toml) and change to your folder ID.
  - **IMPORTANT**: Also share this folder with people who will be using the code.
 
 
@@ -269,41 +252,36 @@ https://developers.google.com/drive/api/reference/rest/v3/permissions#resource:-
  - For the Google Slides template (`[template] Marketing Assets`): 
    - From the Google Drive folder open the file in Google Slides.  
    - In Google Slides, click on `File` and `Save as Google Slides`. Take note of the Slides ID from the URL.
-   - Open the configuration file [app_config.toml - line 559](/app/app_config.toml) and change to your Slides ID.
+   - Open the configuration file [app_config.toml - line 40](/backend_apis/app/config.toml) and change to your Slides ID.
  - For the Google Docs template (`[template] Gen AI for Marketing Google Doc Template`): 
    - From the Google Drive folder open the file in Google Docs. 
    - In Google Docs, click on `File` and `Save as Google Docs`. Take note of the Docs ID from the URL.
-   - Open the configuration file [app_config.toml - line 560](/app/app_config.toml) and change to your Docs ID.
+   - Open the configuration file [app_config.toml - line 41](/backend_apis/app/config.toml) and change to your Docs ID.
  - For the Google Sheets template (`[template] GenAI for Marketing`):  
    - From the Google Drive folder open the Google Sheets.
    - In Google Sheets, click in `File` and `Save as Google Sheets`. Take note of the Sheets ID from the URL.
-   - Open the configuration file [app_config.toml - line 561](/app/app_config.toml) and change to your Sheets ID.
+   - Open the configuration file [app_config.toml - line 42](/backend_apis/app/config.toml) and change to your Sheets ID.
  
 
-### Deploy the demonstration to App Engine
-
+## Deploy the APIs to Cloud Run and Firebase Hosting
  - On Jupyterlab `Launcher Page` (in the Workbench managed instance), click on `Terminal` to start a new terminal by clicking the Terminal icon.  
- - Navigate to `genai-for-marketing` folder  
 
-> cd genai-for-marketing
+### Cloud Run
+ - Navigate to the `genai-for-marketing/backend_apis/` folder  
 
- - Open the [`app.yaml`](./app.yaml) configuration file and include your service account (Compute Engine default service account) in line 19:
+> cd genai-for-marketing/backend_apis/  
 
- ```
- service_account: <REPLACE WITH YOUR SERVICE ACCOUNT ADDRESS>
- ```
+ - Build and deploy the Docker image to Cloud Run.  
 
-The service account has the following format: `PROJECT_NUMBER-compute@developer.gserviceaccount.com`
+> docker build --build-arg="PROJECT_ID=<YOUR PROJECT ID>" -t gcr.io/<YOUR PROJECT ID>/genai-marketing .  
+> docker push gcr.io/<YOUR PROJECT ID>/genai-marketing  
+> gcloud run deploy genai-marketing-apis --image gcr.io/<YOUR PROJECT ID>/genai-marketing --allow-unauthenticated  
 
-You can check the available service accounts in your project by running the following command:  
-> gcloud iam service-accounts list
+- Open the [Typescript file - line 2](/frontend/src/environments/environments.ts) and include the URL to your newly created Cloud Run deployment.  
+Example: `https://marketing-image-tlmb7xv43q-uc.a.run.app`  
 
- - Deploy the solution to AppEngine
-
-> gcloud app deploy
-
-Wait for the application to be deployed and open the link generated by AppEngine.
-
+### Firebase Hosting
+ - 
 
 ## Getting help
 

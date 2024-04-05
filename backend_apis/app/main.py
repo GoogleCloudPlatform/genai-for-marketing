@@ -91,6 +91,7 @@ with open("/code/app/config.toml", "rb") as f:
 project_id = config["global"]["project_id"]
 location = config["global"]["location"]
 bucket_name = config["global"]["asset_bkt"]
+domain = config["global"]["domain"]
 
 vertexai.init(project=project_id, location=location)
 # Vertex AI Search Client
@@ -766,7 +767,8 @@ def post_brief_create_upload(data: BriefCreateRequest) -> BriefCreateResponse:
         
         utils_workspace.set_permission(
             credentials = CREDENTIALS,
-            file_id=new_folder_id)
+            file_id=new_folder_id,
+            domain=domain)
 
         doc_id = utils_workspace.copy_drive_file(
             credentials = CREDENTIALS,

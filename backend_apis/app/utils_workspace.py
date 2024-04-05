@@ -173,10 +173,11 @@ def update_doc(
 
 def set_permission(
         credentials,
-        file_id: str):
+        file_id: str,
+        domain: str):
     drive_service = build('drive', 'v3', credentials=credentials)
     permission = {'type': 'domain',
-                'domain': 'google.com', 
+                'domain': domain,
                 'role': 'writer'}
     return drive_service.permissions().create(fileId=file_id,
                                         sendNotificationEmail=False,
