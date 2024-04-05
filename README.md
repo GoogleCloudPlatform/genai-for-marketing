@@ -273,15 +273,70 @@ https://developers.google.com/drive/api/reference/rest/v3/permissions#resource:-
 
  - Build and deploy the Docker image to Cloud Run.  
 
-> docker build --build-arg="PROJECT_ID=<YOUR PROJECT ID>" -t gcr.io/<YOUR PROJECT ID>/genai-marketing .  
-> docker push gcr.io/<YOUR PROJECT ID>/genai-marketing  
-> gcloud run deploy genai-marketing-apis --image gcr.io/<YOUR PROJECT ID>/genai-marketing --allow-unauthenticated  
+gcloud run deploy genai-marketing --source . --region us-central1 --allow-unauthenticated
 
 - Open the [Typescript file - line 2](/frontend/src/environments/environments.ts) and include the URL to your newly created Cloud Run deployment.  
 Example: `https://marketing-image-tlmb7xv43q-uc.a.run.app`  
 
 ### Firebase Hosting
- - 
+
+**Enable Firebase**
+ - Go to https://console.firebase.google.com/
+ - Select add project and laod your GCP project
+ - Add Firebase to one of your existing Google Cloud projects
+ - Confirm Firebase billing plan
+ - Continue and complete the configuration
+
+#### Firebase Hosting app setup
+After you have a Firebase project, you can register your web app with that project.
+
+In the center of the Firebase console's project overview page, click the Web icon (plat_web) to launch the setup workflow.
+
+If you've already added an app to your Firebase project, click Add app to display the platform options.
+ - Enter your app's nickname.
+ - This nickname is an internal, convenience identifier and is only visible to you in the Firebase console.
+ - Click Register app.
+ - Copy the information to include in the configuration.
+
+#### Update the frontend configuration with information of your project
+
+Open the [frontend environment file](/frontend/src/environments/environment.ts) and include the Firebase information.
+
+## Build Angular Frontend
+Angular is the framework for the Frontend. Execute the following commands to build your application.
+
+```bash
+npm install -g @angular/cli
+
+cd frontend
+
+ng build
+```
+
+#### Firebase Hosting Setup
+Firebase Hosting is used to serve the frontend.
+
+ - Install firebase tools
+```bash
+npm install -g firebase-tools
+
+firebase login
+```
+
+ - Init hosting
+```bash
+cd frontend/dist/genai-csm-project
+
+firebase init hosting
+```
+
+select browser as public folder
+
+
+ - Deploy hosting
+```bash
+firebase deploy --only hosting
+```
 
 ## Getting help
 
