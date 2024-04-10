@@ -25,7 +25,14 @@ terraform apply -var=project_id=<your_project_id>
 
 
 ## After Terraform deployment
-1. Go to https://firebase.corp.google.com/project/genai-marketing-tf-test/authentication/providers
+### Enable Firebase authentication
+1. Go to https://firebase.corp.google.com/project/<your_project_id>/authentication/providers
 2. Select google and enable it
 3. Set the name for the project and support email for project
 4. Save
+
+### Enable Dialogflow CX Messenger
+1. Go to https://dialogflow.cloud.google.com/cx/projects/<your_project_id> and select the agent
+2. Click in Publish
+3. Select Unauthenticated API (anonymous access)
+4. Click in Enable the unauthenticated API

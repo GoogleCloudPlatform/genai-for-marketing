@@ -34,7 +34,8 @@ with open("app/config.toml", "rb") as f:
     config = tomllib.load(f)
 
 # Application Default credentials are automatically created.
-app = firebase_admin.initialize_app()
+app_options = {'projectId': config["global"]["project_id"]}
+app = firebase_admin.initialize_app(options=app_options)
 db = firestore.client()
 
 def to_serializable(val):

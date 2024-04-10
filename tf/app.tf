@@ -1,3 +1,20 @@
+/**
+ * Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
 resource "google_artifact_registry_repository" "docker-repo" {
   project       = var.project_id
   location      = "us-central1"
@@ -22,7 +39,8 @@ resource "google_secret_manager_secret_version" "secret-cred-version" {
 resource "null_resource" "backend_deployment" {
 
   triggers = {
-    sa = module.genai_run_service_account.service_account.name
+    sa = module.genai_run_service_account.service_account.name,
+    tomlfile = local_file.config_toml.content
   }
 
   provisioner "local-exec" {
@@ -88,7 +106,8 @@ resource "local_file" "enviroments_ts" {
     fb_storage_bucket      = lookup(data.google_firebase_web_app_config.app_front, "storage_bucket", ""),
     fb_messaging_sender_id = lookup(data.google_firebase_web_app_config.app_front, "messaging_sender_id", ""),
     fb_api_id              = google_firebase_web_app.app_front.app_id,
-    fb_measurement_id      = lookup(data.google_firebase_web_app_config.app_front, "measurement_id", "")
+    fb_measurement_id      = lookup(data.google_firebase_web_app_config.app_front, "measurement_id", ""),
+    dialogflow_cx_agent_id = google_discovery_engine_chat_engine.chat_app.chat_engine_metadata.dialogflow_agent[0]
     }
   )
   filename = "${path.module}/templates/environments.ts"
@@ -97,6 +116,7 @@ resource "local_file" "enviroments_ts" {
 resource "null_resource" "frontend_deployment" {
 
   triggers = {
+    frontend_config=local_file.enviroments_ts.content
     sa = module.genai_run_service_account.service_account.name
   }
 

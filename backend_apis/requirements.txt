@@ -19,6 +19,7 @@ uvicorn
 Pillow
 newspaper3k
 pandas
+lxml[html_clean]
 db-dtypes
 google-cloud-datacatalog
 google-cloud-discoveryengine

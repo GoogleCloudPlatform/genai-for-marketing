@@ -1,3 +1,19 @@
+/**
+ * Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 
 locals {
   bq_tables = [for t in local.tables : {
@@ -18,7 +34,6 @@ module "bigquery" {
   dataset_name                = var.dataset_name
   project_id                  = var.project_id
   location                    = var.location
-  default_table_expiration_ms = 3600000
 
   tables = local.bq_tables
 }
@@ -26,6 +41,7 @@ module "bigquery" {
 ## Populating tables with scripts
 resource "null_resource" "bq_tables_populate" {
   triggers = {
+    bq_tables    = join(",", module.bigquery.table_ids)
     bq_dataset = var.dataset_name
   }
 
@@ -80,8 +96,6 @@ resource "google_data_catalog_tag_template" "tag_template" {
 }
 
 ## Tag columns using scripts
-## Loading data from old scripts
-#TODO
 
 resource "null_resource" "bq_tagging" {
 
