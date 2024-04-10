@@ -21,7 +21,15 @@ export class ContentReviewService {
 
   }
 
-  
+  exportToGoogleSlides(folderId: any) {
+    const head = new HttpHeaders().set('content-type', 'application/json')
+    let options = {
+      headers: head
+    }
+    return this.http.post(`${environment.apiUrl}/creative-slides-upload`, folderId, options)
+      .pipe(catchError(this.handleError));
+
+  }
 
   getActivation(query: any, userId: string, campaignId: string) {
     const head = new HttpHeaders().set('content-type', 'application/json')

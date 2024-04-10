@@ -73,6 +73,7 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
 import { PrismComponent } from './prism/prism.component';
 import 'prismjs/components/prism-sql';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatSelectModule } from '@angular/material/select';
 
 const fireBaseConfig = environment.firebaseConfig
 @NgModule({
@@ -144,7 +145,8 @@ const fireBaseConfig = environment.firebaseConfig
     SortAltIcon,
     SortAmountUpAltIcon,
     ClipboardModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatSelectModule
     ],
   providers: [
     // provideClientHydration(),

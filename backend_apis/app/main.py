@@ -33,13 +33,19 @@ from google.cloud import bigquery
 from google.cloud import datacatalog_v1
 from google.cloud import discoveryengine
 from google.cloud import translate_v2 as translate
+from google.cloud import texttospeech
 from google.oauth2 import service_account
 from proto import Message
+
 import vertexai
+from vertexai.generative_models import GenerativeModel, Part, FinishReason
+import vertexai.preview.generative_models as generative_models
+
 from vertexai.preview.language_models import TextGenerationModel as bison_latest
 from vertexai.language_models import TextGenerationModel as bison_ga
 from vertexai.preview.vision_models import ImageGenerationModel
 from vertexai.vision_models import Image
+
 from google.cloud import secretmanager
 import json
 import base64
@@ -74,15 +80,18 @@ from .body_schema import (
     BulkEmailGenRequest,
     BulkEmailGenResponse,
     ExportGoogleDocRequest,
-    ExportGoogleDocResponse
+    ExportGoogleDocResponse,
+    TexttoSpeechRequest,
+    TexttoSpeechResponse
 )
 
 # Load configuration file
-with open("app/config.toml", "rb") as f:
+with open("/code/app/config.toml", "rb") as f:
     config = tomllib.load(f)
 project_id = config["global"]["project_id"]
 location = config["global"]["location"]
 bucket_name = config["global"]["asset_bkt"]
+domain = config["global"]["domain"]
 
 vertexai.init(project=project_id, location=location)
 # Vertex AI Search Client
@@ -101,10 +110,15 @@ datacatalog_client = datacatalog_v1.DataCatalogClient()
 # Text models
 llm_latest = bison_latest.from_pretrained(model_name="text-bison")
 llm_ga = bison_ga.from_pretrained(model_name="text-bison@002")
+gemini_llm = GenerativeModel("gemini-1.0-pro-001")
+
 TEXT_MODEL_NAME = config["models"]["text_model_name"]
 
 #translation
 translate_client = translate.Client()
+
+#texttospeech
+texttospeech_client = texttospeech.TextToSpeechLongAudioSynthesizeClient()
 
 # Image models
 imagen = ImageGenerationModel.from_pretrained("imagegeneration@002")
@@ -149,22 +163,39 @@ router = APIRouter(prefix="/marketing-api")
 app = FastAPI(docs_url="/marketing-api/docs")
 
 origins = [
-    "http://localhost:4200", # Angular default
-    f"https://{config['global']['project_id']}.web.app", # default deployment using firebase
-    f"https://{config['global']['project_id']}.firebaseapp.com"
+    "http://localhost:5000",
+    "http://localhost:8080",
+    "https://genai-mkt-frontend-dev.web.app",
+    "https://genai-mkt-frontend-dev.firebaseapp.com"
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-@app.get(path="/healthcheck")
-async def healthcheck():
-    return {"status": "ok"}
+@app.get(path="/marketing/")
+@app.get("/marketing/campaign-form")
+@app.get(path="/marketing/user-journey")
+@app.get(path="/marketing/home")
+@app.get(path="/marketing/marketing-insights")
+async def angular() -> FileResponse:
+    """
+    ## Angular app
+
+    ### Returns:
+    - Angular app index.html with the right route
+
+    """
+    return FileResponse("/static/index.html")
+
+
+app.mount(
+    path="/marketing", app=StaticFiles(directory="/static", html=True), name="static"
+)
 
 
 # create-campaign
@@ -187,36 +218,36 @@ def create_campaign(user_id: str,data: CampaignCreateRequest
             campaign_name:str
             workspace_asset: dict
         """
-    print(f"Creating campaing with: {data}")
+    
     gender_select_theme = data.brief.gender_select_theme
     age_select_theme = data.brief.age_select_theme
     objective_select_theme = data.brief.objective_select_theme
     competitor_select_theme = data.brief.competitor_select_theme
     async def generate_campaign() -> tuple:
             return await asyncio.gather(
-                utils_prompt.async_predict_text_llm(
+                utils_prompt.async_predict_text_gemini(
                     BRAND_STATEMENT_PROMPT_TEMPLATE.format(
                         gender_select_theme, 
                         age_select_theme,
                         objective_select_theme,
                         competitor_select_theme,
-                        BRAND_OVERVIEW),
-                    TEXT_MODEL_NAME),
-                utils_prompt.async_predict_text_llm(
+                        BRAND_OVERVIEW)
+                        ),
+                utils_prompt.async_predict_text_gemini(
                     PRIMARY_MSG_PROMPT_TEMPLATE.format(
                         gender_select_theme, 
                         age_select_theme,
                         objective_select_theme,
                         competitor_select_theme,
-                        BRAND_OVERVIEW),
-                    TEXT_MODEL_NAME),
-                utils_prompt.async_predict_text_llm(
+                        BRAND_OVERVIEW)
+                    ),
+                utils_prompt.async_predict_text_gemini(
                     COMMS_CHANNEL_PROMPT_TEMPLATE.format(
                         gender_select_theme, 
                         age_select_theme,
                         objective_select_theme,
-                        competitor_select_theme),
-                    TEXT_MODEL_NAME)) 
+                        competitor_select_theme)
+                    )) 
     try:
         generated_tuple = asyncio.run(generate_campaign())
         print(generated_tuple)
@@ -528,7 +559,9 @@ def post_summarize_news(data: NewsSummaryRequest,request: Request
     try:
         summaries = []
         for doc in documents:
-            summary = trendspotting.summarize_news_article(doc["page_content"], llm_ga)
+            summary = trendspotting.summarize_news_article(
+                doc["page_content"],
+                gemini_llm)
             summaries.append({
                 "original_headline": doc["title"],
                 "summary":summary,
@@ -537,8 +570,7 @@ def post_summarize_news(data: NewsSummaryRequest,request: Request
     except Exception as e:
         raise HTTPException(
             status_code=400, 
-            detail=f"Something went wrong. "
-                    "Could not summarize news articles. {str(e)}")
+            detail=f"Something went wrong. Could not summarize news articles. {str(e)}")
 
     return NewsSummaryResponse(
         summaries=summaries
@@ -637,7 +669,9 @@ def post_consumer_insights(data: ConsumerInsightsRequest
             status_code=400, 
             detail="Something went wrong. Please try again.")
     else:
-        for search_result in search_results:
+        llm_summary = search_results.summary.summary_text
+
+        for search_result in search_results.results:
             search_result_dict = Message.to_dict(search_result)
             document = search_result_dict.get("document", {})
             struct_data = document.get("derived_struct_data",{})
@@ -656,7 +690,8 @@ def post_consumer_insights(data: ConsumerInsightsRequest
                 results.append(result)
 
     return ConsumerInsightsResponse(
-        results=results
+        results=results,
+        llm_summary=llm_summary
     )
 
 
@@ -732,7 +767,8 @@ def post_brief_create_upload(data: BriefCreateRequest) -> BriefCreateResponse:
         
         utils_workspace.set_permission(
             credentials = CREDENTIALS,
-            file_id=new_folder_id)
+            file_id=new_folder_id,
+            domain=domain)
 
         doc_id = utils_workspace.copy_drive_file(
             credentials = CREDENTIALS,
@@ -783,7 +819,8 @@ def post_create_slides_upload(data: SlidesCreateRequest
             credentials = CREDENTIALS,
             drive_file_id=sheet_template_id,
             parentFolderId=data.folder_id,
-            copy_title="GenAI Marketing Data Source")     
+            copy_title="GenAI Marketing Data Source")
+        print(sheet_id)     
 
         utils_workspace.merge_slides(
             credentials = CREDENTIALS,
@@ -867,22 +904,20 @@ def generate_content(data: ContentCreationRequest
     try:
         if data.type == 'Email':
             print("Generating Email..")
-            generated_content["text"]=asyncio.run(utils_prompt.async_predict_text_llm(
+            generated_content["text"]=asyncio.run(utils_prompt.async_predict_text_gemini(
                         EMAIL_TEXT_PROMPT.format(
                             data.context,
                             data.theme
-                        ),
-                        TEXT_MODEL_NAME
+                        )
                         )
                     )
         elif data.type == 'Webpost':
-            generated_content["text"]=asyncio.run(utils_prompt.async_predict_text_llm(
+            generated_content["text"]=asyncio.run(utils_prompt.async_predict_text_gemini(
                         WEBSITE_PROMPT_TEMPLATE.format(
                             data.theme,
-                            data.context),
-                        TEXT_MODEL_NAME))
+                            data.context)))
         elif data.type == 'SocialMedia':
-            generated_content["text"]=asyncio.run(utils_prompt.async_predict_text_llm(
+            generated_content["text"]=asyncio.run(utils_prompt.async_predict_text_gemini(
                         AD_PROMPT_TEMPLATE.format(
                             BUSINESS_NAME,
                             data.no_of_char,
@@ -890,30 +925,28 @@ def generate_content(data: ContentCreationRequest
                             data.audience_gender,
                             data.theme,
                             data.context,
-                            ),
-                        TEXT_MODEL_NAME))
+                            )))
         elif data.type == 'AssetGroup':
             async def generate_brief() -> tuple:
                 return await asyncio.gather(
-                    utils_prompt.async_predict_text_llm(
+                    utils_prompt.async_predict_text_gemini(
                         prompt=HEADLINE_PROMPT_TEMPLATE.format(
                             data.theme,
                             BRAND_OVERVIEW),
-                        pretrained_model=TEXT_MODEL_NAME,
+                        
                         max_output_tokens=256
                     ),
-                    utils_prompt.async_predict_text_llm(
+                    utils_prompt.async_predict_text_gemini(
                         prompt=LONG_HEADLINE_PROMPT_TEMPLATE.format(
                             data.theme,
-                            BRAND_OVERVIEW),
-                        pretrained_model=TEXT_MODEL_NAME,
+                            BRAND_OVERVIEW)
+                        
                     ),
-                    utils_prompt.async_predict_text_llm(
+                    utils_prompt.async_predict_text_gemini(
                         prompt=DESCRIPTION_PROMPT_TEMPLATE.format(
                             data.theme,
                             BRAND_OVERVIEW,
-                            data.context),
-                        pretrained_model=TEXT_MODEL_NAME)) 
+                            data.context))) 
     
             generated_tuple = asyncio.run(generate_brief())
             
@@ -972,12 +1005,14 @@ def post_bulk_email_generate(data: BulkEmailGenRequest) -> BulkEmailGenResponse:
 @router.post(path="/export-google-doc")
 def post_export_google_doc(data:ExportGoogleDocRequest) -> ExportGoogleDocResponse:
     """
-    Parameters:
-        audience : list[dict]
-        theme : str
+    data:
+        folder_id: str
+        doc_name: str
+        text: str
+        image_prefix: str
+        images: list
     Returns:
-        audience: list
-        persionlized_emails : list[dict]
+        doc_id: str
     """
     
     try:
@@ -1006,6 +1041,63 @@ def post_export_google_doc(data:ExportGoogleDocRequest) -> ExportGoogleDocRespon
     
     return ExportGoogleDocResponse(
         doc_id = file_id
+    )
+
+@router.post(path="/texttospeech")
+def text_to_speech(data: TexttoSpeechRequest
+                   ) -> TexttoSpeechResponse:
+    """ Text to Speech
+    Body:
+        text:str
+        prefix: str
+        language_code:str | None = None
+        language_name: str | None = None
+    Returns:
+        audio_uri :str
+    """
+    output_gcs_uri = "gs://"+bucket_name+"/"+data.prefix+".wav"
+    
+    try:
+        input = texttospeech.SynthesisInput(
+        text=data.text
+        )
+
+        audio_config = texttospeech.AudioConfig(
+            audio_encoding=texttospeech.AudioEncoding.LINEAR16
+        )
+
+        if data.language_code != None and data.language_name != None:
+            voice = texttospeech.VoiceSelectionParams(
+                language_code=data.language_code, name=data.language_name
+            )
+        else:
+            voice = texttospeech.VoiceSelectionParams(
+                language_code="en-US", name="en-US-Standard-A"
+            )
+
+        parent = f"projects/{project_id}/locations/{location}"
+
+        request = texttospeech.SynthesizeLongAudioRequest(
+            parent=parent,
+            input=input,
+            audio_config=audio_config,
+            voice=voice,
+            output_gcs_uri=output_gcs_uri,
+        )
+
+        operation = texttospeech_client.synthesize_long_audio(request=request)
+        # Set a deadline for your LRO to finish. 300 seconds is reasonable, 
+        # but can be adjusted depending on the length of the input.
+        # If the operation times out, that likely means there was an error. 
+        # In that case, inspect the error, and try again.
+        result = operation.result(timeout=300)
+    except Exception as e:
+        raise HTTPException(
+            status_code=400, 
+            detail="Something went wrong. Please try again."+str(e)
+        )
+    return TexttoSpeechResponse(
+        audio_uri=output_gcs_uri
     )
 
 

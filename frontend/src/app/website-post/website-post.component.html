@@ -159,11 +159,27 @@
             <!-- <st-editor [(ngModel)]="textContent" [config]="config" style=" white-space: pre-wrap;"></st-editor> -->
 
             <textarea class="singleEmailTextarea" [(ngModel)]="textContent" (ngModelChange)="updateEmailText($event)"
-                style=" width: 903px; white-space: pre-wrap; overflow: auto; height:486px"></textarea>
+                style=" width: 903px; white-space: pre-wrap; overflow: auto; height:486px;"></textarea>
+            <div style="margin-top: 10px;">Choose the language to convert Text to Speech :</div>
+            <div style="width: 300px;border: 1px solid #D5D5D5;padding: 10px;border-radius: 10px; margin-top: 10px;">
+                <mat-select [(ngModel)]="selectedLang" (ngModelChange)="changeLang($event)" name="lang"
+                    class="translateLang">
+                    @for (option of filteredOptions | async; track option) {
+                    <mat-option [value]="option">{{option.language_name}}</mat-option>
+                    }
+                </mat-select>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <audio controls *ngIf="audio_url">
+                    <source src={{audio_url}} type="audio/wav">
+
+                </audio>
+            </div>
         </div>
 
         <br>
-      
+
         <div *ngIf="showEmailContents && (images.length > 0) && !uploadImageAssetsClicked"
             class="generatedImagesSection">
             <div class="d-flex justify-content-around align-items-center">

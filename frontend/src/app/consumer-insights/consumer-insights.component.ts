@@ -14,6 +14,7 @@ export class ConsumerInsightsComponent {
   photoURL: any;
   generateSuccessMsg: boolean = false;
   insightResults: any[] = [];
+  llm_summary: any;
   constructor(public loginService: LoginService, public trendsService: TrendspottingService) {
     this.loginService.getUserDetails().subscribe(res => {
       this.userLoggedIn = true;
@@ -27,14 +28,18 @@ export class ConsumerInsightsComponent {
   onClickMarketingAssi() {
     this.showchatboot = true
   }
-  
+
   onSubmit() {
     let obj = {
       query: this.insightsForm.controls.name?.value
     }
-    this.trendsService.consumerInsightsSearch(obj).subscribe((res:any) => {
+    this.trendsService.consumerInsightsSearch(obj).subscribe((res: any) => {
       this.generateSuccessMsg = true;
-      this.insightResults = res?.results
+      this.insightResults = res?.results;
+      this.llm_summary = res?.llm_summary;
+      if (res?.llm_summary.includes('not enough information') ){
+        this.llm_summary = 'Generative summary not available this time.'
+      }
     })
   }
 }

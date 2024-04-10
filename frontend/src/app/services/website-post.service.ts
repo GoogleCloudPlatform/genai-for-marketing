@@ -85,4 +85,14 @@ export class WebsitePostService {
       .pipe(catchError(this.handleError));
 
   }
+
+  generateTextToSpeech(query: any) {
+    const head = new HttpHeaders().set('content-type', 'application/json')
+    let options = {
+      headers: head
+    }
+    return this.http.post(`https://gemini-mkt-apis-42fk6qqj5a-uc.a.run.app/marketing-api/texttospeech`, query, options)
+      .pipe(catchError(this.handleError));
+
+  }
 }
