@@ -32,4 +32,3 @@ google-cloud-translate
 google-cloud-storage
 google-cloud-texttospeech
 google-auth
-lxml[html_clean]

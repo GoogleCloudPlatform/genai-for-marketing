@@ -18,7 +18,7 @@ Utility module for Vertex AI Search API
 """
 
 
-from typing import List, Tuple
+from typing import List
 from google.cloud import discoveryengine
 
 
@@ -79,7 +79,7 @@ def search(
     search_engine_id: str,
     serving_config_id: str,
     search_client: discoveryengine.SearchServiceClient
-):
+) -> List[discoveryengine.SearchResponse.SearchResult]:
     """Searches for documents that match the given query.
 
     Args:
@@ -108,27 +108,10 @@ def search(
         serving_config=serving_config_id,
     )
 
-    snippet_spec = (
-        discoveryengine.SearchRequest.ContentSearchSpec.SnippetSpec(
-            return_snippet=True
-        )
-    )
-    summary_spec = (
-        discoveryengine.SearchRequest.ContentSearchSpec.SummarySpec(
-            summary_result_count=3,
-            include_citations=True,
-        )
-    )
-    content_spec = discoveryengine.SearchRequest.ContentSearchSpec(
-        snippet_spec=snippet_spec, summary_spec=summary_spec
-    )    
-
     request = discoveryengine.SearchRequest(
         serving_config=serving_config,
         query=search_query,
-        content_search_spec=content_spec,
-        page_size=20,
     )
     response = search_client.search(request)
 
-    return response
+    return response.results

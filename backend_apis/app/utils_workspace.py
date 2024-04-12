@@ -177,7 +177,7 @@ def set_permission(
         domain: str):
     drive_service = build('drive', 'v3', credentials=credentials)
     permission = {'type': 'domain',
-                'domain': domain,
+                'domain': domain, 
                 'role': 'writer'}
     return drive_service.permissions().create(fileId=file_id,
                                         sendNotificationEmail=False,
@@ -186,9 +186,9 @@ def set_permission(
 
 
 def get_chart_id(
-        sheets_service,
+        credentials,
         spreadsheet_id):
-    
+    sheets_service = build('sheets', 'v4', credentials=credentials)
     spreadsheet_id = spreadsheet_id  
     ranges = [] 
     include_grid_data = False 

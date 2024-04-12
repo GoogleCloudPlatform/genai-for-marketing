@@ -30,7 +30,7 @@ import google.auth.transport.requests
 HTTP_REQUEST = google.auth.transport.requests.Request()
 
 # Load configuration file
-with open("/code/app/config.toml", "rb") as f:
+with open("app/config.toml", "rb") as f:
     config = tomllib.load(f)
 
 # Application Default credentials are automatically created.

@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-
 resource "google_artifact_registry_repository" "docker-repo" {
   project       = var.project_id
-  location      = "us-central1"
+  location      = var.region
   repository_id = "docker"
   format        = "DOCKER"
+}
+
+resource "google_firestore_database" "database" {
+  project     = var.project_id
+  name        = "(default)"
+  location_id = var.region
+  type        = "FIRESTORE_NATIVE"
 }
 
 resource "google_secret_manager_secret" "secret-cred" {
@@ -107,7 +113,7 @@ resource "local_file" "enviroments_ts" {
     fb_messaging_sender_id = lookup(data.google_firebase_web_app_config.app_front, "messaging_sender_id", ""),
     fb_api_id              = google_firebase_web_app.app_front.app_id,
     fb_measurement_id      = lookup(data.google_firebase_web_app_config.app_front, "measurement_id", ""),
-    dialogflow_cx_agent_id = google_discovery_engine_chat_engine.chat_app.chat_engine_metadata.dialogflow_agent[0]
+    dialogflow_cx_agent_id = split("/",google_discovery_engine_chat_engine.chat_app.chat_engine_metadata[0].dialogflow_agent)[5] # Only getting agent Id
     }
   )
   filename = "${path.module}/templates/environments.ts"

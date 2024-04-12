@@ -39,7 +39,7 @@ variable "region" {
 
 variable "dataset_name" {
   type        = string
-  default     = "gani_marketing"
+  default     = "genai_marketing"
   description = "BigQuery dataset name"
 }
 

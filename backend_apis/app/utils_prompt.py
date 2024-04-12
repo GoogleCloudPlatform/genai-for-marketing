@@ -24,7 +24,7 @@ import vertexai
 import tomllib
 
 # Load configuration file
-with open("/code/app/config.toml", "rb") as f:
+with open("app/config.toml", "rb") as f:
     config = tomllib.load(f)
 project_id = config["global"]["project_id"]
 location = config["global"]["location"]
@@ -33,41 +33,6 @@ vertexai.init(project=project_id, location=location)
 
 from vertexai.preview.language_models import TextGenerationModel
 from vertexai.preview.vision_models import ImageGenerationModel
-
-from vertexai.generative_models import GenerativeModel , GenerationConfig
-
-
-async def async_predict_text_gemini(
-        prompt: str,
-        model_name: str="gemini-1.0-pro",
-        max_output_tokens: int=2048,
-        temperature: float=0.4,
-        top_k: int=40,
-        top_p: float=0.8
-    )-> str:
-    loop = asyncio.get_running_loop()
-    llm = GenerativeModel(model_name)
-    generated_response = None
-    generation_config = GenerationConfig(
-    temperature=temperature,
-    top_p=top_p,
-    top_k=top_k,
-    candidate_count=1,
-    max_output_tokens=max_output_tokens,
-)
-    try:
-        generated_response = await loop.run_in_executor(
-            None,
-            functools.partial(
-                llm.generate_content,
-                    prompt, 
-                    generation_config=generation_config))
-    except Exception as e:
-        print(e)
-
-    if generated_response and generated_response.text:
-        return generated_response.text
-    return ""
 
 async def async_predict_text_llm(
         prompt: str,

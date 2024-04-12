@@ -24,8 +24,6 @@ import requests
 from newspaper import Article
 from newspaper import ArticleException
 
-from vertexai.generative_models import GenerativeModel
-import vertexai.preview.generative_models as generative_models
 
 gdelt_api_url: str = 'https://api.gdeltproject.org/api/v2/doc/doc'
 mode: str = 'ArtList'
@@ -140,9 +138,7 @@ def get_relevant_documents(
     return documents
 
 
-def summarize_news_article(
-        page_content: dict,
-        llm: GenerativeModel):
+def summarize_news_article(page_content: dict, llm):
     """Summarizes a news article.
 
     Args:
@@ -160,31 +156,7 @@ def summarize_news_article(
         "Write a one sentence summary of the news article below:"
         f"input: {page_content}"
         "output:")
-
-    try:
-        summary = llm.generate_content(
-            contents=prompt_template,
-            generation_config={
-                "max_output_tokens": 2048,
-                "temperature": 0.8,
-                "top_p": 0.8,
-            },
-            safety_settings = {
-                generative_models.HarmCategory.HARM_CATEGORY_HATE_SPEECH: generative_models.HarmBlockThreshold.BLOCK_ONLY_HIGH,
-                generative_models.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: generative_models.HarmBlockThreshold.BLOCK_ONLY_HIGH,
-                generative_models.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: generative_models.HarmBlockThreshold.BLOCK_ONLY_HIGH,
-                generative_models.HarmCategory.HARM_CATEGORY_HARASSMENT: generative_models.HarmBlockThreshold.BLOCK_ONLY_HIGH,
-            },
-            stream=False,
-        )
-    except Exception as e:
-        print(e)
-        return ""
-
-    if isinstance(summary.text, str):
-        return summary.text
-    else:
-        return ""
+    return llm.predict(prompt_template).text
 
 
 def summarize_documents(documents: dict, llm) -> list:

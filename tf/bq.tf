@@ -28,20 +28,19 @@ locals {
 }
 
 module "bigquery" {
-  source                      = "terraform-google-modules/bigquery/google"
-  version                     = "~> 7.0"
-  dataset_id                  = var.dataset_name
-  dataset_name                = var.dataset_name
-  project_id                  = var.project_id
-  location                    = var.location
-
+  source       = "terraform-google-modules/bigquery/google"
+  version      = "~> 7.0"
+  dataset_id   = var.dataset_name
+  dataset_name = var.dataset_name
+  project_id   = var.project_id
+  location     = var.location
   tables = local.bq_tables
 }
 
 ## Populating tables with scripts
 resource "null_resource" "bq_tables_populate" {
   triggers = {
-    bq_tables    = join(",", module.bigquery.table_ids)
+    bq_tables  = join(",", module.bigquery.table_ids)
     bq_dataset = var.dataset_name
   }
 

@@ -25,10 +25,10 @@ resource "null_resource" "gdrice_folder" {
   }
 
   provisioner "local-exec" {
-    command = "[ ! -e create_gdrive_folder_results.json ] && echo \"{}\" >> create_gdrive_folder_results.json"
+    command = "rm -f create_gdrive_folder_results.json;  echo \"{}\" >> create_gdrive_folder_results.json"
   }
 
-  
+
 
   provisioner "local-exec" {
     command = "source venv/bin/activate; python3 aux_data/Create_GDrive_folder.py --folder_name=\"${var.gdrive_folder_name}\" --service_account_email=\"${module.genai_run_service_account.email}\""

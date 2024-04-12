@@ -97,7 +97,6 @@ class ConsumerInsightsRequest(BaseModel):
 
 class ConsumerInsightsResponse(BaseModel):
     results: list
-    llm_summary: str
 
 
 class BriefCreateRequest(BaseModel):
@@ -214,12 +213,3 @@ class ExportGoogleDocRequest(BaseModel):
 
 class ExportGoogleDocResponse(BaseModel):
     doc_id: str
-
-class TexttoSpeechRequest(BaseModel):
-    text: str
-    prefix: str
-    language_code: str = None
-    language_name: str = None
-
-class TexttoSpeechResponse(BaseModel):
-    audio_uri: str

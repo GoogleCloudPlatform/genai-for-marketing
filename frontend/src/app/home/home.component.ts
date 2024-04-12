@@ -27,14 +27,14 @@ export class HomeComponent {
   showWebsitePost: boolean = false;
   showAssestGroup: boolean = false;
   showContentReview: boolean = false;
-  dialogFlowCxAgendId: string | undefined;
+  dialogflowCxAgendId: string | undefined;
   userProjectId: string | undefined;
 
   constructor(public _router: Router, public loginService: LoginService) {
     this.subscription = this.loginService.getUserDetails().subscribe(message => {
       this.photoURL = message?.photoURL
     });
-    this.dialogFlowCxAgendId = environment.dialogflowCxAgendId;
+    this.dialogflowCxAgendId = environment.dialogflowCxAgendId;
     this.userProjectId = environment.firebaseConfig.projectId;
   }
   ngOnInit() {}
