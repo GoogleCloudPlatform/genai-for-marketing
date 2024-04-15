@@ -122,7 +122,9 @@ gcloud services enable \
 From Cloud Shell, execute the following commands:
 
  - Set your project id. Replace `<CHANGE TO YOUR PROJECT ID>` with your project ID.
-> export PROJECT_ID=<CHANGE TO YOUR PROJECT ID>
+```bash 
+export PROJECT_ID=<CHANGE TO YOUR PROJECT ID>
+```
 
  - Follow the instructions in your Shell to authenticate with the same user that has EDITOR/OWNER rights to this project.
 > gcloud auth application-default login
