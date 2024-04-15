@@ -253,10 +253,10 @@ https://developers.google.com/drive/api/reference/rest/v3/permissions#resource:-
 
 > cd ./genai-for-marketing/backend_apis/  
 
+ - Open the [Dockerfile - line 20](/backend_apis/Dockerfile) and include your project id where indicated.
  - Build and deploy the Docker image to Cloud Run.  
- - Replace "your-project-id" with your project ID in the line below.
 
-> gcloud run deploy genai-marketing --source . --region us-central1 --allow-unauthenticated --args=["PROJECT_ID=your-project-id"]
+> gcloud run deploy genai-marketing --source . --region us-central1 --allow-unauthenticated
 
 - Open the [Typescript file - line 2](/frontend/src/environments/environments.ts) and include the URL to your newly created Cloud Run deployment.  
 Example: `https://marketing-image-tlmb7xv43q-uc.a.run.app`  
