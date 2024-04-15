@@ -162,13 +162,6 @@ DESCRIPTION_PROMPT_TEMPLATE = config["prompts"]["description_prompt_template"]
 router = APIRouter(prefix="/marketing-api")
 app = FastAPI(docs_url="/marketing-api/docs")
 
-origins = [
-    "http://localhost:5000",
-    "http://localhost:8080",
-    "https://genai-mkt-frontend-dev.web.app",
-    "https://genai-mkt-frontend-dev.firebaseapp.com"
-]
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
