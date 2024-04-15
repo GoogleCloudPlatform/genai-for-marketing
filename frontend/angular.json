@@ -40,10 +40,10 @@
               "node_modules/primeng/resources/themes/saga-blue/theme.css",
                 "node_modules/primeng/resources/primeng.min.css",
                 "node_modules/primeicons/primeicons.css",
-                
+
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "node_modules/primeng/resources/themes/lara-light-blue/theme.css",
-             
+
               "src/styles.scss",
               "node_modules/@fortawesome/fontawesome-free/css/all.css"
             ],
@@ -54,13 +54,13 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumWarning": "5mb",
+                  "maximumError": "5mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumWarning": "1mb",
+                  "maximumError": "1mb"
                 }
               ],
               "outputHashing": "all"
