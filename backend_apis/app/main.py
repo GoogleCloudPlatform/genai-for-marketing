@@ -86,7 +86,7 @@ from .body_schema import (
 )
 
 # Load configuration file
-with open("/code/app/config.toml", "rb") as f:
+with open("/app/config.toml", "rb") as f:
     config = tomllib.load(f)
 project_id = config["global"]["project_id"]
 location = config["global"]["location"]

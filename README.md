@@ -249,9 +249,9 @@ https://developers.google.com/drive/api/reference/rest/v3/permissions#resource:-
  - On Jupyterlab `Launcher Page` (in the Workbench managed instance), click on `Terminal` to start a new terminal by clicking the Terminal icon.  
 
 ### Cloud Run
- - Navigate to the `genai-for-marketing/backend_apis/` folder  
+ - Navigate to the [/backend_apis](`genai-for-marketing/backend_apis/`) folder  
 
-> cd genai-for-marketing/backend_apis/  
+> cd ./genai-for-marketing/backend_apis/  
 
  - Build and deploy the Docker image to Cloud Run.  
  - Replace "your-project-id" with your project ID in the line below.
