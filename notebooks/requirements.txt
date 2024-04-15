@@ -1,0 +1,4 @@
+google-cloud-datacatalog
+google-cloud-storage
+google-cloud-bigquery
+numpy

@@ -20,9 +20,16 @@ from aux_data import data_gen
 from aux_data import bq_tag_generation
 
 
+print(
+    """This installation script will:
+     - Create a dataset on BigQuery with data about Audiences.
+     - Create a TagTemplate with metadata about the dataset.
+       
+    This process can take up to 3 minutes to finish.""")
+
 # Set environmental variables
 PROJECT_ID = os.environ['PROJECT_ID']
-LOCATION = 'us-central1'
+LOCATION = os.environ['LOCATION']
 DATASET_ID = 'cdp_dataset'
 
 # Tag template definitions
