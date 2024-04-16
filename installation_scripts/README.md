@@ -12,7 +12,7 @@ Before running the automation, Navigate to the Vertex AI Search and Conversation
 
 [![Open in Cloud Shell](https://gstatic.com/cloudssh/images/open-btn.png)](https://ssh.cloud.google.com/cloudshell/open?cloudshell_git_repo=https://github.com/GoogleCloudPlatform/genai-for-marketing&cloudshell_tutorial=installation_scripts/tutorial.md)
 
-or, in Cloud Shell, clone this repo, `cd installation-scripts` and run:
+or, in Cloud Shell, clone this repo, `cd installation_scripts` and run:
 
 ```
 teachme tutorial.md
