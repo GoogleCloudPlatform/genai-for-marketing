@@ -8,7 +8,7 @@ Follow the instructions below to install the solution.
 
 Use the Cloud Shell button below to install the solution.
 
-Before running the automation, Navigate to the Vertex AI Search and Conversation in google cloud console and Read and agree to the Terms of Service, then click Continue and activate the API.
+Before running the automation, Navigate to the Vertex AI Agent Builder in Google Cloud console and read and agree to the Terms of Service, then click Continue and activate the API.
 
 [![Open in Cloud Shell](https://gstatic.com/cloudssh/images/open-btn.png)](https://ssh.cloud.google.com/cloudshell/open?cloudshell_git_repo=https://github.com/GoogleCloudPlatform/genai-for-marketing&cloudshell_tutorial=installation_scripts/tutorial.md)
 

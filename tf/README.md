@@ -10,7 +10,7 @@
 4. Confirm Firebase billing plan
 5. Continue and complete
 
-### Enable search and Conversation
+### Enable Vertex AI Agent Builder
 1. Go to https://console.cloud.google.com/gen-app-builder/start
 2. Accept TOS
 
