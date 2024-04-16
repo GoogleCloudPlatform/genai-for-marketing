@@ -20,6 +20,8 @@
 export USER_PROJECT_OVERRIDE=true
 export GOOGLE_BILLING_PROJECT=<your_project_id>
 
+terraform init
+
 terraform apply -var=project_id=<your_project_id>
 ```
 
