@@ -81,9 +81,9 @@ From [Cloud Shell](https://cloud.google.com/shell/docs/using-cloud-shell), run t
 Replace `<CHANGE TO YOUR PROJECT ID>` to the id of your project and `<CHANGE TO YOUR LOCATION>` to the location where your resources will be deployed.
 
 ```bash
-export PROJECT_ID=<CHANGE TO YOUR PROJECT ID>
-export LOCATION=<CHANGE TO YOUR LOCATION>
-gcloud config set project $PROJECT_ID
+export PROJECT_ID=<CHANGE TO YOUR PROJECT ID>  
+export LOCATION=<CHANGE TO YOUR LOCATION>  
+gcloud config set project $PROJECT_ID  
 ```
 
 Enable the services:
@@ -138,7 +138,7 @@ export PROJECT_ID=<CHANGE TO YOUR PROJECT ID>
 ### 4- Clone the Gen AI for Marketing repository
 From Cloud Shell, execute the following command:
 
-> git clone https://github.com/GoogleCloudPlatform/genai-for-marketing
+> git clone https://github.com/GoogleCloudPlatform/genai-for-marketing  
 
 
 ### 5- Update the configuration with information of your project
@@ -148,17 +148,18 @@ Open the [configuration file](/backend_apis/app/config.toml) and include your pr
 
 ### 6- Prepare BigQuery and Dataplex
 From Cloud Shell, navigate to [/installation_scripts](/installation_scripts) and execute the following command.  
-Make sure you have set the environmental variables PROJECT_ID and LOCATION.
-> cd ./genai-for-marketing/installation_scripts
-> pip3 install -r requirements.txt
+Make sure you have set the environmental variables PROJECT_ID and LOCATION.  
+> cd ./genai-for-marketing/installation_scripts  
+> pip3 install -r requirements.txt  
 
-Run the python script to create the BigQuery dataset and the DataCatalog TagTemplate.
-> python3 1_env_setup_script.py
+Run the python script to create the BigQuery dataset and the DataCatalog TagTemplate.  
+> python3 1_env_setup_script.py  
+
 
 ### 7- Create an Vertex AI Search engine for a public website
 
 Follow the steps below to create a search engine for a website using Vertex AI Search.
- - Make sure the Vertex AI Search APIs are enabled [here](https://cloud.google.com/generative-ai-app-builder/docs/try-enterprise-search#before-you-begin) and you activated Vertex AI Search [here](https://cloud.google.com/generative-ai-app-builder/docs/try-enterprise-search#activate).
+ - Make sure the Vertex AI Search APIs are enabled [here](https://cloud.google.com/generative-ai-app-builder/docs/try-enterprise-search#before-you-begin) and you activated Vertex AI Search [here](https://cloud.google.com/generative-ai-app-builder/docs/try-enterprise-search#activate).  
  - Create and preview the website search engine as described [here](https://cloud.google.com/generative-ai-app-builder/docs/try-enterprise-search#create_a_search_app_for_website_data) and [here](https://cloud.google.com/generative-ai-app-builder/docs/try-enterprise-search#preview_your_app_for_website_data).
 
 After you finished creating the Vertex AI Search datastore, navigate back to the [`Apps`](https://console.cloud.google.com/gen-app-builder/engines) page and copy the ID of the datastore you just created.  
@@ -174,9 +175,9 @@ Open the [configuration file - line 33](/backend_apis/app/config.toml) and inclu
 
 In order to render your Looker Dashboards in the UI, you need to update a HTML file with links to them.
 
-1) Open this [HTML file - lines 18 and 28](/frontend/src/app/marketing-insights/marketing-insights.component.html) and include links to the Looker dashboards for Marketing Insights.
+1) Open this [HTML file - lines 18 and 28](/frontend/src/app/marketing-insights/marketing-insights.component.html) and include links to the Looker dashboards for Marketing Insights.  
 
-2) 1) Open this [HTML file - lines 27 and 37](/frontend/src/app/campaign-performance/campaign-performance.component.html) and include links to the Looker dashboards for Marketing Insights.
+2) Open this [HTML file - lines 27 and 37](/frontend/src/app/campaign-performance/campaign-performance.component.html) and include links to the Looker dashboards for Campaign Performance.
 
 The `allow_login_screen=true` in the URL will open the authentication page from Looker to secure the access to your account.
 
@@ -185,13 +186,13 @@ The `allow_login_screen=true` in the URL will open the authentication page from 
 
 ### 9- Create a Generative AI DataStore Agent
 
-Next you will create a Generative AI Agent that will assist the users to answer questions about Google Ads, etc.
-- Follow the steps described in this [Documentation](https://cloud.google.com/dialogflow/vertex/docs/concept/data-store-agent) to build your own Datastore Agent.
-  - Execute these steps in the same project you will deploy this demo.
+Next you will create a Generative AI Agent that will assist the users to answer questions about Google Ads, etc.  
+- Follow the steps described in this [Documentation](https://cloud.google.com/dialogflow/vertex/docs/concept/data-store-agent) to build your own Datastore Agent.  
+  - Execute these steps in the same project you will deploy this demo.  
 - Enable [Dialogflow Messenger integration](https://cloud.google.com/dialogflow/cx/docs/concept/integration/dialogflow-messenger) and copy the `project-id` and `agent-id` from the HTML code snippet provided by the platform.  
   - The HTML code snippet looks like this: 
-  ![HTML Code](/app/images/dialogflow-integration.png "HTML Code")
-- Open the [HTML file - line 117](/frontend/src/app/home/home.component.html) and replace the variables with the `project-id` and `agent-id`.
+  ![HTML Code](/app/images/dialogflow-integration.png "HTML Code")  
+- Open the [HTML file - line 117](/frontend/src/app/home/home.component.html) and replace the variables with the `project-id` and `agent-id`.  
 
 
 ### 10- Workspace integration
@@ -291,12 +292,12 @@ Open the [frontend environment file - line 3](/frontend/src/environments/environ
 Angular is the framework for the Frontend. Execute the following commands to build your application.
 
 ```bash
-npm install -g @angular/cli
-npm install --legacy-peer-deps
+npm install -g @angular/cli  
+npm install --legacy-peer-deps  
 
-cd ./genai-for-marketing/frontend
+cd ./genai-for-marketing/frontend  
 
-ng build
+ng build  
 ```
 
 #### 11.5- Firebase Hosting Setup
@@ -304,15 +305,15 @@ Firebase Hosting is used to serve the frontend.
 
  - Install firebase tools
 ```bash
-npm install -g firebase-tools
+npm install -g firebase-tools  
 
-firebase login --no-localhost
+firebase login --no-localhost  
 ```
 Follow the steps presented in the console to login to Firebase.
 
  - Init hosting
 ```bash
-cd frontend/dist/frontend
+cd frontend/dist/frontend  
 
 firebase init hosting
 ```
