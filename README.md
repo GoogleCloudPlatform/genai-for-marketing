@@ -330,9 +330,9 @@ Navigate to the created URL to access the Gen AI for Marketing app.
 #### 11.6- Firestore database setup
 
 Visit the following URL to create a database for Firestore.  
-Replace `<your-project-id>` with your project ID.
+Replace `your-project-id` with your project ID.
 
-https://console.cloud.google.com/datastore/setup?project=<your-project-id>
+https://console.cloud.google.com/datastore/setup?project=your-project-id
  - Choose "Native Mode (Recommended)" for the database mode.
  - Click Save
 
@@ -340,8 +340,8 @@ https://console.cloud.google.com/datastore/setup?project=<your-project-id>
 #### 11.7- Enable Firebase Authentication with Google
 
 Visit the following URL to enable Firebase Authentication.  
-Replace `<your-project-id>` with your project ID.
-https://firebase.corp.google.com/project/<your-project-id>/authentication/providers
+Replace `your-project-id` with your project ID.
+https://firebase.corp.google.com/project/your-project-id/authentication/providers
 
  - Add a new provider by clicking on "Add new provider"
  - Choose "Google" and click "enable" and then "Save".
