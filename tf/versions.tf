@@ -13,4 +13,8 @@ terraform {
       source = "hashicorp/local"
     }
   }
+
+  provider_meta "google" {
+    module_name = "cloud-solutions/genai-for-marketing-v2.0"
+  }
 }
