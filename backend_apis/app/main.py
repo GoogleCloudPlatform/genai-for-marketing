@@ -82,7 +82,7 @@ from .body_schema import (
     ExportGoogleDocRequest,
     ExportGoogleDocResponse,
     TexttoSpeechRequest,
-    TexttoSpeechResponse
+    TexttoSpeechResponse,
 )
 
 # Load configuration file
@@ -114,10 +114,10 @@ gemini_llm = GenerativeModel("gemini-1.0-pro-001")
 
 TEXT_MODEL_NAME = config["models"]["text_model_name"]
 
-#translation
+# translation
 translate_client = translate.Client()
 
-#texttospeech
+# texttospeech
 texttospeech_client = texttospeech.TextToSpeechLongAudioSynthesizeClient()
 
 # Image models
@@ -126,13 +126,13 @@ imagen = ImageGenerationModel.from_pretrained("imagegeneration@002")
 # Workspace integration
 # Fetch Secret Configuration
 secret_client = secretmanager.SecretManagerServiceClient()
-secret_name = config['global']['secret_name_workspace']
+secret_name = config["global"]["secret_name_workspace"]
 secret_response = secret_client.access_secret_version(name=secret_name)
 workspace_cred = secret_response.payload.data.decode("UTF-8")
 workspace_cred = json.loads(workspace_cred)
 CREDENTIALS = service_account.Credentials.from_service_account_info(
-    info=workspace_cred, 
-    scopes=config["global"]["workspace_scopes"])
+    info=workspace_cred, scopes=config["global"]["workspace_scopes"]
+)
 # drive_service = build('drive', 'v3', credentials=CREDENTIALS)
 # docs_service = build('docs', 'v1', credentials=CREDENTIALS)
 # sheets_service = build('sheets', 'v4', credentials=CREDENTIALS)
@@ -144,9 +144,9 @@ doc_template_id = config["global"]["doc_template_id"]
 sheet_template_id = config["global"]["sheet_template_id"]
 slide_page_id_list = config["global"]["slide_page_id_list"]
 
-#prompts
+# prompts
 BRAND_OVERVIEW = config["prompts"]["prompt_brand_overview"]
-BRAND_STATEMENT_PROMPT_TEMPLATE =config["prompts"]["prompt_brand_statement_template"]
+BRAND_STATEMENT_PROMPT_TEMPLATE = config["prompts"]["prompt_brand_statement_template"]
 PRIMARY_MSG_PROMPT_TEMPLATE = config["prompts"]["prompt_primary_msg_template"]
 COMMS_CHANNEL_PROMPT_TEMPLATE = config["prompts"]["prompt_comms_channel_template"]
 BUSINESS_NAME = config["prompts"]["prompt_business_name"]
@@ -173,73 +173,83 @@ app.add_middleware(
 
 # create-campaign
 @router.post("/users/{user_id}/campaigns")
-def create_campaign(user_id: str,data: CampaignCreateRequest
-                    ) -> CampaignCreateResponse:
+def create_campaign(
+    user_id: str, data: CampaignCreateRequest
+) -> CampaignCreateResponse:
     """Campaing Creation and content generation with PaLM API
-        Parameters:
-            user_id: str
-            campaign_name: str
-            theme: str
-            brief: dict = {
-                "gender_select_theme":"Male",
-                "age_select_theme":"20-30",
-                "objective_select_theme":"Drive Awareness",
-                "competitor_select_theme":"Fashion Forward"
-                }
-        Returns:
-            id (str): Response of generated Campaign ID
-            campaign_name:str
-            workspace_asset: dict
-        """
-    
+    Parameters:
+        user_id: str
+        campaign_name: str
+        theme: str
+        brief: dict = {
+            "gender_select_theme":"Male",
+            "age_select_theme":"20-30",
+            "objective_select_theme":"Drive Awareness",
+            "competitor_select_theme":"Fashion Forward"
+            }
+    Returns:
+        id (str): Response of generated Campaign ID
+        campaign_name:str
+        workspace_asset: dict
+    """
+
     gender_select_theme = data.brief.gender_select_theme
     age_select_theme = data.brief.age_select_theme
     objective_select_theme = data.brief.objective_select_theme
     competitor_select_theme = data.brief.competitor_select_theme
+
     async def generate_campaign() -> tuple:
-            return await asyncio.gather(
-                utils_prompt.async_predict_text_gemini(
-                    BRAND_STATEMENT_PROMPT_TEMPLATE.format(
-                        gender_select_theme, 
-                        age_select_theme,
-                        objective_select_theme,
-                        competitor_select_theme,
-                        BRAND_OVERVIEW)
-                        ),
-                utils_prompt.async_predict_text_gemini(
-                    PRIMARY_MSG_PROMPT_TEMPLATE.format(
-                        gender_select_theme, 
-                        age_select_theme,
-                        objective_select_theme,
-                        competitor_select_theme,
-                        BRAND_OVERVIEW)
-                    ),
-                utils_prompt.async_predict_text_gemini(
-                    COMMS_CHANNEL_PROMPT_TEMPLATE.format(
-                        gender_select_theme, 
-                        age_select_theme,
-                        objective_select_theme,
-                        competitor_select_theme)
-                    )) 
+        return await asyncio.gather(
+            utils_prompt.async_predict_text_gemini(
+                BRAND_STATEMENT_PROMPT_TEMPLATE.format(
+                    gender_select_theme,
+                    age_select_theme,
+                    objective_select_theme,
+                    competitor_select_theme,
+                    BRAND_OVERVIEW,
+                )
+            ),
+            utils_prompt.async_predict_text_gemini(
+                PRIMARY_MSG_PROMPT_TEMPLATE.format(
+                    gender_select_theme,
+                    age_select_theme,
+                    objective_select_theme,
+                    competitor_select_theme,
+                    BRAND_OVERVIEW,
+                )
+            ),
+            utils_prompt.async_predict_text_gemini(
+                COMMS_CHANNEL_PROMPT_TEMPLATE.format(
+                    gender_select_theme,
+                    age_select_theme,
+                    objective_select_theme,
+                    competitor_select_theme,
+                )
+            ),
+        )
+
     try:
         generated_tuple = asyncio.run(generate_campaign())
         print(generated_tuple)
-        brand_statement = generated_tuple[0] 
+        brand_statement = generated_tuple[0]
         primary_message = generated_tuple[1]
         comm_channels = generated_tuple[2]
         brief_scenario = (
-                    f'Targeting gender: {gender_select_theme}, '
-                    f'Age group: {age_select_theme}, '
-                    f'Campaign objective: {objective_select_theme}, '
-                    f'Competitor: {competitor_select_theme}') 
-        workspace_asset = post_brief_create_upload(BriefCreateRequest(
-            campaign_name=data.campaign_name,
-            business_name=BUSINESS_NAME,
-            brief_scenario=brief_scenario,
-            brand_statement=brand_statement,
-            primary_message=primary_message,
-            comm_channels=comm_channels
-            ))
+            f"Targeting gender: {gender_select_theme}, "
+            f"Age group: {age_select_theme}, "
+            f"Campaign objective: {objective_select_theme}, "
+            f"Competitor: {competitor_select_theme}"
+        )
+        workspace_asset = post_brief_create_upload(
+            BriefCreateRequest(
+                campaign_name=data.campaign_name,
+                business_name=BUSINESS_NAME,
+                brief_scenario=brief_scenario,
+                brand_statement=brand_statement,
+                primary_message=primary_message,
+                comm_channels=comm_channels,
+            )
+        )
     except Exception as e:
         print("Failed in Creating Content Asset")
         raise HTTPException(status_code=400, detail=str(e))
@@ -248,19 +258,19 @@ def create_campaign(user_id: str,data: CampaignCreateRequest
             name=data.campaign_name,
             theme=data.theme,
             brief=data.brief,
-            workspace_assets=workspace_asset
-            )
-        update_time,campaign_id = utils_firebase.create_campaign(
-            user_id=user_id,
-            campaign=campaign
-            )
-        print(update_time,campaign_id)
+            workspace_assets=workspace_asset,
+        )
+        update_time, campaign_id = utils_firebase.create_campaign(
+            user_id=user_id, campaign=campaign
+        )
+        print(update_time, campaign_id)
         return CampaignCreateResponse(
             id=campaign_id,
             campaign_name=data.campaign_name,
             theme=data.theme,
-            workspace_assets=workspace_asset
-            )
+            workspace_assets=workspace_asset,
+        )
+
 
 # List-campaigns
 @router.get("/users/{user_id}/campaigns")
@@ -272,74 +282,66 @@ async def list_campaigns(user_id: str) -> CampaignListResponse:
     print(list_of_campaigns)
     return CampaignListResponse(results=list_of_campaigns)
 
+
 # get-campaign
 @router.get("/users/{user_id}/campaigns/{campaign_id}")
-async def get_campaign(user_id: str,campaign_id:str) -> Campaign:
+async def get_campaign(user_id: str, campaign_id: str) -> Campaign:
     """
     List Existing Campaign for logged in user
     """
-    campaign_resp = utils_firebase.read_campaign(user_id=user_id,campaign_id=campaign_id)
+    campaign_resp = utils_firebase.read_campaign(
+        user_id=user_id, campaign_id=campaign_id
+    )
     if campaign_resp == {}:
         raise HTTPException(
-            status_code=400, 
-            detail="Invalid user_id or campaign does not exists."
-            )
+            status_code=400, detail="Invalid user_id or campaign does not exists."
+        )
     return Campaign(**campaign_resp)
+
 
 # Update-campaign
 @router.put("/users/{user_id}/campaigns/{campaign_id}")
-async def update_campaign(user_id: str,campaign_id:str,data:Campaign):
+async def update_campaign(user_id: str, campaign_id: str, data: Campaign):
     """
     Update Campiagn detail in backend storage
     """
     response = utils_firebase.update_campaign(
-        user_id=user_id,
-        campaign_id=campaign_id,
-        data=data
-        )
+        user_id=user_id, campaign_id=campaign_id, data=data
+    )
     print(response)
-    return JSONResponse(
-        content={'message': 'Successfully Updated'},
-        status_code=200
-        )
+    return JSONResponse(content={"message": "Successfully Updated"}, status_code=200)
+
 
 # Delete-campaign
 @router.delete("/users/{user_id}/campaigns/{campaign_id}")
-async def delete_campaign(user_id: str,campaign_id:str):
+async def delete_campaign(user_id: str, campaign_id: str):
     """
     Delete Campiagn from backend storage
     """
-    response = utils_firebase.delete_campaign(
-        user_id=user_id,
-        campaign_id=campaign_id
-        )
+    response = utils_firebase.delete_campaign(user_id=user_id, campaign_id=campaign_id)
     print(response)
     return JSONResponse(
-        content={'message': 'Successfully Deleted Campaign'}, 
-        status_code=200
-        )
+        content={"message": "Successfully Deleted Campaign"}, status_code=200
+    )
+
 
 # Update-Status
 @router.put("/users/{user_id}/campaigns/{campaign_id}/status/")
-async def update_status(user_id: str,campaign_id:str,data:CampaignStatusUpdate):
+async def update_status(user_id: str, campaign_id: str, data: CampaignStatusUpdate):
     """
     Update Campiagn Creative Component Status in backend storage
     """
     response = utils_firebase.update_status(
-        user_id=user_id,
-        campaign_id=campaign_id,
-        key=data.key,
-        status=data.status
-        )
+        user_id=user_id, campaign_id=campaign_id, key=data.key, status=data.status
+    )
     print(response)
-    return JSONResponse(
-        content={'message': 'Successfully Activated'},
-        status_code=200
-        )
+    return JSONResponse(content={"message": "Successfully Activated"}, status_code=200)
+
 
 @router.post(path="/generate-text")
-def post_text_bison_generate(data: TextGenerateRequest,
-                             ) -> TextGenerateResponse:
+def post_text_bison_generate(
+    data: TextGenerateRequest,
+) -> TextGenerateResponse:
     """Text generation with PaLM API
     Parameters:
         model: str = "latest"
@@ -353,16 +355,15 @@ def post_text_bison_generate(data: TextGenerateRequest,
         text (str): Response from the LLM
         safety_attributes: Safety attributes from LLM
     """
-   
+
     if data.model == "latest":
         llm = llm_latest
     elif data.model == "ga":
         llm = llm_ga
     else:
         raise HTTPException(
-            status_code=400, 
-            detail="Invalid model name. Options: ga | latest."
-            )
+            status_code=400, detail="Invalid model name. Options: ga | latest."
+        )
 
     try:
         llm_response = llm.predict(
@@ -370,19 +371,20 @@ def post_text_bison_generate(data: TextGenerateRequest,
             max_output_tokens=data.max_output_tokens,
             temperature=data.temperature,
             top_k=data.top_k,
-            top_p=data.top_p)
+            top_p=data.top_p,
+        )
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     else:
         return TextGenerateResponse(
-            text=llm_response.text,
-            safety_attributes=llm_response.safety_attributes
+            text=llm_response.text, safety_attributes=llm_response.safety_attributes
         )
 
 
 @router.post(path="/generate-image")
-def post_image_generate(data: ImageGenerateRequest,
-                        ) -> ImageGenerateResponse:
+def post_image_generate(
+    data: ImageGenerateRequest,
+) -> ImageGenerateResponse:
     """Image generation with Imagen
     Parameters:
         prompt: str
@@ -398,31 +400,29 @@ def post_image_generate(data: ImageGenerateRequest,
         imagen_responses = imagen.generate_images(
             prompt=data.prompt,
             number_of_images=data.number_of_images,
-            negative_prompt=data.negative_prompt)
+            negative_prompt=data.negative_prompt,
+        )
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     else:
         generated_images = []
-        i=0
+        i = 0
         for image in imagen_responses:
             generated_images.append(
-                {   
-                    "id": i ,
+                {
+                    "id": i,
                     "images_base64_string": image._as_base64_string(),
                     "image_size": image._size,
-                    "images_parameters": image.generation_parameters
+                    "images_parameters": image.generation_parameters,
                 }
             )
-            i=i+1
+            i = i + 1
 
-    return ImageGenerateResponse(
-        generated_images=generated_images
-    )
+    return ImageGenerateResponse(generated_images=generated_images)
 
 
 @router.post(path="/edit-image")
-def post_image_edit(data: ImageEditRequest
-                    ) -> ImageGenerateResponse:
+def post_image_edit(data: ImageEditRequest) -> ImageGenerateResponse:
     """Image editing with Imagen
     Parameters:
         prompt: str
@@ -447,7 +447,8 @@ def post_image_edit(data: ImageEditRequest
             base_image=Image(image_bytes=base64.b64decode(data.base_image_base64)),
             mask=mask,
             number_of_images=data.number_of_images,
-            negative_prompt=data.negative_prompt)
+            negative_prompt=data.negative_prompt,
+        )
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     else:
@@ -455,23 +456,20 @@ def post_image_edit(data: ImageEditRequest
         i = 0
         for image in imagen_responses:
             generated_images.append(
-                {   
-                    "id" : i,
+                {
+                    "id": i,
                     "images_base64_string": image._as_base64_string(),
                     "image_size": image._size,
-                    "images_parameters": image.generation_parameters
+                    "images_parameters": image.generation_parameters,
                 }
             )
-            i=i+1
+            i = i + 1
 
-    return ImageGenerateResponse(
-        generated_images=generated_images
-    )
+    return ImageGenerateResponse(generated_images=generated_images)
 
 
 @router.get(path="/get-top-search-terms/{trends_date}")
-def get_top_search_term(trends_date: str
-                        ) -> TrendTopReponse:
+def get_top_search_term(trends_date: str) -> TrendTopReponse:
     """Get top search terms from Google Trends
     Parameters:
         trends_date: str
@@ -488,22 +486,18 @@ def get_top_search_term(trends_date: str
             "ORDER by rank ASC"
         )
         query_job = bq_client.query(query, location="US")
-        trends = [
-            {"rank": i[1], "term":i[0]}
-                for i in query_job.result()
-        ]
+        trends = [{"rank": i[1], "term": i[0]} for i in query_job.result()]
     except Exception as e:
         message = "Date must use the format YYY-MM-DD. " + str(e)
         raise HTTPException(status_code=400, detail=message)
     else:
-        return TrendTopReponse(
-            top_search_terms=trends
-        )
+        return TrendTopReponse(top_search_terms=trends)
 
 
 @router.post(path="/post-summarize-news")
-def post_summarize_news(data: NewsSummaryRequest,request: Request
-                        ) -> NewsSummaryResponse:
+def post_summarize_news(
+    data: NewsSummaryRequest, request: Request
+) -> NewsSummaryResponse:
     """Summarize news related to keyword(s)
     Parameters:
         keywords: list[str]
@@ -521,33 +515,35 @@ def post_summarize_news(data: NewsSummaryRequest,request: Request
     try:
         documents = trendspotting.get_relevant_documents(
             data.keywords,
-            start_date.strftime('%Y%m%d%H%M%S'),
-            end_date.strftime('%Y%m%d%H%M%S'),
-            max_records=data.max_records)
+            start_date.strftime("%Y%m%d%H%M%S"),
+            end_date.strftime("%Y%m%d%H%M%S"),
+            max_records=data.max_records,
+        )
     except:
         raise HTTPException(
-            status_code=400, 
-            detail="No articles found. Try different keywords.")
+            status_code=400, detail="No articles found. Try different keywords."
+        )
 
     try:
         summaries = []
         for doc in documents:
             summary = trendspotting.summarize_news_article(
-                doc["page_content"],
-                gemini_llm)
-            summaries.append({
-                "original_headline": doc["title"],
-                "summary":summary,
-                "url": doc["url"]
-            })
+                doc["page_content"], gemini_llm
+            )
+            summaries.append(
+                {
+                    "original_headline": doc["title"],
+                    "summary": summary,
+                    "url": doc["url"],
+                }
+            )
     except Exception as e:
         raise HTTPException(
-            status_code=400, 
-            detail=f"Something went wrong. Could not summarize news articles. {str(e)}")
+            status_code=400,
+            detail=f"Something went wrong. Could not summarize news articles. {str(e)}",
+        )
 
-    return NewsSummaryResponse(
-        summaries=summaries
-    )
+    return NewsSummaryResponse(summaries=summaries)
 
 
 @router.post(path="/post-audiences")
@@ -560,11 +556,14 @@ def post_audiences(data: AudiencesRequest) -> AudiencesResponse:
         gen_code: SQL code
     """
     # Audiences
-    tag_template_name = (f'projects/{project_id}/locations/'
-                        f'{location}/tagTemplates/{config["global"]["tag_name"]}')
+    tag_template_name = (
+        f"projects/{project_id}/locations/"
+        f'{location}/tagTemplates/{config["global"]["tag_name"]}'
+    )
     query_metadata = (
-        f'SELECT * FROM `{project_id}.{dataset_id}.INFORMATION_SCHEMA.TABLES`'
-        ' WHERE table_name NOT LIKE "%metadata%"')
+        f"SELECT * FROM `{project_id}.{dataset_id}.INFORMATION_SCHEMA.TABLES`"
+        ' WHERE table_name NOT LIKE "%metadata%"'
+    )
 
     try:
         audiences, gen_code, prompt = utils_codey.generate_sql_and_query(
@@ -576,22 +575,21 @@ def post_audiences(data: AudiencesRequest) -> AudiencesResponse:
             project_id=project_id,
             dataset_id=dataset_id,
             tag_template_name=tag_template_name,
-            bqclient=bq_client
+            bqclient=bq_client,
         )
-        crm_data = bulk_email_util.generate_information(audiences).to_dict('records')
+        crm_data = bulk_email_util.generate_information(audiences).to_dict("records")
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-    
+
     return AudiencesResponse(
-        audiences={"data":audiences,"crm_data":crm_data},
+        audiences={"data": audiences, "crm_data": crm_data},
         gen_code=gen_code,
-        prompt=prompt
+        prompt=prompt,
     )
 
 
 @router.get(path="/get-dataset-sample/{table_name}")
-def get_dataset_sample(table_name: str
-                       ) -> AudiencesSampleDataResponse:
+def get_dataset_sample(table_name: str) -> AudiencesSampleDataResponse:
     """Retrieve 3 rows of a BQ table
     Parameters:
         table_name: str
@@ -600,10 +598,7 @@ def get_dataset_sample(table_name: str
     """
 
     if table_name not in ["customers", "events", "transactions"]:
-        raise HTTPException(
-            status_code=400,
-            detail="Provide a valid table name."
-        )
+        raise HTTPException(status_code=400, detail="Provide a valid table name.")
 
     query = f"SELECT * FROM `{project_id}.{dataset_id}.{table_name}` LIMIT 3"
     result_job = bq_client.query(query=query)
@@ -611,22 +606,18 @@ def get_dataset_sample(table_name: str
     for row in result_job:
         result.append(dict(row.items()))
 
-    return AudiencesSampleDataResponse(
-        table_name=table_name,
-        data=result
-    )
+    return AudiencesSampleDataResponse(table_name=table_name, data=result)
 
 
 @router.post(path="/post-consumer-insights")
-def post_consumer_insights(data: ConsumerInsightsRequest
-                           ) -> ConsumerInsightsResponse:
+def post_consumer_insights(data: ConsumerInsightsRequest) -> ConsumerInsightsResponse:
     """Query Vertex AI Search and return top 10 results.
     Parameters:
         query: str
     Returns:
         results: list
     """
-    
+
     datastore_location = "global"
     results = []
     try:
@@ -636,18 +627,20 @@ def post_consumer_insights(data: ConsumerInsightsRequest
             location=datastore_location,
             search_engine_id=vertexai_search_datastore,
             serving_config_id="default_config",
-            search_client=search_client)
+            search_client=search_client,
+        )
     except Exception as e:
+        print(e)
         raise HTTPException(
-            status_code=400, 
-            detail="Something went wrong. Please try again.")
+            status_code=400, detail="Something went wrong. Please try again."
+        )
     else:
         llm_summary = search_results.summary.summary_text
 
         for search_result in search_results.results:
             search_result_dict = Message.to_dict(search_result)
             document = search_result_dict.get("document", {})
-            struct_data = document.get("derived_struct_data",{})
+            struct_data = document.get("derived_struct_data", {})
             title = struct_data.get("title", "")
             link = struct_data.get("link", "")
             snippets = struct_data.get("snippets", [])
@@ -658,64 +651,65 @@ def post_consumer_insights(data: ConsumerInsightsRequest
                     "title": title,
                     "link": link,
                     "snippet": snippet,
-                    "html_snippet": html_snippet
+                    "html_snippet": html_snippet,
                 }
                 results.append(result)
 
-    return ConsumerInsightsResponse(
-        results=results,
-        llm_summary=llm_summary
-    )
+    return ConsumerInsightsResponse(results=results, llm_summary=llm_summary)
 
 
 @router.post(path="/post-upload-file-drive/{folder_id}")
-def post_upload_file_drive(folder_id: str,file: UploadFile):
+def post_upload_file_drive(folder_id: str, file: UploadFile):
     """Upload file to Google Drive
     Parameters:
         file: UploadFile
     Returns:
         file_id: str
     """
-    
+
     try:
         file_id = utils_workspace.upload_to_folder(
-            credentials = CREDENTIALS,
+            credentials=CREDENTIALS,
             f=file.file,
             folder_id=folder_id,
             upload_name=file.filename,
-            mime_type=file.content_type
+            mime_type=file.content_type,
         )
     except Exception as e:
+        print(e)
         raise HTTPException(
-            status_code=400,
-            detail="Something went wrong. Please try again.")
+            status_code=400, detail="Something went wrong. Please try again."
+        )
     finally:
         file.file.close()
     return file_id
 
+
 @router.post(path="/post-upload-file-gcs/{folder_id}")
-def post_upload_file_gcs(folder_id: str,file: UploadFile):
+def post_upload_file_gcs(folder_id: str, file: UploadFile):
     """Upload file to Google Drive
     Parameters:
         file: UploadFile
     Returns:
         file_path: str
     """
-    
+
     try:
         file_path = utils_gcs.upload_to_gcs(
-            project_id= project_id,
-            bucket_name= bucket_name,
+            project_id=project_id,
+            bucket_name=bucket_name,
             file=file.file,
-            destination_blob_name=f"{folder_id}/{file.filename}"
+            destination_blob_name=f"{folder_id}/{file.filename}",
         )
     except Exception as e:
+        print(e)
         raise HTTPException(
-            status_code=400,
-            detail="Something went wrong. Please try again.")
+            status_code=400, detail="Something went wrong. Please try again."
+        )
     finally:
         file.file.close()
     return file_path
+
 
 @router.post(path="/creative-brief-create-upload")
 def post_brief_create_upload(data: BriefCreateRequest) -> BriefCreateResponse:
@@ -734,45 +728,43 @@ def post_brief_create_upload(data: BriefCreateRequest) -> BriefCreateResponse:
     try:
         print("Creating document Assets..")
         new_folder_id = utils_workspace.create_folder_in_folder(
-            credentials = CREDENTIALS,
+            credentials=CREDENTIALS,
             folder_name=f"Marketing_Assets_{int(time.time())}",
-            parent_folder_id=drive_folder_id)
-        
+            parent_folder_id=drive_folder_id,
+        )
+
         utils_workspace.set_permission(
-            credentials = CREDENTIALS,
-            file_id=new_folder_id,
-            domain=domain)
+            credentials=CREDENTIALS, file_id=new_folder_id, domain=domain
+        )
 
         doc_id = utils_workspace.copy_drive_file(
-            credentials = CREDENTIALS,
+            credentials=CREDENTIALS,
             drive_file_id=doc_template_id,
             parentFolderId=new_folder_id,
-            copy_title=f"GenAI Marketing Brief")
+            copy_title=f"GenAI Marketing Brief",
+        )
 
         utils_workspace.update_doc(
-            credentials = CREDENTIALS,
+            credentials=CREDENTIALS,
             document_id=doc_id,
             campaign_name=data.campaign_name,
             business_name=data.business_name,
             scenario=data.brief_scenario,
             brand_statement=data.brand_statement,
             primary_msg=data.primary_message,
-            comms_channel=data.comm_channels)
+            comms_channel=data.comm_channels,
+        )
     except Exception as e:
         print(e)
         raise HTTPException(
-            status_code=400, 
-            detail="Something went wrong. Please try again."+str(e))
+            status_code=400, detail="Something went wrong. Please try again." + str(e)
+        )
 
-    return BriefCreateResponse(
-        new_folder_id=new_folder_id,
-        doc_id=doc_id
-    )
+    return BriefCreateResponse(new_folder_id=new_folder_id, doc_id=doc_id)
 
 
 @router.post(path="/creative-slides-upload")
-def post_create_slides_upload(data: SlidesCreateRequest
-                              ) -> SlidesCreateResponse:
+def post_create_slides_upload(data: SlidesCreateRequest) -> SlidesCreateResponse:
     """Create Slides and upload charts from Google Sheets
     Parameters:
         folder_id: str
@@ -783,45 +775,43 @@ def post_create_slides_upload(data: SlidesCreateRequest
 
     try:
         slide_id = utils_workspace.copy_drive_file(
-            credentials = CREDENTIALS,
+            credentials=CREDENTIALS,
             drive_file_id=slides_template_id,
             parentFolderId=data.folder_id,
-            copy_title="Marketing Assets")
-        
+            copy_title="Marketing Assets",
+        )
+
         sheet_id = utils_workspace.copy_drive_file(
-            credentials = CREDENTIALS,
+            credentials=CREDENTIALS,
             drive_file_id=sheet_template_id,
             parentFolderId=data.folder_id,
-            copy_title="GenAI Marketing Data Source")
-        print(sheet_id)     
+            copy_title="GenAI Marketing Data Source",
+        )
+        print(sheet_id)
 
         utils_workspace.merge_slides(
-            credentials = CREDENTIALS,
+            credentials=CREDENTIALS,
             presentation_id=slide_id,
             spreadsheet_id=sheet_id,
             spreadsheet_template_id=sheet_template_id,
-            slide_page_id_list=slide_page_id_list
-            )
+            slide_page_id_list=slide_page_id_list,
+        )
 
     except Exception as e:
         raise HTTPException(
-            status_code=400, 
-            detail="Something went wrong. Please try again."+str(e)
+            status_code=400, detail="Something went wrong. Please try again." + str(e)
         )
 
-    return SlidesCreateResponse(
-        slide_id=slide_id,
-        sheet_id=sheet_id
-    )
+    return SlidesCreateResponse(slide_id=slide_id, sheet_id=sheet_id)
+
 
 @router.post(path="/translate")
-def translate_text(data: TranslateRequest
-                   ) -> TranslateResponse:
+def translate_text(data: TranslateRequest) -> TranslateResponse:
     """Translate Text
     Body:
         source_text:str
         source_language_code:str | None = None
-        target_language_code:str 
+        target_language_code:str
     Returns:
         translated_text :str
     """
@@ -831,33 +821,30 @@ def translate_text(data: TranslateRequest
     try:
         results = []
         i = 0
-        while i*128 < len(text):
+        while i * 128 < len(text):
             if data.source_language_code == None:
                 result = translate_client.translate(
-                    text[i*128:i*128+128],
-                    target_language=data.target_language_code
-                    )['translatedText']
+                    text[i * 128 : i * 128 + 128],
+                    target_language=data.target_language_code,
+                )["translatedText"]
             else:
                 result = translate_client.translate(
-                    text[i*128:i*128+128],
+                    text[i * 128 : i * 128 + 128],
                     source_language=data.source_language_code,
                     target_language=data.target_language_code,
-                )['translatedText']
+                )["translatedText"]
             results.extend(result)
-            i+=1
+            i += 1
     except Exception as e:
         raise HTTPException(
-            status_code=400, 
-            detail="Something went wrong. Please try again."+str(e)
+            status_code=400, detail="Something went wrong. Please try again." + str(e)
         )
-    translated_text = ''.join(results)
-    return TranslateResponse(
-        translated_text=translated_text
-    )
+    translated_text = "".join(results)
+    return TranslateResponse(translated_text=translated_text)
+
 
 @router.post(path="/generate-content")
-def generate_content(data: ContentCreationRequest
-                     ) -> ContentCreationResponse:
+def generate_content(data: ContentCreationRequest) -> ContentCreationResponse:
     """Generate Content like Media , Ad or Emails
     Body:
         type: str | Email/Webpost/SocialMedia/AssetGroup
@@ -871,81 +858,82 @@ def generate_content(data: ContentCreationRequest
         text_content :str
         images : list
     """
-    
+
     images = []
     generated_content = {}
     try:
-        if data.type == 'Email':
+        if data.type == "Email":
             print("Generating Email..")
-            generated_content["text"]=asyncio.run(utils_prompt.async_predict_text_gemini(
-                        EMAIL_TEXT_PROMPT.format(
-                            data.context,
-                            data.theme
-                        )
-                        )
+            generated_content["text"] = asyncio.run(
+                utils_prompt.async_predict_text_gemini(
+                    EMAIL_TEXT_PROMPT.format(data.context, data.theme)
+                )
+            )
+        elif data.type == "Webpost":
+            generated_content["text"] = asyncio.run(
+                utils_prompt.async_predict_text_gemini(
+                    WEBSITE_PROMPT_TEMPLATE.format(data.theme, data.context)
+                )
+            )
+        elif data.type == "SocialMedia":
+            generated_content["text"] = asyncio.run(
+                utils_prompt.async_predict_text_gemini(
+                    AD_PROMPT_TEMPLATE.format(
+                        BUSINESS_NAME,
+                        data.no_of_char,
+                        data.audience_age_range,
+                        data.audience_gender,
+                        data.theme,
+                        data.context,
                     )
-        elif data.type == 'Webpost':
-            generated_content["text"]=asyncio.run(utils_prompt.async_predict_text_gemini(
-                        WEBSITE_PROMPT_TEMPLATE.format(
-                            data.theme,
-                            data.context)))
-        elif data.type == 'SocialMedia':
-            generated_content["text"]=asyncio.run(utils_prompt.async_predict_text_gemini(
-                        AD_PROMPT_TEMPLATE.format(
-                            BUSINESS_NAME,
-                            data.no_of_char,
-                            data.audience_age_range,
-                            data.audience_gender,
-                            data.theme,
-                            data.context,
-                            )))
-        elif data.type == 'AssetGroup':
+                )
+            )
+        elif data.type == "AssetGroup":
+
             async def generate_brief() -> tuple:
                 return await asyncio.gather(
                     utils_prompt.async_predict_text_gemini(
                         prompt=HEADLINE_PROMPT_TEMPLATE.format(
-                            data.theme,
-                            BRAND_OVERVIEW),
-                        
-                        max_output_tokens=256
+                            data.theme, BRAND_OVERVIEW
+                        ),
+                        max_output_tokens=256,
                     ),
                     utils_prompt.async_predict_text_gemini(
                         prompt=LONG_HEADLINE_PROMPT_TEMPLATE.format(
-                            data.theme,
-                            BRAND_OVERVIEW)
-                        
+                            data.theme, BRAND_OVERVIEW
+                        )
                     ),
                     utils_prompt.async_predict_text_gemini(
                         prompt=DESCRIPTION_PROMPT_TEMPLATE.format(
-                            data.theme,
-                            BRAND_OVERVIEW,
-                            data.context))) 
-    
+                            data.theme, BRAND_OVERVIEW, data.context
+                        )
+                    ),
+                )
+
             generated_tuple = asyncio.run(generate_brief())
-            
-            generated_content["headlines"] = generated_tuple[0] 
-            generated_content["long_headlines"] = generated_tuple[1] 
+
+            generated_content["headlines"] = generated_tuple[0]
+            generated_content["long_headlines"] = generated_tuple[1]
             generated_content["description"] = generated_tuple[2]
             generated_content["scenario"] = data.theme
             generated_content["business_name"] = BUSINESS_NAME
             generated_content["call_to_action"] = "Shop Now"
-            
+
         if data.image_generate == True:
-            images = asyncio.run(utils_prompt.async_generate_image(
+            images = asyncio.run(
+                utils_prompt.async_generate_image(
                     prompt=IMAGE_PROMPT_TAMPLATE.format(
-                            data.theme,)
-            ))
-             
+                        data.theme,
+                    )
+                )
+            )
+
     except Exception as e:
-            raise HTTPException(
-            status_code=400, 
-            detail="Something went wrong. Please try again."+str(e)
+        raise HTTPException(
+            status_code=400, detail="Something went wrong. Please try again." + str(e)
         )
-    
-    return ContentCreationResponse(
-        generated_content=generated_content,
-        images = images
-    )
+
+    return ContentCreationResponse(generated_content=generated_content, images=images)
 
 
 @router.post(path="/bulk-email-generate")
@@ -958,25 +946,27 @@ def post_bulk_email_generate(data: BulkEmailGenRequest) -> BulkEmailGenResponse:
     Returns:
         persionlized_emails : list[dict]
     """
-    
+
     try:
-        emails = asyncio.run(bulk_email_util.generate_emails(number_of_emails=data.no_of_emails,
-                                    theme=data.theme,
-                                    audience_data=data.audience,
-                                    image_context = data.image_context))
-        
-    except Exception as e:
-            raise HTTPException(
-            status_code=400, 
-            detail="Something went wrong. Please try again."+str(e)
+        emails = asyncio.run(
+            bulk_email_util.generate_emails(
+                number_of_emails=data.no_of_emails,
+                theme=data.theme,
+                audience_data=data.audience,
+                image_context=data.image_context,
+            )
         )
-    
-    return BulkEmailGenResponse(
-        persionalized_emails=emails
-    )
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=400, detail="Something went wrong. Please try again." + str(e)
+        )
+
+    return BulkEmailGenResponse(persionalized_emails=emails)
+
 
 @router.post(path="/export-google-doc")
-def post_export_google_doc(data:ExportGoogleDocRequest) -> ExportGoogleDocResponse:
+def post_export_google_doc(data: ExportGoogleDocRequest) -> ExportGoogleDocResponse:
     """
     data:
         folder_id: str
@@ -987,39 +977,41 @@ def post_export_google_doc(data:ExportGoogleDocRequest) -> ExportGoogleDocRespon
     Returns:
         doc_id: str
     """
-    
+
     try:
-        file_id = utils_workspace.create_doc(credentials = CREDENTIALS,
-                                             folder_id=data.folder_id,
-                                             doc_name=data.doc_name,
-                                             text=data.text)
-        i=0
-        for img in data.images:
-            file = utils_gcs.download_from_gcs(project_id=project_id,
-                                               bucket_name=bucket_name,
-                                               source_blob_name='/'.join(img.split('/')[1:]))
-            utils_workspace.upload_to_folder(credentials= CREDENTIALS,
-                                             f=file,
-                                             folder_id=data.folder_id,
-                                             upload_name=str(data.image_prefix)+"_"+str(i),
-                                             mime_type='application/octet-stream'
-                                             )
-            i=i+1
-        
-    except Exception as e:
-            raise HTTPException(
-            status_code=400, 
-            detail="Something went wrong. Please try again."+str(e)
+        file_id = utils_workspace.create_doc(
+            credentials=CREDENTIALS,
+            folder_id=data.folder_id,
+            doc_name=data.doc_name,
+            text=data.text,
         )
-    
-    return ExportGoogleDocResponse(
-        doc_id = file_id
-    )
+        i = 0
+        for img in data.images:
+            file = utils_gcs.download_from_gcs(
+                project_id=project_id,
+                bucket_name=bucket_name,
+                source_blob_name="/".join(img.split("/")[1:]),
+            )
+            utils_workspace.upload_to_folder(
+                credentials=CREDENTIALS,
+                f=file,
+                folder_id=data.folder_id,
+                upload_name=str(data.image_prefix) + "_" + str(i),
+                mime_type="application/octet-stream",
+            )
+            i = i + 1
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=400, detail="Something went wrong. Please try again." + str(e)
+        )
+
+    return ExportGoogleDocResponse(doc_id=file_id)
+
 
 @router.post(path="/texttospeech")
-def text_to_speech(data: TexttoSpeechRequest
-                   ) -> TexttoSpeechResponse:
-    """ Text to Speech
+def text_to_speech(data: TexttoSpeechRequest) -> TexttoSpeechResponse:
+    """Text to Speech
     Body:
         text:str
         prefix: str
@@ -1028,12 +1020,10 @@ def text_to_speech(data: TexttoSpeechRequest
     Returns:
         audio_uri :str
     """
-    output_gcs_uri = "gs://"+bucket_name+"/"+data.prefix+".wav"
-    
+    output_gcs_uri = "gs://" + bucket_name + "/" + data.prefix + ".wav"
+
     try:
-        input = texttospeech.SynthesisInput(
-        text=data.text
-        )
+        input = texttospeech.SynthesisInput(text=data.text)
 
         audio_config = texttospeech.AudioConfig(
             audio_encoding=texttospeech.AudioEncoding.LINEAR16
@@ -1059,19 +1049,16 @@ def text_to_speech(data: TexttoSpeechRequest
         )
 
         operation = texttospeech_client.synthesize_long_audio(request=request)
-        # Set a deadline for your LRO to finish. 300 seconds is reasonable, 
+        # Set a deadline for your LRO to finish. 300 seconds is reasonable,
         # but can be adjusted depending on the length of the input.
-        # If the operation times out, that likely means there was an error. 
+        # If the operation times out, that likely means there was an error.
         # In that case, inspect the error, and try again.
         result = operation.result(timeout=300)
     except Exception as e:
         raise HTTPException(
-            status_code=400, 
-            detail="Something went wrong. Please try again."+str(e)
+            status_code=400, detail="Something went wrong. Please try again." + str(e)
         )
-    return TexttoSpeechResponse(
-        audio_uri=output_gcs_uri
-    )
+    return TexttoSpeechResponse(audio_uri=output_gcs_uri)
 
 
 app.include_router(router=router)

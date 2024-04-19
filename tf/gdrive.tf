@@ -9,10 +9,6 @@ resource "null_resource" "gdrice_folder" {
     command = "cp -rf ../installation_scripts/Create_GDrive_folder.py aux_data/;"
   }
 
-  provisioner "local-exec" {
-    command = "echo \"{}\" >> create_gdrive_folder_results.json"
-  }
-
   
 
   provisioner "local-exec" {

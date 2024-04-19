@@ -14,3 +14,7 @@ terraform {
     }
   }
 }
+
+provider "google" {
+  credentials = "svc_acc.json"
+}

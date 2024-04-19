@@ -15,6 +15,7 @@
 [global]
 project_id = "${project_id}"
 location = "${region}"
+domain = "rubikcloud.ai"
 
 # Provide the path to the secret with the Workspace Service Account key
 # Change this variable to your secret
@@ -44,7 +45,7 @@ slide_page_id_list = ["p3","p4","p5","p6","p7","p8"] # LIST OF PAGES WHERE YOU W
 
 # GCS Asset bucket
 # Change this variable to your bucket
-asset_bkt="genai-for-marketing-assets"
+asset_bkt="CHANGE_ME"
 
 # Scope for the Workspace API - don't change
 workspace_scopes = [
@@ -64,22 +65,22 @@ Below is the dataset schema:
 
 [Q]: What is the city and state with the most customer transactions?
 [SQL]: SELECT c.city, c.state, SUM(t.transaction_qnt) as total_transactions
-FROM `{}.cdp_dataset.customers` AS c
-JOIN `{}.cdp_dataset.transactions` as t
+FROM `{}.gai_marketing.customers` AS c
+JOIN `{}.gai_marketing.transactions` as t
 ON c.customer_id = t.customer_id
 GROUP BY c.city, c.state
 ORDER BY total_transactions DESC
 
 [Q]: What are the customer emails ordered by the quantity of purchases by the customer in the city of Atlanta and the state of Georgia?
 [SQL]: SELECT c.email, c.total_purchases 
-FROM `{}.cdp_dataset.customers` as c
+FROM `{}.gai_marketing.customers` as c
 WHERE c.city = "Atlanta" AND c.state = "Georgia"
 ORDER BY c.total_purchases DESC
 
 [Q]: What are the customer emails ordered by the total transactions in app by the customer in the city of Atlanta and the state of Georgia?
 [SQL]: SELECT c.email, SUM(t.app_purchase_qnt) as total_app_purchase
-FROM `{}.cdp_dataset.customers` as c
-JOIN `{}.cdp_dataset.transactions` as t
+FROM `{}.gai_marketing.customers` as c
+JOIN `{}.gai_marketing.transactions` as t
 ON c.customer_id = t.customer_id
 WHERE c.city = "Atlanta" AND c.state = "Georgia"
 GROUP BY c.email, c.city, c.state
@@ -87,7 +88,7 @@ ORDER BY total_app_purchase DESC
 
 [Q]: Retrieve top 10 customer emails ordered by loyalty score
 [SQL]: SELECT c.email
-FROM `{}.cdp_dataset.customers` as c
+FROM `{}.gai_marketing.customers` as c
 ORDER BY c.loyalty_score DESC 
 
 """

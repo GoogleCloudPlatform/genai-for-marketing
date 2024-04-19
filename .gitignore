@@ -168,4 +168,15 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
-tf/aux_data/*
+tf/aux_data/*svc_acc.json
+tf/svc_acc.json
+tf/notas.md
+tf/create_gdrive_folder_results.json
+frontend/firebase.json
+frontend/.firebase
+frontend/.firebaserc
+frontend/package-lock.json
+tf/aux_data
+backend_apis/app/config.toml
+tf/templates/config.toml
+tf/templates/environments.ts

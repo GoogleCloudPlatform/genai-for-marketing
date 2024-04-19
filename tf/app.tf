@@ -70,10 +70,10 @@ resource "local_file" "config_toml" {
     credentials_secret_name = google_secret_manager_secret_version.secret-cred-version.name,
     search_datastore_id     = google_discovery_engine_data_store.search_datastore.data_store_id,
     tag_template_id         = var.tag_template_id,
-    drive_folder_id = local.gdrive_resuts.GDRIVE_FOLDER_ID,
-    slides_template_id = local.gdrive_resuts.MarketingPptID,
-    doc_template_id = local.gdrive_resuts.MarketingDocID,
-    sheet_template_id = local.gdrive_resuts.MarketingExcelID,
+    drive_folder_id         = local.gdrive_resuts.GDRIVE_FOLDER_ID,
+    slides_template_id      = local.gdrive_resuts.MarketingPptID,
+    doc_template_id         = local.gdrive_resuts.MarketingDocID,
+    sheet_template_id       = local.gdrive_resuts.MarketingExcelID,
     }
   )
   filename = "${path.module}/templates/config.toml"
@@ -111,3 +111,4 @@ resource "null_resource" "frontend_deployment" {
 
   depends_on = [google_artifact_registry_repository.docker-repo, local_file.enviroments_ts]
 }
+
