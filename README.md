@@ -286,7 +286,7 @@ If you've already added an app to your Firebase project, click Add app to displa
  - Click Register app.
  - Copy the information to include in the configuration.
 
-Open the [frontend environment file - line 3](/frontend/src/environments/environment.ts) and include the Firebase information.
+Open the [frontend environment file - line 3](/frontend/src/environments/environments.ts) and include the Firebase information.
 
 #### 11.4- Build Angular Frontend
 Angular is the framework for the Frontend. Execute the following commands to build your application.
