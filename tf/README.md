@@ -20,11 +20,11 @@
 export USER_PROJECT_OVERRIDE=true
 export GOOGLE_BILLING_PROJECT=<your_project_id>
 
-terraform init
+cd tf/
 
+terraform init
 terraform apply -var=project_id=<your_project_id>
 ```
-
 
 ## After Terraform deployment
 1. Go to https://firebase.corp.google.com/project/genai-marketing-tf-test/authentication/providers

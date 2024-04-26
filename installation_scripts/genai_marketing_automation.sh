@@ -13,7 +13,7 @@ SEARCH_APP_NAME="genai_marketing"       # Vertex Search App Name for creation
 CHAT_BOT_NAME="genai_marketing"    # Vertex Conversation app Name for creation
 #COMPANY_NAME="genai_marketing"          # Your company name 
 EXISTING_LOOKER_URI=""            # your Existing Looker dashboard URl. leave it empty if you don't have
-SERVICE_ACCOUNT="genai-markting-sa"    # Service account name for creation
+SERVICE_ACCOUNT="genai-marketing-sa"    # Service account name for creation
 #YOUR_DOMAIN="google.com"               # Your domain name. eg user@company.com then company.com 
 GDRIVE_FOLDER_NAME="genai-marketing-assets"      # Google drive folder name for creation
 

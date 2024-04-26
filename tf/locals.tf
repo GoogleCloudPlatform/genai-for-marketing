@@ -25,6 +25,7 @@ locals {
     "sheets.googleapis.com",
     "slides.googleapis.com",
     "firebase.googleapis.com",
+    "firebasehosting.googleapis.com",
     "discoveryengine.googleapis.com",
     "secretmanager.googleapis.com"
 

@@ -13,38 +13,38 @@
 # limitations under the License.
 
 [global]
-project_id = "YOUR-PROJECT-ID"
+project_id = "<your_project_id>"
 location = "us-central1"
 
 # Provide the path to the secret with the Workspace Service Account key
 # Change this variable to your secret
-secret_name_workspace = "projects/YOUR-PROJECT-NUMBER/secrets/SECRET-NAME/versions/X"
+secret_name_workspace = "<your_secret_name>" # example: projects/your_project_id/secrets/secret_name/versions/x
 
 # Audiences
 # Dataset ID of the BigQuery dataset. If you change the dataset_id during the deployment 
 # of this solution, change it here as well.
-dataset_id = "cdp_dataset"
+dataset_id = "<your_dataset_id>"
 
 # Tag name for the Dataplex Tag manager.
-tag_name = "llmcdptemplate"
+tag_name = "<your_dataplex_tag_template_id>" # default: llmcdptemplate
 
 # Vertex AI Search Datastore ID
 # Change these variable to your Vertex AI
-vertexai_search_datastore = "<YOUR VERTEX SEARCH ID>"
+vertexai_search_datastore = "<your_search_datastore_id>"
 search_location = "global"
 
 # Workspace integration variables
 # ID of the templates
 # Change this variables according to your Google Workspace settings
-drive_folder_id = "" # example: "1MYB0Ybyo9XZERgIcjsdfeqO0SKqhrkvqMx"
-slides_template_id = "" # example: '16uQlLkCJ9YRiMU_IoONHsl-vY-uKeoasnWTPlbZZ1D4'
-doc_template_id = "" # example: '1kqvxZLRXIdfM8MVS7css4UoiJ8f0I4dKFj9cP986K4pM'
-sheet_template_id = "" # example: '1gIaIWLOeKmnjso7-CAAAcqMlPznpoEXDdEue3DNWr7bw'
+drive_folder_id = "<your_gdrive_folder_id>" # example: "1MYB0Ybyo9XZERgIcjsdfeqO0SKqhrkvqMx"
+slides_template_id = "<your_slides_template_id>" # example: '16uQlLkCJ9YRiMU_IoONHsl-vY-uKeoasnWTPlbZZ1D4'
+doc_template_id = "<your_doc_template_id>" # example: '1kqvxZLRXIdfM8MVS7css4UoiJ8f0I4dKFj9cP986K4pM'
+sheet_template_id = "<your_sheet_template_id>" # example: '1gIaIWLOeKmnjso7-CAAAcqMlPznpoEXDdEue3DNWr7bw'
 slide_page_id_list = ["p3","p4","p5","p6","p7","p8"] # LIST OF PAGES WHERE YOU WANT TO INSERT CHARTS FROM THE SHEETS
 
 # GCS Asset bucket
 # Change this variable to your bucket
-asset_bkt="genai-for-marketing-assets"
+asset_bkt="<your_gcs_bucket_name>" # exaple: genai-for-marketing-assets
 
 # Scope for the Workspace API - don't change
 workspace_scopes = [
@@ -56,7 +56,7 @@ workspace_scopes = [
     'https://www.googleapis.com/auth/documents']
 
 # Domain that Workspace will share the documents
-domain = "<YOUR DOMAIN HERE>"
+domain = "<your_workspace_domain>"
 
 # Prompt used to generate SQL from questions using natural language.
 # You can change this prompt if needed. 
@@ -66,22 +66,22 @@ Below is the dataset schema:
 
 [Q]: What is the city and state with the most customer transactions?
 [SQL]: SELECT c.city, c.state, SUM(t.transaction_qnt) as total_transactions
-FROM `{}.cdp_dataset.customers` AS c
-JOIN `{}.cdp_dataset.transactions` as t
+FROM `{}.<your_dataset_id>.customers` AS c
+JOIN `{}.<your_dataset_id>.transactions` as t
 ON c.customer_id = t.customer_id
 GROUP BY c.city, c.state
 ORDER BY total_transactions DESC
 
 [Q]: What are the customer emails ordered by the quantity of purchases by the customer in the city of Atlanta and the state of Georgia?
 [SQL]: SELECT c.email, c.total_purchases 
-FROM `{}.cdp_dataset.customers` as c
+FROM `{}.<your_dataset_id>.customers` as c
 WHERE c.city = "Atlanta" AND c.state = "Georgia"
 ORDER BY c.total_purchases DESC
 
 [Q]: What are the customer emails ordered by the total transactions in app by the customer in the city of Atlanta and the state of Georgia?
 [SQL]: SELECT c.email, SUM(t.app_purchase_qnt) as total_app_purchase
-FROM `{}.cdp_dataset.customers` as c
-JOIN `{}.cdp_dataset.transactions` as t
+FROM `{}.<your_dataset_id>.customers` as c
+JOIN `{}.<your_dataset_id>.transactions` as t
 ON c.customer_id = t.customer_id
 WHERE c.city = "Atlanta" AND c.state = "Georgia"
 GROUP BY c.email, c.city, c.state
@@ -89,7 +89,7 @@ ORDER BY total_app_purchase DESC
 
 [Q]: Retrieve top 10 customer emails ordered by loyalty score
 [SQL]: SELECT c.email
-FROM `{}.cdp_dataset.customers` as c
+FROM `{}.<your_dataset_id>.customers` as c
 ORDER BY c.loyalty_score DESC 
 
 """
