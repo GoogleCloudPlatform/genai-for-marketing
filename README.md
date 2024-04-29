@@ -173,13 +173,21 @@ Open the [configuration file - line 33](/backend_apis/app/config.toml) and inclu
 
 ### 8- Add your Looker Dashboards
 
-In order to render your Looker Dashboards in the UI, you need to update a HTML file with links to them.
+In order to render your Looker Dashboards in the Marketing Insights and Campaing Performance pages, you need to update a HTML file with links to them.
 
-1) Open this [HTML file - lines 18 and 28](/frontend/src/app/marketing-insights/marketing-insights.component.html) and include links to the Looker dashboards for Marketing Insights.  
+1) Open this [HTML file - lines 18 and 28](/frontend/src/app/marketing-insights/marketing-insights.component.html) and include links to the Looker dashboards for Marketing Insights.
+Example:
+ - Add a new line after line 18 (or replace line 18) and include the title and ID of your Looker Dashboard.
+> <option value="Overview">Overview</option>
 
-2) Open this [HTML file - lines 27 and 37](/frontend/src/app/campaign-performance/campaign-performance.component.html) and include links to the Looker dashboards for Campaign Performance.
+ - For each dashboard id/title you included the step above, include a link to it at the end of this file.
+> <div *ngIf="overview" class="overviewcss">
+>  <iframe width="1000" height="1000" src="https://googledemo.looker.com/embed/dashboards/2131?allow_login_screen=true" ></iframe>
+> </div>
 
 The `allow_login_screen=true` in the URL will open the authentication page from Looker to secure the access to your account.
+
+3) Open this [HTML file - lines 27 and 37](/frontend/src/app/campaign-performance/campaign-performance.component.html) and include links to the Looker dashboards for Campaign Performance.
 
 **[Optional]** If you have your Google Ads and Google Analytics 4 accounts in production, you can deploy the [`Marketing Analytics Jumpstart`](https://github.com/GoogleCloudPlatform/marketing-analytics-jumpstart) solution to your project, build the Dashboards and link them to the demonstration UI.  
 
