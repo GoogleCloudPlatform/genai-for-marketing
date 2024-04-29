@@ -114,7 +114,9 @@
   </div>
 
   <div [hidden]="!showchatboot">
-    <df-messenger project-id="<YOUR PROJECT ID HERE>" agent-id="<YOUR AGENT ID HERE>"
+    <df-messenger
+      [attr.project-id]="userProjectId"
+      [attr.agent-id]="dialogflowCxAgendId"
       language-code="en" max-query-length="-1">
       <df-messenger-chat-bubble expanded=true chat-title="Marketing Assistant">
       </df-messenger-chat-bubble>

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { LoginService } from '../services/login.service';
+import { environment } from '../../environments/environments';
 
 @Component({
   selector: 'app-home',
@@ -26,10 +27,15 @@ export class HomeComponent {
   showWebsitePost: boolean = false;
   showAssestGroup: boolean = false;
   showContentReview: boolean = false;
+  dialogflowCxAgendId: string | undefined;
+  userProjectId: string | undefined;
+
   constructor(public _router: Router, public loginService: LoginService) {
     this.subscription = this.loginService.getUserDetails().subscribe(message => {
       this.photoURL = message?.photoURL
     });
+    this.dialogflowCxAgendId = environment.dialogflowCxAgendId;
+    this.userProjectId = environment.firebaseConfig.projectId;
   }
   ngOnInit() {}
 

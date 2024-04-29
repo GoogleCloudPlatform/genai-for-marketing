@@ -1,16 +1,30 @@
+/**
+ * Copyright 2022 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-resource "google_project_service" "project" {
-  count   = length(local.services)
-  project = var.project_id
-  service = local.services[count.index]
+module "project-services" {
+  source  = "terraform-google-modules/project-factory/google//modules/project_services"
+  version = "~> 14.5"
 
-  timeouts {
-    create = "30m"
-    update = "40m"
-  }
+  project_id  = var.project_id
+  enable_apis = true
 
-  disable_dependent_services=true
+  activate_apis = local.services
+  disable_services_on_destroy = false
 }
+
 
 ## Creating venv for python scripts
 resource "null_resource" "py_venv" {
@@ -19,7 +33,7 @@ resource "null_resource" "py_venv" {
   }
 
   provisioner "local-exec" {
-    command = "cp -rf ../notebooks/aux_data . ;[ ! -d \"venv\" ] && python3 -m venv venv; source venv/bin/activate;pip install google-cloud-datacatalog google-cloud-storage google-cloud-bigquery numpy google-api-python-client google.cloud google.auth google-cloud-discoveryengine google-cloud-dialogflow-cx"
+    command = "cp -rf ../installation_scripts/aux_data . ;[ ! -d \"venv\" ] && python3 -m venv venv; source venv/bin/activate;pip install google-cloud-datacatalog google-cloud-storage google-cloud-bigquery numpy google-api-python-client google.cloud google.auth google-cloud-discoveryengine google-cloud-dialogflow-cx"
   }
 
 }

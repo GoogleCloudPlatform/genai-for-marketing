@@ -19,6 +19,7 @@ location = "${region}"
 # Provide the path to the secret with the Workspace Service Account key
 # Change this variable to your secret
 secret_name_workspace = "${credentials_secret_name}"
+
 # Audiences
 # Dataset ID of the BigQuery dataset. If you change the dataset_id during the deployment 
 # of this solution, change it here as well.
@@ -30,7 +31,6 @@ tag_name = "${tag_template_id}"
 # Vertex AI Search Datastore ID
 # Change these variable to your Vertex AI
 vertexai_search_datastore = "${search_datastore_id}"
-datastores."${search_datastore_id}" = "default_config"
 search_location = "global"
 
 # Workspace integration variables
@@ -44,7 +44,7 @@ slide_page_id_list = ["p3","p4","p5","p6","p7","p8"] # LIST OF PAGES WHERE YOU W
 
 # GCS Asset bucket
 # Change this variable to your bucket
-asset_bkt="genai-for-marketing-assets"
+asset_bkt="${gcs_assets_bucket}"
 
 # Scope for the Workspace API - don't change
 workspace_scopes = [
@@ -55,6 +55,8 @@ workspace_scopes = [
     'https://www.googleapis.com/auth/drive.resource',
     'https://www.googleapis.com/auth/documents']
 
+# Domain that Workspace will share the documents
+domain = "${domain}"
 
 # Prompt used to generate SQL from questions using natural language.
 # You can change this prompt if needed. 
@@ -64,22 +66,22 @@ Below is the dataset schema:
 
 [Q]: What is the city and state with the most customer transactions?
 [SQL]: SELECT c.city, c.state, SUM(t.transaction_qnt) as total_transactions
-FROM `{}.cdp_dataset.customers` AS c
-JOIN `{}.cdp_dataset.transactions` as t
+FROM `{}.${dataset_name}.customers` AS c
+JOIN `{}.${dataset_name}.transactions` as t
 ON c.customer_id = t.customer_id
 GROUP BY c.city, c.state
 ORDER BY total_transactions DESC
 
 [Q]: What are the customer emails ordered by the quantity of purchases by the customer in the city of Atlanta and the state of Georgia?
 [SQL]: SELECT c.email, c.total_purchases 
-FROM `{}.cdp_dataset.customers` as c
+FROM `{}.${dataset_name}.customers` as c
 WHERE c.city = "Atlanta" AND c.state = "Georgia"
 ORDER BY c.total_purchases DESC
 
 [Q]: What are the customer emails ordered by the total transactions in app by the customer in the city of Atlanta and the state of Georgia?
 [SQL]: SELECT c.email, SUM(t.app_purchase_qnt) as total_app_purchase
-FROM `{}.cdp_dataset.customers` as c
-JOIN `{}.cdp_dataset.transactions` as t
+FROM `{}.${dataset_name}.customers` as c
+JOIN `{}.${dataset_name}.transactions` as t
 ON c.customer_id = t.customer_id
 WHERE c.city = "Atlanta" AND c.state = "Georgia"
 GROUP BY c.email, c.city, c.state
@@ -87,7 +89,7 @@ ORDER BY total_app_purchase DESC
 
 [Q]: Retrieve top 10 customer emails ordered by loyalty score
 [SQL]: SELECT c.email
-FROM `{}.cdp_dataset.customers` as c
+FROM `{}.${dataset_name}.customers` as c
 ORDER BY c.loyalty_score DESC 
 
 """
