@@ -147,7 +147,7 @@ Open the [configuration file](/backend_apis/app/config.toml) and include your pr
 
 
 ### 6- Prepare BigQuery and Dataplex
-From Cloud Shell, navigate to [/installation_scripts](/installation_scripts) and execute the following command.  
+From Cloud Shell, navigate to [/installation_scripts](/installation_scripts), install the python packages and execute the following script.  
 Make sure you have set the environmental variables PROJECT_ID and LOCATION.  
 > cd ./genai-for-marketing/installation_scripts  
 > pip3 install -r requirements.txt  
