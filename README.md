@@ -197,10 +197,10 @@ The `allow_login_screen=true` in the URL will open the authentication page from 
 Next you will create a Generative AI Agent that will assist the users to answer questions about Google Ads, etc.  
 - Follow the steps described in this [Documentation](https://cloud.google.com/dialogflow/vertex/docs/concept/data-store-agent) to build your own Datastore Agent.  
   - Execute these steps in the same project you will deploy this demo.  
-- Enable [Dialogflow Messenger integration](https://cloud.google.com/dialogflow/cx/docs/concept/integration/dialogflow-messenger) and copy the `project-id` and `agent-id` from the HTML code snippet provided by the platform.  
+- Enable [Dialogflow Messenger integration](https://cloud.google.com/dialogflow/cx/docs/concept/integration/dialogflow-messenger) and copy the `agent-id` from the HTML code snippet provided by the platform.  
   - The HTML code snippet looks like this: 
   ![HTML Code](/app/images/dialogflow-integration.png "HTML Code")  
-- Open the [HTML file - line 117](/frontend/src/app/home/home.component.html) and replace the variables with the `project-id` and `agent-id`.  
+- Open the [HTML file - line 117](/frontend/src/environments/environments.ts#L3) and replace the variable `dialogFlowCxAgendId` with the `agent-id`.  
 
 
 ### 10- Workspace integration
@@ -294,7 +294,7 @@ If you've already added an app to your Firebase project, click Add app to displa
  - Click Register app.
  - Copy the information to include in the configuration.
 
-Open the [frontend environment file - line 3](/frontend/src/environments/environments.ts) and include the Firebase information.
+Open the [frontend environment file - line 4](/frontend/src/environments/environments.ts) and include the Firebase information.
 
 #### 11.4- Build Angular Frontend
 Angular is the framework for the Frontend. Execute the following commands to build your application.
