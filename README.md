@@ -169,7 +169,7 @@ Example:
 Open the [configuration file - line 33](/backend_apis/app/config.toml) and include the datastore ID. 
 **Don't forget to save the configuration file.**
 
-**Important**: If you don't have access to the DNS of the website to verify the domain, you can use a Search Engine with PDFs (for example) to enable the Advanced Features.
+**Important**: Alternatively, you can create a [search engine for structure or unstructured data](https://cloud.google.com/generative-ai-app-builder/docs/try-enterprise-search#before-you-begin).
 
 ### 8- Add your Looker Dashboards
 
