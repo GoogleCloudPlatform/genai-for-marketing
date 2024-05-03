@@ -21,7 +21,7 @@ module "project-services" {
   project_id  = var.project_id
   enable_apis = true
 
-  activate_apis = local.services
+  activate_apis               = local.services
   disable_services_on_destroy = false
 }
 
