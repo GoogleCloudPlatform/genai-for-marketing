@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 resource "google_artifact_registry_repository" "docker-repo" {
   project       = var.project_id
   location      = "us-central1"
@@ -50,7 +50,7 @@ resource "null_resource" "backend_deployment" {
     command     = "sh aux_data/backend_deployment.sh ${var.region} ${module.genai_run_service_account.email}"
   }
 
-  depends_on = [google_artifact_registry_repository.docker-repo, local_file.config_toml]
+  depends_on = [google_artifact_registry_repository.docker-repo, local_file.config_toml, local_file.dockerfile]
 }
 
 data "google_cloud_run_service" "run_service" {
@@ -103,6 +103,15 @@ resource "local_file" "config_toml" {
     }
   )
   filename = "${path.module}/templates/config.toml"
+}
+
+
+resource "local_file" "dockerfile" {
+  content = templatefile("${path.module}/templates/Dockerfile.tftpl", {
+    project_id = var.project_id
+    }
+  )
+  filename = "${path.module}/templates/Dockerfile"
 }
 
 resource "local_file" "enviroments_ts" {
