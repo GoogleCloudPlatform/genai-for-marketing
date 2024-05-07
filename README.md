@@ -45,7 +45,7 @@ In this repository, the following demonstrations are provided:
 ## Notebooks and code samples
 
 The notebooks listed below were developed to explain the concepts exposed in this repository:  
-- [Getting Started](/notebooks/1_environment_setup.ipynb) (1_environment_setup.ipynb): This notebook is part of the deployment guide and helps with dataset preparation.
+- [Getting Started](/installation_scripts/1_environment_setup.ipynb) (installation_scripts/1_environment_setup.ipynb): This notebook is part of the deployment guide and helps with dataset preparation.
 - [Data Q&A with PaLM API and GoogleSQL](/notebooks/data_qa_with_sql.ipynb) (data_qa_with_sql.ipynb): Translate questions using natural language to GoogleSQL to interact with BigQuery.
 - [News summarization with LangChain agents and Vertex AI PaLM text models](/notebooks/news_summarization_langchain_palm.ipynb) (news_summarization_langchain_palm.ipynb): Summarize news articles related to top search terms using LangChain agents and the ReAct concept.
 - [News summarization with PaLM API](/notebooks/simple_news_summarization.ipynb) (simple_news_summarization.ipynb): News summarization related to top search terms using the PaLM API.
