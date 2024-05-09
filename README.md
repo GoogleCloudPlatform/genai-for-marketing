@@ -349,7 +349,7 @@ https://console.cloud.google.com/datastore/setup?project=your-project-id
 
 Visit the following URL to enable Firebase Authentication.  
 Replace `your-project-id` with your project ID.
-https://firebase.corp.google.com/project/your-project-id/authentication/providers
+https://console.firebase.google.com/project/your-project-id/authentication/providers
 
  - Add a new provider by clicking on "Add new provider"
  - Choose "Google" and click "enable" and then "Save".
