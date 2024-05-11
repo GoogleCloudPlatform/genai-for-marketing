@@ -46,7 +46,7 @@ This terraform will generate all configurations files required in the frontend a
 
 ### After Terraform deployment
 You need to enable at least one authentication provider in Firebase, you can enable it using the following steps:
-1. Go to https://firebase.corp.google.com/project/your_project_id/authentication/providers (change the your_project_id value)
+1. Go to https://console.firebase.google.com/project/your_project_id/authentication/providers (change the `your_project_id` value)
 2. Select Google and enable it
 3. Set the name for the project and support email for project
 4. Save
