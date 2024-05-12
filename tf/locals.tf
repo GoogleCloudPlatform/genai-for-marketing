@@ -27,8 +27,8 @@ locals {
     "firebase.googleapis.com",
     "firebasehosting.googleapis.com",
     "discoveryengine.googleapis.com",
-    "secretmanager.googleapis.com"
-
+    "secretmanager.googleapis.com",
+    "artifactregistry.googleapis.com"
   ]
   tables = [
     {
