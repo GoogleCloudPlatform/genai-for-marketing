@@ -23,8 +23,12 @@ module "genai_run_service_account" {
     "${var.project_id}=>roles/logging.logWriter",
     "${var.project_id}=>roles/artifactregistry.reader",
     "${var.project_id}=>roles/storage.objectViewer",
+    "${var.project_id}=>roles/storage.objectUser",
     "${var.project_id}=>roles/aiplatform.admin",
     "${var.project_id}=>roles/secretmanager.secretAccessor",
+    "${var.project_id}=>roles/bigquery.dataViewer",
+    "${var.project_id}=>roles/bigquery.jobUser",
+    "${var.project_id}=>roles/datastore.user",
   ]
 }
 
