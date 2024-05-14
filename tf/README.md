@@ -85,7 +85,7 @@ This deployment creates all the resources described in the main [README.md](../R
 - Firebase for frontend deployment
 
 ### Configuration files
-This deployment uses the tempaltes in the [templates/](templates/) diractory to replace all necessary configuration values for the application. After the deployment is complete, you can review the resulting values in the config.tomal and enviroments.ts files.
+This deployment uses the templates in the [templates/](templates/) diractory to replace all necessary configuration values for the application. After the deployment is complete, you can review the resulting values in the config.toml and enviroments.ts files.
 
 ## Know Issues
 
