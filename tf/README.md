@@ -21,6 +21,13 @@ Required before start using App Builder services
 1. Go to https://console.cloud.google.com/gen-app-builder/start
 2. Accept TOS
 
+### (Optional) Local configuration
+In case you are running this outside Cloud Shell you need to set up your Google Cloud SDK Credentials
+
+```shell
+gcloud config set project <your_project_id>
+gcloud auth application-default set-quota-project <your_project_id>
+```
 
 ## Terraform deployment
 
@@ -28,6 +35,11 @@ From [Cloud Shell](https://cloud.google.com/shell/docs/using-cloud-shell) run th
 
 *Note*: This deployment requires Terraform 1.7 or higher
 
+Enable services
+```
+gcloud services enable run.googleapis.com cloudbuild.googleapis.com compute.googleapis.com cloudresourcemanager.googleapis.com iam.googleapis.com container.googleapis.com cloudapis.googleapis.com cloudtrace.googleapis.com containerregistry.googleapis.com iamcredentials.googleapis.com dialogflow.googleapis.com monitoring.googleapis.com logging.googleapis.com aiplatform.googleapis.com storage.googleapis.com datacatalog.googleapis.com translate.googleapis.com admin.googleapis.com docs.googleapis.com drive.googleapis.com sheets.googleapis.com slides.googleapis.com firebase.googleapis.com firebasehosting.googleapis.com discoveryengine.googleapis.com secretmanager.googleapis.com artifactregistry.googleapis.com
+```
+Start the terraform deployment
 ```sh
 # move to the tf folder
 cd tf/
@@ -46,7 +58,7 @@ This terraform will generate all configurations files required in the frontend a
 
 ### After Terraform deployment
 You need to enable at least one authentication provider in Firebase, you can enable it using the following steps:
-1. Go to https://console.firebase.google.com/project/your_project_id/authentication/providers (change the `your_project_id` value)
+1. Go to https://firebase.corp.google.com/project/your_project_id/authentication/providers (change the your_project_id value)
 2. Select Google and enable it
 3. Set the name for the project and support email for project
 4. Save
@@ -74,3 +86,18 @@ This deployment creates all the resources described in the main [README.md](../R
 
 ### Configuration files
 This deployment uses the tempaltes in the [templates/](templates/) diractory to replace all necessary configuration values for the application. After the deployment is complete, you can review the resulting values in the config.tomal and enviroments.ts files.
+
+## Know Issues
+
+
+**Error**: Error while creating the service account key
+```
+Error creating service account key: googleapi: Error 400: Key creation is not allowed on this service account. 
+```
+
+**Resolution**: Disable the disableServiceAccountKeyCreation organization policy in your project.
+```
+gcloud resource-manager org-policies disable-enforce constraints/iam.disableServiceAccountKeyCreation --project $(gcloud config get project)
+```
+
+After this you can re run the terraform apply command.
