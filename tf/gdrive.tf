@@ -30,7 +30,7 @@ resource "null_resource" "gdrive_folder" {
   provisioner "local-exec" {
     command = "source venv/bin/activate; python3 aux_data/Create_GDrive_folder.py --folder_name=\"${var.gdrive_folder_name}\" --service_account_email=\"${module.genai_run_service_account.email}\""
   }
-  depends_on = [null_resource.py_venv, module.genai_run_service_account]
+  depends_on = [null_resource.py_venv, module.genai_run_service_account,module.project_services]
 }
 
 data "local_file" "create_gdrive_folder_results_json" {

@@ -19,6 +19,7 @@ resource "google_artifact_registry_repository" "docker-repo" {
   location      = "us-central1"
   repository_id = "docker"
   format        = "DOCKER"
+  depends_on = [ module.project_services ]
 }
 
 resource "google_secret_manager_secret" "secret-cred" {
@@ -27,6 +28,7 @@ resource "google_secret_manager_secret" "secret-cred" {
   replication {
     auto {}
   }
+  depends_on = [ module.project_services ]
 }
 
 
@@ -50,7 +52,8 @@ resource "null_resource" "backend_deployment" {
     command     = "sh aux_data/backend_deployment.sh ${var.region} ${module.genai_run_service_account.email}"
   }
 
-  depends_on = [google_artifact_registry_repository.docker-repo, local_file.config_toml, local_file.dockerfile]
+  depends_on = [google_artifact_registry_repository.docker-repo, local_file.config_toml, local_file.dockerfile, module.project_services]
+
 }
 
 data "google_cloud_run_service" "run_service" {
@@ -63,12 +66,14 @@ data "google_cloud_run_service" "run_service" {
 resource "google_firebase_project" "firebase" {
   provider = google-beta
   project  = var.project_id
+  depends_on = [ module.project_services ]
 }
 
 resource "google_firebase_web_app" "app_front" {
   provider     = google-beta
   project      = var.project_id
   display_name = "GenAI for marketing"
+  depends_on = [ module.project_services ]
 }
 
 data "google_firebase_web_app_config" "app_front" {
@@ -83,6 +88,7 @@ module "gcs_assets_bucket" {
   project_id = var.project_id
   names      = ["marketing"]
   prefix     = var.project_id
+  depends_on = [ module.project_services ]
 }
 
 
@@ -145,7 +151,7 @@ resource "null_resource" "frontend_deployment" {
     command     = "sh aux_data/frontend_deployment.sh ${var.project_id}"
   }
 
-  depends_on = [google_artifact_registry_repository.docker-repo, local_file.enviroments_ts]
+  depends_on = [google_artifact_registry_repository.docker-repo, local_file.enviroments_ts, module.project_services]
 }
 
 resource "google_firestore_database" "database" {
@@ -153,4 +159,5 @@ resource "google_firestore_database" "database" {
   name        = "(default)"
   location_id = var.region
   type        = "FIRESTORE_NATIVE"
+  depends_on = [ module.project_services ]
 }
