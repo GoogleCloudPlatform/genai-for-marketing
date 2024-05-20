@@ -35,20 +35,16 @@ From [Cloud Shell](https://cloud.google.com/shell/docs/using-cloud-shell) run th
 
 *Note*: This deployment requires Terraform 1.7 or higher
 
-Enable services
-```
-gcloud services enable run.googleapis.com cloudbuild.googleapis.com compute.googleapis.com cloudresourcemanager.googleapis.com iam.googleapis.com container.googleapis.com cloudapis.googleapis.com cloudtrace.googleapis.com containerregistry.googleapis.com iamcredentials.googleapis.com dialogflow.googleapis.com monitoring.googleapis.com logging.googleapis.com aiplatform.googleapis.com storage.googleapis.com datacatalog.googleapis.com translate.googleapis.com admin.googleapis.com docs.googleapis.com drive.googleapis.com sheets.googleapis.com slides.googleapis.com firebase.googleapis.com firebasehosting.googleapis.com discoveryengine.googleapis.com secretmanager.googleapis.com artifactregistry.googleapis.com
-```
 Start the terraform deployment
 ```sh
 # move to the tf folder
 cd tf/
 
 export USER_PROJECT_OVERRIDE=true
-export GOOGLE_BILLING_PROJECT=<your_project_id>
+export GOOGLE_BILLING_PROJECT=$(gcloud config get project)
 
 terraform init
-terraform apply -var=project_id=<your_project_id>
+terraform apply -var=project_id=$(gcloud config get project)
 ```
 
 ### Terraform variables
@@ -57,11 +53,26 @@ You can change any of the default variables values in [variables.tf](variables.t
 This terraform will generate all configurations files required in the frontend and backend_apis you need to change [variables.tf](variables.tf) values in order to change configuration if needed.
 
 ### After Terraform deployment
+***Auth Provider***
+
 You need to enable at least one authentication provider in Firebase, you can enable it using the following steps:
 1. Go to https://console.firebase.google.com/project/your_project_id/authentication/providers (change the `your_project_id` value)
-2. Select Google and enable it
-3. Set the name for the project and support email for project
-4. Save
+2. Click on Get Started (if needed)
+3 Select Google and enable it
+4. Set the name for the project and support email for project
+5. Save
+
+***Google Drive Configuration (Optional)***
+
+If your Google Workspace has additional restrictions, you may need to grant permissions to the service account created during this execution. This will allow the service account to access and manage files within the designated folder.
+
+1. Go to your folder [drive.google.com](drive.google.com)
+2. Select the genai-marketing-assets folder
+3. Click on the three dots menu at the right click
+4. Select Share, then Share again
+5. In the "Add people and groups" field, enter the email address of the service account that was provided as output from the Terraform configuration.
+6. Set the permissions for the service account to Editor.
+4. Clock Done to share the folder and grant permissions.
 
 ## Check your deployment
 Once deployment is completed terraform will output relevants resoruces values.

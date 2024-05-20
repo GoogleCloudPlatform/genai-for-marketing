@@ -30,6 +30,7 @@ module "genai_run_service_account" {
     "${var.project_id}=>roles/bigquery.jobUser",
     "${var.project_id}=>roles/datastore.user",
   ]
+  depends_on = [ module.project_services ]
 }
 
 resource "google_service_account_key" "sa_key" {

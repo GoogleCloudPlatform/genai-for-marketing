@@ -41,6 +41,7 @@ resource "google_discovery_engine_data_store" "search_datastore" {
   content_config              = "PUBLIC_WEBSITE"
   solution_types              = ["SOLUTION_TYPE_SEARCH"]
   create_advanced_site_search = false
+  depends_on = [ module.project_services ]
 }
 
 resource "google_discovery_engine_search_engine" "search_app" {
@@ -76,6 +77,7 @@ resource "google_discovery_engine_data_store" "website_datastore" {
   industry_vertical = "GENERIC"
   content_config    = "PUBLIC_WEBSITE"
   solution_types    = ["SOLUTION_TYPE_CHAT"]
+  depends_on = [ module.project_services ]
 }
 
 resource "google_discovery_engine_data_store" "storage_datastore" {
@@ -86,6 +88,7 @@ resource "google_discovery_engine_data_store" "storage_datastore" {
   industry_vertical = "GENERIC"
   content_config    = "CONTENT_REQUIRED"
   solution_types    = ["SOLUTION_TYPE_CHAT"]
+  depends_on = [ module.project_services ]
 }
 
 resource "google_discovery_engine_chat_engine" "chat_app" {

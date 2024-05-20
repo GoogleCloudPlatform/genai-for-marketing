@@ -33,9 +33,10 @@ module "bigquery" {
   dataset_name                = var.dataset_name
   project_id                  = var.project_id
   location                    = var.location
-  default_table_expiration_ms = 3600000
+  default_table_expiration_ms = null
 
   tables = local.bq_tables
+  depends_on = [ module.project_services ]
 }
 
 ## Populating tables with scripts
@@ -96,6 +97,8 @@ resource "google_data_catalog_tag_template" "tag_template" {
   }
 
   force_delete = "true"
+
+  depends_on = [ module.project_services ]
 }
 
 ## Tag columns using scripts
