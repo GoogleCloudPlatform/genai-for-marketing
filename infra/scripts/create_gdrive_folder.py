@@ -10,8 +10,8 @@ import argparse
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--folder_name", help="Name of the drive folder", type=str)
-parser.add_argument("--service_account_email", help="email of your service account", type=str)
+parser.add_argument("--folder-name", help="Name of the drive folder", type=str)
+parser.add_argument("--service-account-email", help="email of your service account", type=str)
 
 dict_args = parser.parse_args()
 
@@ -152,13 +152,13 @@ if __name__ == "__main__":
     MarketingDocID=upload_with_conversion(GDRIVE_FOLDER_ID,"genai-for-marketing/templates/[template] Gen AI for Marketing Google Doc Template.docx","Gen AI for Marketing Google Doc Template.docx","text/doc")
     MarketingPptID=upload_with_conversion(GDRIVE_FOLDER_ID,"genai-for-marketing/templates/[template] Marketing Assets.pptx","Marketing Assets.pptx","text/ppt")
     
-    with open("create_gdrive_folder_results.json", "r") as jsonFile:
+    with open("gdrive_folder_results.json", "r") as jsonFile:
         data = json.load(jsonFile)
         data["GDRIVE_FOLDER_ID"] = GDRIVE_FOLDER_ID
         data["MarketingExcelID"] = MarketingExcelID
         data["MarketingDocID"] = MarketingDocID
         data["MarketingPptID"] = MarketingPptID
-    with open("create_gdrive_folder_results.json", "w") as jsonFile:
+    with open("gdrive_folder_results.json", "w") as jsonFile:
         json.dump(data, jsonFile)
     
     

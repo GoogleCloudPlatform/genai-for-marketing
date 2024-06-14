@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-output "backend_deployment" {
-  value = data.google_cloud_run_service.run_service.status[0].url
-}
+project_id = "genai-marketing-tf-test"
 
-output "backend_service_account" {
-  value = module.genai_run_service_account.email
-}
-
-output "frontend_deployment" {
-  value = "https://${var.project_id}.web.app"
+gdrive_config = {
+  "gdrive_folder_id"   = "1s9_mhguwGWgeqynwuGt-QNZrmkAIeO4a",
+  "marketing_slide_id" = "1aW5nGNjV3PT2WCBDHuPM5I8pISEFeysJjzaeG43bitY",
+  "marketing_doc_id"   = "1z33FI4UZcy9l8iFdxS_PrCVgwK_9eXt0kcwbc37PBGY",
+  "marketing_sheet_id" = "1ix2QoIPEdiSc1zU0nBJiuNDUfeiueKZkVDixzosi-hc"
 }

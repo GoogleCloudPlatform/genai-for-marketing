@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ module "genai_run_service_account" {
     "${var.project_id}=>roles/bigquery.jobUser",
     "${var.project_id}=>roles/datastore.user",
   ]
-  depends_on = [ module.project_services ]
+  depends_on = [module.project_services]
 }
 
 resource "google_service_account_key" "sa_key" {

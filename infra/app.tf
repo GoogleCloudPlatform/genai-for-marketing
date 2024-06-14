@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ resource "google_artifact_registry_repository" "docker-repo" {
   location      = "us-central1"
   repository_id = "docker"
   format        = "DOCKER"
-  depends_on = [ module.project_services ]
+  depends_on    = [module.project_services]
 }
 
 resource "google_secret_manager_secret" "secret-cred" {
@@ -28,52 +28,47 @@ resource "google_secret_manager_secret" "secret-cred" {
   replication {
     auto {}
   }
-  depends_on = [ module.project_services ]
+  depends_on = [module.project_services]
 }
-
 
 resource "google_secret_manager_secret_version" "secret-cred-version" {
   secret      = google_secret_manager_secret.secret-cred.id
   secret_data = base64decode(google_service_account_key.sa_key.private_key)
 }
 
-resource "null_resource" "backend_deployment" {
+/*
+* Deploybing sample image to get Cloud Run URL
+*/
+resource "google_cloud_run_service" "backend" {
+  name     = "genai-for-marketing-backend-apis"
+  location = var.region
+  project  = var.project_id
 
-  triggers = {
-    sa = module.genai_run_service_account.service_account.name
+  template {
+    spec {
+      containers {
+        image = "us-docker.pkg.dev/cloudrun/container/hello"
+      }
+    }
   }
 
-  provisioner "local-exec" {
-    command = "cp -rf ../installation_scripts/backend_deployment.sh aux_data/"
+  traffic {
+    percent         = 100
+    latest_revision = true
   }
-
-  provisioner "local-exec" {
-    interpreter = ["/bin/bash", "-c"]
-    command     = "sh aux_data/backend_deployment.sh ${var.region} ${module.genai_run_service_account.email}"
-  }
-
-  depends_on = [google_artifact_registry_repository.docker-repo, local_file.config_toml, local_file.dockerfile, module.project_services]
-
-}
-
-data "google_cloud_run_service" "run_service" {
-  project    = var.project_id
-  name       = "genai-for-marketing"
-  location   = var.region
-  depends_on = [null_resource.backend_deployment]
 }
 
 resource "google_firebase_project" "firebase" {
-  provider = google-beta
-  project  = var.project_id
-  depends_on = [ module.project_services ]
+  provider   = google-beta
+  project    = var.project_id
+  depends_on = [module.project_services]
 }
 
 resource "google_firebase_web_app" "app_front" {
   provider     = google-beta
   project      = var.project_id
   display_name = "GenAI for marketing"
-  depends_on = [ module.project_services ]
+  depends_on   = [module.project_services]
 }
 
 data "google_firebase_web_app_config" "app_front" {
@@ -88,9 +83,8 @@ module "gcs_assets_bucket" {
   project_id = var.project_id
   names      = ["marketing"]
   prefix     = var.project_id
-  depends_on = [ module.project_services ]
+  depends_on = [module.project_services]
 }
-
 
 resource "local_file" "config_toml" {
   content = templatefile("${path.module}/templates/config.toml.tftpl", {
@@ -100,29 +94,28 @@ resource "local_file" "config_toml" {
     credentials_secret_name = google_secret_manager_secret_version.secret-cred-version.name,
     search_datastore_id     = google_discovery_engine_data_store.search_datastore.data_store_id,
     tag_template_id         = var.tag_template_id,
-    drive_folder_id         = local.gdrive_resuts.GDRIVE_FOLDER_ID,
-    slides_template_id      = local.gdrive_resuts.MarketingPptID,
-    doc_template_id         = local.gdrive_resuts.MarketingDocID,
-    sheet_template_id       = local.gdrive_resuts.MarketingExcelID,
+    drive_folder_id         = var.gdrive_config.gdrive_folder_id,
+    slides_template_id      = var.gdrive_config.marketing_slide_id,
+    doc_template_id         = var.gdrive_config.marketing_doc_id,
+    sheet_template_id       = var.gdrive_config.marketing_sheet_id,
     domain                  = var.domain,
     gcs_assets_bucket       = module.gcs_assets_bucket.name
     }
   )
-  filename = "${path.module}/templates/config.toml"
+  filename = "${path.module}/output_config/config.toml"
 }
-
 
 resource "local_file" "dockerfile" {
   content = templatefile("${path.module}/templates/Dockerfile.tftpl", {
     project_id = var.project_id
     }
   )
-  filename = "${path.module}/templates/Dockerfile"
+  filename = "${path.module}/output_config/Dockerfile"
 }
 
 resource "local_file" "enviroments_ts" {
   content = templatefile("${path.module}/templates/environments.ts.tftpl", {
-    run_service_url        = data.google_cloud_run_service.run_service.status[0].url,
+    run_service_url        = google_cloud_run_service.backend.status[0].url,
     fb_api_key             = data.google_firebase_web_app_config.app_front.api_key,
     fb_auth_domain         = data.google_firebase_web_app_config.app_front.auth_domain,
     fb_project_id          = var.project_id,
@@ -133,31 +126,14 @@ resource "local_file" "enviroments_ts" {
     dialogflow_cx_agent_id = google_discovery_engine_chat_engine.chat_app.chat_engine_metadata[0].dialogflow_agent
     }
   )
-  filename = "${path.module}/templates/environments.ts"
-}
-
-resource "null_resource" "frontend_deployment" {
-
-  triggers = {
-    sa = module.genai_run_service_account.service_account.name
-  }
-
-  provisioner "local-exec" {
-    command = "cp -rf ../installation_scripts/frontend_deployment.sh aux_data/"
-  }
-
-  provisioner "local-exec" {
-    interpreter = ["/bin/bash", "-c"]
-    command     = "sh aux_data/frontend_deployment.sh ${var.project_id}"
-  }
-
-  depends_on = [google_artifact_registry_repository.docker-repo, local_file.enviroments_ts, module.project_services]
+  filename = "${path.module}/output_config/environments.ts"
 }
 
 resource "google_firestore_database" "database" {
-  project     = var.project_id
-  name        = "(default)"
-  location_id = var.region
-  type        = "FIRESTORE_NATIVE"
-  depends_on = [ module.project_services ]
+  project         = var.project_id
+  name            = "(default)"
+  location_id     = var.region
+  type            = "FIRESTORE_NATIVE"
+  deletion_policy = "DELETE"
+  depends_on      = [module.project_services]
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,11 +65,6 @@ variable "genai_marketing_service_account" {
   description = "Service account name"
 
 }
-variable "existing_looker_uri" {
-  type        = string
-  default     = ""
-  description = "Existing looker dashboard uri"
-}
 
 variable "company_name" {
   type        = string
@@ -82,10 +77,20 @@ variable "domain" {
   description = "Your company domain"
 
 }
-variable "gdrive_folder_name" {
-  type        = string
-  default     = "genai-marketing-assets"
-  description = "Google drive folder name"
+variable "gdrive_config" {
+  type = object({
+    gdrive_folder_id   = string,
+    marketing_slide_id = string,
+    marketing_doc_id   = string,
+    marketing_sheet_id = string
+  })
+  default = {
+    gdrive_folder_id   = "",
+    marketing_slide_id = "",
+    marketing_doc_id   = "",
+    marketing_sheet_id = ""
+  }
+  description = "Google drive settings"
 }
 
 variable "datastore_uris" {

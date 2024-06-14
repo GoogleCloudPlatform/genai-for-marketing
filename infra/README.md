@@ -1,4 +1,4 @@
-# Terraform deployment
+# Infrastructure deployment
 Terraform deployment simpliefies the deployment of this solution and can be used as blueprint of the solution, it includes all requirements in order to deploy in a single terraform scripts the.
 
 *Note*: Current version of the Terraform Google Cloud provider has not been updated to generate some of the GenAI resources, this soultion uses null_resource to create some resources using Google Cloud SDK.
@@ -20,6 +20,8 @@ Will be used for the frontend deployment
 Required before start using App Builder services
 1. Go to https://console.cloud.google.com/gen-app-builder/start
 2. Accept TOS
+
+
 
 ### (Optional) Local configuration
 In case you are running this outside Cloud Shell you need to set up your Google Cloud SDK Credentials
@@ -62,6 +64,13 @@ You need to enable at least one authentication provider in Firebase, you can ena
 4. Set the name for the project and support email for project
 5. Save
 
+## Create Gdrive assets
+
+### Create Gdrive assets
+To create gdrive assets you need to execute the following script
+```
+python scripts/create_gdrive_folder.py --folder-name="genai-marketing-assets" --service-account-email=<cloud_run_backend_sa>
+```
 ***Google Drive Configuration (Optional)***
 
 If your Google Workspace has additional restrictions, you may need to grant permissions to the service account created during this execution. This will allow the service account to access and manage files within the designated folder.
@@ -74,7 +83,20 @@ If your Google Workspace has additional restrictions, you may need to grant perm
 6. Set the permissions for the service account to Editor.
 4. Clock Done to share the folder and grant permissions.
 
-## Check your deployment
+#### Update the config file
+Before deploy the application you need to update the gdrive configuration within the config.toml file with the resulting gdrive_folder_results.json values
+
+## Application deployment
+To deploy the frontend of the application run the following command, you need to check terraform outputs values required for this step.
+```
+sh scripts/backend_deployment.sh --project <your_project_id> --region <your_region> --run-sa <cloud_run_backend_sa>
+```
+Then to deploy the frontent you need to execute:
+```
+sh scripts/frontend_deployment.sh --project <your_project_id>
+```
+
+## Review your enviroment
 Once deployment is completed terraform will output relevants resoruces values.
 
 Resulting example outputs:

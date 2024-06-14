@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,8 @@ resource "null_resource" "py_venv" {
   }
 
   provisioner "local-exec" {
-    command = "cp -rf ../installation_scripts/aux_data . ;[ ! -d \"venv\" ] && python3 -m venv venv; source venv/bin/activate;pip install google-cloud-datacatalog google-cloud-storage google-cloud-bigquery numpy google-api-python-client google.cloud google.auth google-cloud-discoveryengine google-cloud-dialogflow-cx"
+    working_dir = "scripts/"
+    command     = "[ ! -d \"venv\" ] && python3 -m venv venv; source venv/bin/activate;pip install google-cloud google-cloud-datacatalog google-cloud-storage google-cloud-bigquery numpy google-api-python-client google.cloud google.auth google-cloud-discoveryengine google-cloud-dialogflow-cx"
   }
 
 }

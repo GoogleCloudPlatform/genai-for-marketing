@@ -7,7 +7,7 @@ from google.cloud import discoveryengine_v1alpha
 
 #
 # Usage:
-# python genai_marketing_search_app_creation.py --project="my-project-id" --app-name=my_app --company-name=my_company --uris="cloud.goole.com/*"
+# python search_app_creation.py --project="my-project-id" --app-name=my_app --company-name=my_company --uris="cloud.goole.com/*"
 #
 
 parser = argparse.ArgumentParser()
