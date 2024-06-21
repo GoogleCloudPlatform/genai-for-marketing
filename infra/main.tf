@@ -34,7 +34,7 @@ resource "null_resource" "py_venv" {
 
   provisioner "local-exec" {
     working_dir = "scripts/"
-    command     = "[ ! -d \"venv\" ] && python3 -m venv venv; source venv/bin/activate;pip install google-cloud google-cloud-datacatalog google-cloud-storage google-cloud-bigquery numpy google-api-python-client google.cloud google.auth google-cloud-discoveryengine google-cloud-dialogflow-cx"
+    command     = "[ ! -d \"venv\" ] && python3 -m venv venv; source venv/bin/activate;pip install -r requirements.txt"
   }
 
 }

@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# Perform backend APIs deployment to Cloud Run
+#
 
 # Function to display usage and exit
 usage() {
@@ -48,10 +51,16 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-echo "Copying config.toml file"
-cp output_config/config.toml ../backend_apis/app
-echo "Copying Docker file"
-cp output_config/Dockerfile ../backend_apis/
-cd ../backend_apis
-echo "Deploying backend to cloud run"
-gcloud run deploy genai-for-marketing --source . --project="$project" --region="$region" --service-account="$run_sa" --allow-unauthenticated
+# Deploys backend to Cloud Run using the provided region and service account
+main(){
+    echo "Copying config.toml file"
+    cp output_config/config.toml ../backend_apis/app
+    echo "Copying Docker file"
+    cp output_config/Dockerfile ../backend_apis/
+    cd ../backend_apis
+    echo "Deploying backend to cloud run"
+    gcloud run deploy genai-for-marketing-backend-apis --source . --project="$project" --region="$region" --service-account="$sa" --allow-unauthenticated
+    echo "Done"
+}
+
+main

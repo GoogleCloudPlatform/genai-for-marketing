@@ -37,7 +37,8 @@ resource "google_secret_manager_secret_version" "secret-cred-version" {
 }
 
 /*
-* Deploybing sample image to get Cloud Run URL
+* Deploying sample image to get Cloud Run
+* This is a workarround that allow us to get the URL of the service and pass the resulting value to the fontend deployment
 */
 resource "google_cloud_run_service" "backend" {
   name     = "genai-for-marketing-backend-apis"
@@ -49,6 +50,7 @@ resource "google_cloud_run_service" "backend" {
       containers {
         image = "us-docker.pkg.dev/cloudrun/container/hello"
       }
+      service_account_name = module.genai_run_service_account.email
     }
   }
 
@@ -56,6 +58,15 @@ resource "google_cloud_run_service" "backend" {
     percent         = 100
     latest_revision = true
   }
+}
+
+# Allow unauthenticated invocations
+resource "google_cloud_run_service_iam_member" "invoker" {
+  location = google_cloud_run_service.backend.location
+  project  = google_cloud_run_service.backend.project
+  service  = google_cloud_run_service.backend.name
+  role     = "roles/run.invoker"
+  member   = "allUsers"
 }
 
 resource "google_firebase_project" "firebase" {

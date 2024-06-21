@@ -1,6 +1,9 @@
 #!/bin/bash
-set -e
+#
+# Perform frontend deployment to Firebase
+#
 
+# Function to display usage and exit
 usage() {
     echo "Usage: $0 --project <your_project_id>"
     exit 1  # Indicate an error
@@ -27,7 +30,7 @@ while [[ $# -gt 0 ]]; do
     case "$1" in
         --project)
             validate_param "$1" "$2"
-            $project
+            project=$2
             shift 2  # Move to the next parameter
             ;;
         *)  
@@ -37,13 +40,16 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-echo "Copying environments.ts file"
-cp output_config/environments.ts ../frontend/src/environments
-cd ../frontend
-echo "Deploying frontend to firebase"
-npm install -g @angular/cli
-npm install --legacy-peer-deps
-npm install -g firebase-tools
-ng build
-firebase experiments:enable webframeworks
-firebase deploy --only hosting --project="$project"
+# Deploys backend to Firebase
+main(){
+    echo "Copying environments.ts file"
+    cp output_config/environments.ts ../frontend/src/environments
+    cd ../frontend
+    echo "Deploying frontend to firebase"
+    npm install -g @angular/cli
+    npm install --legacy-peer-deps
+    npm install -g firebase-tools
+    ng build
+    firebase experiments:enable webframeworks
+    firebase deploy --only hosting --project="$project"
+}
