@@ -21,8 +21,6 @@ Required before start using App Builder services
 1. Go to https://console.cloud.google.com/gen-app-builder/start
 2. Accept TOS
 
-
-
 ### (Optional) Local configuration
 In case you are running this outside Cloud Shell you need to set up your Google Cloud SDK Credentials
 
@@ -84,7 +82,7 @@ If your Google Workspace has additional restrictions, you may need to grant perm
 4. Clock Done to share the folder and grant permissions.
 
 #### Update the config file
-Before deploy the application you need to update the gdrive configuration within the config.toml file with the resulting gdrive_folder_results.json values
+Before deploy the application you need to update the gdrive configuration values for `drive_folder_id` , `slides_template_id`, `doc_template_id` and `sheet_template_id` in the the *config.toml* file with the resulting *gdrive_folder_results.json* values.
 
 ## Application deployment
 To deploy the frontend of the application run the following command, you need to check terraform outputs values required for this step.
@@ -134,3 +132,13 @@ gcloud resource-manager org-policies disable-enforce constraints/iam.disableServ
 ```
 
 After this you can re run the terraform apply command.
+
+**Error**: Error creating the Database
+```
+Error creating Database: googleapi: Error 400: Database ID '(default)' is not available in project 'your_project_id'. Please retry in 134 seconds.
+```
+**Resolution**: This issue occurred because you were repeatedly creating and deleting the Firestore database. To resolve this, you can either:
+
+1. Wait:  Firestore has built-in mechanisms to handle this.  Wait a few minutes, and the system should automatically resolve the conflict.
+
+2. Manual Deletion (If Necessary): If the problem persists, you may need to manually delete the Firestore database through the Google Cloud Console. Please note that this will erase all data within the database.
