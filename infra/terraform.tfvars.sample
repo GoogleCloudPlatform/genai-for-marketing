@@ -21,7 +21,7 @@
 project_id = "your_project_id"
 
 gdrive_config = {
-  "gdrive_folder_id"   = "fodler_gdrive_id",
+  "gdrive_folder_id"   = "folder_gdrive_id",
   "marketing_slide_id" = "slide_gdrive_id",
   "marketing_doc_id"   = "doc_gdrive_id",
   "marketing_sheet_id" = "sheet_gdrive_id"

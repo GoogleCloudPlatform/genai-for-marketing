@@ -154,10 +154,10 @@ if __name__ == "__main__":
     
     with open("gdrive_folder_results.json", "r") as jsonFile:
         data = json.load(jsonFile)
-        data["GDRIVE_FOLDER_ID"] = GDRIVE_FOLDER_ID
-        data["MarketingExcelID"] = MarketingExcelID
-        data["MarketingDocID"] = MarketingDocID
-        data["MarketingPptID"] = MarketingPptID
+        data["folder_gdrive_id"] = GDRIVE_FOLDER_ID
+        data["sheet_gdrive_id"] = MarketingExcelID
+        data["doc_gdrive_id"] = MarketingDocID
+        data["slide_gdrive_id"] = MarketingPptID
     with open("gdrive_folder_results.json", "w") as jsonFile:
         json.dump(data, jsonFile)
     
