@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,14 @@
  */
 
 /*
-Uncomment if necessary
-terraform {
-  backend "gcs" {
-    bucket = "<changeme>"
-    prefix = "terraform/genai-for-marketing"
-  }
-}
+* You can use this to overwrite terraform default variables.
 */
+
+project_id = "your_project_id"
+
+gdrive_config = {
+  "gdrive_folder_id"   = "folder_gdrive_id",
+  "marketing_slide_id" = "slide_gdrive_id",
+  "marketing_doc_id"   = "doc_gdrive_id",
+  "marketing_sheet_id" = "sheet_gdrive_id"
+}

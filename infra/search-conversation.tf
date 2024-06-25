@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+ /*
+ *
+ * Note: Terraform Provider Limitations, while some GCP GenAI features are not yet fully supported by Terraform, this deployment offers a Python Google Cloud SDK-based deployment to enable those capabilities.
+ *
+ */
+
 
 resource "random_string" "random" {
   length  = 4
@@ -23,9 +29,8 @@ resource "random_string" "random" {
 }
 
 locals {
-  data_store_id    = "${var.search_app_name}_datastore_${random_string.random.result}"
-  search_engine_id = "${var.search_app_name}_search_engine_${random_string.random.result}"
-
+  data_store_id         = "${var.search_app_name}_datastore_${random_string.random.result}"
+  search_engine_id      = "${var.search_app_name}_search_engine_${random_string.random.result}"
   chat_engine_id        = "${var.search_app_name}_chat_engine_${random_string.random.result}"
   website_data_store_id = "${var.search_app_name}_web_datastore_${random_string.random.result}"
   storage_data_store_id = "${var.search_app_name}_storage_datastore_${random_string.random.result}"
@@ -41,7 +46,7 @@ resource "google_discovery_engine_data_store" "search_datastore" {
   content_config              = "PUBLIC_WEBSITE"
   solution_types              = ["SOLUTION_TYPE_SEARCH"]
   create_advanced_site_search = false
-  depends_on = [ module.project_services ]
+  depends_on                  = [module.project_services]
 }
 
 resource "google_discovery_engine_search_engine" "search_app" {
@@ -52,6 +57,7 @@ resource "google_discovery_engine_search_engine" "search_app" {
   display_name   = local.search_engine_id
   data_store_ids = [google_discovery_engine_data_store.search_datastore.data_store_id]
   search_engine_config {
+
   }
 }
 
@@ -61,10 +67,8 @@ resource "null_resource" "genai_marketing_search_target_site" {
     search_app = google_discovery_engine_search_engine.search_app.id
   }
   provisioner "local-exec" {
-    command = "cp -rf ../installation_scripts/genai_marketing_search_app_creation.py aux_data/"
-  }
-  provisioner "local-exec" {
-    command = "source venv/bin/activate; python3 -c 'from aux_data import genai_marketing_search_app_creation; genai_marketing_search_app_creation.create_target_site(\"${var.project_id}\",\"${var.genai_location}\",\"${google_discovery_engine_data_store.search_datastore.data_store_id}\",\"${join(",", var.datastore_uris)}\")'"
+    working_dir = "scripts/"
+    command     = "source venv/bin/activate; python3 -c 'import search_app_creation; search_app_creation.create_target_site(\"${var.project_id}\",\"${var.genai_location}\",\"${google_discovery_engine_data_store.search_datastore.data_store_id}\",\"${join(",", var.datastore_uris)}\")'"
   }
   depends_on = [null_resource.py_venv, google_discovery_engine_search_engine.search_app]
 }
@@ -77,7 +81,7 @@ resource "google_discovery_engine_data_store" "website_datastore" {
   industry_vertical = "GENERIC"
   content_config    = "PUBLIC_WEBSITE"
   solution_types    = ["SOLUTION_TYPE_CHAT"]
-  depends_on = [ module.project_services ]
+  depends_on        = [module.project_services]
 }
 
 resource "google_discovery_engine_data_store" "storage_datastore" {
@@ -88,7 +92,7 @@ resource "google_discovery_engine_data_store" "storage_datastore" {
   industry_vertical = "GENERIC"
   content_config    = "CONTENT_REQUIRED"
   solution_types    = ["SOLUTION_TYPE_CHAT"]
-  depends_on = [ module.project_services ]
+  depends_on        = [module.project_services]
 }
 
 resource "google_discovery_engine_chat_engine" "chat_app" {

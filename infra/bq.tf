@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,6 @@
  * limitations under the License.
  */
 
-locals {
-  bq_tables = [for t in local.tables : {
-    table_id           = t.name,
-    schema             = file(t.schema),
-    time_partitioning  = null,
-    range_partitioning = null,
-    expiration_time    = null,
-    clustering         = [],
-    labels             = {}
-  }]
-}
-
 module "bigquery" {
   source                      = "terraform-google-modules/bigquery/google"
   version                     = "~> 7.0"
@@ -35,8 +23,8 @@ module "bigquery" {
   location                    = var.location
   default_table_expiration_ms = null
 
-  tables = local.bq_tables
-  depends_on = [ module.project_services ]
+  tables     = local.bq_tables
+  depends_on = [module.project_services]
 }
 
 ## Populating tables with scripts
@@ -46,11 +34,8 @@ resource "null_resource" "bq_tables_populate" {
   }
 
   provisioner "local-exec" {
-    command = "cp ../installation_scripts/aux_data/data_gen.py aux_data/"
-  }
-
-  provisioner "local-exec" {
-    command = "source venv/bin/activate; python3 -c 'from aux_data import data_gen; data_gen.generate_and_populate_dataset(PROJECT_ID=\"${var.project_id}\",DATASET_ID=\"${var.dataset_name}\",create_tables=False)'"
+    working_dir = "scripts/"
+    command     = "source venv/bin/activate; python3 -c 'from aux_data import data_gen; data_gen.generate_and_populate_dataset(PROJECT_ID=\"${var.project_id}\",DATASET_ID=\"${var.dataset_name}\",create_tables=False)'"
   }
   depends_on = [null_resource.py_venv, module.bigquery]
 }
@@ -98,7 +83,7 @@ resource "google_data_catalog_tag_template" "tag_template" {
 
   force_delete = "true"
 
-  depends_on = [ module.project_services ]
+  depends_on = [module.project_services]
 }
 
 ## Tag columns using scripts
@@ -112,11 +97,8 @@ resource "null_resource" "bq_tagging" {
   }
 
   provisioner "local-exec" {
-    command = "cp ../installation_scripts/aux_data/bq_tag_generation.py aux_data/"
-  }
-
-  provisioner "local-exec" {
-    command = "source venv/bin/activate; python3 -c 'from aux_data import bq_tag_generation; bq_tag_generation.tag_metadata_from_bq(\"${var.project_id}\",\"${var.dataset_name}\",\"${google_data_catalog_tag_template.tag_template.name}\",\"${google_data_catalog_tag_template.tag_template.tag_template_id}\")'"
+    working_dir = "scripts/"
+    command     = "source venv/bin/activate; python3 -c 'from aux_data import bq_tag_generation; bq_tag_generation.tag_metadata_from_bq(\"${var.project_id}\",\"${var.dataset_name}\",\"${google_data_catalog_tag_template.tag_template.name}\",\"${google_data_catalog_tag_template.tag_template.tag_template_id}\")'"
   }
   depends_on = [null_resource.py_venv, module.bigquery, google_data_catalog_tag_template.tag_template]
 

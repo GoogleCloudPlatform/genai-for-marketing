@@ -1,0 +1,9 @@
+google-cloud
+google.auth
+google-cloud-datacatalog
+google-cloud-storage
+google-cloud-bigquery
+google-api-python-client
+google-cloud-discoveryengine
+google-cloud-dialogflow-cx
+numpy

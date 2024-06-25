@@ -6,7 +6,7 @@ from google.cloud import dialogflowcx_v3
 
 #
 # Usage:
-# python genai_marketing_conversation_app_creation.py --project="my-project-id" --app-name=my_app1 --company-name=my_company --uris="support.oogle.com/google-ads/*" --datastore-storage-folder="gs://gsd-tests-genai-marketing-sample-data/sample-folder/*"
+# python conversation_app_creation.py --project="my-project-id" --app-name=my_app1 --company-name=my_company --uris="support.oogle.com/google-ads/*" --datastore-storage-folder="gs://gsd-tests-genai-marketing-sample-data/sample-folder/*"
 #
 
 parser = argparse.ArgumentParser()

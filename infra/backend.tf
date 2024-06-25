@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-output "backend_deployment" {
-  value = data.google_cloud_run_service.run_service.status[0].url
+/*
+Uncomment if necessary
+terraform {
+  backend "gcs" {
+    bucket = "<changeme>"
+    prefix = "terraform/genai-for-marketing"
+  }
 }
-
-output "backend_service_account" {
-  value = module.genai_run_service_account.email
-}
-
-output "frontend_deployment" {
-  value = "https://${var.project_id}.web.app"
-}
+*/
