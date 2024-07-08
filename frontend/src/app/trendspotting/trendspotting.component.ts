@@ -6,6 +6,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { CampaignService } from '../services/campaign.service';
 import { LoginService } from '../services/login.service';
 import { AudiencesService } from '../services/audiences.service';
+import { map, mergeMap, switchMap } from 'rxjs';
 export interface TableElement {
   email: string;
   total_transaction_value: number
@@ -27,6 +28,7 @@ export class TrendspottingComponent {
   today!: Date;
   minDate!: Date;
   maxDate!: Date;
+  summarizeError: any = '';
   onClickMarketingAssi() {
     this.showchatboot = true
   }
@@ -36,7 +38,7 @@ export class TrendspottingComponent {
   });
   summarizeNewsForm = new FormGroup({
     maxRecords: new FormControl(),
-    keyword1: new FormControl(),
+    keyword1: new FormControl('Fashion'),
     keyword2: new FormControl(),
     keyword3: new FormControl(),
   });
@@ -58,7 +60,6 @@ export class TrendspottingComponent {
   filtered!: any;
   campaignId: any;
   campaignData: any;
-  keyword1Value: string = 'Fashion'
   public query: string | undefined;
   campaignName: any
   constructor(public audiencesSerive: AudiencesService
@@ -71,9 +72,15 @@ export class TrendspottingComponent {
   onSubmit() {
     let date = this.trendspottingForm.controls.fromDate.value;
     let latest_date = this.datepipe.transform(date, 'yyyy-MM-dd');
-    this.trendService.getTopSearchedTerms(latest_date).subscribe((res: any) => {
-      this.topSearchedRank1 = res.top_search_terms[0]?.term
-    })
+    this.trendService.getTopSearchedTerms(latest_date)
+      .pipe(
+        map((val: any) => {
+          return val.top_search_terms[0]?.term
+        })
+      ).
+      subscribe((res: any) => {
+        this.topSearchedRank1 = res
+      })
   }
 
   initialValue: number = 3;
@@ -112,17 +119,11 @@ export class TrendspottingComponent {
   };
   onSummarizeNewsSubmit() {
     this.showProgress = true;
+    this.summarizeError = null
+    this.showData = false;
     this.getCampaign();
-    // let keyword1Value
-    // if(this.summarizeNewsForm.controls.keyword1?.value === null){
-    //   this.keyword1Value = 'Fashion';
-    // } else{
-    //   this.keyword1Value = this.summarizeNewsForm.controls.keyword1?.value;
-    // }
     let keywords = []
-    if (this.keyword1Value) {
-      keywords.push(this.keyword1Value)
-    }
+    keywords.push(this.summarizeNewsForm.controls.keyword1?.value)
 
     let keyword2Value = this.summarizeNewsForm.controls.keyword2?.value;
     if (keyword2Value) {
@@ -138,10 +139,16 @@ export class TrendspottingComponent {
       "max_records": this.summarizeNewsForm.controls.maxRecords?.value,
       "max_days": 30
     }
-    this.trendService.postSummarizeNews(obj).subscribe((res: any) => {
-      this.summarizeNewsResults = res?.summaries;
-      this.showData = true;
-      this.showProgress = false;
+    this.trendService.postSummarizeNews(obj).subscribe({
+      next: (res: any) => {
+        this.summarizeNewsResults = res?.summaries;
+        this.showData = true;
+        this.showProgress = false;
+      },
+      error: (error: any) => {
+        this.summarizeError = error
+        throw error
+      }
     })
   }
 
