@@ -37,8 +37,8 @@ From [Cloud Shell](https://cloud.google.com/shell/docs/using-cloud-shell) run th
 
 Start the terraform deployment
 ```sh
-# move to the tf folder
-cd tf/
+# move to the infra folder
+cd infra/
 
 export USER_PROJECT_OVERRIDE=true
 export GOOGLE_BILLING_PROJECT=$(gcloud config get project)
@@ -67,6 +67,7 @@ You need to enable at least one authentication provider in Firebase, you can ena
 ### Create Gdrive assets
 To create gdrive assets you need to execute the following script
 ```
+echo "{}" >> gdrive_folder_results.json
 python scripts/create_gdrive_folder.py --folder-name="genai-marketing-assets" --service-account-email=<cloud_run_backend_sa>
 ```
 ***Google Drive Configuration (Optional)***
@@ -87,11 +88,11 @@ Before deploy the application you need to update the gdrive configuration values
 ## Application deployment
 To deploy the frontend of the application run the following command, you need to check terraform outputs values required for this step.
 ```
-sh scripts/backend_deployment.sh --project <your_project_id> --region <your_region> --run-sa <cloud_run_backend_sa>
+sh scripts/backend_deployment.sh --project $(gcloud config get project) --region <your_region> --sa <cloud_run_backend_sa>
 ```
 Then to deploy the frontent you need to execute:
 ```
-sh scripts/frontend_deployment.sh --project <your_project_id>
+sh scripts/frontend_deployment.sh --project $(gcloud config get project)
 ```
 
 ## Review your enviroment
