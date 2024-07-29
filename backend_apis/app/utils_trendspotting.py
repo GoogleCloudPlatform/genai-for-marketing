@@ -33,7 +33,7 @@ format: str = 'json'
 n_near_words: int = 20
 source_country: str = 'US'
 source_lang: str = 'english'
-tone = 'tone>10'
+tone = 'tone>5'
 
 
 def _get_articles_info(

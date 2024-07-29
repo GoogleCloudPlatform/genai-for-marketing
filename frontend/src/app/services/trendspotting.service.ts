@@ -32,21 +32,19 @@ export class TrendspottingService {
   }
 
   private handleError(error: HttpErrorResponse) {
+    
     if (error.error instanceof ErrorEvent) {
-
-      console.error('An error occurred:', error.error);
-
       this.showSnackbarCssStyles(error.error, 'Close', '4000')
-    } else {
+    } /*else {
 
-      this.showSnackbarCssStyles(error?.message, 'Close', '4000')
-      // console.error(
-      //   `Backend returned code ${error.status}, ` +
-      //   `body was: ${error.error}`);
-    }
+      this.showSnackbarCssStyles(error.error.detail, 'Close', '4000')
+       console.error(
+         `Backend returned code ${error.status}, ` +
+         `body was: ${error.error}`);
+    }*/
 
     return throwError(
-      'Something bad happened; please try again later.');
+      error.error.detail);
   }
   consumerInsightsSearch(query: any) {
     const head = new HttpHeaders().set('content-type', 'application/json')
