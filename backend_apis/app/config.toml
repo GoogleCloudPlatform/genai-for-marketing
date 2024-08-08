@@ -205,7 +205,8 @@ Product description: """
 # If needed, replace with a specific version of the model. Check the Vertex AI 
 # documentation for more information.
 text_model_name = "text-bison"
-image_model_name = "imagegeneration"
+# Imagen 3 Fast, Imagen models require allowlisting see https://cloud.google.com/vertex-ai/generative-ai/docs/image/overview
+image_model_name = "imagen-3.0-fast-generate-001""
 code_model_name = "code-bison"
 
 [data_sample]
