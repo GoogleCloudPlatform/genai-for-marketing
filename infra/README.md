@@ -1,43 +1,50 @@
-# Infrastructure deployment
-Terraform deployment simpliefies the deployment of this solution and can be used as blueprint of the solution, it includes all requirements in order to deploy in a single terraform scripts the.
+# Infrastructure Deployment
+Terraform simplifies deploying Generative AI for Marketing. The Terraform deployment includes all necessary requirements.
 
-*Note*: Current version of the Terraform Google Cloud provider has not been updated to generate some of the GenAI resources, this soultion uses null_resource to create some resources using Google Cloud SDK.
+*Note*: The Terraform Provider for Google Cloud is not able to generate some of the GenAI resources, `null_resource` is used to create some resources using the Google Cloud SDK.
+
+You'll need to create a Google Cloud project and link a billing account before you begin. **It is strongly recommended you deploy Generative AI for Marketing in it's own fresh project.** Existing resources in a project may be impacted by the deployment, and the deployment itself may fail.
 
 ## Prerequisites:
 
-Previous to execute terraform you need to enable some services using the following steps:
+Before executing Terraform, follow these steps to enable some services:
 
 ### Enable Firebase
 Will be used for the frontend deployment
 
-1. Go to https://console.firebase.google.com/
-2. Select add project and load your Google Cloud Platform project
-3. Add Firebase to one of your existing Google Cloud projects
-4. Confirm Firebase billing plan
-5. Continue and complete
+1. Go to https://console.firebase.google.com/.
+2. Select "Create a project" and enter the name of your Google Cloud Platform project, then click "Continue". 
+3. If you're using Firebase for the first time, you'll have to add Firebase to one of yor existing Google Cloud projects and confirm the Firebase billing plan.
+4. When prompted to set up Google Analytics respond as you'd like.
+5. Continue and complete.
 
 ### Enable Vertex AI Agent Builder
-Required before start using App Builder services
+Required before starting using App Builder services.
 1. Go to https://console.cloud.google.com/gen-app-builder/start
-2. Accept TOS
+2. Click the button to accept TOS and enable.
 
-### (Optional) Local configuration
-In case you are running this outside Cloud Shell you need to set up your Google Cloud SDK Credentials
+### (Optional) Local Configuration
+
+Cloud Shell is the recommend environment for running the deployment. If you are deploying from outside Cloud Shell, set up your Google Cloud SDK Credentials:
 
 ```shell
 gcloud config set project <your_project_id>
 gcloud auth application-default set-quota-project <your_project_id>
 ```
 
-## Terraform deployment
+You'll also need to install [Terraform](https://developer.hashicorp.com/terraform/install) and the [`gcloud` CLI](https://cloud.google.com/sdk/docs/install).
 
-From [Cloud Shell](https://cloud.google.com/shell/docs/using-cloud-shell) run the following commands:
+*Note*: The deployment requires Terraform 1.7 or higher.
 
-*Note*: This deployment requires Terraform 1.7 or higher
+## Terraform Deployment
 
-Start the terraform deployment
+1. Clone the GitHub repo.
+
+1. In [Cloud Shell](https://cloud.google.com/shell/docs/using-cloud-shell) navigate to the git repo root.
+
+1. Run the following to start the Terraform deployment:
 ```sh
-# move to the infra folder
+# Move to the infra folder.
 cd infra/
 
 export USER_PROJECT_OVERRIDE=true
@@ -86,7 +93,7 @@ If your Google Workspace has additional restrictions, you may need to grant perm
 Before deploy the application you need to update the gdrive configuration values for `drive_folder_id` , `slides_template_id`, `doc_template_id` and `sheet_template_id` in the the *config.toml* file with the resulting *gdrive_folder_results.json* values.
 
 ## Application deployment
-To deploy the frontend of the application run the following command, you need to check terraform outputs values required for this step.
+To deploy the backend of the application run the following command, you need to check terraform outputs values required for this step.
 ```
 sh scripts/backend_deployment.sh --project $(gcloud config get project) --region <your_region> --sa <cloud_run_backend_sa>
 ```
@@ -119,10 +126,10 @@ This deployment creates all the resources described in the main [README.md](../R
 ### Configuration files
 This deployment uses the templates in the [templates/](templates/) diractory to replace all necessary configuration values for the application. After the deployment is complete, you can review the resulting values in the config.toml and enviroments.ts files.
 
-## Know Issues
+## Known Issues
 
 
-**Error**: Error while creating the service account key
+### Error creating service account key
 ```
 Error creating service account key: googleapi: Error 400: Key creation is not allowed on this service account. 
 ```
@@ -132,9 +139,14 @@ Error creating service account key: googleapi: Error 400: Key creation is not al
 gcloud resource-manager org-policies disable-enforce constraints/iam.disableServiceAccountKeyCreation --project $(gcloud config get project)
 ```
 
-After this you can re run the terraform apply command.
+After this run the `terraform apply` command again. Note that fixing this may fix other issues with your deployment.
 
-**Error**: Error creating the Database
+After the service account is successfully created, you should consider reenabling this organization policy:
+```
+gcloud resource-manager org-policies enable-enforce constraints/iam.disableServiceAccountKeyCreation --project $(gcloud config get project)
+```
+
+### Error creating Database
 ```
 Error creating Database: googleapi: Error 400: Database ID '(default)' is not available in project 'your_project_id'. Please retry in 134 seconds.
 ```
