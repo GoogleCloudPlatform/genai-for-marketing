@@ -1,12 +1,12 @@
-import google.auth
-import os
+import argparse
 import json
+import google.auth
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaFileUpload
-import string
+import os
 import random
-import argparse
+import string
 
 
 parser = argparse.ArgumentParser()
@@ -161,7 +161,4 @@ if __name__ == "__main__":
     with open("gdrive_folder_results.json", "w") as jsonFile:
         json.dump(data, jsonFile)
     
-    
-
-
   
