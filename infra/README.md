@@ -5,7 +5,7 @@ Terraform simplifies deploying Generative AI for Marketing. The Terraform deploy
 
 You'll need to create a Google Cloud project and link a billing account before you begin. **It is strongly recommended you deploy Generative AI for Marketing in it's own fresh project.** Existing resources in a project may be impacted by the deployment, and the deployment itself may fail.
 
-## Prerequisites:
+## Step 0 - Prerequisites:
 
 Before executing Terraform, follow these steps to enable some services:
 
@@ -36,7 +36,7 @@ You'll also need to install [Terraform](https://developer.hashicorp.com/terrafor
 
 *Note*: The deployment requires Terraform 1.7 or higher.
 
-## Terraform Deployment
+## Step 1 - Terraform Deployment
 
 1. Clone the GitHub repo.
 
@@ -54,24 +54,25 @@ terraform init
 terraform apply -var=project_id=$(gcloud config get project)
 ```
 
-### Terraform variables
+When `terraform apply` completes successfully, you'll see a message `Apply complete!` along with outputs specifying config values. 
+
+### Terraform Variables
 You can change any of the default variables values in [variables.tf](variables.tf).
 
 This terraform will generate all configurations files required in the frontend and backend_apis you need to change [variables.tf](variables.tf) values in order to change configuration if needed.
 
-### After Terraform deployment
-***Auth Provider***
+## Step 2 - Firebase Auth Provider
 
-You need to enable at least one authentication provider in Firebase, you can enable it using the following steps:
-1. Go to https://console.firebase.google.com/project/your_project_id/authentication/providers (change the `your_project_id` value)
-2. Click on Get Started (if needed)
-3 Select Google and enable it
-4. Set the name for the project and support email for project
-5. Save
+After the Terraform deployment successfully completes, enable at least one authentication provider in Firebase. You can enable it using the following steps:
+1. Go to https://console.firebase.google.com/project/your_project_id/authentication/providers (change the `your_project_id` value).
+2. Click on Get Started (if needed).
+3. Select Google and flip the enable switch on.
+4. Set the name for the project and the support email.
+5. Click the "Save" button.
 
-## Create Gdrive assets
+## Step 3 - Create Google Drive Assets
 
-### Create Gdrive assets
+### Create Gdrive Assets
 To create gdrive assets you need to execute the following script
 ```
 echo "{}" >> gdrive_folder_results.json
@@ -89,10 +90,10 @@ If your Google Workspace has additional restrictions, you may need to grant perm
 6. Set the permissions for the service account to Editor.
 4. Clock Done to share the folder and grant permissions.
 
-#### Update the config file
+#### Update the Config File
 Before deploy the application you need to update the gdrive configuration values for `drive_folder_id` , `slides_template_id`, `doc_template_id` and `sheet_template_id` in the the *config.toml* file with the resulting *gdrive_folder_results.json* values.
 
-## Application deployment
+## Application Deployment
 To deploy the backend of the application run the following command, you need to check terraform outputs values required for this step.
 ```
 sh scripts/backend_deployment.sh --project $(gcloud config get project) --region <your_region> --sa <cloud_run_backend_sa>
@@ -102,7 +103,7 @@ Then to deploy the frontent you need to execute:
 sh scripts/frontend_deployment.sh --project $(gcloud config get project)
 ```
 
-## Review your enviroment
+## Review Your Enviroment
 Once deployment is completed terraform will output relevants resoruces values.
 
 Resulting example outputs:
@@ -113,7 +114,7 @@ frontend_deployment = "https://your-project-id.web.app"
 ```
 You can use the app by accessing to the frontend_deployment URL.
 
-### Deployed resources
+### Deployed Resources
 This deployment creates all the resources described in the main [README.md](../README.md) file, the following is a list of the created resources:
 - Required Google Cloud services
 - [BiqQuery](https://console.cloud.google.com/bigquery) Dataset and tables (populating tables with sample data)
@@ -123,13 +124,20 @@ This deployment creates all the resources described in the main [README.md](../R
 - [Cloud Run](https://console.cloud.google.com/run) for backend APIs
 - Firebase for frontend deployment
 
-### Configuration files
+### Configuration Files
 This deployment uses the templates in the [templates/](templates/) diractory to replace all necessary configuration values for the application. After the deployment is complete, you can review the resulting values in the config.toml and enviroments.ts files.
 
 ## Known Issues
 
+Workarounds for known issues.
 
-### Error creating service account key
+Note that some of the workarounds require modifying [organization policies](https://cloud.google.com/resource-manager/docs/organization-policy/creating-managing-policies), which can only be done by a user with the [`orgpolicy.policyAdmin`](https://cloud.google.com/iam/docs/understanding-roles#orgpolicy.policyAdmin) role. If you have an Google Cloud organization administrator, you should work with them on issues requiring organization policy changes.
+
+### Errors During Terraform Deployment
+
+#### `Error creating service account key`
+
+TODO: also look into enable/disable of disableServiceAccountCreation (not Key) constraints/iam.disableServiceAccountCreation
 ```
 Error creating service account key: googleapi: Error 400: Key creation is not allowed on this service account. 
 ```
@@ -139,14 +147,29 @@ Error creating service account key: googleapi: Error 400: Key creation is not al
 gcloud resource-manager org-policies disable-enforce constraints/iam.disableServiceAccountKeyCreation --project $(gcloud config get project)
 ```
 
-After this run the `terraform apply` command again. Note that fixing this may fix other issues with your deployment.
+After this run the `terraform apply` command again. Note that fixing this may fix other errors that were raised during deployment.
 
 After the service account is successfully created, you should consider reenabling this organization policy:
 ```
 gcloud resource-manager org-policies enable-enforce constraints/iam.disableServiceAccountKeyCreation --project $(gcloud config get project)
 ```
 
-### Error creating Database
+#### `Error applying IAM policy for cloud service`
+```
+Error setting IAM policy for cloudrun service: googleapi: Error 400: One or more users named in the policy do not belong to a permitted customer, perhaps due to an organization policy.
+```
+
+**Resolution**: Disable the iam.allowedPolicyMemberDomains organizational policy in your project.
+```
+TODO: provide command
+```
+
+After this run the `terraform apply` command again. Once the error is resolved, you should reenable this organization policy:
+```
+TODO: provide command
+```
+
+#### `Error creating Database`
 ```
 Error creating Database: googleapi: Error 400: Database ID '(default)' is not available in project 'your_project_id'. Please retry in 134 seconds.
 ```
