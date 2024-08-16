@@ -148,9 +148,9 @@ if __name__ == "__main__":
         print(" folder Already Exists, so using the same")
         GDRIVE_FOLDER_ID=results["files"][0]["id"]
     share_file(GDRIVE_FOLDER_ID,service_account_email)
-    MarketingExcelID=upload_with_conversion(GDRIVE_FOLDER_ID,"templates/[data source] GenAI for Marketing.xlsx","GenAI for Marketing.xlsx","text/xls")
-    MarketingDocID=upload_with_conversion(GDRIVE_FOLDER_ID,"templates/[template] Gen AI for Marketing Google Doc Template.docx","Gen AI for Marketing Google Doc Template.docx","text/doc")
-    MarketingPptID=upload_with_conversion(GDRIVE_FOLDER_ID,"templates/[template] Marketing Assets.pptx","Marketing Assets.pptx","text/ppt")
+    MarketingExcelID=upload_with_conversion(GDRIVE_FOLDER_ID,"../templates/[data source] GenAI for Marketing.xlsx","GenAI for Marketing.xlsx","text/xls")
+    MarketingDocID=upload_with_conversion(GDRIVE_FOLDER_ID,"../templates/[template] Gen AI for Marketing Google Doc Template.docx","Gen AI for Marketing Google Doc Template.docx","text/doc")
+    MarketingPptID=upload_with_conversion(GDRIVE_FOLDER_ID,"../templates/[template] Marketing Assets.pptx","Marketing Assets.pptx","text/ppt")
     
     with open("gdrive_folder_results.json", "r") as jsonFile:
         data = json.load(jsonFile)
