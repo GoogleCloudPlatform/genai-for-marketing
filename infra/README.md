@@ -19,7 +19,7 @@ Will be used for the frontend deployment
 5. Continue and complete.
 
 ### Enable Vertex AI Agent Builder
-Required before starting using App Builder services.
+Required before starting using Vertex AI Agent Builder services.
 1. Go to https://console.cloud.google.com/gen-app-builder/start
 2. Click the button to accept TOS and enable.
 
