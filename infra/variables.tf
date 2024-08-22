@@ -42,6 +42,12 @@ variable "dataset_name" {
   description = "BigQuery dataset name"
 }
 
+variable "dataset_tables_min_records" {
+  type        = number
+  default     = 5000
+  description = "Minimum records to generate when loading data into BQ tables"
+}
+
 variable "tag_template_id" {
   type    = string
   default = "llmcdptemplate"

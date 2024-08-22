@@ -25,21 +25,19 @@ rng = np.random.default_rng(SEED)
 
 def create_and_populate_customers(num_customers: int = 50000) -> List[Dict]:
     from aux_data.customers_aux_data import channel, locations
-
+    
     customers_location = rng.choice(locations, size=(num_customers))
     customers_channel = rng.choice(channel, size=(num_customers))
     customers_total_purchases = rng.integers(1, 100, size=(num_customers))
     customers_total_value = rng.integers(10, 1000, size=(num_customers))
     customers_total_emails = rng.integers(1, 100, size=(num_customers))
     customers_loyalty_score = rng.integers(1, 100, size=(num_customers))
-    customers_is_media_follower = rng.choice(
-        [False, True], size=(num_customers))
+    customers_is_media_follower = rng.choice([False, True], size=(num_customers))
 
     baseline_datetime = datetime(2023, 4, 1)
     customers_last_sign_up_date = rng.integers(500, 1000, size=(num_customers))
     customers_last_purchase_date = rng.integers(20, 100, size=(num_customers))
-    customers_last_activity_date = customers_last_purchase_date - \
-        rng.integers(10, 20, size=(num_customers))
+    customers_last_activity_date = customers_last_purchase_date - rng.integers(10, 20, size=(num_customers))
 
     customers_cart_total = rng.uniform(0.0, 800.0, size=(num_customers))
 
@@ -58,20 +56,14 @@ def create_and_populate_customers(num_customers: int = 50000) -> List[Dict]:
         customer['loyalty_score'] = int(customers_loyalty_score[i])
         customer['is_media_follower'] = bool(customers_is_media_follower[i])
 
-        customer['last_sign_up_date'] = baseline_datetime - \
-            timedelta(days=int(customers_last_sign_up_date[i]))
-        customer['last_sign_up_date'] = customer['last_sign_up_date'].strftime(
-            '%Y-%m-%d')
+        customer['last_sign_up_date'] = baseline_datetime - timedelta(days=int(customers_last_sign_up_date[i]))
+        customer['last_sign_up_date'] = customer['last_sign_up_date'].strftime('%Y-%m-%d')
 
-        customer['last_purchase_date'] = baseline_datetime - \
-            timedelta(days=int(customers_last_purchase_date[i]))
-        customer['last_purchase_date'] = customer['last_purchase_date'].strftime(
-            '%Y-%m-%d')
+        customer['last_purchase_date'] = baseline_datetime - timedelta(days=int(customers_last_purchase_date[i]))
+        customer['last_purchase_date'] = customer['last_purchase_date'].strftime('%Y-%m-%d')
 
-        customer['last_activity_date'] = baseline_datetime - \
-            timedelta(days=int(customers_last_activity_date[i]))
-        customer['last_activity_date'] = customer['last_activity_date'].strftime(
-            '%Y-%m-%d')
+        customer['last_activity_date'] = baseline_datetime - timedelta(days=int(customers_last_activity_date[i]))
+        customer['last_activity_date'] = customer['last_activity_date'].strftime('%Y-%m-%d')
 
         customer['cart_total'] = round(float(customers_cart_total[i]), 2)
 
@@ -84,15 +76,14 @@ def create_and_populate_customers(num_customers: int = 50000) -> List[Dict]:
 def create_and_populate_events(num_customers: int = 50000) -> Dict:
     from aux_data.events_aux_data import event_type
 
-    events_per_customer = list(map(int, np.absolute(
-        np.floor(rng.normal(1, 1, size=(num_customers)) * 100))))
+    events_per_customer = list(map(int, np.absolute(np.floor(rng.normal(1, 1, size=(num_customers)) * 100))))
     num_events = sum(events_per_customer)
-
+    
     events_type = rng.choice(event_type, size=(num_events))
-
+    
     baseline_datetime = datetime(2023, 4, 1)
     events_date_delta = rng.integers(20, 200, size=(num_events))
-
+    
     events_data = []
     idx = 0
 
@@ -101,8 +92,7 @@ def create_and_populate_events(num_customers: int = 50000) -> Dict:
             event = {}
             event['customer_id'] = i
             event['event_id'] = idx
-            event['event_date'] = baseline_datetime - \
-                timedelta(days=int(events_date_delta[idx]))
+            event['event_date'] = baseline_datetime - timedelta(days=int(events_date_delta[idx]))
             event['event_date'] = event['event_date'].strftime('%Y-%m-%d')
             event['event_type'] = events_type[idx]['event_type']
             idx += 1
@@ -114,13 +104,11 @@ def create_and_populate_events(num_customers: int = 50000) -> Dict:
 def create_and_populate_transactions(num_customers: int = 50000) -> Dict:
     from aux_data.transactions_aux_data import product_name, transaction_type
 
-    transactions_per_customer = list(map(int, np.absolute(
-        np.floor(rng.normal(1, 1, size=(num_customers)) * 100))))
+    transactions_per_customer = list(map(int, np.absolute(np.floor(rng.normal(1, 1, size=(num_customers)) * 100))))
     num_transactions = sum(transactions_per_customer)
 
     product_name_choice = rng.choice(product_name, size=(num_transactions))
-    transaction_type_choice = rng.choice(
-        transaction_type, size=(num_transactions))
+    transaction_type_choice = rng.choice(transaction_type, size=(num_transactions))
 
     transaction_qtn = rng.integers(1, 30, size=(num_transactions))
     transaction_value = rng.integers(1, 5000, size=(num_transactions))
@@ -130,7 +118,7 @@ def create_and_populate_transactions(num_customers: int = 50000) -> Dict:
 
     baseline_datetime = datetime(2023, 4, 1)
     transactions_date_delta = rng.integers(20, 200, size=(num_transactions))
-
+    
     transaction_data = []
 
     transaction_id = 0
@@ -139,34 +127,29 @@ def create_and_populate_transactions(num_customers: int = 50000) -> Dict:
             transaction = {}
             transaction['transaction_id'] = transaction_id
             transaction['customer_id'] = i
-            transaction['transaction_quantity'] = int(
-                transaction_qtn[transaction_id])
-            transaction['transaction_value'] = int(
-                transaction_value[transaction_id])
+            transaction['transaction_quantity'] = int(transaction_qtn[transaction_id])
+            transaction['transaction_value'] = int(transaction_value[transaction_id])
             transaction['transaction_type'] = transaction_type_choice[transaction_id]['transaction_type']
-            transaction['app_purchase_quantity'] = int(
-                app_purchase_quantity[transaction_id])
-            transaction['is_online'] = bool(
-                transaction_is_online[transaction_id])
+            transaction['app_purchase_quantity'] = int(app_purchase_quantity[transaction_id])
+            transaction['is_online'] = bool(transaction_is_online[transaction_id])
 
-            transaction['transaction_date'] = baseline_datetime - \
-                timedelta(days=int(transactions_date_delta[transaction_id]))
-            transaction['transaction_date'] = transaction['transaction_date'].strftime(
-                '%Y-%m-%d')
-
+            transaction['transaction_date'] = baseline_datetime - timedelta(days=int(transactions_date_delta[transaction_id]))
+            transaction['transaction_date'] = transaction['transaction_date'].strftime('%Y-%m-%d')
+            
             transaction['product_name'] = product_name_choice[transaction_id]['product_name']
             transaction['product_id'] = product_name_choice[transaction_id]['product_id']
 
             transaction_id += 1
             transaction_data.append(transaction)
-
+    
     return transaction_data
 
 
 def generate_and_populate_dataset(
         PROJECT_ID: str,
         DATASET_ID: str,
-        create_tables: bool = True
+        create_tables: bool = True,
+        min_records: int = 5000
 ):
     bq_client = bigquery.Client(project=PROJECT_ID)
 
@@ -198,12 +181,10 @@ def generate_and_populate_dataset(
     transactions_schema = [
         bigquery.SchemaField('transaction_id', 'INTEGER', mode='NULLABLE'),
         bigquery.SchemaField('customer_id', 'INTEGER', mode='NULLABLE'),
-        bigquery.SchemaField('transaction_quantity',
-                             'INTEGER', mode='NULLABLE'),
+        bigquery.SchemaField('transaction_quantity', 'INTEGER', mode='NULLABLE'),
         bigquery.SchemaField('transaction_value', 'INTEGER', mode='NULLABLE'),
         bigquery.SchemaField('transaction_type', 'STRING', mode='NULLABLE'),
-        bigquery.SchemaField('app_purchase_quantity',
-                             'INTEGER', mode='NULLABLE'),
+        bigquery.SchemaField('app_purchase_quantity', 'INTEGER', mode='NULLABLE'),
         bigquery.SchemaField('is_online', 'BOOLEAN', mode='NULLABLE'),
         bigquery.SchemaField('transaction_date', 'DATE', mode='NULLABLE'),
         bigquery.SchemaField('product_name', 'STRING', mode='NULLABLE'),
@@ -219,41 +200,40 @@ def generate_and_populate_dataset(
         bigquery.SchemaField('is_foreign_key', 'BOOLEAN', mode='NULLABLE')
     ]
 
-    if (create_tables):
+    if(create_tables):
         print('Creating tables ...')
-        for table_id, table_schema in zip(['customers', 'events', 'transactions', 'metadata'],
-                                          [customers_schema, events_schema, transactions_schema, metadata_schema]):
+        for table_id, table_schema in zip(['customers', 'events', 'transactions', 'metadata'], 
+                            [customers_schema, events_schema, transactions_schema, metadata_schema]):
             table_id = f'{PROJECT_ID}.{DATASET_ID}.{table_id}'
             table = bigquery.Table(table_id, schema=table_schema)
             table = bq_client.create_table(table)
 
-    print('Generating and populating METADATA table ...')
+
+    print('Generating and populating METADATA table ...')    
     table_id = f"{PROJECT_ID}.{DATASET_ID}.metadata"
     bq_client.load_table_from_json(
-        get_metadata_data(DATASET_ID=DATASET_ID),
+        get_metadata_data(DATASET_ID=DATASET_ID), 
         destination=bigquery.Table(table_ref=table_id, schema=metadata_schema)
     )
 
     print('Generating and populating CUSTOMERS table ...')
-    customers_data = create_and_populate_customers()
+    customers_data = create_and_populate_customers(num_customers=min_records)
     table_id = f"{PROJECT_ID}.{DATASET_ID}.customers"
     bq_client.load_table_from_json(
-        customers_data,
+        customers_data, 
         destination=bigquery.Table(table_ref=table_id, schema=customers_schema))
-    customers_data = None
-
+    
     print('Generating and populating EVENTS table ...')
-    events_data = create_and_populate_events()
+    events_data = create_and_populate_events(num_customers=min_records)
     table_id = f"{PROJECT_ID}.{DATASET_ID}.events"
     bq_client.load_table_from_json(
-        events_data,
+        events_data, 
         destination=bigquery.Table(table_ref=table_id, schema=events_schema))
-    events_data = None
-
+    
     print('Generating and populating TRANSACTIONS table ...')
-    transactions_data = create_and_populate_transactions()
+    transactions_data = create_and_populate_transactions(num_customers=min_records)
     table_id = f"{PROJECT_ID}.{DATASET_ID}.transactions"
     bq_client.load_table_from_json(
-        transactions_data,
+        transactions_data, 
         destination=bigquery.Table(table_ref=table_id, schema=transactions_schema))
-    transactions_data = None
+    
