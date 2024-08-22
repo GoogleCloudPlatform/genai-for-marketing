@@ -148,7 +148,8 @@ def create_and_populate_transactions(num_customers: int = 50000) -> Dict:
 def generate_and_populate_dataset(
         PROJECT_ID: str,
         DATASET_ID: str,
-        create_tables: bool = True
+        create_tables: bool = True,
+        min_records: int = 5000
 ):
     bq_client = bigquery.Client(project=PROJECT_ID)
 
@@ -216,22 +217,23 @@ def generate_and_populate_dataset(
     )
 
     print('Generating and populating CUSTOMERS table ...')
-    customers_data = create_and_populate_customers()
+    customers_data = create_and_populate_customers(num_customers=min_records)
     table_id = f"{PROJECT_ID}.{DATASET_ID}.customers"
     bq_client.load_table_from_json(
         customers_data, 
         destination=bigquery.Table(table_ref=table_id, schema=customers_schema))
     
     print('Generating and populating EVENTS table ...')
-    events_data = create_and_populate_events()
+    events_data = create_and_populate_events(num_customers=min_records)
     table_id = f"{PROJECT_ID}.{DATASET_ID}.events"
     bq_client.load_table_from_json(
         events_data, 
         destination=bigquery.Table(table_ref=table_id, schema=events_schema))
     
     print('Generating and populating TRANSACTIONS table ...')
-    transactions_data = create_and_populate_transactions()
+    transactions_data = create_and_populate_transactions(num_customers=min_records)
     table_id = f"{PROJECT_ID}.{DATASET_ID}.transactions"
     bq_client.load_table_from_json(
         transactions_data, 
         destination=bigquery.Table(table_ref=table_id, schema=transactions_schema))
+    

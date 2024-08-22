@@ -35,7 +35,7 @@ resource "null_resource" "bq_tables_populate" {
 
   provisioner "local-exec" {
     working_dir = "scripts/"
-    command     = "source venv/bin/activate; python3 -c 'from aux_data import data_gen; data_gen.generate_and_populate_dataset(PROJECT_ID=\"${var.project_id}\",DATASET_ID=\"${var.dataset_name}\",create_tables=False)'"
+    command     = "source venv/bin/activate; python3 -c 'from aux_data import data_gen; data_gen.generate_and_populate_dataset(PROJECT_ID=\"${var.project_id}\",DATASET_ID=\"${var.dataset_name}\",create_tables=False, min_records=${var.dataset_tables_min_records})'"
   }
   depends_on = [null_resource.py_venv, module.bigquery]
 }
