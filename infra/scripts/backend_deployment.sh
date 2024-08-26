@@ -62,5 +62,5 @@ main(){
     gcloud run deploy genai-for-marketing-backend-apis --source . --project="$project" --region="$region" --service-account="$sa" --allow-unauthenticated
     echo "Done"
 }
-
+# Deploy
 main

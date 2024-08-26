@@ -53,3 +53,6 @@ main(){
     firebase experiments:enable webframeworks
     firebase deploy --only hosting --project="$project"
 }
+
+# Deploy
+main 
