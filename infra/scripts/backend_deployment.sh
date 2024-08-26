@@ -53,6 +53,8 @@ done
 
 # Deploys backend to Cloud Run using the provided region and service account
 main(){
+    echo "Copying config.toml file"
+    cp output_config/config.toml ../backend_apis/app
     echo "Copying Docker file"
     cp output_config/Dockerfile ../backend_apis/
     cd ../backend_apis
