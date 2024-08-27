@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
- /*
+/*
  *
  * Note: Terraform Provider Limitations, while some GCP GenAI features are not yet fully supported by Terraform, this deployment offers a Python Google Cloud SDK-based deployment to enable those capabilities.
  *

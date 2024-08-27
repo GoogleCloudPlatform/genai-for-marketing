@@ -36,3 +36,19 @@ module "genai_run_service_account" {
 resource "google_service_account_key" "sa_key" {
   service_account_id = module.genai_run_service_account.service_account.name
 }
+
+# IAM Binding to ensure build service account have the requireds roles to build the backend_api
+
+data "google_project" "project" {
+  project_id = var.project_id
+}
+
+locals {
+  cb_roles = ["roles/storage.objectViewer", "roles/logging.logWriter", "roles/artifactregistry.writer"]
+}
+resource "google_project_iam_member" "cb_roles" {
+  count   = length(local.cb_roles)
+  project = var.project_id
+  role    = local.cb_roles[count.index]
+  member  = "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
+}
