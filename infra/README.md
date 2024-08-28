@@ -108,52 +108,21 @@ In most Workspace setups, the Generative AI for Marketing application needs to b
 
 ### Update `config.toml`
 
-The configuration file acts as a control center for a marketing content generation, providing the necessary settings, prompts, and data to automate the creation of personalized and brand-consistent marketing materials.  
+Terraform uses the template at `infra/templates/config.toml.tftpl` to generate `config.toml`. During deployment, key sections are replaced with actual infrastructure details, and the final `config.toml` is written to `infra/output_config/`.
 
-The following are the key sections and their functions:
+Next, we'll incorporate Google Drive details into this file. **Use your preferred text editor** (nano is shown here).
 
-#### **Global:**
+1. Open `gdrive_folder_results.json` in the `infra` directory. 
+1. Copy the values for `folder_gdrive_id`, `slide_gdrive_id`, `doc_gdrive_id`, and `sheet_gdrive_id`. Save these somewhere safe outside of Cloud Shell.
+1. In the `infra` directory, open `output_config/config.toml` (e.g., `nano output_config/config.toml`).
+1. Search for `drive_folder_id`. You'll see placeholders for the 4 values you copied. (In nano, use **Ctrl+w** to search)
+1. Replace the placeholders:
+   - `folder_gdrive_id`  ->  `drive_folder_id`
+   - `slide_gdrive_id`   ->  `slides_template_id`
+   - `doc_gdrive_id`     ->  `doc_template_id`
+   - `sheet_gdrive_id`   ->  `sheet_template_id`
+1. Save the file. (In nano, **Ctrl+x**, then **Y**, then Enter) 
 
-- Sets core project settings (project ID, location).
-- Specifies credentials for Workspace access.
-- Identifies BigQuery datasets and Vertex AI resources.
-- Defines Workspace document templates and folders.
-- Sets the GCS bucket for asset storage.
-- Defines Workspace API scopes (permissions). 
-
-#### **Prompts:**
-
-- Provides detailed brand information (name, vision, mission, etc.) to guide content generation.
-- Defines prompt templates for various types of content (brand statement, primary message, communication channel, email, web post, ad, headlines, descriptions).
-- Includes placeholders ({}) for dynamic content insertion.  
-
-
-#### **Models:** 
-
-- Specifies the names of AI models to use for text and image generation.  
-
-#### **Data Sample:**
-
-- Provides sample data and options (age buckets, names, languages) for personalizing content.  
-
-The template for generating this file is located under `infra/templates/config.toml.tftpl`. During the terraform deployment, key sections are replaced as the infrastructure is created. The output of this template is written to `infra/output_config/config.toml`. For the next step, we'll be updating this file with the details of the Google Drive Creation Step.  
-
-Edit this file and update it with values generated during the deployment process. These instructions use `nano` but use whatever editor you prefer. From the `/infra` directory:
-
-1. `gdrive_folder_results.json`, contains configuration values that will need to go into `output_config/config.toml`. You'll see configuration values for the following:  
-
-
-    - `folder_gdrive_id` 
-    - `slide_gdrive_id`
-    - `doc_gdrive_id`
-    - `sheet_gdrive_id` 
-
-    Copy these values and save them somewhere outside of your Cloud Shell window.
-
-1. From the `infra` directory, run `nano output_config/config.toml`
-1. Search for `drive_folder_id` and you'll see where to enter the 4 configuration values. If you're using `nano`, you can search for these values using **ctrl+w**.
-1. Replace the following values: `folder_gdrive_id` for `drive_folder_id`, `slide_gdrive_id` for `slides_template_id`, `doc_gdrive_id` for `doc_template_id`, and `sheet_gdrive_id` for `sheet_template_id`.  
-1. After updating the configuration values, save file. If you're using `nano`, press **ctrl+x** to exit then **Y** to save and enter to confim.
 
 ## Application Deployment
 To deploy the backend of the application run the following command from the `/infra` folder. You need to use values output by `terraform apply` for this step.
