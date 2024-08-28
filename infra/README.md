@@ -106,16 +106,23 @@ In most Workspace setups, the Generative AI for Marketing application needs to b
 
 ## Step 4 - Application Deployment
 
-#### Update `config.toml`
+### Update `config.toml`
 
-TODO: explain this better, like what the config file is. 
+Terraform uses the template at `infra/templates/config.toml.tftpl` to generate `config.toml`. During deployment, key sections are replaced with actual infrastructure details, and the final `config.toml` is written to `infra/output_config/`.
 
-Configuration for the backend of the application is stored in `backend_apis/app/config.toml`. Edit this file and update it with values generated during the deployment process. These instructions use `nano` but use whatever editor you prefer. From the `/infra` directory:
+Next, we'll incorporate Google Drive details into this file. **Use your preferred text editor** (nano is shown here).
 
-1. Run `cat gdrive_folder_results.json` and copy the output to somewhere outside of your Cloud Shell window. You'll see configuration values for `drive_folder_id` , `slides_template_id`, `doc_template_id` and `sheet_template_id`. These will go into `config.toml`.
-1. Run `nano ../backend_apis/app/config.toml`
-1. Press ctrl+w to find `drive_folder_id` and you'll see where to enter the 4 configuration values.
-1. After updating the configuration values, press ctrl+x to exit then Y to save and enter to confim.
+1. Open `gdrive_folder_results.json` in the `infra` directory. 
+1. Copy the values for `folder_gdrive_id`, `slide_gdrive_id`, `doc_gdrive_id`, and `sheet_gdrive_id`. Save these somewhere safe outside of Cloud Shell.
+1. In the `infra` directory, open `output_config/config.toml` (e.g., `nano output_config/config.toml`).
+1. Search for `drive_folder_id`. You'll see placeholders for the 4 values you copied. (In nano, use **Ctrl+w** to search)
+1. Replace the placeholders:
+   - `folder_gdrive_id`  ->  `drive_folder_id`
+   - `slide_gdrive_id`   ->  `slides_template_id`
+   - `doc_gdrive_id`     ->  `doc_template_id`
+   - `sheet_gdrive_id`   ->  `sheet_template_id`
+1. Save the file. (In nano, **Ctrl+x**, then **Y**, then Enter) 
+
 
 ## Application Deployment
 To deploy the backend of the application run the following command from the `/infra` folder. You need to use values output by `terraform apply` for this step.

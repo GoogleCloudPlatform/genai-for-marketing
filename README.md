@@ -57,13 +57,42 @@ The following additional (external) notebooks provide supplementary information 
 - [Vertex AI Search - Document search](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/search/retrieval-augmented-generation): This demo illustrates how Vertex AI Search and the Vertex AI PaLM API help ensure that generated content is grounded in validated, relevant and up-to-date information.
 - [Getting Started with LangChain and Vertex AI PaLM API](https://github.com/GoogleCloudPlatform/generative-ai/blob/main/language/orchestration/langchain/intro_langchain_palm_api.ipynb): Use LangChain and Vertex AI PaLM API to generate text.
 
+## Config.toml
+
+The configuration file acts as a control center for a marketing content generation, providing the necessary settings, prompts, and data to automate the creation of personalized and brand-consistent marketing materials.  
+
+The following are the key sections and their functions:
+
+#### **Global:**
+
+- Sets core project settings (project ID, location).
+- Specifies credentials for Workspace access.
+- Identifies BigQuery datasets and Vertex AI resources.
+- Defines Workspace document templates and folders.
+- Sets the GCS bucket for asset storage.
+- Defines Workspace API scopes (permissions). 
+
+#### **Prompts:**
+
+- Provides detailed brand information (name, vision, mission, etc.) to guide content generation.
+- Defines prompt templates for various types of content (brand statement, primary message, communication channel, email, web post, ad, headlines, descriptions).
+- Includes placeholders ({}) for dynamic content insertion.  
+
+#### **Models:** 
+
+- Specifies the names of AI models to use for text and image generation.  
+
+#### **Data Sample:**
+
+- Provides sample data and options (age buckets, names, languages) for personalizing content.  
+
+
 # Environment Setup
 You have two options to deploy the solution:
 
 1. Automated Deployment (Recommended): Navigate to the [infra](infra/) folder. This folder contains Terraform code and scripts designed to automate the entire deployment process for you. Follow the instructions provided within the folder to initiate the automated deployment.
 
 2. Manual Setup: If you prefer a hands-on approach, you can opt for [manual setup](manual-setup.md). Detailed instructions are available on how to configure the solution components step-by-step.
-
 
 
 ## Getting help
