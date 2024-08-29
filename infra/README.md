@@ -5,6 +5,10 @@ Terraform simplifies deploying Generative AI for Marketing. The Terraform deploy
 
 You'll need to create a Google Cloud project and link a billing account before you begin. **It is strongly recommended you deploy Generative AI for Marketing in it's own fresh project.** Existing resources in a project may be impacted by the deployment, and the deployment itself may fail.
 
+These instructions have been tested as run by a Google Cloud user with the [Owner role](https://cloud.google.com/iam/docs/understanding-roles#basic) for the project, installation may not work if the installing user does not have the Owner role.
+
+In certain Google Cloud Organizations, organization policies may block installation steps. The [Known Issues](#known-issues) section provides help changing these policies, which requires the [Organization Administrator Role](https://cloud.google.com/resource-manager/docs/access-control-org#using_predefined_roles).
+
 ## Step 0 - Prerequisites:
 
 Before executing Terraform, follow these steps to enable some services:
@@ -46,6 +50,8 @@ Generative AI for Marketing requires your organization has Workspace set up and 
 
 1. In [Cloud Shell](https://cloud.google.com/shell/docs/using-cloud-shell) navigate to the git repo root.
 
+1. Run `gcloud config set project YOUR_PROJECT_ID` to ensure you're installing into the expected project.
+
 1. In the cloned project root, run the following to start the Terraform deployment:
 ```sh
 # Move to the infra folder.
@@ -60,8 +66,6 @@ terraform apply -var=project_id=$(gcloud config get project)
 
 When `terraform apply` completes successfully, you'll see a message `Apply complete!` along with outputs specifying config values. Save this output somewhere, you'll need these values later.
 
-TODO: More details about what to do with the output variables from terraform apply.
-
 ### Terraform Variables
 TODO: explain this better.
 
@@ -72,27 +76,25 @@ This terraform will generate all configurations files required in the frontend a
 ## Step 2 - Firebase Auth Provider
 
 After the Terraform deployment successfully completes, enable at least one authentication provider in Firebase. You can enable it using the following steps:
-1. Go to https://console.firebase.google.com/project/your_project_id/authentication/providers (change the `your_project_id` value).
+1. Go to https://console.firebase.google.com/project/your_project_id/authentication/providers (change the `your_project_id` value in this URL to your project ID).
 2. Click on Get Started (if needed).
 3. Select Google and flip the enable switch on.
 4. Set the name for the project and the support email.
 5. Click the "Save" button.
 
 ## Step 3 - Setup Google Drive
-(TODO: explain this better)
+
+Generative AI for Marketing Uses Google Drive to store created marketing materials. This step creates a Google Drive folder, populates it with templates for the marketing materials, and then returns Google Drive IDs for these templates (you'll need these later). You'll then give the Generative AI for Marketing application access to the Google Drive folder.
 
 ### Create Folder and Upload Files
-Execute the following script from the `infra` subfolder:
+Execute the following script from the `infra` subfolder, substituting `<cloud_run_backend_sa>` for the value output by `terraform apply` (without quotes) in step 1.
 
-TODO: better instructions around `cloud_run_backend_sa`, it comes out of the terraform apply.
-TODO: explain better what happens here. the folder needs to be created, yes? do the templates also need to be created?
+
 ```
 echo "{}" >> gdrive_folder_results.json
 python scripts/create_gdrive_folder.py --folder-name="genai-marketing-assets" --service-account-email=<cloud_run_backend_sa>
 ```
 ### Grant Backend Service Account Google Drive Access
-
-TODO: fix this after determining how the values output by the terraform apply are handled.
 
 In most Workspace setups, the Generative AI for Marketing application needs to be granted access to the Google Drive folder you just created. To do this,  [share the folder](https://support.google.com/drive/answer/7166529?hl=en&co=GENIE.Platform%3DDesktop#zippy=%2Cshare-with-specific-people) with the service account created for the application backend during the Terraform installation. This will allow the service account to access and manage files within the designated folder.
 
@@ -125,24 +127,23 @@ Next, we'll incorporate Google Drive details into this file. **Use your preferre
 
 
 ## Application Deployment
-To deploy the backend of the application run the following command from the `/infra` folder. You need to use values output by `terraform apply` for this step.
+To deploy the backend of the application run the following command from the `/infra` folder. You need to use values output by `terraform apply` (`region` and `cloud_run_backend_sa`, both without quotes and removing `<` and `>`) for this step.
 
-TODO: make this less unpleasant to do with the values output by terraform apply.
-
-TODO: change to use an SA besides the compute engine default and grant it the necessary permissions. 
 ```
-sh scripts/backend_deployment.sh --project $(gcloud config get project) --region <your_region> --sa <cloud_run_backend_sa>
+sh scripts/backend_deployment.sh --project $(gcloud config get project) --region <region> --sa <cloud_run_backend_sa>
 ```
-
 In a fresh project, you'll be asked to create an Artifact Registry Docker repoitory. Enter `Y` to confirm.
 
-Then to deploy the frontent you need to execute:
+Then to deploy the frontent you need to execute from the `/infra` folder:
 ```
 sh scripts/frontend_deployment.sh --project $(gcloud config get project)
 ```
 
 ## Review Your Enviroment
-Once deployment is completed terraform will output relevants resoruces values.
+
+TODO: review this section and determine if it's deployment or other information that belongs elsewhere in the README.
+
+Once deployment is completed Terraform will output relevant resoruces values.
 
 Resulting example outputs:
 ```sh
@@ -162,8 +163,6 @@ This deployment creates all the resources described in the main [README.md](../R
 - [Cloud Run](https://console.cloud.google.com/run) for backend APIs
 - Firebase for frontend deployment
 
-### Configuration Files
-This deployment uses the templates in the [templates/](templates/) diractory to replace all necessary configuration values for the application. After the deployment is complete, you can review the resulting values in the config.toml and enviroments.ts files.
 
 ## Known Issues
 
