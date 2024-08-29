@@ -116,14 +116,6 @@ resource "local_file" "config_toml" {
   filename = "${path.module}/output_config/config.toml"
 }
 
-resource "local_file" "dockerfile" {
-  content = templatefile("${path.module}/templates/Dockerfile.tftpl", {
-    project_id = var.project_id
-    }
-  )
-  filename = "${path.module}/output_config/Dockerfile"
-}
-
 resource "local_file" "enviroments_ts" {
   content = templatefile("${path.module}/templates/environments.ts.tftpl", {
     run_service_url        = google_cloud_run_service.backend.status[0].url,

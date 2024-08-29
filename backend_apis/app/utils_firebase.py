@@ -23,6 +23,7 @@ import os
 from .body_schema import Campaign, CampaignList
 import json
 import tomllib
+import google.auth
 import google.oauth2.id_token
 import google.auth.transport.requests
 
@@ -44,8 +45,9 @@ def to_serializable(val):
 
 def verify_auth_token(id_token):
     # Verify Firebase auth.
+    _, project_id = google.auth.default()
     claims = google.oauth2.id_token.verify_firebase_token(
-        id_token, HTTP_REQUEST, audience=os.environ.get("GOOGLE_CLOUD_PROJECT")
+        id_token, HTTP_REQUEST, audience=project_id
     )
     if not claims:
         return "000"
