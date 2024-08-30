@@ -55,8 +55,6 @@ done
 main(){
     echo "Copying config.toml file"
     cp output_config/config.toml ../backend_apis/app
-    echo "Copying Docker file"
-    cp output_config/Dockerfile ../backend_apis/
     cd ../backend_apis
     echo "Deploying backend to cloud run"
     gcloud run deploy genai-for-marketing-backend-apis --source . --project="$project" --region="$region" --service-account="$sa" --allow-unauthenticated
