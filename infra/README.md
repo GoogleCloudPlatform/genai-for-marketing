@@ -126,7 +126,7 @@ Next, we'll incorporate Google Drive details into this file. **Use your preferre
 1. Save the file. (In nano, **Ctrl+x**, then **Y**, then Enter) 
 
 
-## Application Deployment
+### Backend Deployment
 To deploy the backend of the application run the following command from the `/infra` folder. You need to use values output by `terraform apply` (`region` and `cloud_run_backend_sa`, both without quotes and removing `<` and `>`) for this step.
 
 ```
@@ -134,7 +134,12 @@ sh scripts/backend_deployment.sh --project $(gcloud config get project) --region
 ```
 In a fresh project, you'll be asked to create an Artifact Registry Docker repoitory. Enter `Y` to confirm.
 
-Then to deploy the frontent you need to execute from the `/infra` folder:
+### Frontend Deployment 
+
+TODO: explain this better, need more complete instructions.
+
+
+Then to deploy the frontend you need to execute from the `/infra` folder:
 ```
 sh scripts/frontend_deployment.sh --project $(gcloud config get project)
 ```
