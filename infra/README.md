@@ -67,7 +67,6 @@ terraform apply -var=project_id=$(gcloud config get project)
 When `terraform apply` completes successfully, you'll see a message `Apply complete!` along with outputs specifying config values. Save this output somewhere, you'll need these values later.
 
 ### Terraform Variables
-TODO: explain this better.
 
 You can change any of the default variables values in [variables.tf](variables.tf).
 
@@ -136,8 +135,6 @@ In a fresh project, you'll be asked to create an Artifact Registry Docker repoit
 
 ### Frontend Deployment 
 
-TODO: explain this better, need more complete instructions.
-
 
 Then to deploy the frontend you need to execute from the `/infra` folder:
 ```
@@ -145,8 +142,6 @@ sh scripts/frontend_deployment.sh --project $(gcloud config get project)
 ```
 
 ## Review Your Enviroment
-
-TODO: review this section and determine if it's deployment or other information that belongs elsewhere in the README.
 
 Once deployment is completed Terraform will output relevant resoruces values.
 
@@ -179,7 +174,6 @@ Note that some of the workarounds require modifying [organization policies](http
 
 #### `Error creating service account key`
 
-TODO: also look into enable/disable of disableServiceAccountCreation (not Key) constraints/iam.disableServiceAccountCreation
 ```
 Error creating service account key: googleapi: Error 400: Key creation is not allowed on this service account. 
 ```
