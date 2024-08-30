@@ -33,10 +33,6 @@ module "genai_run_service_account" {
   depends_on = [module.project_services]
 }
 
-resource "google_service_account_key" "sa_key" {
-  service_account_id = module.genai_run_service_account.service_account.name
-}
-
 # IAM Binding to ensure build service account have the requireds roles to build the backend_api
 
 data "google_project" "project" {

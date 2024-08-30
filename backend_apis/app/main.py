@@ -34,7 +34,7 @@ from google.cloud import datacatalog_v1
 from google.cloud import discoveryengine
 from google.cloud import translate_v2 as translate
 from google.cloud import texttospeech
-from google.oauth2 import service_account
+import google.auth
 from proto import Message
 
 import vertexai
@@ -46,7 +46,7 @@ from vertexai.language_models import TextGenerationModel as bison_ga
 from vertexai.preview.vision_models import ImageGenerationModel
 from vertexai.vision_models import Image
 
-from google.cloud import secretmanager
+import google.auth
 import json
 import base64
 
@@ -123,21 +123,6 @@ texttospeech_client = texttospeech.TextToSpeechLongAudioSynthesizeClient()
 # Image models
 imagen = ImageGenerationModel.from_pretrained("imagegeneration@002")
 
-# Workspace integration
-# Fetch Secret Configuration
-secret_client = secretmanager.SecretManagerServiceClient()
-secret_name = config['global']['secret_name_workspace']
-secret_response = secret_client.access_secret_version(name=secret_name)
-workspace_cred = secret_response.payload.data.decode("UTF-8")
-workspace_cred = json.loads(workspace_cred)
-CREDENTIALS = service_account.Credentials.from_service_account_info(
-    info=workspace_cred, 
-    scopes=config["global"]["workspace_scopes"])
-# drive_service = build('drive', 'v3', credentials=CREDENTIALS)
-# docs_service = build('docs', 'v1', credentials=CREDENTIALS)
-# sheets_service = build('sheets', 'v4', credentials=CREDENTIALS)
-# slides_service = build('slides', 'v1', credentials=CREDENTIALS)
-
 drive_folder_id = config["global"]["drive_folder_id"]
 slides_template_id = config["global"]["slides_template_id"]
 doc_template_id = config["global"]["doc_template_id"]
@@ -162,9 +147,11 @@ DESCRIPTION_PROMPT_TEMPLATE = config["prompts"]["description_prompt_template"]
 router = APIRouter(prefix="/marketing-api")
 app = FastAPI(docs_url="/marketing-api/docs")
 
+_, project_id = google.auth.default()
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[f"https://{project_id}.web.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -679,7 +666,6 @@ def post_upload_file_drive(folder_id: str,file: UploadFile):
     
     try:
         file_id = utils_workspace.upload_to_folder(
-            credentials = CREDENTIALS,
             f=file.file,
             folder_id=folder_id,
             upload_name=file.filename,
@@ -734,23 +720,19 @@ def post_brief_create_upload(data: BriefCreateRequest) -> BriefCreateResponse:
     try:
         print("Creating document Assets..")
         new_folder_id = utils_workspace.create_folder_in_folder(
-            credentials = CREDENTIALS,
             folder_name=f"Marketing_Assets_{int(time.time())}",
             parent_folder_id=drive_folder_id)
         
         utils_workspace.set_permission(
-            credentials = CREDENTIALS,
             file_id=new_folder_id,
             domain=domain)
 
         doc_id = utils_workspace.copy_drive_file(
-            credentials = CREDENTIALS,
             drive_file_id=doc_template_id,
             parentFolderId=new_folder_id,
             copy_title=f"GenAI Marketing Brief")
 
         utils_workspace.update_doc(
-            credentials = CREDENTIALS,
             document_id=doc_id,
             campaign_name=data.campaign_name,
             business_name=data.business_name,
@@ -783,20 +765,17 @@ def post_create_slides_upload(data: SlidesCreateRequest
 
     try:
         slide_id = utils_workspace.copy_drive_file(
-            credentials = CREDENTIALS,
             drive_file_id=slides_template_id,
             parentFolderId=data.folder_id,
             copy_title="Marketing Assets")
         
         sheet_id = utils_workspace.copy_drive_file(
-            credentials = CREDENTIALS,
             drive_file_id=sheet_template_id,
             parentFolderId=data.folder_id,
             copy_title="GenAI Marketing Data Source")
         print(sheet_id)     
 
         utils_workspace.merge_slides(
-            credentials = CREDENTIALS,
             presentation_id=slide_id,
             spreadsheet_id=sheet_id,
             spreadsheet_template_id=sheet_template_id,
@@ -989,7 +968,7 @@ def post_export_google_doc(data:ExportGoogleDocRequest) -> ExportGoogleDocRespon
     """
     
     try:
-        file_id = utils_workspace.create_doc(credentials = CREDENTIALS,
+        file_id = utils_workspace.create_doc(
                                              folder_id=data.folder_id,
                                              doc_name=data.doc_name,
                                              text=data.text)
@@ -998,7 +977,7 @@ def post_export_google_doc(data:ExportGoogleDocRequest) -> ExportGoogleDocRespon
             file = utils_gcs.download_from_gcs(project_id=project_id,
                                                bucket_name=bucket_name,
                                                source_blob_name='/'.join(img.split('/')[1:]))
-            utils_workspace.upload_to_folder(credentials= CREDENTIALS,
+            utils_workspace.upload_to_folder(
                                              f=file,
                                              folder_id=data.folder_id,
                                              upload_name=str(data.image_prefix)+"_"+str(i),

@@ -31,4 +31,5 @@ google-cloud-translate
 google-cloud-storage
 google-cloud-texttospeech
 google-auth
+google-auth-oauthlib>=0.4.1
 lxml[html_clean]
