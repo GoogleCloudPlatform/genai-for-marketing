@@ -67,7 +67,6 @@ terraform apply -var=project_id=$(gcloud config get project)
 When `terraform apply` completes successfully, you'll see a message `Apply complete!` along with outputs specifying config values. Save this output somewhere, you'll need these values later.
 
 ### Terraform Variables
-TODO: explain this better.
 
 You can change any of the default variables values in [variables.tf](variables.tf).
 
@@ -126,7 +125,7 @@ Next, we'll incorporate Google Drive details into this file. **Use your preferre
 1. Save the file. (In nano, **Ctrl+x**, then **Y**, then Enter) 
 
 
-## Application Deployment
+### Backend Deployment
 To deploy the backend of the application run the following command from the `/infra` folder. You need to use values output by `terraform apply` (`region` and `cloud_run_backend_sa`, both without quotes and removing `<` and `>`) for this step.
 
 ```
@@ -134,14 +133,15 @@ sh scripts/backend_deployment.sh --project $(gcloud config get project) --region
 ```
 In a fresh project, you'll be asked to create an Artifact Registry Docker repoitory. Enter `Y` to confirm.
 
-Then to deploy the frontent you need to execute from the `/infra` folder:
+### Frontend Deployment 
+
+
+Then to deploy the frontend you need to execute from the `/infra` folder:
 ```
 sh scripts/frontend_deployment.sh --project $(gcloud config get project)
 ```
 
 ## Review Your Enviroment
-
-TODO: review this section and determine if it's deployment or other information that belongs elsewhere in the README.
 
 Once deployment is completed Terraform will output relevant resoruces values.
 
@@ -174,7 +174,6 @@ Note that some of the workarounds require modifying [organization policies](http
 
 #### `Error creating service account key`
 
-TODO: also look into enable/disable of disableServiceAccountCreation (not Key) constraints/iam.disableServiceAccountCreation
 ```
 Error creating service account key: googleapi: Error 400: Key creation is not allowed on this service account. 
 ```
