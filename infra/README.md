@@ -200,13 +200,24 @@ Error setting IAM policy for cloudrun service: googleapi: Error 400: One or more
 ```
 
 **Resolution**: Disable the iam.allowedPolicyMemberDomains organizational policy in your project.
-```
-TODO: provide command
-```
 
+First, you need to create a policy file, replace the `<your_project_number>` with your project number:
+```yaml
+# policy.yaml
+name: projects/<your_project_number>/policies/iam.allowedPolicyMemberDomains
+spec:
+  rules:
+  -  allowAll: true
+  inheritFromParent: true
+```
+and then apply the policy:
+```
+gcloud org-policies set-policy policy.yaml
+```
 After this run the `terraform apply` command again. Once the error is resolved, you should reenable this organization policy:
 ```
-TODO: provide command
+gcloud resource-manager org-policies delete constraints/iam.allowedPolicyMemberDomains --project $(gcloud config get project)
+
 ```
 
 #### `Error creating Database`
