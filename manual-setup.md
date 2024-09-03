@@ -138,7 +138,7 @@ Next you will create a Generative AI Agent that will assist the users to answer 
 - Enable [Dialogflow Messenger integration](https://cloud.google.com/dialogflow/cx/docs/concept/integration/dialogflow-messenger) and copy the `agent-id` from the HTML code snippet provided by the platform.  
   - The HTML code snippet looks like this: 
   ![HTML Code](/app/images/dialogflow-integration.png "HTML Code")  
-- Open the [HTML file - line 117](/frontend/src/environments/environments.ts#L3) and replace the variable `dialogFlowCxAgendId` with the `agent-id`.  
+- Open the [HTML file - line 117](/frontend/src/environments/environments.ts#L3) and replace the variable `dialogflowCxAgentId` with the `agent-id`.  
 
 
 ### 10- Workspace integration

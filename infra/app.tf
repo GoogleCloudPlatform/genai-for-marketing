@@ -111,7 +111,7 @@ resource "local_file" "enviroments_ts" {
     fb_messaging_sender_id = lookup(data.google_firebase_web_app_config.app_front, "messaging_sender_id", ""),
     fb_api_id              = google_firebase_web_app.app_front.app_id,
     fb_measurement_id      = lookup(data.google_firebase_web_app_config.app_front, "measurement_id", ""),
-    dialogflow_cx_agent_id = google_discovery_engine_chat_engine.chat_app.chat_engine_metadata[0].dialogflow_agent
+    dialogflow_cx_agent_id = reverse(split("/",google_discovery_engine_chat_engine.chat_app.chat_engine_metadata[0].dialogflow_agent))[0]
     }
   )
   filename = "${path.module}/output_config/environments.ts"
