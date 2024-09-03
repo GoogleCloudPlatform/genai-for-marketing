@@ -9,6 +9,8 @@ These instructions have been tested as run by a Google Cloud user with the [Owne
 
 In certain Google Cloud Organizations, organization policies may block installation steps. The [Known Issues](#known-issues) section provides help changing these policies, which requires the [Organization Administrator Role](https://cloud.google.com/resource-manager/docs/access-control-org#using_predefined_roles).
 
+Make sure you have sufficient free space in your terminal environment before you begin installation--4GB is recommended. Having insufficient free space can cause installation steps to fail in a state that makes recovery especially difficult. This is especially important when installing the frontend, which requires a large number of npm packages.
+
 ## Step 0 - Prerequisites:
 
 Before executing Terraform, follow these steps to enable some services:
@@ -51,6 +53,8 @@ Generative AI for Marketing requires your organization has Workspace set up and 
 1. In [Cloud Shell](https://cloud.google.com/shell/docs/using-cloud-shell) navigate to the git repo root.
 
 1. Run `gcloud config set project YOUR_PROJECT_ID` to ensure you're installing into the expected project.
+
+1. Enable the Cloud Resource Manager API: https://console.developers.google.com/apis/api/cloudresourcemanager.googleapis.com/overview . Note you may get a Terraform Error asking you to install this API, if that happens just wait a few minutes and retry.
 
 1. In the cloned project root, run the following to start the Terraform deployment:
 ```sh
@@ -190,7 +194,7 @@ After the service account is successfully created, you should consider reenablin
 gcloud resource-manager org-policies enable-enforce constraints/iam.disableServiceAccountKeyCreation --project $(gcloud config get project)
 ```
 
-#### `Error applying IAM policy for cloud service`
+#### `Error setting IAM policy for cloud service`
 ```
 Error setting IAM policy for cloudrun service: googleapi: Error 400: One or more users named in the policy do not belong to a permitted customer, perhaps due to an organization policy.
 ```
