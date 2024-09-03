@@ -9,6 +9,8 @@ These instructions have been tested as run by a Google Cloud user with the [Owne
 
 In certain Google Cloud Organizations, organization policies may block installation steps. The [Known Issues](#known-issues) section provides help changing these policies, which requires the [Organization Administrator Role](https://cloud.google.com/resource-manager/docs/access-control-org#using_predefined_roles).
 
+Make sure you have sufficient free space in your terminal environment before you begin installation--4GB is recommended. Having insufficient free space can cause installation steps to fail in a state that makes recovery especially difficult. This is especially important when installing the frontend, which requires a large number of npm packages.
+
 ## Step 0 - Prerequisites:
 
 Before executing Terraform, follow these steps to enable some services:
@@ -52,6 +54,8 @@ Generative AI for Marketing requires your organization has Workspace set up and 
 
 1. Run `gcloud config set project YOUR_PROJECT_ID` to ensure you're installing into the expected project.
 
+1. Enable the Cloud Resource Manager API: https://console.developers.google.com/apis/api/cloudresourcemanager.googleapis.com/overview . Note you may get a Terraform Error asking you to install this API, if that happens just wait a few minutes and retry.
+
 1. In the cloned project root, run the following to start the Terraform deployment:
 ```sh
 # Move to the infra folder.
@@ -86,7 +90,7 @@ After the Terraform deployment successfully completes, enable at least one authe
 Generative AI for Marketing Uses Google Drive to store created marketing materials. This step creates a Google Drive folder, populates it with templates for the marketing materials, and then returns Google Drive IDs for these templates (you'll need these later). You'll then give the Generative AI for Marketing application access to the Google Drive folder.
 
 ### Create Folder and Upload Files
-Execute the following script from the `infra` subfolder, substituting `<cloud_run_backend_sa>` for the value output by `terraform apply` (without quotes) in step 1.
+Execute the following script from the `infra` subfolder, substituting `<cloud_run_backend_sa>` for the `cloud_run_backend_sa` value output by `terraform apply` (without quotes) in step 1.
 
 
 ```
@@ -101,7 +105,7 @@ In most Workspace setups, the Generative AI for Marketing application needs to b
 2. Find the folder created in the previous step (default is genai-marketing-assets).
 3. Click on the three dots menu at the far right of the row with the folder.
 4. Highlight "Share" in the menu that pops up, then click "Share" in the submenu.
-5. In the "Add people, groups, and calendar events" field, enter the email address of the service account (`cloud_run_backend_sa`) that was provided as output from the Terraform configuration.
+5. In the "Add people, groups, and calendar events" field, enter the email address of the service account (`cloud_run_backend_sa`) that was provided as output from the `terraform apply`.
 6. Set the permissions for the service account to "Editor".
 4. Clock "Send" to share the folder and grant permissions. If a popup appears asking for confirmation, click "Share anyway".
 
@@ -141,20 +145,18 @@ Then to deploy the frontend you need to execute from the `/infra` folder:
 sh scripts/frontend_deployment.sh --project $(gcloud config get project)
 ```
 
-## Review Your Enviroment
+Once this script completes, Generative AI for Marketing is Deployed!
 
-Once deployment is completed Terraform will output relevant resoruces values.
+## Wrapping Up
 
-Resulting example outputs:
-```sh
-backend_deployment = "https://genai-for-marketing-xxxxxxxx.a.run.app"
-backend_service_account = "genai-marketing-run@your-project-id.iam.gserviceaccount.com"
-frontend_deployment = "https://your-project-id.web.app"
-```
-You can use the app by accessing to the frontend_deployment URL.
+### Review Your Enviroment
+
+When frontend deployment is complete, the 'Hosting URL' printed in the terminal is your link to the UI. You can also see this value in the `frontend_deployment` value output by `terraform apply`. 
+
+The backend is located at the address in the `backend_deployment` value in the `terraform apply` output. It should look something like "https://genai-for-marketing-xxxxxxxx.a.run.app". If you append `/marketing-api/docs` (i.e., "https://genai-for-marketing-xxxxxxxx.a.run.app/marketing-api-docs") to this URL you can access the FastAPI interface for exploring the backend APIs. 
 
 ### Deployed Resources
-This deployment creates all the resources described in the main [README.md](../README.md) file, the following is a list of the created resources:
+The deployment creates all the resources described in the main [README.md](../README.md) file, the following is a list of the created resources:
 - Required Google Cloud services
 - [BiqQuery](https://console.cloud.google.com/bigquery) Dataset and tables (populating tables with sample data)
 - Google Drive folder and templates files
@@ -190,7 +192,7 @@ After the service account is successfully created, you should consider reenablin
 gcloud resource-manager org-policies enable-enforce constraints/iam.disableServiceAccountKeyCreation --project $(gcloud config get project)
 ```
 
-#### `Error applying IAM policy for cloud service`
+#### `Error setting IAM policy for cloud service`
 ```
 Error setting IAM policy for cloudrun service: googleapi: Error 400: One or more users named in the policy do not belong to a permitted customer, perhaps due to an organization policy.
 ```
@@ -208,9 +210,9 @@ spec:
 ```
 and then apply the policy:
 ```
-gcloud org-policies set-policy policy.yaml
+`gcloud org-policies set-policy policy.yaml`
 ```
-After this run the `terraform apply` command again. Once the error is resolved, you should reenable this organization policy:
+After this run the `terraform apply` command again. It may take a few minutes for the policy change to take effect, if you keep getting errors wait a few minutes and retry. Once the error is resolved, you should reenable this organization policy:
 ```
 gcloud resource-manager org-policies delete constraints/iam.allowedPolicyMemberDomains --project $(gcloud config get project)
 
