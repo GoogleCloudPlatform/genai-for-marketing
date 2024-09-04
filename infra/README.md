@@ -128,6 +128,13 @@ Next, we'll incorporate Google Drive details into this file. **Use your preferre
    - `sheet_gdrive_id`   ->  `sheet_template_id`
 1. Save the file. (In nano, **Ctrl+x**, then **Y**, then Enter) 
 
+### Vertex AI Agent Builder Datastores
+This automated process will generate all resources to enable the Vertex AI Search service and a Dialogflow CX Agent.
+
+For this 2 datastore are created, two manual steps are required to complete the setup process.
+
+1. Domain verification: go to [Agent Builder Datastores](https://console.cloud.google.com/gen-app-builder/data-stores) and follow these instructions to validate the domain to enable Search Advanced features using  [Verify website domains](https://cloud.google.com/generative-ai-app-builder/docs/domain-verification) process.
+2. Add Datastore to Dialogflow CX: once verified you are able to use Advanced features, you need to configure your datastore using the following [Data store agents](https://cloud.google.com/dialogflow/vertex/docs/concept/data-store-agent) within the Start Page in your [Dialogflow CX agent](https://dialogflow.cloud.google.com/cx)
 
 ### Backend Deployment
 To deploy the backend of the application run the following command from the `/infra` folder. You need to use values output by `terraform apply` (`region` and `cloud_run_backend_sa`, both without quotes and removing `<` and `>`) for this step.
