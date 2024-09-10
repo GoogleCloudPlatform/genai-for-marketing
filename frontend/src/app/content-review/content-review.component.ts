@@ -72,6 +72,7 @@ export class ContentReviewComponent {
   activeETranslatedButton: boolean = false
   bulkEmailImageContent: string = '';
   bulkEmailLanguage: any;
+  googleSlidesSpinner: boolean = false;
 
   constructor(public loginService: LoginService, public audiencesSerive: AudiencesService, public snackBar: MatSnackBar,
     public emailService: EmailCopyService, public contentReview: ContentReviewService,
@@ -217,9 +218,18 @@ export class ContentReviewComponent {
     let obj = {
       "folder_id": this.folderId,
     }
-    this.contentReview.exportToGoogleSlides(obj).subscribe((res: any) => {
-      this.showSnackbar("Google Slides Exported Successfully", 'Close', '2000')
-    });
+    this.contentReview.exportToGoogleSlides(obj).subscribe( {
+        next: (res: any) => {
+          this.googleSlidesSpinner = false;
+          this.showSnackbar("Google Slides Exported Successfully", 'Close', '2000')
+        },
+        error: (error: any) => {
+          this.googleSlidesSpinner = false;
+          throw error;
+        },
+        complete: () => {
+        }
+      });
   }
   onClickActive(key: any) {
     let obj = {
