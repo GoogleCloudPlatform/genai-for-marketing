@@ -214,7 +214,7 @@ export class ContentReviewComponent {
     });
   }
   exportToGoogleSlides() {
-
+    this.googleSlidesSpinner = true;
     let obj = {
       "folder_id": this.folderId,
     }
