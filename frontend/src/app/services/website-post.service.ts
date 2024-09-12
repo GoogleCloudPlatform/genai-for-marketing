@@ -91,7 +91,7 @@ export class WebsitePostService {
     let options = {
       headers: head
     }
-    return this.http.post(`https://gemini-mkt-apis-42fk6qqj5a-uc.a.run.app/marketing-api/texttospeech`, query, options)
+    return this.http.post(`${environment.apiUrl}/texttospeech`, query, options)
       .pipe(catchError(this.handleError));
 
   }
