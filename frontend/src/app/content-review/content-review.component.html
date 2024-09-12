@@ -26,10 +26,11 @@
                     <span>Review</span>
                     <span style="margin-left:866px;">Activation</span>
                 </div> -->
-                <div *ngIf="selectedCampaign">
+                <div *ngIf="selectedCampaign" class="d-flex gap-2 align-items-center mt-3">
                     <button class="googleSlidesBtn" (click)="exportToGoogleSlides()">
                         Export to Google Slides
                     </button>
+                    <mat-spinner diameter='30' *ngIf="googleSlidesSpinner"></mat-spinner>
                 </div>
                 <div *ngIf="showExportFileLink">
                     <p style="font-family: 'Google Sans';font-size: 14px; margin-top:10px">
