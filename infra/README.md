@@ -139,9 +139,9 @@ The automated deployment process created all resources to enable the use of Vert
 
     1.  **GCS Bucket Creation:** Create a GCS bucket if you don't have one already. The following steps create a GCS bucket with uniform level access. Change the value of `BUCKET_LOCATION` otherwise it will be deployed to `us-central1`. 
 
-        ```
+        ```bash
         export PROJECT_ID=$(gcloud config get project)
-        export BUCKET_NAME="$PROJECT_ID-marketing-data"
+        export BUCKET_NAME="$PROJECT_ID-vais-unstructured-data"
         export BUCKET_LOCATION="us-central1"
         export STORAGE_CLASS="STANDARD"
 
@@ -150,7 +150,8 @@ The automated deployment process created all resources to enable the use of Vert
 
         ```
     
-    1.  **Copying Data:** We need to copy over some PDFs - Alphabet Earnings Reports from 2004 to 2023 -  into the newly created bucket using `gsutil`. If you don't have `gsutil`, please follow instructions [here](https://cloud.google.com/storage/docs/gsutil_install), if you need to install `gsutil`.   
+    1.  **Copying Data:** We need to copy over some PDFs - Alphabet Earnings Reports from 2004 to 2023 -  into the newly created bucket using `gsutil`.  
+    
 
         ```
         gsutil -m cp -r "gs://cloud-samples-data-us-central1/gen-app-builder/search/alphabet-investor-pdfs" "gs://$BUCKET_NAME/data" 
