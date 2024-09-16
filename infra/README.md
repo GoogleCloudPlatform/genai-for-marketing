@@ -128,13 +128,50 @@ Next, we'll incorporate Google Drive details into this file. **Use your preferre
    - `sheet_gdrive_id`   ->  `sheet_template_id`
 1. Save the file. (In nano, **Ctrl+x**, then **Y**, then Enter) 
 
-### Vertex AI Agent Builder Datastores
-This automated process will generate all resources to enable the Vertex AI Search service and a Dialogflow CX Agent.
+### Vertex AI Agent Builder Datastores. 
+The automated deployment process created all resources to enable the use of Vertex AI Search service with a Dialogflow CX Agent. However, additional steps are required to complete the process of providing the chat agent with data to use on the Frontend: 
 
-For this 2 datastore are created, two manual steps are required to complete the setup process.
+1. **Indexing Data:** Two data stores were created during the automation deployment; `Website` type for indexing information from your already existing website (if applicable) and `Unstructured data` type for indexing information from files like PDFs into Google Cloud Storage (GCS), this is what we'll be doing.  To learn more about Agent Builder data stores, see [here](https://console.cloud.google.com/gen-app-builder/data-stores). 
 
-1. Domain verification: go to [Agent Builder Datastores](https://console.cloud.google.com/gen-app-builder/data-stores) and follow these instructions to validate the domain to enable Search Advanced features using  [Verify website domains](https://cloud.google.com/generative-ai-app-builder/docs/domain-verification) process.
-2. Add Datastore to Dialogflow CX: once verified you are able to use Advanced features, you need to configure your datastore using the following [Data store agents](https://cloud.google.com/dialogflow/vertex/docs/concept/data-store-agent) within the Start Page in your [Dialogflow CX agent](https://dialogflow.cloud.google.com/cx)
+    > **IMPORTANT:** Indexing data from a website requires domain verification of your website in order to use the advanced features. Domain verification is **out of scope for this demo** but you can find the steps [here](https://cloud.google.com/generative-ai-app-builder/docs/domain-verification).   
+    
+   Follow steps below:
+
+    1.  **GCS Bucket Creation:** Create a GCS bucket if you don't have one already. The following steps create a GCS bucket with uniform level access. Change the value of `BUCKET_LOCATION` otherwise it will be deployed to `us-central1`. 
+
+        ```
+        export PROJECT_ID=$(gcloud config get project)
+        export BUCKET_NAME="$PROJECT_ID-marketing-data"
+        export BUCKET_LOCATION="us-central1"
+        export STORAGE_CLASS="STANDARD"
+
+        gcloud config set project $PROJECT_ID
+        gcloud storage buckets create gs://$BUCKET_NAME --project=$PROJECT_ID --default-storage-class=$STORAGE_CLASS --location=$BUCKET_LOCATION --uniform-bucket-level-access
+
+        ```
+    
+    1.  **Copying Data:** We need to copy over some PDFs - Alphabet Earnings Reports from 2004 to 2023 -  into the newly created bucket using `gsutil`. If you don't have `gsutil`, please follow instructions [here](https://cloud.google.com/storage/docs/gsutil_install), if you need to install `gsutil`.   
+
+        ```
+        gsutil -m cp -r "gs://cloud-samples-data-us-central1/gen-app-builder/search/alphabet-investor-pdfs" "gs://$BUCKET_NAME/data" 
+        ```  
+
+        You can also download the folder manually and upload it to your storage account.     
+    
+    1.  **Indexing Data Store:** Follow instructions [here](https://cloud.google.com/dialogflow/vertex/docs/concept/data-store#cloud-storage) to index the data store with the PDF documents we just copied over. 
+
+2. **Add Datastore to Dialogflow CX:** Once the pdf documents are copied over to your GCS bucket and indexed, you need to connect Dialogflow CX agent to your data store. Follow the steps below to do that.  
+    - **Connect Agent to Data:** Go to your [Dialogflow CX agent](https://dialogflow.cloud.google.com/cx) and click on **Build > Default Start Flow > Start Page**.   
+    - Under **Data stores**, click on **Edit Data Store** and select your indexed data store from the drop down of type: **Unstructured documents**.  
+    - Click **Save**. 
+    - **Test your agent**, from Dialogflow CX UI, to make sure it responds with the right data. Otherwise, ensure you followed all steps above.  
+
+3. **Publish Agent:** In order to access your chat agent from the GAIM Frontend, you will need to publish it. Follow steps below:  
+    - Click on **Publish**.
+    - Under **Access**, ensure `Unauthenticated API (anonymous access)` is checked  
+    - Set your UI style  as **Side Panel**.
+    - Finally, click on **Enable the Unauthenticated API**. This will generate some HTML code that can be added to your website to display your agent. You can ignore this as the provided Frontend already has the Chat UI done for you.  
+    - Now, click **Done** and exit.
 
 ### Backend Deployment
 To deploy the backend of the application run the following command from the `/infra` folder. You need to use values output by `terraform apply` (`region` and `cloud_run_backend_sa`, both without quotes and removing `<` and `>`) for this step.
