@@ -70,12 +70,6 @@ terraform apply -var=project_id=$(gcloud config get project)
 
 When `terraform apply` completes successfully, you'll see a message `Apply complete!` along with outputs specifying config values. Save this output somewhere, you'll need these values later.
 
-### Terraform Variables
-
-You can change any of the default variables values in [variables.tf](variables.tf).
-
-This terraform will generate all configurations files required in the frontend and backend_apis you need to change [variables.tf](variables.tf) values in order to change configuration if needed.
-
 ## Step 2 - Firebase Auth Provider
 
 After the Terraform deployment successfully completes, enable at least one authentication provider in Firebase. You can enable it using the following steps:
