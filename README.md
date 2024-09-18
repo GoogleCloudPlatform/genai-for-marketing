@@ -57,11 +57,28 @@ The following additional (external) notebooks provide supplementary information 
 - [Vertex AI Search - Document Search](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/search/retrieval-augmented-generation): This demo illustrates how Vertex AI Search and the Vertex AI PaLM API help ensure that generated content is grounded in validated, relevant and up-to-date information.
 - [Getting Started with LangChain and Vertex AI PaLM API](https://github.com/GoogleCloudPlatform/generative-ai/blob/main/language/orchestration/langchain/intro_langchain_palm_api.ipynb): Use LangChain and Vertex AI PaLM API to generate text.
 
-## Config.toml
 
-The configuration file acts as a control center for a marketing content generation, providing the necessary settings, prompts, and data to automate the creation of personalized and brand-consistent marketing materials.  
+## Configuration
 
-The following are the key sections and their functions:
+Some of the behavior of Generative AI for Marketing can be changed by adjusting configuration.
+
+### Pre-Deployment Configuration
+
+When deploying Generative AI for Marketing, various settings for the deployment are pulled from the [`infra/variables.tf`](infra/variables.tf) file. 
+
+If your deployment needs do not match the default Generative AI for Marketing deployment, some of your deployment needs might be met by adjusting the defaults in `variables.tf` prior to beginning deployment.
+
+Make changes to `variables.tf` prior to running `terraform init`, making changes afterwards may result in unexpected behavior including irrecoverable deployment failures.
+
+### Config.toml
+
+When deploying, after `terraform apply` completes successfully, there will be a file called `config.toml` in [`backend_apis/app`](/backend_apis/app). `config.toml` is generated from [`infra/templates/config.toml.tftpl`](infra/templates/config.toml.tftpl).
+
+`config.toml`  acts as a control center for a marketing content generation, providing the necessary settings, prompts, and data to automate the creation of personalized and brand-consistent marketing materials.
+
+You can adjust some of the values in `config.toml` to change the behavior of your deployment. If you adjust the values in `config.toml`, rerun the backend deployment ([`infra/scripts/backend_deployment.sh`](infra/scripts/backend_deployment.sh)) to push the updated config to the backend.
+
+The following are the key sections of `config.toml` and their functions:
 
 #### **Global:**
 
