@@ -1,14 +1,34 @@
-# Generative AI for Marketing using Google Cloud
+# Generative AI for Marketing Using Google Cloud
 
-This repository provides a deployment guide showcasing the application of Google Cloud's Generative AI for marketing scenarios. It offers detailed, step-by-step guidance for setting up and utilizing the Generative AI tools, including examples of their use in crafting marketing materials like blog posts and social media content.
+**Resources enabling generative AI-powered marketing use cases on Google Cloud.**
 
-Additionally, supplementary Jupyter notebooks are provided to aid users in grasping the concepts explored in the demonstration.
+This repository showcases the application of Google Cloud's Generative AI to marketing scenarios. It contains detailed, step-by-step instructions to [TODO LINK]() deploy a solution implementing marketing-centric Generative AI capabilities, including capabilities to craft marketing materials like blog posts and social media content.
 
-The architecture of all the demos that are implemented in this application is as follows.    
+The architecture of the deployed solution:
 ![Architecture](/app/images/architecture.png "Architecture")
 
+Additionally, supplementary [TODO LINK] () Jupyter notebooks are provided to aid users in grasping the concepts explored in the solution.
 
-## Repository structure
+## Table of Contents
+
+- [Generative AI for Marketing Using Google Cloud](#generative-ai-for-marketing-using-google-cloud)
+  - [Table of Contents](#table-of-contents)
+  - [Repository Structure](#repository-structure)
+  - [Demonstrations](#demonstrations)
+  - [Deployment](#deployment)
+  - [Notebooks and Code Samples](#notebooks-and-code-samples)
+  - [Configuration](#configuration)
+    - [Pre-Deployment Configuration](#pre-deployment-configuration)
+    - [Config.toml](#configtoml)
+      - [**Global:**](#global)
+      - [**Prompts:**](#prompts)
+      - [**Models:**](#models)
+      - [**Data Sample:**](#data-sample)
+  - [Getting Help](#getting-help)
+
+
+
+## Repository Structure
 
 ```
 .
@@ -20,33 +40,38 @@ The architecture of all the demos that are implemented in this application is as
 └── infra
 ```
 
-- [`/app`](/app): Architecture diagrams.  
+- [`/app`](/app): Architecture diagrams and images.
 - [`/backend_apis`](/backend_apis): Source code for backend APIs.  
-- [`/frontend`](/frontend): Source code for the front end UI.  
-- [`/notebooks`](/notebooks): Sample notebooks demonstrating the concepts covered in this demonstration.  
-- [`/templates`](/templates): Workspace Slides, Docs and Sheets templates used in the demonstration.  
-- [`/infra`](/infra): Infrastructure deployment.
-
+- [`/frontend`](/frontend): Source code for the frontend UI.  
+- [`/infra`](/infra): Scripts and configuration for deploying the solution.
+- [`/notebooks`](/notebooks): Notebooks demonstrating and explaining how to use Google Cloud's Generative AI for marketing scenarios, including scenarios included in the solution.
+- [`/templates`](/templates): Workspace Slides, Docs and Sheets templates used in the solution.  
 
 ## Demonstrations
 
-In this repository, the following demonstrations are provided:  
+The deployed solution supports the following demonstrations:
 
-* **Marketing Insights**: Utilize Looker Dashboards to access and visualize marketing data, powered by Looker dashboards, marketers can access and visualize marketing data to build data driven marketing campaigns. These features can empower businesses to connect with their target audience more efficiently, thereby improving conversion rates.  
-* **Audience and Insight finder**: Conversational interface that translates natural language into SQL queries. This democratizes access to data for non-SQL users removing any bottleneck for marketing teams.  
-* **Trendspotting**: Identify emerging trends in the market by analyzing Google Trends data on a Looker dashboard and summarize news related to top search terms. This can help businesses to stay ahead of the competition and to develop products and services that meet the needs and interests of their customers.  
-* **Content Search**: Improve search experience for internal or external content with Vertex AI Search for business users.  
-* **Content Generation**: Reduce time for content generation with Vertex Foundation Models. Generate compelling and captivating email copy, website articles, social media posts, and assets for PMax. All aimed at achieving specific goals such as boosting sales, generating leads, or enhancing brand awareness. This encompasses both textual and visual elements using Vertex language & vision models.  
-* **Workspace integration**: Transfer the insights and assets you've generated earlier to Workspace and visualize in Google Slides, Docs and Sheets.
+* **Marketing Insights**: Utilize Looker Dashboards to access and visualize marketing data. Marketers can access and visualize marketing data to build data-driven marketing campaigns, empowering businesses to connect with their target audience more efficiently, thereby improving conversion rates.  
+* **Audience and Insight Finder**: Conversational interface that translates natural language into SQL queries, democratizing access to data for non-SQL users thus removing bottlenecks for marketing teams.  
+* **Trendspotting**: Identify emerging trends in the market by analyzing Google Trends data on a Looker dashboard, and summarize news related to top search terms. This can help businesses to stay ahead of the competition and develop products and services that meet the needs and interests of their customers.  
+* **Content Search**: Improve search experience for internal or external content with Vertex AI Search [TODO LINK]() for business users.  
+* **Content Generation**: Reduce time for content generation with Vertex Foundation Models [TODO LINK](). Generate compelling and captivating email copy, website articles, social media posts, and assets for PMax. All aimed at achieving specific goals such as boosting sales, generating leads, or enhancing brand awareness. This encompasses both textual and visual elements using Vertex language & vision models.  
+* **Workspace Integration**: Transfer the insights and assets you generate to Google Workspace [TODO LINK](), and visualize in Google Slides, Docs and Sheets.
 
+## Deployment
 
-## Notebooks and code samples
+You have two options to deploy the solution:
 
-The notebooks listed below were developed to explain the concepts exposed in this repository:  
-- [Getting Started](/notebooks/1_environment_setup.ipynb) (/notebooks/1_environment_setup.ipynb): This notebook is part of the deployment guide and helps with dataset preparation.
-- [Data Q&A with PaLM API and GoogleSQL](/notebooks/data_qa_with_sql.ipynb) (/notebooks/data_qa_with_sql.ipynb): Translate questions using natural language to GoogleSQL to interact with BigQuery.
+1. Automated Deployment (Recommended): Navigate to the [infra](infra/) folder. This folder contains Terraform code and scripts designed to automate the entire deployment process for you. Follow the instructions provided within the folder to initiate the automated deployment.
+
+2. Manual Setup: If you prefer a hands-on approach, you can opt for [manual setup](manual-setup.md). Detailed instructions are available on how to configure the solution components step-by-step.
+
+## Notebooks and Code Samples
+
+The notebooks listed below were developed to explain the concepts featured in this solution:  
+- [Data Q&A with PaLM API and GoogleSQL](/notebooks/data_qa_with_sql.ipynb) (/notebooks/data_qa_with_sql.ipynb): Translate questions from natural language to GoogleSQL to interact with BigQuery.
 - [News Summarization with LangChain Agents and Vertex AI PaLM Text Models](/notebooks/news_summarization_langchain_palm.ipynb) (news_summarization_langchain_palm.ipynb): Summarize news articles related to top search terms using LangChain agents and the ReAct concept.
-- [News Summarization with PaLM API](/notebooks/simple_news_summarization.ipynb) (simple_news_summarization.ipynb): News summarization related to top search terms using the PaLM API.
+- [News Summarization with PaLM API](/notebooks/simple_news_summarization.ipynb) (simple_news_summarization.ipynb): News summarization related to top search terms.
 - [Imagen Fine Tuning](/notebooks/Imagen_finetune.ipynb) (Imagen_finetune.ipynb): Fine tune Imagen model.
 
 The following additional (external) notebooks provide supplementary information on the concepts discussed in this repository:
@@ -60,13 +85,13 @@ The following additional (external) notebooks provide supplementary information 
 
 ## Configuration
 
-Some of the behavior of Generative AI for Marketing can be changed by adjusting configuration.
+Some of the solution's behavior can be changed by adjusting configuration.
 
 ### Pre-Deployment Configuration
 
-When deploying Generative AI for Marketing, various settings for the deployment are pulled from the [`infra/variables.tf`](infra/variables.tf) file. 
+When deploying the Google Cloud Generative AI for Marketing solution, various settings for the deployment are pulled from the [`infra/variables.tf`](infra/variables.tf) file. 
 
-If your deployment needs do not match the default Generative AI for Marketing deployment, some of your deployment needs might be met by adjusting the defaults in `variables.tf` prior to beginning deployment.
+If your deployment needs do not match the default deployment, some of your deployment needs might be met by adjusting the defaults in `variables.tf` prior to beginning deployment.
 
 Make changes to `variables.tf` prior to running `terraform init`, making changes afterwards may result in unexpected behavior including irrecoverable deployment failures.
 
@@ -103,15 +128,6 @@ The following are the key sections of `config.toml` and their functions:
 
 - Provides sample data and options (age buckets, names, languages) for personalizing content.  
 
-
-# Environment Setup
-You have two options to deploy the solution:
-
-1. Automated Deployment (Recommended): Navigate to the [infra](infra/) folder. This folder contains Terraform code and scripts designed to automate the entire deployment process for you. Follow the instructions provided within the folder to initiate the automated deployment.
-
-2. Manual Setup: If you prefer a hands-on approach, you can opt for [manual setup](manual-setup.md). Detailed instructions are available on how to configure the solution components step-by-step.
-
-
-## Getting help
+## Getting Help
 
 If you have any questions or if you found any problems with this repository, please report through GitHub issues.
