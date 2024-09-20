@@ -225,6 +225,6 @@ def generate_sql_and_query(
         for row in result_job:
             result.append(dict(row.items()))
     except:
-        raise Exception("We couldn't complete your request due to an error in the generated query. ")
+        raise Exception(f"We couldn't complete your request due to an error in the generated query. Query: {gen_code} ")
     
     return result, gen_code, prompt
