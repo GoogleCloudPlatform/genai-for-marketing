@@ -2,29 +2,21 @@
 
 **Resources enabling generative AI-powered marketing use cases on Google Cloud.**
 
-This repository showcases the application of Google Cloud's Generative AI to marketing scenarios. It contains detailed, step-by-step instructions to [TODO LINK]() deploy a solution implementing marketing-centric Generative AI capabilities, including capabilities to craft marketing materials like blog posts and social media content.
+This repository showcases the application of Google Cloud's Generative AI to marketing scenarios. It contains detailed, step-by-step [instructions to deploy a solution](#deployment) implementing marketing-centric Generative AI capabilities, including capabilities to craft marketing materials like blog posts and social media content.
 
 The architecture of the deployed solution:
 ![Architecture](/app/images/architecture.png "Architecture")
 
-Additionally, supplementary [TODO LINK] () Jupyter notebooks are provided to aid users in grasping the concepts explored in the solution.
+Additionally, [supplementary Jupyter notebooks](#notebooks-and-code-samples) are provided to aid users in grasping the concepts explored in the solution.
 
 ## Table of Contents
 
-- [Generative AI for Marketing Using Google Cloud](#generative-ai-for-marketing-using-google-cloud)
-  - [Table of Contents](#table-of-contents)
-  - [Repository Structure](#repository-structure)
-  - [Demonstrations](#demonstrations)
-  - [Deployment](#deployment)
-  - [Notebooks and Code Samples](#notebooks-and-code-samples)
-  - [Configuration](#configuration)
-    - [Pre-Deployment Configuration](#pre-deployment-configuration)
-    - [Config.toml](#configtoml)
-      - [**Global:**](#global)
-      - [**Prompts:**](#prompts)
-      - [**Models:**](#models)
-      - [**Data Sample:**](#data-sample)
-  - [Getting Help](#getting-help)
+- [Repository Structure](#repository-structure)
+- [Demonstrations](#demonstrations)
+- [Deployment](#deployment)
+- [Notebooks and Code Samples](#notebooks-and-code-samples)
+- [Configuration](#configuration)
+- [Getting Help](#getting-help)
 
 
 
@@ -54,9 +46,9 @@ The deployed solution supports the following demonstrations:
 * **Marketing Insights**: Utilize Looker Dashboards to access and visualize marketing data. Marketers can access and visualize marketing data to build data-driven marketing campaigns, empowering businesses to connect with their target audience more efficiently, thereby improving conversion rates.  
 * **Audience and Insight Finder**: Conversational interface that translates natural language into SQL queries, democratizing access to data for non-SQL users thus removing bottlenecks for marketing teams.  
 * **Trendspotting**: Identify emerging trends in the market by analyzing Google Trends data on a Looker dashboard, and summarize news related to top search terms. This can help businesses to stay ahead of the competition and develop products and services that meet the needs and interests of their customers.  
-* **Content Search**: Improve search experience for internal or external content with Vertex AI Search [TODO LINK]() for business users.  
-* **Content Generation**: Reduce time for content generation with Vertex Foundation Models [TODO LINK](). Generate compelling and captivating email copy, website articles, social media posts, and assets for PMax. All aimed at achieving specific goals such as boosting sales, generating leads, or enhancing brand awareness. This encompasses both textual and visual elements using Vertex language & vision models.  
-* **Workspace Integration**: Transfer the insights and assets you generate to Google Workspace [TODO LINK](), and visualize in Google Slides, Docs and Sheets.
+* **Content Search**: Improve search experience for internal or external content with [Vertex AI Search](https://cloud.google.com/enterprise-search) for business users.  
+* **Content Generation**: Reduce time for content generation with [Vertex Foundation Models](https://cloud.google.com/vertex-ai/generative-ai/docs/learn/models). Generate compelling and captivating email copy, website articles, social media posts, and assets for PMax. All aimed at achieving specific goals such as boosting sales, generating leads, or enhancing brand awareness. This encompasses both textual and visual elements using Vertex language & vision models.  
+* **Workspace Integration**: Transfer the insights and assets you generate to [Google Workspace](https://workspace.google.com/), and visualize in Google Slides, Docs and Sheets.
 
 ## Deployment
 
