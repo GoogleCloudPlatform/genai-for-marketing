@@ -52,9 +52,9 @@ The deployed solution supports the following demonstrations:
 
 ## Deployment
 
-[This video](https://www.youtube.com/watch?v=EOY5B5HBxIY) walks through the automated deployment process.
+Follow the instructions in the [deployment guide](/infra/README.md) to deploy with Terraform.
 
-Navigate to the [infra](infra/) folder. This folder contains Terraform code and scripts designed to automate the entire deployment process for you. Follow the instructions provided within the folder to initiate the automated deployment.  
+[This video](https://www.youtube.com/watch?v=EOY5B5HBxIY) walks through the automated deployment process.
 
 ## Notebooks and Code Samples
 
@@ -91,7 +91,7 @@ When deploying, after `terraform apply` completes successfully, there will be a 
 
 `config.toml`  acts as a control center for a marketing content generation, providing the necessary settings, prompts, and data to automate the creation of personalized and brand-consistent marketing materials.
 
-You can adjust some of the values in `config.toml` to change the behavior of your deployment. If you adjust the values in `config.toml`, rerun the backend deployment ([`infra/scripts/backend_deployment.sh`](infra/scripts/backend_deployment.sh)) to push the updated config to the backend.
+You can adjust some of the values in `config.toml` to change the behavior of your deployment. If you adjust the values in `config.toml`, [rerun the backend deployment](/infra/README.md#backend-deployment) ([`infra/scripts/backend_deployment.sh`](infra/scripts/backend_deployment.sh)) to push the updated config to the backend
 
 The following are the key sections of `config.toml` and their functions:
 
