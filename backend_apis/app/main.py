@@ -122,11 +122,7 @@ translate_client = translate.Client()
 texttospeech_client = texttospeech.TextToSpeechLongAudioSynthesizeClient()
 
 # Image models
-<<<<<<< Updated upstream
-imagen = ImageGenerationModel.from_pretrained("imagen-3.0-generate-00")
-=======
 imagen = ImageGenerationModel.from_pretrained(IMAGE_MODEL_NAME)
->>>>>>> Stashed changes
 
 drive_folder_id = config["global"]["drive_folder_id"]
 slides_template_id = config["global"]["slides_template_id"]
