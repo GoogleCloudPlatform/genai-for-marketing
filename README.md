@@ -2,7 +2,7 @@
 
 **Resources enabling generative AI-powered marketing use cases on Google Cloud.**
 
-This repository showcases the application of Google Cloud's Generative AI to marketing scenarios. It contains detailed, step-by-step [instructions to deploy a solution](#deployment) implementing marketing-centric Generative AI capabilities, including capabilities to craft marketing materials like blog posts and social media content.
+This repository showcases the application of Google Cloud's Generative AI to marketing scenarios. It contains detailed, step-by-step [instructions to deploy a solution](#deployment) implementing marketing-centric Generative AI capabilities, including capabilities to craft marketing materials like blog posts and social media content. [This video](https://youtu.be/F8bppBkpCiI?si=MZNryO5D5cezJMlX&t=755) walks through the functionality in the solution.
 
 The architecture of the deployed solution:
 ![Architecture](/app/images/architecture.png "Architecture")
@@ -54,7 +54,7 @@ The deployed solution supports the following demonstrations:
 
 You have two options to deploy the solution:
 
-1. Automated Deployment (Recommended): Navigate to the [infra](infra/) folder. This folder contains Terraform code and scripts designed to automate the entire deployment process for you. Follow the instructions provided within the folder to initiate the automated deployment.
+1. Automated Deployment (Recommended): Navigate to the [infra](infra/) folder. This folder contains Terraform code and scripts designed to automate the entire deployment process for you. Follow the instructions provided within the folder to initiate the automated deployment. [This video](https://www.youtube.com/watch?v=EOY5B5HBxIY) walks through the automated deployment process. 
 
 2. Manual Setup: If you prefer a hands-on approach, you can opt for [manual setup](manual-setup.md). Detailed instructions are available on how to configure the solution components step-by-step.
 
@@ -72,7 +72,7 @@ The following additional (external) notebooks provide supplementary information 
 - [Document Q&A](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/language/use-cases/document-qa): Two notebooks explaining different techniques to do document Q&A on a large amount of documents.
 - [Vertex AI Search - Web Search](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/search/web-app): This demo illustrates how to search through a corpus of documents using Vertex AI Search. Additional features include how to search the public Cloud Knowledge Graph using the Enterprise Knowledge Graph API.
 - [Vertex AI Search - Document Search](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/search/retrieval-augmented-generation): This demo illustrates how Vertex AI Search and the Vertex AI PaLM API help ensure that generated content is grounded in validated, relevant and up-to-date information.
-- [Getting Started with LangChain and Vertex AI PaLM API](https://github.com/GoogleCloudPlatform/generative-ai/blob/main/language/orchestration/langchain/intro_langchain_palm_api.ipynb): Use LangChain and Vertex AI PaLM API to generate text.
+- [Getting Started with LangChain and Vertex AI PaLM API](https://github.com/GoogleCloudPlatform/generative-ai/blob/main/gemini/orchestration/intro_langchain_gemini.ipynb): Getting Started with LangChain + Vertex AI Gemini API.
 
 
 ## Configuration
