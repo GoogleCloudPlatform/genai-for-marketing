@@ -15,6 +15,9 @@ Make sure you have sufficient free space in your terminal environment before you
 
 Before executing Terraform, follow these steps to enable some services:
 
+### Get allowlisted for Imagen3
+Request access to Imagen3 through this [form](https://docs.google.com/forms/d/e/1FAIpQLSdMHAK_KJygnvV2Psga7FIzKAhAqIBS_bHYzfgf_Y2h7fsoGA/viewform).
+
 ### Enable Firebase
 Will be used for the frontend deployment
 
