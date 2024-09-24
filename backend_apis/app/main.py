@@ -110,7 +110,7 @@ datacatalog_client = datacatalog_v1.DataCatalogClient()
 # Text models
 llm_latest = bison_latest.from_pretrained(model_name="text-bison")
 llm_ga = bison_ga.from_pretrained(model_name="text-bison@002")
-model_version_name = config["global"]["model_version_name"]
+model_version_name = config["models"]["code_model_name"]
 gemini_llm = GenerativeModel(model_version_name)
 
 TEXT_MODEL_NAME = config["models"]["text_model_name"]
