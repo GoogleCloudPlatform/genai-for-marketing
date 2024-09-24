@@ -52,11 +52,9 @@ The deployed solution supports the following demonstrations:
 
 ## Deployment
 
-You have two options to deploy the solution:
+Follow the instructions in the [deployment guide](/infra/README.md) to deploy with Terraform.
 
-1. Automated Deployment (Recommended): Navigate to the [infra](infra/) folder. This folder contains Terraform code and scripts designed to automate the entire deployment process for you. Follow the instructions provided within the folder to initiate the automated deployment. [This video](https://www.youtube.com/watch?v=EOY5B5HBxIY) walks through the automated deployment process. 
-
-2. Manual Setup: If you prefer a hands-on approach, you can opt for [manual setup](manual-setup.md). Detailed instructions are available on how to configure the solution components step-by-step.
+[This video](https://www.youtube.com/watch?v=EOY5B5HBxIY) walks through the automated deployment process.
 
 ## Notebooks and Code Samples
 
@@ -93,7 +91,7 @@ When deploying, after `terraform apply` completes successfully, there will be a 
 
 `config.toml`  acts as a control center for a marketing content generation, providing the necessary settings, prompts, and data to automate the creation of personalized and brand-consistent marketing materials.
 
-You can adjust some of the values in `config.toml` to change the behavior of your deployment. If you adjust the values in `config.toml`, rerun the backend deployment ([`infra/scripts/backend_deployment.sh`](infra/scripts/backend_deployment.sh)) to push the updated config to the backend.
+You can adjust some of the values in `config.toml` to change the behavior of your deployment. If you adjust the values in `config.toml`, [rerun the backend deployment](/infra/README.md#backend-deployment) ([`infra/scripts/backend_deployment.sh`](infra/scripts/backend_deployment.sh)) to push the updated config to the backend
 
 The following are the key sections of `config.toml` and their functions:
 
@@ -119,6 +117,35 @@ The following are the key sections of `config.toml` and their functions:
 #### **Data Sample:**
 
 - Provides sample data and options (age buckets, names, languages) for personalizing content.  
+
+### Adding Looker Dashboards
+
+You can display your own Looker Dashboards in the Marketing Insights and Campaign Performance pages. 
+
+For Marketing Insights, edit [/frontend/src/app/marketing-insights/marketing-insights.component.html](/frontend/src/app/marketing-insights/marketing-insights.component.html) and for Campaign Performance edit [/frontend/src/app/marketing-insights/marketing-insights.component.html](/frontend/src/app/marketing-insights/marketing-insights.component.html). The procedure is the same for both of these files:
+
+#### 1. Add the Dashboard Name to the Dropdown
+
+1. Find the line `<select class="select-theme-dropdowns" name="state" ngModel (ngModelChange)="onClick($event)">`. If you are on a fresh deployment, the line below is `<option value="Overview">Overview</option>`.
+2. Add another similarly formatted line: `<option value="Display Name in Dropdown">newdash</option>`, where `value` is what will be displayed in the UI and inside the `>` and `<` is the identifier you'll use below to link to the dashboard. In this case we're adding a dashboard that will be identified as "Display Name in Dropdown" and below we'll link this dashboard using the `newdash` identifier.
+
+#### 2. Add the Dashboard Link
+
+On a fresh deployment at the bottom of the file, you'll see something like this:
+```html
+<div *ngIf="overview" class="overviewcss">
+  <iframe width="1000" height="1000" src="https://googledemo.looker.com/embed/dashboards/2131?allow_login_screen=true" ></iframe>
+</div>
+```
+
+At the end of the file, add three similar lines for each dashboard, replacing the following:
+1. Set `*ngIF=` to the identifier of the new dashboard that you specified in the dropdown. E.g. `<div *ngIf="newdash" class="overviewcss">`.
+2. Set the `src=` to the embed link to your dashboard. The `allow_login_screen=true` in the URL will open the authentication page from Looker to secure the access to your account. E.g., `<iframe width="1000" height="1000" src="https://googledemo.looker.com/embed/dashboards/YOURDASH?allow_login_screen=true" ></iframe>`
+
+
+#### Marketing Analytics Jumpstart
+
+If you have your Google Ads and Google Analytics 4 accounts in production, you can deploy the [`Marketing Analytics Jumpstart`](https://github.com/GoogleCloudPlatform/marketing-analytics-jumpstart) solution, build the Dashboards, and link them into these pages in the Generative AI for Marketing UI.
 
 ## Getting Help
 

@@ -3,7 +3,7 @@ Terraform simplifies deploying Generative AI for Marketing. The Terraform deploy
 
 *Note*: The Terraform Provider for Google Cloud is not able to generate some of the GenAI resources, `null_resource` is used to create some resources using the Google Cloud SDK.
 
-You'll need to create a Google Cloud project and link a billing account before you begin. **It is strongly recommended you deploy Generative AI for Marketing in it's own fresh project.** Existing resources in a project may be impacted by the deployment, and the deployment itself may fail.
+You'll need to create a Google Cloud project and link a billing account before you begin. **It is strongly recommended you deploy Generative AI for Marketing in its own, new project.** Existing resources in a project may be impacted by the deployment, and the deployment itself may fail.
 
 These instructions have been tested as run by a Google Cloud user with the [Owner role](https://cloud.google.com/iam/docs/understanding-roles#basic) for the project, installation may not work if the installing user does not have the Owner role.
 
@@ -11,15 +11,20 @@ In certain Google Cloud Organizations, organization policies may block installat
 
 Make sure you have sufficient free space in your terminal environment before you begin installation--4GB is recommended. Having insufficient free space can cause installation steps to fail in a state that makes recovery especially difficult. This is especially important when installing the frontend, which requires a large number of npm packages.
 
+If you encounter problems during deployment see the [Known Issues](#known-issues) section for workarounds to common issues.
+
 ## Step 0 - Prerequisites:
 
 Before executing Terraform, follow these steps to enable some services:
 
-### Get allowlisted for Imagen3
-Request access to Imagen3 through this [form](https://docs.google.com/forms/d/e/1FAIpQLSdMHAK_KJygnvV2Psga7FIzKAhAqIBS_bHYzfgf_Y2h7fsoGA/viewform).
+### Get Allowlisted for Imagen
+Request access to Imagen through this [form](https://docs.google.com/forms/d/e/1FAIpQLSdMHAK_KJygnvV2Psga7FIzKAhAqIBS_bHYzfgf_Y2h7fsoGA/viewform). Note this can take up to a week. You can still use Generative AI for Marketing while awaiting allowlisting, but image generation capabilities will not work. Generative AI for Marketing currently uses Imagen 3.
+
+### Enable the Cloud Resource Manager API:
+1. Go to https://console.developers.google.com/apis/api/cloudresourcemanager.googleapis.com/overview and enable the API.
 
 ### Enable Firebase
-Will be used for the frontend deployment
+The frontend of Generative AI for Marketing is hosted on Firebase. Before beginning deployment, you need to enable Firebase.
 
 1. Go to https://console.firebase.google.com/.
 2. Select "Create a project" and enter the name of your Google Cloud Platform project, then click "Continue". 
@@ -28,8 +33,8 @@ Will be used for the frontend deployment
 5. Continue and complete.
 
 ### Enable Vertex AI Agent Builder
-Required before starting using Vertex AI Agent Builder services.
-1. Go to https://console.cloud.google.com/gen-app-builder/start
+The chat agent and search features of Generative AI for Marketing require Vertex AI Agent Builder.
+1. Go to https://console.cloud.google.com/gen-app-builder/start .
 2. Click the button to accept TOS and enable.
 
 ### (Optional) Local Configuration
@@ -47,7 +52,7 @@ You'll also need to install [Terraform](https://developer.hashicorp.com/terrafor
 
 ### Ensure Workspace is Set Up and You Have Access
 
-Generative AI for Marketing requires your organization has Workspace set up and you have an account before proceeding.
+Generative AI for Marketing requires your organization has [Google Workspace](https://workspace.google.com/lp/business/) set up and you have an account before proceeding.
 
 ## Step 1 - Terraform Deployment
 
@@ -56,8 +61,6 @@ Generative AI for Marketing requires your organization has Workspace set up and 
 1. In [Cloud Shell](https://cloud.google.com/shell/docs/using-cloud-shell) navigate to the git repo root.
 
 1. Run `gcloud config set project YOUR_PROJECT_ID` to ensure you're installing into the expected project.
-
-1. Enable the Cloud Resource Manager API: https://console.developers.google.com/apis/api/cloudresourcemanager.googleapis.com/overview . Note you may get a Terraform Error asking you to install this API, if that happens just wait a few minutes and retry.
 
 1. In the cloned project root, run the following to start the Terraform deployment:
 ```sh
@@ -90,7 +93,7 @@ Generative AI for Marketing Uses Google Drive to store created marketing materia
 Execute the following script from the `infra` subfolder, substituting `<cloud_run_backend_sa>` for the `cloud_run_backend_sa` value output by `terraform apply` (without quotes) in step 1.
 
 
-```
+```shell
 echo "{}" >> gdrive_folder_results.json
 python scripts/create_gdrive_folder.py --folder-name="genai-marketing-assets" --service-account-email=<cloud_run_backend_sa>
 ```
@@ -179,6 +182,8 @@ sh scripts/backend_deployment.sh --project $(gcloud config get project) --region
 ```
 In a fresh project, you'll be asked to create an Artifact Registry Docker repoitory. Enter `Y` to confirm.
 
+The backend deployment pushes the backend APIs into a Cloud Run container that will be called by the frontend UI. The APIs are implemented in Python using [FastAPI](https://fastapi.tiangolo.com/).
+
 ### Frontend Deployment 
 
 
@@ -186,6 +191,8 @@ Then to deploy the frontend you need to execute from the `/infra` folder:
 ```
 sh scripts/frontend_deployment.sh --project $(gcloud config get project)
 ```
+
+The frontend is an Angular application deployed in Firebase.
 
 Once this script completes, Generative AI for Marketing is Deployed!
 
@@ -195,7 +202,7 @@ Once this script completes, Generative AI for Marketing is Deployed!
 
 When frontend deployment is complete, the 'Hosting URL' printed in the terminal is your link to the UI. You can also see this value in the `frontend_deployment` value output by `terraform apply`. 
 
-The backend is located at the address in the `backend_deployment` value in the `terraform apply` output. It should look something like "https://genai-for-marketing-xxxxxxxx.a.run.app". If you append `/marketing-api/docs` (i.e., "https://genai-for-marketing-xxxxxxxx.a.run.app/marketing-api-docs") to this URL you can access the FastAPI interface for exploring the backend APIs. 
+The backend is located at the address in the `backend_deployment` value in the `terraform apply` output. It should look something like "https://genai-for-marketing-xxxxxxxx.a.run.app". If you append `/marketing-api/docs` (i.e., "https://genai-for-marketing-xxxxxxxx.a.run.app/marketing-api/docs") to this URL you can access the FastAPI interface for exploring the backend APIs. 
 
 ### Deployed Resources
 The deployment creates all the resources described in the main [README.md](../README.md) file, the following is a list of the created resources:
