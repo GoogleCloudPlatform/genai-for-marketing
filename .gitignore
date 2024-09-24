@@ -169,3 +169,7 @@ override.tf.json
 .terraformrc
 terraform.rc
 infra/output_config/*
+
+# Post deployment files
+frontend/.firebase 
+frontend/.angular
