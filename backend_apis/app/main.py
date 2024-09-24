@@ -110,7 +110,8 @@ datacatalog_client = datacatalog_v1.DataCatalogClient()
 # Text models
 llm_latest = bison_latest.from_pretrained(model_name="text-bison")
 llm_ga = bison_ga.from_pretrained(model_name="text-bison@002")
-gemini_llm = GenerativeModel("gemini-1.0-pro-001")
+model_version_name = config["models"]["code_model_name"]
+gemini_llm = GenerativeModel(model_version_name)
 
 TEXT_MODEL_NAME = config["models"]["text_model_name"]
 IMAGE_MODEL_NAME = config["models"]["image_model_name"]
@@ -556,7 +557,7 @@ def post_audiences(data: AudiencesRequest) -> AudiencesResponse:
 
     try:
         audiences, gen_code, prompt = utils_codey.generate_sql_and_query(
-            llm=llm_ga,
+            llm=gemini_llm,
             datacatalog_client=datacatalog_client,
             prompt_template=prompt_nl_sql,
             query_metadata=query_metadata,
