@@ -3,7 +3,7 @@ Terraform simplifies deploying Generative AI for Marketing. The Terraform deploy
 
 *Note*: The Terraform Provider for Google Cloud is not able to generate some of the GenAI resources, `null_resource` is used to create some resources using the Google Cloud SDK.
 
-You'll need to create a Google Cloud project and link a billing account before you begin. **It is strongly recommended you deploy Generative AI for Marketing in its own fresh project.** Existing resources in a project may be impacted by the deployment, and the deployment itself may fail.
+You'll need to create a Google Cloud project and link a billing account before you begin. **It is strongly recommended you deploy Generative AI for Marketing in its own, new project.** Existing resources in a project may be impacted by the deployment, and the deployment itself may fail.
 
 These instructions have been tested as run by a Google Cloud user with the [Owner role](https://cloud.google.com/iam/docs/understanding-roles#basic) for the project, installation may not work if the installing user does not have the Owner role.
 
@@ -17,14 +17,14 @@ If you encounter problems during deployment see the [Known Issues](#known-issues
 
 Before executing Terraform, follow these steps to enable some services:
 
-### Get Allowlisted for Imagen3
-Request access to Imagen3 through this [form](https://docs.google.com/forms/d/e/1FAIpQLSdMHAK_KJygnvV2Psga7FIzKAhAqIBS_bHYzfgf_Y2h7fsoGA/viewform). Note this can take up to a week. You can still use Generative AI for Marketing while awaiting allowlisting, but image generation capabilities will not work.
+### Get Allowlisted for Imagen
+Request access to Imagen through this [form](https://docs.google.com/forms/d/e/1FAIpQLSdMHAK_KJygnvV2Psga7FIzKAhAqIBS_bHYzfgf_Y2h7fsoGA/viewform). Note this can take up to a week. You can still use Generative AI for Marketing while awaiting allowlisting, but image generation capabilities will not work. Generative AI for Marketing currently uses Imagen 3.
 
 ### Enable the Cloud Resource Manager API:
 1. Go to https://console.developers.google.com/apis/api/cloudresourcemanager.googleapis.com/overview and enable the API.
 
 ### Enable Firebase
-The frontend of Generative AI for Marketing runs in Firebase. Before beginning deployment, you need to enable Firebase.
+The frontend of Generative AI for Marketing is hosted on Firebase. Before beginning deployment, you need to enable Firebase.
 
 1. Go to https://console.firebase.google.com/.
 2. Select "Create a project" and enter the name of your Google Cloud Platform project, then click "Continue". 
@@ -182,6 +182,8 @@ sh scripts/backend_deployment.sh --project $(gcloud config get project) --region
 ```
 In a fresh project, you'll be asked to create an Artifact Registry Docker repoitory. Enter `Y` to confirm.
 
+The backend deployment pushes the backend APIs into a Cloud Run container that will be called by the frontend UI. The APIs are implemented in Python using [FastAPI](https://fastapi.tiangolo.com/).
+
 ### Frontend Deployment 
 
 
@@ -189,6 +191,8 @@ Then to deploy the frontend you need to execute from the `/infra` folder:
 ```
 sh scripts/frontend_deployment.sh --project $(gcloud config get project)
 ```
+
+The frontend is an Angular application deployed in Firebase.
 
 Once this script completes, Generative AI for Marketing is Deployed!
 
