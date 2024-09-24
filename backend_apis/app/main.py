@@ -110,10 +110,8 @@ datacatalog_client = datacatalog_v1.DataCatalogClient()
 # Text models
 llm_latest = bison_latest.from_pretrained(model_name="text-bison")
 llm_ga = bison_ga.from_pretrained(model_name="text-bison@002")
-gemini_llm = GenerativeModel("gemini-1.0-pro-001")
+text_llm = GenerativeModel(config["models"]["text_model_name"])
 
-TEXT_MODEL_NAME = config["models"]["text_model_name"]
-IMAGE_MODEL_NAME = config["models"]["image_model_name"]
 
 #translation
 translate_client = translate.Client()
@@ -122,7 +120,7 @@ translate_client = translate.Client()
 texttospeech_client = texttospeech.TextToSpeechLongAudioSynthesizeClient()
 
 # Image models
-imagen = ImageGenerationModel.from_pretrained(IMAGE_MODEL_NAME)
+imagen = ImageGenerationModel.from_pretrained(config["models"]["image_model_name"])
 
 drive_folder_id = config["global"]["drive_folder_id"]
 slides_template_id = config["global"]["slides_template_id"]
@@ -522,7 +520,7 @@ def post_summarize_news(data: NewsSummaryRequest,request: Request
         for doc in documents:
             summary = trendspotting.summarize_news_article(
                 doc["page_content"],
-                gemini_llm)
+                text_llm)
             summaries.append({
                 "original_headline": doc["title"],
                 "summary":summary,
