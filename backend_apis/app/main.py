@@ -114,6 +114,7 @@ model_version_name = config["models"]["code_model_name"]
 gemini_llm = GenerativeModel(model_version_name)
 
 TEXT_MODEL_NAME = config["models"]["text_model_name"]
+IMAGE_MODEL_NAME = config["models"]["image_model_name"]
 
 #translation
 translate_client = translate.Client()
@@ -122,7 +123,7 @@ translate_client = translate.Client()
 texttospeech_client = texttospeech.TextToSpeechLongAudioSynthesizeClient()
 
 # Image models
-imagen = ImageGenerationModel.from_pretrained("imagegeneration@002")
+imagen = ImageGenerationModel.from_pretrained(IMAGE_MODEL_NAME)
 
 drive_folder_id = config["global"]["drive_folder_id"]
 slides_template_id = config["global"]["slides_template_id"]
