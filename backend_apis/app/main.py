@@ -23,6 +23,7 @@ from . import utils_firebase
 from . import utils_trendspotting as trendspotting
 from . import utils_prompt
 from . import bulk_email_util
+from .logger import log 
 from datetime import datetime, timedelta
 from fastapi import FastAPI, HTTPException, UploadFile, Request, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
@@ -46,7 +47,6 @@ from vertexai.language_models import TextGenerationModel as bison_ga
 from vertexai.preview.vision_models import ImageGenerationModel
 from vertexai.vision_models import Image
 
-import google.auth
 import json
 import base64
 
@@ -110,10 +110,8 @@ datacatalog_client = datacatalog_v1.DataCatalogClient()
 # Text models
 llm_latest = bison_latest.from_pretrained(model_name="text-bison")
 llm_ga = bison_ga.from_pretrained(model_name="text-bison@002")
-gemini_llm = GenerativeModel("gemini-1.0-pro-001")
+text_llm = GenerativeModel(config["models"]["text_model_name"])
 
-TEXT_MODEL_NAME = config["models"]["text_model_name"]
-IMAGE_MODEL_NAME = config["models"]["image_model_name"]
 
 #translation
 translate_client = translate.Client()
@@ -122,7 +120,7 @@ translate_client = translate.Client()
 texttospeech_client = texttospeech.TextToSpeechLongAudioSynthesizeClient()
 
 # Image models
-imagen = ImageGenerationModel.from_pretrained(IMAGE_MODEL_NAME)
+imagen = ImageGenerationModel.from_pretrained(config["models"]["image_model_name"])
 
 drive_folder_id = config["global"]["drive_folder_id"]
 slides_template_id = config["global"]["slides_template_id"]
@@ -211,7 +209,7 @@ def create_campaign(user_id: str,data: CampaignCreateRequest
                     )) 
     try:
         generated_tuple = asyncio.run(generate_campaign())
-        print(generated_tuple)
+        log(generated_tuple)
         brand_statement = generated_tuple[0] 
         primary_message = generated_tuple[1]
         comm_channels = generated_tuple[2]
@@ -229,7 +227,7 @@ def create_campaign(user_id: str,data: CampaignCreateRequest
             comm_channels=comm_channels
             ))
     except Exception as e:
-        print("Failed in Creating Content Asset")
+        log("Failed in Creating Content Asset")
         raise HTTPException(status_code=400, detail=str(e))
     else:
         campaign = Campaign(
@@ -242,7 +240,7 @@ def create_campaign(user_id: str,data: CampaignCreateRequest
             user_id=user_id,
             campaign=campaign
             )
-        print(update_time,campaign_id)
+        log(f"Updated Time: {update_time} - Campaign ID: {campaign_id}")
         return CampaignCreateResponse(
             id=campaign_id,
             campaign_name=data.campaign_name,
@@ -257,7 +255,7 @@ async def list_campaigns(user_id: str) -> CampaignListResponse:
     List Existing Campaign for logged in user
     """
     list_of_campaigns = utils_firebase.list_campaigns(user_id=user_id)
-    print(list_of_campaigns)
+    log(f"List of campaigns: {list_of_campaigns}")
     return CampaignListResponse(results=list_of_campaigns)
 
 # get-campaign
@@ -285,7 +283,7 @@ async def update_campaign(user_id: str,campaign_id:str,data:Campaign):
         campaign_id=campaign_id,
         data=data
         )
-    print(response)
+    log(response)
     return JSONResponse(
         content={'message': 'Successfully Updated'},
         status_code=200
@@ -301,7 +299,7 @@ async def delete_campaign(user_id: str,campaign_id:str):
         user_id=user_id,
         campaign_id=campaign_id
         )
-    print(response)
+    log(response)
     return JSONResponse(
         content={'message': 'Successfully Deleted Campaign'}, 
         status_code=200
@@ -319,7 +317,7 @@ async def update_status(user_id: str,campaign_id:str,data:CampaignStatusUpdate):
         key=data.key,
         status=data.status
         )
-    print(response)
+    log(response)
     return JSONResponse(
         content={'message': 'Successfully Activated'},
         status_code=200
@@ -522,7 +520,7 @@ def post_summarize_news(data: NewsSummaryRequest,request: Request
         for doc in documents:
             summary = trendspotting.summarize_news_article(
                 doc["page_content"],
-                gemini_llm)
+                text_llm)
             summaries.append({
                 "original_headline": doc["title"],
                 "summary":summary,
@@ -719,20 +717,27 @@ def post_brief_create_upload(data: BriefCreateRequest) -> BriefCreateResponse:
         doc_id: str
     """
     try:
-        print("Creating document Assets..")
+        log("Creating document assets...")
+        folder_name = f"Marketing_Assets_{int(time.time())}"
         new_folder_id = utils_workspace.create_folder_in_folder(
-            folder_name=f"Marketing_Assets_{int(time.time())}",
+            folder_name=folder_name,
             parent_folder_id=drive_folder_id)
+        log(f"Successfully created {folder_name} with ID: '{new_folder_id}'.")
         
+        log("Setting document assets permission...")
         utils_workspace.set_permission(
             file_id=new_folder_id,
             domain=domain)
+        log(f"Successfully set permissions for folder. ID: {new_folder_id}.")
 
+        log("Copying drive files...")
         doc_id = utils_workspace.copy_drive_file(
             drive_file_id=doc_template_id,
             parentFolderId=new_folder_id,
             copy_title=f"GenAI Marketing Brief")
+        log(f"Successfully copied files to {new_folder_id}")
 
+        log(f"Updating document - {doc_id} - with document assets...")
         utils_workspace.update_doc(
             document_id=doc_id,
             campaign_name=data.campaign_name,
@@ -742,10 +747,10 @@ def post_brief_create_upload(data: BriefCreateRequest) -> BriefCreateResponse:
             primary_msg=data.primary_message,
             comms_channel=data.comm_channels)
     except Exception as e:
-        print(e)
+        log(e)
         raise HTTPException(
             status_code=400, 
-            detail="Something went wrong. Please try again."+str(e))
+            detail=f"Something went wrong. Please try again. {e}")
 
     return BriefCreateResponse(
         new_folder_id=new_folder_id,
@@ -774,7 +779,7 @@ def post_create_slides_upload(data: SlidesCreateRequest
             drive_file_id=sheet_template_id,
             parentFolderId=data.folder_id,
             copy_title="GenAI Marketing Data Source")
-        print(sheet_id)     
+        log(sheet_id)     
 
         utils_workspace.merge_slides(
             presentation_id=slide_id,
@@ -856,7 +861,7 @@ def generate_content(data: ContentCreationRequest
     generated_content = {}
     try:
         if data.type == 'Email':
-            print("Generating Email..")
+            log("Generating Email..")
             generated_content["text"]=asyncio.run(utils_prompt.async_predict_text_gemini(
                         EMAIL_TEXT_PROMPT.format(
                             data.context,
