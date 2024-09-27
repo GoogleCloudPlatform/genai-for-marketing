@@ -42,7 +42,6 @@ import vertexai
 from vertexai.generative_models import GenerativeModel, Part, FinishReason
 import vertexai.preview.generative_models as generative_models
 
-from vertexai.preview.language_models import TextGenerationModel as bison_latest
 from vertexai.language_models import TextGenerationModel as bison_ga
 from vertexai.preview.vision_models import ImageGenerationModel
 from vertexai.vision_models import Image
@@ -108,7 +107,6 @@ bq_client = bigquery.Client(project=project_id)
 datacatalog_client = datacatalog_v1.DataCatalogClient()
 
 # Text models
-llm_latest = bison_latest.from_pretrained(model_name="text-bison")
 llm_ga = bison_ga.from_pretrained(model_name="text-bison@002")
 text_llm = GenerativeModel(config["models"]["text_model_name"])
 
@@ -322,49 +320,6 @@ async def update_status(user_id: str,campaign_id:str,data:CampaignStatusUpdate):
         content={'message': 'Successfully Activated'},
         status_code=200
         )
-
-@router.post(path="/generate-text")
-def post_text_bison_generate(data: TextGenerateRequest,
-                             ) -> TextGenerateResponse:
-    """Text generation with PaLM API
-    Parameters:
-        model: str = "latest"
-            [Options] "latest" | "ga"
-        prompt: str
-        temperature: float = 0.2
-        top_k: int = 40
-        top_p: float = 0.8
-        max_output_tokens: int = 1024
-    Returns:
-        text (str): Response from the LLM
-        safety_attributes: Safety attributes from LLM
-    """
-   
-    if data.model == "latest":
-        llm = llm_latest
-    elif data.model == "ga":
-        llm = llm_ga
-    else:
-        raise HTTPException(
-            status_code=400, 
-            detail="Invalid model name. Options: ga | latest."
-            )
-
-    try:
-        llm_response = llm.predict(
-            prompt=data.prompt,
-            max_output_tokens=data.max_output_tokens,
-            temperature=data.temperature,
-            top_k=data.top_k,
-            top_p=data.top_p)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    else:
-        return TextGenerateResponse(
-            text=llm_response.text,
-            safety_attributes=llm_response.safety_attributes
-        )
-
 
 @router.post(path="/generate-image")
 def post_image_generate(data: ImageGenerateRequest,
