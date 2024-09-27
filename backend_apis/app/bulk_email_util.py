@@ -30,7 +30,7 @@ import base64
 from PIL import Image
 
 from google.cloud import translate_v2 as translate
-from vertexai.preview.language_models import TextGenerationModel
+from vertexai.preview.generative_models import GenerativeModel, GenerationConfig
 from vertexai.preview.vision_models import ImageGenerationModel
 
 
@@ -43,8 +43,7 @@ location = config["global"]["location"]
 vertexai.init(
     project=project_id,
     location=location)
-llm = TextGenerationModel.from_pretrained(
-    config["models"]["text_model_name"])
+text_llm = GenerativeModel(config["models"]["text_model_name"])
 imagen = ImageGenerationModel.from_pretrained(config["models"]["image_model_name"])
 translate_client = translate.Client()
 
@@ -75,12 +74,12 @@ def generate_information(data : list) -> pd.DataFrame:
     return df
 
 async def email_generate(row: pd.Series, theme: str, image_context: str) -> pd.Series:
-    prompt_row = row['first_name']
+    first_name = row['first_name']
     
-    email_prompt = EMAIL_TEXT_PROMPT.format(prompt_row,
+    email_prompt = EMAIL_TEXT_PROMPT.format(first_name,
                                             theme)
     loop = asyncio.get_running_loop()
-    progress_text = f"Generating email text for {prompt_row}"
+    progress_text = f"Generating email text for {first_name}"
     print(progress_text)
     generated_text = ""
     generated_images = []
@@ -89,13 +88,14 @@ async def email_generate(row: pd.Series, theme: str, image_context: str) -> pd.S
         generated_response = await loop.run_in_executor(
             None, 
             functools.partial(
-                llm.predict,
-                prompt=email_prompt,
-                temperature=0.2,
-                max_output_tokens=1024,
-                top_k = 40,
-                top_p = 0.8
-                ))
+                text_llm.generate_content,
+                contents=email_prompt,
+                generation_config=GenerationConfig(temperature=0.2, 
+                                                    top_p=0.8, 
+                                                    top_k=40, 
+                                                    max_output_tokens=1024),
+            )
+        )
     except Exception as e:
         generated_response = None
         print("Error")
