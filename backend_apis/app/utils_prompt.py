@@ -39,7 +39,7 @@ from vertexai.generative_models import GenerativeModel , GenerationConfig
 
 async def async_predict_text_gemini(
         prompt: str,
-        model_name: str="gemini-1.0-pro",
+        model_name: str=config["models"]["text_model_name"],
         max_output_tokens: int=2048,
         temperature: float=0.4,
         top_k: int=40,
