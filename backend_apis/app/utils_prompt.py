@@ -14,7 +14,7 @@
 
 
 """
-A utility module for performing prompt engineering with the Vertex PaLM API.
+A utility module for performing prompt engineering with the Vertex Gemini.
 """
 
 
