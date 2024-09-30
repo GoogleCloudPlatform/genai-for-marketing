@@ -58,8 +58,6 @@
     border-radius: 7px;
     border: 1px solid transparent;
     outline: 1px solid #E9E9E9;
-    //background: #F6F6F6;
-    //box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15) inset;
     border-right: 16px solid transparent;
     margin-left: 55px;
     padding: 3px;
@@ -74,7 +72,6 @@
     border: 1px solid transparent;
     outline: 1px solid black;
     background: white;
-    //box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15) inset;
     color: #000;
     font-family: Google Sans;
     font-size: 14px;
@@ -107,19 +104,16 @@
     border-radius: 100px;
     border: 0;
     margin-bottom: 20px;
-    //color: #4285F4;
     background-color: white;
     margin-left: 20px;
     color: #767676;
     border: 1px solid transparent;
     outline: 1px solid #E9E9E9;
-    /* Component Labels/Button */
     font-family: Google Sans;
     font-size: 14px;
     font-style: normal;
     font-weight: 500;
     line-height: 20px;
-    /* 142.857% */
     letter-spacing: 0.25px;
     border-right: 16px solid transparent;
 }
@@ -140,7 +134,6 @@
     top: 9%;
 }
 
-
 .btnGenrateEmailCopy {
     border-radius: 100px;
     border: 1px solid #4285F4;
@@ -154,13 +147,11 @@
     background-color: white;
     margin-left: 5px;
     text-align: center;
-    /* Component Labels/Button */
     font-family: Google Sans;
     font-size: 14px;
     font-style: normal;
     font-weight: 500;
     line-height: 20px;
-    /* 142.857% */
     letter-spacing: 0.25px;
 }
 
@@ -186,14 +177,11 @@
     margin-left: 5px;
     color: #FFF;
     text-align: center;
-
-    /* Component Labels/Button */
     font-family: Google Sans;
     font-size: 14px;
     font-style: normal;
     font-weight: 500;
     line-height: 20px;
-    /* 142.857% */
     letter-spacing: 0.25px;
 }
 
@@ -215,7 +203,6 @@
     border: none;
 }
 
-
 .bulkEmailButtonEnglish {
     background-color: #E9E9E9;
     border-color: transparent;
@@ -228,17 +215,13 @@
     font-size: 14px;
     font-style: normal;
     font-weight: 700;
-    // line-height: 20px;
     width: 146px;
-    // height: 20px;
-    /* 142.857% */
 }
 
 .bulkEmailButtonActive {
     background-color: #E2F3FF;
     border-color: transparent;
     border-radius: 7px;
-    //margin-left: 10px;
     float: right;
     color: #000;
     text-align: center;
@@ -246,10 +229,7 @@
     font-size: 14px;
     font-style: normal;
     font-weight: 700;
-    //line-height: 20px;
     width: 146px;
-    // height: 20px;
-    /* 142.857% */
 }
 
 .bulkEButtonActive {
@@ -262,10 +242,7 @@
     font-size: 14px;
     font-style: normal;
     font-weight: 700;
-    //line-height: 20px;
     width: 146px;
-    // height: 20px;
-    /* 142.857% */
 }
 
 .bulkEmailGenerateInfo {
@@ -284,13 +261,9 @@
     font-weight: 500;
     font-size: 14px;
     line-height: 20px;
-    /* identical to box height, or 143% */
-
     align-items: center;
     text-align: center;
     letter-spacing: 0.25px;
-    width: 80px;
-    height: 30px;
     border-color: transparent;
     letter-spacing: 0.25px;
     color: white;
@@ -302,7 +275,6 @@
     margin-top: 10px;
     border-color: transparent;
 }
-
 
 .bulkEmailButton {
     background-color: #E9E9E9;
@@ -316,13 +288,7 @@
     font-size: 14px;
     font-style: normal;
     font-weight: 700;
-    //line-height: 20px;
-    //display: flex;
     width: 146px;
-    // height: 20px;
-    // flex-direction: column;
-    // justify-content: center;
-    /* 142.857% */
 }
 
 st-editor {
@@ -330,19 +296,16 @@ st-editor {
     height: 300px;
     flex-shrink: 0;
     width: 903px;
-
     color: #000;
     font-family: Google Sans;
     font-size: 14px;
     font-style: normal;
     font-weight: 400;
     line-height: 18px;
-    //  padding: 15px;
 }
 
 .noCampaignMsg {
     color: #757575;
-    //text-align: center;
     font-family: Google Sans;
     font-size: 14px;
     font-style: normal;
@@ -392,8 +355,6 @@ st-editor {
     box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15) inset;
     background-color: #F6F6F6 !important;
     display: block;
-    //width: 1040px;
-    //padding: 15px;
     color: #000;
     font-family: Google Sans;
     font-size: 14px;
@@ -413,13 +374,11 @@ st-editor {
     gap: 10px;
     color: #4285F4;
     text-align: center;
-
-    /* Component Labels/Button */
     font-family: "Google Sans";
     font-size: 14px;
     font-style: normal;
     font-weight: 500;
     line-height: 20px;
-    /* 142.857% */
     letter-spacing: 0.25px;
+    margin-top:20px;
 }
