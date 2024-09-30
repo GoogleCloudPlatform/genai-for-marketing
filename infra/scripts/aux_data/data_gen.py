@@ -23,7 +23,7 @@ SEED = 1
 rng = np.random.default_rng(SEED)
 
 
-def create_and_populate_customers(num_customers: int = 50000) -> List[Dict]:
+def create_and_populate_customers(num_customers: int = 5000) -> List[Dict]:
     from aux_data.customers_aux_data import channel, locations
     
     customers_location = rng.choice(locations, size=(num_customers))
@@ -73,7 +73,7 @@ def create_and_populate_customers(num_customers: int = 50000) -> List[Dict]:
 
 
 # Generate and load events table to BQ
-def create_and_populate_events(num_customers: int = 50000) -> Dict:
+def create_and_populate_events(num_customers: int = 5000) -> Dict:
     from aux_data.events_aux_data import event_type
 
     events_per_customer = list(map(int, np.absolute(np.floor(rng.normal(1, 1, size=(num_customers)) * 100))))
@@ -101,7 +101,7 @@ def create_and_populate_events(num_customers: int = 50000) -> Dict:
 
 
 # Generate and load transactions to BQ
-def create_and_populate_transactions(num_customers: int = 50000) -> Dict:
+def create_and_populate_transactions(num_customers: int = 5000) -> Dict:
     from aux_data.transactions_aux_data import product_name, transaction_type
 
     transactions_per_customer = list(map(int, np.absolute(np.floor(rng.normal(1, 1, size=(num_customers)) * 100))))
