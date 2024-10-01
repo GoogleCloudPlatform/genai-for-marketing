@@ -9,7 +9,7 @@ You are empowered to extend these APIs, intertwining them with your specific pol
 ## List of APIs Developed in This Repository
 
 **Campaign Creation and Generating the Brief Assets (POST)** (path="/campaigns")
- - Create Campaing and Generate text with Gemini.
+ - Create Campaign and Generate text with Gemini.
 
 **List All Campaigns Created by User (GET)** (path="/campaigns")
  - List of Campaigns and there details.

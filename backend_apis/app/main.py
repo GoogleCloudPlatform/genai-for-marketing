@@ -159,7 +159,7 @@ app.add_middleware(
 @router.post("/users/{user_id}/campaigns")
 def create_campaign(user_id: str,data: CampaignCreateRequest
                     ) -> CampaignCreateResponse:
-    """Campaing Creation and content generation with PaLM API
+    """Campaign Creation and content generation with Gemini.
         Parameters:
             user_id: str
             campaign_name: str
