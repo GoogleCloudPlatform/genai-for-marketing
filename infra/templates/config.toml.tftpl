@@ -16,6 +16,7 @@
 project_id = "${project_id}"
 location = "${region}"
 
+
 # Audiences
 # Dataset ID of the BigQuery dataset. If you change the dataset_id during the deployment 
 # of this solution, change it here as well.
@@ -87,6 +88,11 @@ ORDER BY total_app_purchase DESC
 [SQL]: SELECT c.email
 FROM `{}.${dataset_name}.customers` as c
 ORDER BY c.loyalty_score DESC 
+
+[Q]: How many media follower users are in state of Georgia
+[SQL]: SELECT COUNT(DISTINCT c.customer_id) 
+FROM `{}.${dataset_name}.customers` AS c
+WHERE c.state = 'Georgia' AND c.is_media_follower = TRUE;
 
 """
 
@@ -202,7 +208,7 @@ Product description: """
 # documentation for more information.
 text_model_name = "gemini-1.5-pro"
 image_model_name = "imagen-3.0-generate-001"
-code_model_name = "code-bison"
+code_model_name = "gemini-1.5-pro"
 
 [data_sample]
 
