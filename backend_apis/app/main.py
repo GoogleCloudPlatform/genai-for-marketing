@@ -106,7 +106,6 @@ bq_client = bigquery.Client(project=project_id)
 datacatalog_client = datacatalog_v1.DataCatalogClient()
 
 # Text models
-gemini_llm = GenerativeModel("gemini-1.0-pro-001")
 code_llm = GenerativeModel(config["models"]["code_model_name"])
 text_llm = GenerativeModel(config["models"]["text_model_name"])
 
