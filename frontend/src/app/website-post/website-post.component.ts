@@ -38,52 +38,21 @@ export class WebsitePostComponent {
   filteredOptions!: Observable<TranslationLanguage[]>;
   selectedLang: any = '';
   langCodes = [
-    { 'language_code': 'da-DK', 'language_name': 'da-DK-Neural2-D' },
-    { 'language_code': 'en-AU', 'language_name': 'en-AU-Neural2-D' },
-    { 'language_code': 'en-IN', 'language_name': 'en-IN-Neural2-A' },
-    { 'language_code': 'en-IN', 'language_name': 'en-IN-Neural2-B' },
+    {"language_code": "en-US", "language_name": "en-US-Journey-F"},
+    {"language_code": "en-US", "language_name": "en-US-Journey-D"},
+    {"language_code": "en-US", "language_name": "en-US-Journey-O"},
+    {"language_code": "en-US", "language_name": "en-US-Studio-O"},
+    {"language_code": "en-US", "language_name": "en-US-Casual-K"},
+    {"language_code": "en-US", "language_name": "en-US-News-K"},
+    {"language_code": "en-US", "language_name": "en-US-News-L"},
+    {"language_code": "en-US", "language_name": "en-US-News-N"},
+    {"language_code": "en-US", "language_name": "en-US-Polyglot-1"},
+    
     { 'language_code': 'en-IN', 'language_name': 'en-IN-Neural2-C' },
     { 'language_code': 'en-IN', 'language_name': 'en-IN-Neural2-D' },
     { 'language_code': 'en-GB', 'language_name': 'en-GB-Neural2-A' },
     { 'language_code': 'en-GB', 'language_name': 'en-GB-Neural2-B' },
-    { 'language_code': 'en-GB', 'language_name': 'en-GB-Neural2-C' },
-    { 'language_code': 'en-GB', 'language_name': 'en-GB-Neural2-D' },
-    { 'language_code': 'en-GB', 'language_name': 'en-GB-Neural2-F' },
-
-    { 'language_code': 'fil-PH', 'language_name': 'fil-ph-Neural2-A' },
-    { 'language_code': 'fil-PH', 'language_name': 'fil-ph-Neural2-D' },
-    { 'language_code': 'fr-CA', 'language_name': 'fr-CA-Neural2-A' },
-    { 'language_code': 'fr-CA', 'language_name': 'fr-CA-Neural2-B' },
-    { 'language_code': 'fr-CA', 'language_name': 'fr-CA-Neural2-C' },
-    { 'language_code': 'fr-CA', 'language_name': 'fr-CA-Neural2-D' },
-    { 'language_code': 'fr-FR', 'language_name': 'fr-FR-Neural2-A' },
-    { 'language_code': 'fr-FR', 'language_name': 'fr-FR-Neural2-B' },
-    { 'language_code': 'fr-FR', 'language_name': 'fr-FR-Neural2-C' },
-    { 'language_code': 'fr-FR', 'language_name': 'fr-FR-Neural2-D' },
-    { 'language_code': 'fr-FR', 'language_name': 'fr-FR-Neural2-E' },
-    { 'language_code': 'fr-FR', 'language_name': 'fr-FR-Polyglot-1' },
-
-    { 'language_code': 'de-DE', 'language_name': 'de-DE-Neural2-A' },
-    { 'language_code': 'de-DE', 'language_name': 'de-DE-Neural2-B' },
-    { 'language_code': 'de-DE', 'language_name': 'de-DE-Neural2-C' },
-    { 'language_code': 'de-DE', 'language_name': 'de-DE-Neural2-D' },
-    { 'language_code': 'de-DE', 'language_name': 'de-DE-Neural2-F' },
-    { 'language_code': 'de-DE', 'language_name': 'de-DE-Polyglot-1' },
-
-    { 'language_code': 'hi-IN', 'language_name': 'hi-IN-Neural2-A' },
-    { 'language_code': 'hi-IN', 'language_name': 'hi-IN-Neural2-B' },
-    { 'language_code': 'hi-IN', 'language_name': 'hi-IN-Neural2-C' },
-    { 'language_code': 'hi-IN', 'language_name': 'hi-IN-Neural2-D' },
-
-    { 'language_code': 'it-IT', 'language_name': 'it-IT-Neural2-A' },
-    { 'language_code': 'it-IT', 'language_name': 'it-IT-Neural2-C' },
-
-    { 'language_code': 'ja-JP', 'language_name': 'ja-JP-Neural2-B' },
-    { 'language_code': 'ja-JP', 'language_name': 'ja-JP-Neural2-C' },
-    { 'language_code': 'ja-JP', 'language_name': 'ja-JP-Neural2-D' }
-
-
-  ]
+  ];
   filtered!: any;
   id: any;
   campaignData: any;
