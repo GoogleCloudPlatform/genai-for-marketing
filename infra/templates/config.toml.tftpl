@@ -89,6 +89,11 @@ ORDER BY total_app_purchase DESC
 FROM `{}.${dataset_name}.customers` as c
 ORDER BY c.loyalty_score DESC 
 
+[Q]: How many media follower users are in state of Georgia
+[SQL]: SELECT COUNT(DISTINCT c.customer_id) 
+FROM `{}.${dataset_name}.customers` AS c
+WHERE c.state = 'Georgia' AND c.is_media_follower = TRUE;
+
 """
 
 [prompts]
