@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { LoginService } from '../services/login.service';
 import { CampaignService } from '../services/campaign.service';
-import { AsyncSubject, Observable, Subscription, forkJoin } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { AudiencesService } from '../services/audiences.service';
 import { EmailCopyService } from '../services/email-copy.service';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -53,7 +53,6 @@ export class EmailCopyComponent {
   showProgress: boolean = false;
   showProgress2: boolean = false;
   fileUploaded: boolean = false;
-  sanitizedOutput: any = {};
   uploadImageAssetsClicked: boolean = false;
   genrateImageClicked: boolean = false;
   showGenarateImagedata: boolean = false;
@@ -563,7 +562,6 @@ export class EmailCopyComponent {
     this.visibleEmails = this.bulEmails.slice(this.startIndex, this.startIndex + 3);
     this.activeEButton = this.activeEButton.fill(false)
   }
-
 
   builEmailContents(ind: any, item: any) {
     this.selectedBulkEmailIndex = ind + this.startIndex

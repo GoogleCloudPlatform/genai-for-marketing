@@ -1,11 +1,9 @@
 import { Component } from '@angular/core';
 import { LoginService } from '../services/login.service';
 import { CampaignService } from '../services/campaign.service';
-import { Observable, Subscription, map, of, startWith } from 'rxjs';
+import { Observable, Subscription, of } from 'rxjs';
 import { AudiencesService } from '../services/audiences.service';
-import { EmailCopyService } from '../services/email-copy.service';
 import { DomSanitizer } from '@angular/platform-browser';
-import { DialogConfirmComponent } from '../dialog-confirm/dialog-confirm.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BOLD_BUTTON, CUSTOM, EditorConfig, FONT_SIZE_SELECT, FORE_COLOR, IMAGE_INPUT, INDENT_BUTTON, ITALIC_BUTTON, JUSTIFY_CENTER_BUTTON, JUSTIFY_FULL_BUTTON, JUSTIFY_LEFT_BUTTON, JUSTIFY_RIGHT_BUTTON, LINK_INPUT, ORDERED_LIST_BUTTON, OUTDENT_BUTTON, SEPARATOR, STRIKE_THROUGH_BUTTON, ST_BUTTONS, SUBSCRIPT_BUTTON, SUPERSCRIPT_BUTTON, UNDERLINE_BUTTON, UNDO_BUTTON, UNLINK_BUTTON, UNORDERED_LIST_BUTTON } from 'ngx-simple-text-editor';

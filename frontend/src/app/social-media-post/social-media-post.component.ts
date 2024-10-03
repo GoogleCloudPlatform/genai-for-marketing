@@ -79,6 +79,9 @@ export class SocialMediaPostComponent {
   saveSpinner: boolean = false;
   showSaveBtn: boolean = false;
   selectDisable: boolean = false;
+  selectable: boolean = true;
+  chipLists = [{ name: 'Instagram' }, { name: 'Threads' }];
+
   constructor(public loginService: LoginService, public audiencesSerive: AudiencesService, public snackBar: MatSnackBar,
     public emailService: EmailCopyService,
     public campaignServ: CampaignService, public socialmediaService: SocialMediaService, private domSanitizer: DomSanitizer) {
@@ -112,7 +115,7 @@ export class SocialMediaPostComponent {
     this.showUploadImageData = false;
     this.editImageSection = false;
     this.showImageSection = false;
-    this.selectedImage =''
+    this.selectedImage = ''
   }
   onUploadImageAssets() {
     this.genrateImageClicked = false;
@@ -130,7 +133,7 @@ export class SocialMediaPostComponent {
     this.showImageSection = false;
     this.editImageSection = false;
     this.imageSrc = '';
-    this.selectedImage =''
+    this.selectedImage = ''
   }
   loadEditImageCanvasComponent(img: any) {
     this.editImageSection = false;
@@ -170,28 +173,23 @@ export class SocialMediaPostComponent {
     }
   }
 
-  selectable: boolean = true;
-
-  chipLists = [{ name: 'Instagram' }, { name: 'Threads' }];
-
-
   isSelectedChip(chipValue: any) {
     this.selectedDestination = chipValue
   }
 
   generateSocialMediaImage() {
-    this.images =[];
+    this.images = [];
     if (this.promptVal === "") {
       alert('please enter context value')
     } else {
       this.showProgress = true
       let obj = {
-        "prompt": "Theme:" + this.selectedCampaignFromDropdown[0].data.theme + " " + this.promptVal 
-        + ", Aspect Ration: " + this.socialMediaForm.controls.aspectRation.value 
-        + ", Color Tone:" + this.socialMediaForm.controls.colorTone.value
-        + ", Lighting:" + this.socialMediaForm.controls.lighting.value 
-        + ", Composition:" + this.socialMediaForm.controls.compostion.value 
-        + ", Content Type:" + this.socialMediaForm.controls.contentType.value,
+        "prompt": "Theme:" + this.selectedCampaignFromDropdown[0].data.theme + " " + this.promptVal
+          + ", Aspect Ration: " + this.socialMediaForm.controls.aspectRation.value
+          + ", Color Tone:" + this.socialMediaForm.controls.colorTone.value
+          + ", Lighting:" + this.socialMediaForm.controls.lighting.value
+          + ", Composition:" + this.socialMediaForm.controls.compostion.value
+          + ", Content Type:" + this.socialMediaForm.controls.contentType.value,
         "number_of_images": 3,
         "negative_prompt": ""
       }
@@ -251,9 +249,9 @@ export class SocialMediaPostComponent {
     // Object.assign(cust,customer)
   }
 
-  saveImageToDrive(){
+  saveImageToDrive() {
     this.saveSpinner = true;
-    if(this.selectedImage?.changingThisBreaksApplicationSecurity){
+    if (this.selectedImage?.changingThisBreaksApplicationSecurity) {
       this.selectedImage = this.selectedImage?.changingThisBreaksApplicationSecurity
     }
     if (!this.selectedImage) {
@@ -261,14 +259,14 @@ export class SocialMediaPostComponent {
     }
     var selectedImage = this.campaignServ.dataURLtoFile(`${this.selectedImage}`, 'social_media_image.png')
     let selectedCampaign = this.campaignResults.filter((c: any) => c.id === this.selectedCampaignId);
-    let folder_id  = selectedCampaign[0].data.workspace_assets.new_folder_id
+    let folder_id = selectedCampaign[0].data.workspace_assets.new_folder_id
     this.campaignServ.imageUploadToGCS(selectedImage, folder_id, event).subscribe((res: any) => {
       this.imageGcsPath = res;
-      this.saveToCampaign(this.imageGcsPath , selectedCampaign)
+      this.saveToCampaign(this.imageGcsPath, selectedCampaign)
     })
   }
 
-  saveToCampaign(imageGcsPath : any ,  selectedCampaign : any) {
+  saveToCampaign(imageGcsPath: any, selectedCampaign: any) {
     this.saveSpinner = true;
     if (this.selectedDestination == "Instagram") {
       let instaData = {
