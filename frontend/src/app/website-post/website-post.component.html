@@ -160,7 +160,8 @@
 
             <textarea class="singleEmailTextarea" [(ngModel)]="textContent" (ngModelChange)="updateEmailText($event)"
                 style=" width: 903px; white-space: pre-wrap; overflow: auto; height:486px;"></textarea>
-            <div style="margin-top: 10px;">Choose the language to convert Text to Speech :</div>
+            <!--
+            <div style="margin-top: 10px;">Choose the voice to Read Aloud (Text to Speech):</div>
             <div style="width: 300px;border: 1px solid #D5D5D5;padding: 10px;border-radius: 10px; margin-top: 10px;">
                 <mat-select [(ngModel)]="selectedLang" (ngModelChange)="changeLang($event)" name="lang"
                     class="translateLang">
@@ -173,9 +174,9 @@
             <div style="margin-top: 20px;">
                 <audio controls *ngIf="audio_url">
                     <source src={{audio_url}} type="audio/wav">
-
                 </audio>
             </div>
+            -->
         </div>
 
         <br>

@@ -213,14 +213,18 @@ def generate_sql_and_query(
         prompt_template,
         project_id)
 
-    gen_code = llm.predict(
-        prompt = prompt,
-        max_output_tokens = 1024,
-        temperature=0.3
+    gen_code = llm.generate_content(
+        prompt,
+        generation_config={ "temperature": 0.3,"max_output_tokens": 1024}
     ).text.replace("```","")
+    
     gen_code = gen_code[gen_code.find("SELECT"):]
     result = []
-    result_job = bqclient.query(gen_code)
-    for row in result_job:
-        result.append(dict(row.items()))
+    try:
+        result_job = bqclient.query(gen_code)
+        for row in result_job:
+            result.append(dict(row.items()))
+    except:
+        raise Exception(f"We couldn't complete your request due to an error in the generated query. Query: {gen_code} ")
+    
     return result, gen_code, prompt

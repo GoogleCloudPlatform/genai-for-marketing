@@ -19,14 +19,9 @@ import { HttpClientModule } from '@angular/common/http';
 import { CampaignListComponent } from './campaign-list/campaign-list.component';
 import { MaterialModule } from './material/material.module';
 import { NgxDocViewerModule } from 'ngx-doc-viewer';
-
-
 import { MarketingInsightsComponent } from './marketing-insights/marketing-insights.component';
 import { CampaignPerformanceComponent } from './campaign-performance/campaign-performance.component';
-import { ExistingCampaignsComponent } from './existing-campaigns/existing-campaigns.component';
-
 import { CustomerService } from '../app/customer.service';
-
 import { TableModule } from 'primeng/table';
 import { CalendarModule } from 'primeng/calendar';
 import { SliderModule } from 'primeng/slider';
@@ -55,11 +50,9 @@ import { DatePipe } from '@angular/common';
 import { EmailCopyComponent } from './email-copy/email-copy.component';
 import { SocialMediaPostComponent } from './social-media-post/social-media-post.component';
 import { CarouselModule } from 'primeng/carousel';
-import { NgxEditorModule } from 'ngx-editor';
 import { NgxSimpleTextEditorModule } from 'ngx-simple-text-editor';
 import { EditImageCanvasComponent } from './edit-image-canvas/edit-image-canvas.component';
 import { WebsitePostComponent } from './website-post/website-post.component';
-import { WebsitePostEditImageComponent } from './website-post-edit-image/website-post-edit-image.component';
 import { SocialMediaEditCanvasComponent } from './social-media-edit-canvas/social-media-edit-canvas.component';
 import { AssetGroupPmaxComponent } from './asset-group-pmax/asset-group-pmax.component';
 import { ContentReviewComponent } from './content-review/content-review.component';
@@ -74,6 +67,7 @@ import { PrismComponent } from './prism/prism.component';
 import 'prismjs/components/prism-sql';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSelectModule } from '@angular/material/select';
+import { FileDragNDropDirective } from './file-drag-n-drop.directive';
 
 const fireBaseConfig = environment.firebaseConfig
 @NgModule({
@@ -89,7 +83,6 @@ const fireBaseConfig = environment.firebaseConfig
     CampaignListComponent,
     MarketingInsightsComponent,
     CampaignPerformanceComponent,
-    ExistingCampaignsComponent,
     AudiencesComponent,
     SafePipe,
     ConsumerInsightsComponent,
@@ -98,12 +91,12 @@ const fireBaseConfig = environment.firebaseConfig
     SocialMediaPostComponent,
     EditImageCanvasComponent,
     WebsitePostComponent,
-    WebsitePostEditImageComponent,
     SocialMediaEditCanvasComponent,
     AssetGroupPmaxComponent,
     ContentReviewComponent,
     UserPhotoComponent,
-    PrismComponent
+    PrismComponent,
+    FileDragNDropDirective
   ],
   imports: [
     BrowserModule,
@@ -147,7 +140,7 @@ const fireBaseConfig = environment.firebaseConfig
     ClipboardModule,
     MatExpansionModule,
     MatSelectModule
-    ],
+  ],
   providers: [
     // provideClientHydration(),
     //   provideHttpClient()
@@ -155,7 +148,7 @@ const fireBaseConfig = environment.firebaseConfig
       provideFirebaseApp(() => initializeApp(fireBaseConfig)),
       provideFirestore(() => getFirestore()),
       provideAuth(() => getAuth()),
-      ]),
+    ]),
     CustomerService,
     DatePipe
   ],

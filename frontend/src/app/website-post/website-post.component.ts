@@ -1,11 +1,9 @@
 import { Component } from '@angular/core';
 import { LoginService } from '../services/login.service';
 import { CampaignService } from '../services/campaign.service';
-import { Observable, Subscription, map, of, startWith } from 'rxjs';
+import { Observable, Subscription, of } from 'rxjs';
 import { AudiencesService } from '../services/audiences.service';
-import { EmailCopyService } from '../services/email-copy.service';
 import { DomSanitizer } from '@angular/platform-browser';
-import { DialogConfirmComponent } from '../dialog-confirm/dialog-confirm.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BOLD_BUTTON, CUSTOM, EditorConfig, FONT_SIZE_SELECT, FORE_COLOR, IMAGE_INPUT, INDENT_BUTTON, ITALIC_BUTTON, JUSTIFY_CENTER_BUTTON, JUSTIFY_FULL_BUTTON, JUSTIFY_LEFT_BUTTON, JUSTIFY_RIGHT_BUTTON, LINK_INPUT, ORDERED_LIST_BUTTON, OUTDENT_BUTTON, SEPARATOR, STRIKE_THROUGH_BUTTON, ST_BUTTONS, SUBSCRIPT_BUTTON, SUPERSCRIPT_BUTTON, UNDERLINE_BUTTON, UNDO_BUTTON, UNLINK_BUTTON, UNORDERED_LIST_BUTTON } from 'ngx-simple-text-editor';
@@ -40,52 +38,21 @@ export class WebsitePostComponent {
   filteredOptions!: Observable<TranslationLanguage[]>;
   selectedLang: any = '';
   langCodes = [
-    { 'language_code': 'da-DK', 'language_name': 'da-DK-Neural2-D' },
-    { 'language_code': 'en-AU', 'language_name': 'en-AU-Neural2-D' },
-    { 'language_code': 'en-IN', 'language_name': 'en-IN-Neural2-A' },
-    { 'language_code': 'en-IN', 'language_name': 'en-IN-Neural2-B' },
+    {"language_code": "en-US", "language_name": "en-US-Journey-F"},
+    {"language_code": "en-US", "language_name": "en-US-Journey-D"},
+    {"language_code": "en-US", "language_name": "en-US-Journey-O"},
+    {"language_code": "en-US", "language_name": "en-US-Studio-O"},
+    {"language_code": "en-US", "language_name": "en-US-Casual-K"},
+    {"language_code": "en-US", "language_name": "en-US-News-K"},
+    {"language_code": "en-US", "language_name": "en-US-News-L"},
+    {"language_code": "en-US", "language_name": "en-US-News-N"},
+    {"language_code": "en-US", "language_name": "en-US-Polyglot-1"},
+    
     { 'language_code': 'en-IN', 'language_name': 'en-IN-Neural2-C' },
     { 'language_code': 'en-IN', 'language_name': 'en-IN-Neural2-D' },
     { 'language_code': 'en-GB', 'language_name': 'en-GB-Neural2-A' },
     { 'language_code': 'en-GB', 'language_name': 'en-GB-Neural2-B' },
-    { 'language_code': 'en-GB', 'language_name': 'en-GB-Neural2-C' },
-    { 'language_code': 'en-GB', 'language_name': 'en-GB-Neural2-D' },
-    { 'language_code': 'en-GB', 'language_name': 'en-GB-Neural2-F' },
-
-    { 'language_code': 'fil-PH', 'language_name': 'fil-ph-Neural2-A' },
-    { 'language_code': 'fil-PH', 'language_name': 'fil-ph-Neural2-D' },
-    { 'language_code': 'fr-CA', 'language_name': 'fr-CA-Neural2-A' },
-    { 'language_code': 'fr-CA', 'language_name': 'fr-CA-Neural2-B' },
-    { 'language_code': 'fr-CA', 'language_name': 'fr-CA-Neural2-C' },
-    { 'language_code': 'fr-CA', 'language_name': 'fr-CA-Neural2-D' },
-    { 'language_code': 'fr-FR', 'language_name': 'fr-FR-Neural2-A' },
-    { 'language_code': 'fr-FR', 'language_name': 'fr-FR-Neural2-B' },
-    { 'language_code': 'fr-FR', 'language_name': 'fr-FR-Neural2-C' },
-    { 'language_code': 'fr-FR', 'language_name': 'fr-FR-Neural2-D' },
-    { 'language_code': 'fr-FR', 'language_name': 'fr-FR-Neural2-E' },
-    { 'language_code': 'fr-FR', 'language_name': 'fr-FR-Polyglot-1' },
-
-    { 'language_code': 'de-DE', 'language_name': 'de-DE-Neural2-A' },
-    { 'language_code': 'de-DE', 'language_name': 'de-DE-Neural2-B' },
-    { 'language_code': 'de-DE', 'language_name': 'de-DE-Neural2-C' },
-    { 'language_code': 'de-DE', 'language_name': 'de-DE-Neural2-D' },
-    { 'language_code': 'de-DE', 'language_name': 'de-DE-Neural2-F' },
-    { 'language_code': 'de-DE', 'language_name': 'de-DE-Polyglot-1' },
-
-    { 'language_code': 'hi-IN', 'language_name': 'hi-IN-Neural2-A' },
-    { 'language_code': 'hi-IN', 'language_name': 'hi-IN-Neural2-B' },
-    { 'language_code': 'hi-IN', 'language_name': 'hi-IN-Neural2-C' },
-    { 'language_code': 'hi-IN', 'language_name': 'hi-IN-Neural2-D' },
-
-    { 'language_code': 'it-IT', 'language_name': 'it-IT-Neural2-A' },
-    { 'language_code': 'it-IT', 'language_name': 'it-IT-Neural2-C' },
-
-    { 'language_code': 'ja-JP', 'language_name': 'ja-JP-Neural2-B' },
-    { 'language_code': 'ja-JP', 'language_name': 'ja-JP-Neural2-C' },
-    { 'language_code': 'ja-JP', 'language_name': 'ja-JP-Neural2-D' }
-
-
-  ]
+  ];
   filtered!: any;
   id: any;
   campaignData: any;
