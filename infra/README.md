@@ -92,6 +92,8 @@ Generative AI for Marketing Uses Google Drive to store created marketing materia
 ### Create Folder and Upload Files
 Execute the following script from the `infra` subfolder, substituting `<cloud_run_backend_sa>` for the `cloud_run_backend_sa` value output by `terraform apply` (without quotes) in step 1.
 
+**Note: if you already have a `genai-marketing-assets` folder in your top-level Google Drive you must use a different folder name.**
+
 
 ```shell
 echo "{}" >> gdrive_folder_results.json
