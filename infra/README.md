@@ -92,6 +92,8 @@ Generative AI for Marketing Uses Google Drive to store created marketing materia
 ### Create Folder and Upload Files
 Execute the following script from the `infra` subfolder, substituting `<cloud_run_backend_sa>` for the `cloud_run_backend_sa` value output by `terraform apply` (without quotes) in step 1.
 
+**Note: if you already have a `genai-marketing-assets` folder in your top-level Google Drive you must use a different folder name.**
+
 
 ```shell
 echo "{}" >> gdrive_folder_results.json
@@ -184,15 +186,23 @@ In a fresh project, you'll be asked to create an Artifact Registry Docker repoit
 
 The backend deployment pushes the backend APIs into a Cloud Run container that will be called by the frontend UI. The APIs are implemented in Python using [FastAPI](https://fastapi.tiangolo.com/).
 
+
 ### Frontend Deployment 
+
+The frontend is an Angular application deployed in Firebase.
+
+Please validate that you're logged in with the correct account, and if not, log out and then log in again with the firebase commandline.
+
+```
+# To list your existing logins.
+firebase login:list
+```
 
 
 Then to deploy the frontend you need to execute from the `/infra` folder:
 ```
 sh scripts/frontend_deployment.sh --project $(gcloud config get project)
 ```
-
-The frontend is an Angular application deployed in Firebase.
 
 Once this script completes, Generative AI for Marketing is Deployed!
 
