@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Inject, OnDestroy, inject } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoginButtonComponent } from '../login-button/login-button.component';
 import { Subscription } from 'rxjs';
@@ -10,8 +10,6 @@ import { LoginService } from '../services/login.service';
   selector: 'app-user-photo',
   templateUrl: './user-photo.component.html',
   styleUrl: './user-photo.component.scss',
-  //providers :[Auth]
-  //standalone: true,
 })
 export class UserPhotoComponent implements OnDestroy, AfterViewInit {
   photoURL: string | undefined;

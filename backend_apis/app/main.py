@@ -42,7 +42,6 @@ import vertexai
 from vertexai.generative_models import GenerativeModel, Part, FinishReason
 import vertexai.preview.generative_models as generative_models
 
-from vertexai.language_models import TextGenerationModel as bison_ga
 from vertexai.preview.vision_models import ImageGenerationModel
 from vertexai.vision_models import Image
 
@@ -107,7 +106,7 @@ bq_client = bigquery.Client(project=project_id)
 datacatalog_client = datacatalog_v1.DataCatalogClient()
 
 # Text models
-llm_ga = bison_ga.from_pretrained(model_name="text-bison@002")
+code_llm = GenerativeModel(config["models"]["code_model_name"])
 text_llm = GenerativeModel(config["models"]["text_model_name"])
 
 
@@ -509,7 +508,7 @@ def post_audiences(data: AudiencesRequest) -> AudiencesResponse:
 
     try:
         audiences, gen_code, prompt = utils_codey.generate_sql_and_query(
-            llm=llm_ga,
+            llm=code_llm,
             datacatalog_client=datacatalog_client,
             prompt_template=prompt_nl_sql,
             query_metadata=query_metadata,

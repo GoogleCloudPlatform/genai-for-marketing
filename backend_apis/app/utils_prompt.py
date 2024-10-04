@@ -22,6 +22,8 @@ import asyncio
 import functools
 import vertexai
 import tomllib
+from vertexai.preview.vision_models import ImageGenerationModel
+from vertexai.generative_models import GenerativeModel , GenerationConfig
 
 # Load configuration file
 with open("/app/config.toml", "rb") as f:
@@ -31,10 +33,7 @@ location = config["global"]["location"]
 
 vertexai.init(project=project_id, location=location)
 
-from vertexai.preview.language_models import TextGenerationModel
-from vertexai.preview.vision_models import ImageGenerationModel
 
-from vertexai.generative_models import GenerativeModel , GenerationConfig
 
 
 async def async_predict_text_gemini(
