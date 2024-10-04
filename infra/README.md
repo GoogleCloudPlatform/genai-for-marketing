@@ -186,15 +186,23 @@ In a fresh project, you'll be asked to create an Artifact Registry Docker repoit
 
 The backend deployment pushes the backend APIs into a Cloud Run container that will be called by the frontend UI. The APIs are implemented in Python using [FastAPI](https://fastapi.tiangolo.com/).
 
+
 ### Frontend Deployment 
+
+The frontend is an Angular application deployed in Firebase.
+
+Please validate that you're logged in with the correct account, and if not, log out and then log in again with the firebase commandline.
+
+```
+# To list your existing logins.
+firebase login:list
+```
 
 
 Then to deploy the frontend you need to execute from the `/infra` folder:
 ```
 sh scripts/frontend_deployment.sh --project $(gcloud config get project)
 ```
-
-The frontend is an Angular application deployed in Firebase.
 
 Once this script completes, Generative AI for Marketing is Deployed!
 
