@@ -47,10 +47,15 @@ with open("/app/config.toml", "rb") as f:
 project_id = config["global"]["project_id"]
 location = config["global"]["location"]
 
-#TODO: Include the credentials with the custom header to the vertexai.init method
+credentials, _ = google.auth.default()
+request = google.auth.transport.requests.Request()
+credentials.refresh(request)
+credentials.apply(headers = {'user-agent': 'cloud-solutions/genai-for-marketing-backend-v2.0'})
+
 vertexai.init(
     project=project_id,
-    location=location)
+    location=location,
+    credentials=credentials)
 text_llm = GenerativeModel(config["models"]["text_model_name"])
 imagen = ImageGenerationModel.from_pretrained(config["models"]["image_model_name"])
 translate_client = translate.Client(client_info=ClientInfo(user_agent='cloud-solutions/genai-for-marketing-backend-v2.0'))

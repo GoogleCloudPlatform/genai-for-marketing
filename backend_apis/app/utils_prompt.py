@@ -38,8 +38,12 @@ with open("/app/config.toml", "rb") as f:
 project_id = config["global"]["project_id"]
 location = config["global"]["location"]
 
-#TODO: Include the credentials with the custom header to the vertexai.init method
-vertexai.init(project=project_id, location=location)
+credentials, project_id = google.auth.default()
+request = google.auth.transport.requests.Request()
+credentials.refresh(request)
+credentials.apply(headers = {'user-agent': 'cloud-solutions/genai-for-marketing-backend-v2.0'})
+
+vertexai.init(project=project_id, location=location, credentials=credentials)
 
 
 

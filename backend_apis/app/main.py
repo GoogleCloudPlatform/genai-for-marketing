@@ -97,11 +97,14 @@ location = config["global"]["location"]
 bucket_name = config["global"]["asset_bkt"]
 domain = config["global"]["domain"]
 
-#TODO: Include the credentials with the custom header to the vertexai.init method
-vertexai.init(project=project_id, location=location)
+credentials, project_id = google.auth.default()
+request = google.auth.transport.requests.Request()
+credentials.refresh(request)
+credentials.apply(headers = {'user-agent': 'cloud-solutions/genai-for-marketing-backend-v2.0'})
+
+vertexai.init(project=project_id, location=location, credentials=credentials)
 # Vertex AI Search Client
-#TODO: Include the credentials with the custom header to the SearchServiceClient method
-search_client = discoveryengine.SearchServiceClient()
+search_client = discoveryengine.SearchServiceClient(credentials=credentials)
 vertexai_search_datastore = config["global"]["vertexai_search_datastore"]
 
 # Audiences
@@ -111,8 +114,7 @@ tag_name = config["global"]["tag_name"]
 
 # Trendspotting
 bq_client = bigquery.Client(project=project_id, client_info=ClientInfo(user_agent='cloud-solutions/genai-for-marketing-backend-v2.0'))
-#TODO: Include the credentials with the custom header to the DataCatalogClient method
-datacatalog_client = datacatalog_v1.DataCatalogClient()
+datacatalog_client = datacatalog_v1.DataCatalogClient(credentials=credentials)
 
 # Text models
 code_llm = GenerativeModel(config["models"]["code_model_name"])
@@ -123,8 +125,7 @@ text_llm = GenerativeModel(config["models"]["text_model_name"])
 translate_client = translate.Client(client_info=ClientInfo(user_agent='cloud-solutions/genai-for-marketing-backend-v2.0'))
 
 #texttospeech
-#TODO: Include the credentials with the custom header to the TextToSpeechLongAudioSynthesizeClient method
-texttospeech_client = texttospeech.TextToSpeechLongAudioSynthesizeClient()
+texttospeech_client = texttospeech.TextToSpeechLongAudioSynthesizeClient(credentials=credentials)
 
 # Image models
 imagen = ImageGenerationModel.from_pretrained(config["models"]["image_model_name"])
@@ -152,8 +153,6 @@ DESCRIPTION_PROMPT_TEMPLATE = config["prompts"]["description_prompt_template"]
 
 router = APIRouter(prefix="/marketing-api")
 app = FastAPI(docs_url="/marketing-api/docs")
-
-_, project_id = google.auth.default()
 
 app.add_middleware(
     CORSMiddleware,
