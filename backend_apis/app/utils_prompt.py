@@ -20,7 +20,14 @@ A utility module for performing prompt engineering with the Vertex Gemini.
 
 import asyncio
 import functools
+
 import vertexai
+import google.auth
+from google.auth import impersonated_credentials
+import google.auth.transport.requests
+from google.api_core.client_info import ClientInfo
+from google.auth import credentials as auth_credentials
+
 import tomllib
 from vertexai.preview.vision_models import ImageGenerationModel
 from vertexai.generative_models import GenerativeModel , GenerationConfig
@@ -31,6 +38,7 @@ with open("/app/config.toml", "rb") as f:
 project_id = config["global"]["project_id"]
 location = config["global"]["location"]
 
+#TODO: Include the credentials with the custom header to the vertexai.init method
 vertexai.init(project=project_id, location=location)
 
 

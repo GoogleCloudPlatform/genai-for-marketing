@@ -39,6 +39,12 @@ import google.auth
 from proto import Message
 
 import vertexai
+import google.auth
+from google.auth import impersonated_credentials
+import google.auth.transport.requests
+from google.api_core.client_info import ClientInfo
+from google.auth import credentials as auth_credentials
+
 from vertexai.generative_models import GenerativeModel, Part, FinishReason
 import vertexai.preview.generative_models as generative_models
 
@@ -91,8 +97,10 @@ location = config["global"]["location"]
 bucket_name = config["global"]["asset_bkt"]
 domain = config["global"]["domain"]
 
+#TODO: Include the credentials with the custom header to the vertexai.init method
 vertexai.init(project=project_id, location=location)
 # Vertex AI Search Client
+#TODO: Include the credentials with the custom header to the SearchServiceClient method
 search_client = discoveryengine.SearchServiceClient()
 vertexai_search_datastore = config["global"]["vertexai_search_datastore"]
 
@@ -102,7 +110,8 @@ prompt_nl_sql = config["global"]["prompt_nl_sql"]
 tag_name = config["global"]["tag_name"]
 
 # Trendspotting
-bq_client = bigquery.Client(project=project_id)
+bq_client = bigquery.Client(project=project_id, client_info=ClientInfo(user_agent='cloud-solutions/genai-for-marketing-backend-v2.0'))
+#TODO: Include the credentials with the custom header to the DataCatalogClient method
 datacatalog_client = datacatalog_v1.DataCatalogClient()
 
 # Text models
@@ -111,9 +120,10 @@ text_llm = GenerativeModel(config["models"]["text_model_name"])
 
 
 #translation
-translate_client = translate.Client()
+translate_client = translate.Client(client_info=ClientInfo(user_agent='cloud-solutions/genai-for-marketing-backend-v2.0'))
 
 #texttospeech
+#TODO: Include the credentials with the custom header to the TextToSpeechLongAudioSynthesizeClient method
 texttospeech_client = texttospeech.TextToSpeechLongAudioSynthesizeClient()
 
 # Image models
