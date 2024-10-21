@@ -29,6 +29,11 @@ module "genai_run_service_account" {
     "${var.project_id}=>roles/bigquery.dataViewer",
     "${var.project_id}=>roles/bigquery.jobUser",
     "${var.project_id}=>roles/datastore.user",
+    "${var.project_id}=>roles/iam.serviceAccountTokenCreator",
+    "${var.project_id}=>roles/iam.serviceAccountUser",
+    "${var.project_id}=>roles/iam.serviceAccountOpenIdTokenCreator",
+    "${var.project_id}=>roles/iam.serviceAccountKeyAdmin",
+    "${var.project_id}=>roles/iam.workloadIdentityUser"
   ]
   depends_on = [module.project_services]
 }
@@ -40,7 +45,16 @@ data "google_project" "project" {
 }
 
 locals {
-  cb_roles = ["roles/storage.objectViewer", "roles/logging.logWriter", "roles/artifactregistry.writer"]
+  cb_roles = [
+    "roles/storage.objectViewer", 
+    "roles/logging.logWriter", 
+    "roles/artifactregistry.writer",
+    "roles/iam.serviceAccountTokenCreator",
+    "roles/iam.serviceAccountUser",
+    "roles/iam.serviceAccountOpenIdTokenCreator",
+    "roles/iam.serviceAccountKeyAdmin",
+    "roles/iam.workloadIdentityUser"
+    ]
 }
 resource "google_project_iam_member" "cb_roles" {
   count   = length(local.cb_roles)
