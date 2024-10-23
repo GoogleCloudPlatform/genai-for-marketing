@@ -108,3 +108,14 @@ variable "datastore_storage_folder" {
   type    = string
   default = "gs://cloud-samples-data/gen-app-builder/search/alphabet-investor-pdfs/*"
 }
+
+variable "campaigns_themes" {
+  type    = list(string)
+  default = [
+  "Sales of new women's handbags at Cymbal",`
+  "Introducing a new line of men's leather shoes",
+  "New opening of Cymbal concept shoe store in NYC",
+  "Cymbal shoes retail brand in NYC",
+  "Another theme"
+  ]
+}

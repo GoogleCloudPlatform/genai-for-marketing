@@ -1,0 +1,41 @@
+/**
+ * Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+* You can use this to overwrite terraform default variables.
+*/
+
+project_id = "your_project_id"
+
+gdrive_config = {
+  "gdrive_folder_id"   = "folder_gdrive_id",
+  "marketing_slide_id" = "slide_gdrive_id",
+  "marketing_doc_id"   = "doc_gdrive_id",
+  "marketing_sheet_id" = "sheet_gdrive_id"
+}
+
+campaigns_themes = [
+  "Launch of the new Cymbal electric SUV",
+  "Pre-order campaign for the Cymbal Grand Tourer ",
+  "Announcing the Cymbal "Electrify Your Drive" summer sales event",
+  "Showcase the Cymbal autonomous driving technology",
+  "Highlight Cymbal's commitment to sustainable manufacturing",
+  "Partnership with a luxury hotel chain for exclusive Cymbal charging stations",
+  "Cymbal performance test drive events across major cities",
+  "Introduce a new Cymbal vehicle subscription service",
+  "Sponsor an eco-conscious driving rally with Cymbal vehicles",
+  "Collaborate with a renowned artist on a limited-edition Cymbal vehicle"
+  ]

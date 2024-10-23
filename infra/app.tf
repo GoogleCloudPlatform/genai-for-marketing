@@ -117,6 +117,15 @@ resource "local_file" "enviroments_ts" {
   filename = "${path.module}/output_config/environments.ts"
 }
 
+resource "local_file" "campaign_form" {
+  content = templatefile("${path.module}/templates/campaign-form.component.html.tftpl", {
+    campaigns_themes        = var.campaigns_themes,
+    }
+  )
+  filename = "${path.module}/output_config/campaign-form.component.html"
+  # frontend/src/app/campaign-form/campaign-form.component.html
+}
+
 resource "google_firestore_database" "database" {
   project         = var.project_id
   name            = "(default)"
