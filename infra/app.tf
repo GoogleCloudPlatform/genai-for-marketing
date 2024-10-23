@@ -95,7 +95,11 @@ resource "local_file" "config_toml" {
     doc_template_id         = var.gdrive_config.marketing_doc_id,
     sheet_template_id       = var.gdrive_config.marketing_sheet_id,
     domain                  = var.domain,
-    gcs_assets_bucket       = module.gcs_assets_bucket.name
+    gcs_assets_bucket       = module.gcs_assets_bucket.name,
+    prompt_brand_overview   = var.prompt_brand_overview,
+    text_model_name         = var.text_model_name,
+    image_model_name        = var.image_model_name,
+    code_model_name         = var.code_model_name
     }
   )
   filename = "${path.module}/output_config/config.toml"
