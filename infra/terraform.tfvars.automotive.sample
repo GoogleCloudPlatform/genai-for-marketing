@@ -30,7 +30,7 @@ gdrive_config = {
 campaigns_themes = [
   "Launch of the new Cymbal electric SUV",
   "Pre-order campaign for the Cymbal Grand Tourer ",
-  "Announcing the Cymbal "Electrify Your Drive" summer sales event",
+  "Announcing the Cymbal 'Electrify Your Drive' summer sales event",
   "Showcase the Cymbal autonomous driving technology",
   "Highlight Cymbal's commitment to sustainable manufacturing",
   "Partnership with a luxury hotel chain for exclusive Cymbal charging stations",
@@ -39,3 +39,23 @@ campaigns_themes = [
   "Sponsor an eco-conscious driving rally with Cymbal vehicles",
   "Collaborate with a renowned artist on a limited-edition Cymbal vehicle"
   ]
+
+
+transaction_types = [
+    "in-app-purchase",
+    "online-purchase",
+    "in-store-purchase",
+    "recurrent-customer",
+    "thirdparty-purchase"
+]
+
+product_names = [
+    "Sedan",
+    "Hatchback",
+    "SUV",
+    "Crossover",
+    "Coupe",
+    "Convertible",
+    "Sportsback",
+    "VAN",
+]

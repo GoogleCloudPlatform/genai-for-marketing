@@ -112,10 +112,35 @@ variable "datastore_storage_folder" {
 variable "campaigns_themes" {
   type    = list(string)
   default = [
-  "Sales of new women's handbags at Cymbal",`
+  "Sales of new women's handbags at Cymbal",
   "Introducing a new line of men's leather shoes",
   "New opening of Cymbal concept shoe store in NYC",
   "Cymbal shoes retail brand in NYC",
   "Another theme"
+  ]
+}
+
+variable "transaction_types" {
+  type    = list(string)
+  default = [
+    "in-app-purchase",
+    "online-purchase",
+    "in-store-purchase",
+    "recurrent-customer",
+    "thirdparty-purchase"
+  ]
+}
+
+variable "product_names" {
+  type    = list(string)
+  default = [
+    "Coat",
+    "misc",
+    "Handbag",
+    "Headset",
+    "Backpack",
+    "Flashlight",
+    "Hiking Boots",
+    "Running Shoes",
   ]
 }

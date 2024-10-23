@@ -123,8 +123,17 @@ resource "local_file" "campaign_form" {
     }
   )
   filename = "${path.module}/output_config/campaign-form.component.html"
-  # frontend/src/app/campaign-form/campaign-form.component.html
 }
+
+resource "local_file" "aux_data" {
+  content = templatefile("${path.module}/templates/transactions_aux_data.py.tftpl", {
+    campaigns_themes        = var.campaigns_themes,
+    campaigns_themes        = var.campaigns_themes,
+    }
+  )
+  filename = "${path.module}/scripts/aux_data/transactions_aux_data.py"
+}
+
 
 resource "google_firestore_database" "database" {
   project         = var.project_id
