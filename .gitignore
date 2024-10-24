@@ -177,3 +177,5 @@ frontend/.angular
 
 
 backend_apis/app/config.toml
+infra/.terraform.lock.hcl
+infra/scripts/aux_data/transactions_aux_data.py

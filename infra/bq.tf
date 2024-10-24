@@ -16,7 +16,7 @@
 
 module "bigquery" {
   source                      = "terraform-google-modules/bigquery/google"
-  version                     = "~> 7.0"
+  version                     = "~> 8.1"
   dataset_id                  = var.dataset_name
   dataset_name                = var.dataset_name
   project_id                  = var.project_id

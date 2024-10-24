@@ -16,7 +16,7 @@
 
 module "genai_run_service_account" {
   source     = "terraform-google-modules/service-accounts/google"
-  version    = "~> 3.0"
+  version    = "~> 4.4"
   project_id = var.project_id
   names      = ["genai-marketing-run"]
   project_roles = [

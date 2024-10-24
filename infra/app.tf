@@ -76,7 +76,7 @@ data "google_firebase_web_app_config" "app_front" {
 
 module "gcs_assets_bucket" {
   source     = "terraform-google-modules/cloud-storage/google"
-  version    = "~> 5.0"
+  version    = "~> 8.0"
   project_id = var.project_id
   names      = ["marketing"]
   prefix     = var.project_id
