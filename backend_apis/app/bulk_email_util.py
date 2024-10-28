@@ -23,7 +23,14 @@ import asyncio
 import functools
 import numpy as np
 import pandas as pd
+
 import vertexai
+import google.auth
+from google.auth import impersonated_credentials
+import google.auth.transport.requests
+from google.api_core.client_info import ClientInfo
+from google.auth import credentials as auth_credentials
+
 import tomllib
 import io
 import base64
@@ -40,12 +47,18 @@ with open("/app/config.toml", "rb") as f:
 project_id = config["global"]["project_id"]
 location = config["global"]["location"]
 
+credentials, _ = google.auth.default()
+request = google.auth.transport.requests.Request()
+credentials.refresh(request)
+credentials.apply(headers = {'user-agent': 'cloud-solutions/genai-for-marketing-backend-v2.0'})
+
 vertexai.init(
     project=project_id,
-    location=location)
+    location=location,
+    credentials=credentials)
 text_llm = GenerativeModel(config["models"]["text_model_name"])
 imagen = ImageGenerationModel.from_pretrained(config["models"]["image_model_name"])
-translate_client = translate.Client()
+translate_client = translate.Client(client_info=ClientInfo(user_agent='cloud-solutions/genai-for-marketing-backend-v2.0'))
 
 # Default values
 EMAIL_TEXT_PROMPT = config["prompts"]["prompt_email_text"]

@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from google.cloud import storage
+from google.api_core.client_info import ClientInfo
 import io
 
 def upload_to_gcs(project_id, bucket_name, file, destination_blob_name):
@@ -23,7 +24,7 @@ def upload_to_gcs(project_id, bucket_name, file, destination_blob_name):
         destination_blob_name (str): Name of the object in the GCS bucket.
     """
     print("Started Uploadig to GCS")
-    storage_client = storage.Client(project=project_id)
+    storage_client = storage.Client(project=project_id, client_info=ClientInfo(user_agent='cloud-solutions/genai-for-marketing-backend-v2.0'))
     bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(destination_blob_name)
 
@@ -42,7 +43,7 @@ def download_from_gcs(project_id,bucket_name,source_blob_name):
         destination_file_path (str): Path to save the file locally.
     """
 
-    storage_client = storage.Client(project=project_id)
+    storage_client = storage.Client(project=project_id, client_info=ClientInfo(user_agent='cloud-solutions/genai-for-marketing-backend-v2.0'))
     bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(source_blob_name)
     buffer = io.BytesIO()
