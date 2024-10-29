@@ -90,10 +90,10 @@ resource "local_file" "config_toml" {
     dataset_name            = var.dataset_name,
     search_datastore_id     = google_discovery_engine_data_store.search_datastore.data_store_id,
     tag_template_id         = var.tag_template_id,
-    drive_folder_id         = var.gdrive_config.gdrive_folder_id,
-    slides_template_id      = var.gdrive_config.marketing_slide_id,
-    doc_template_id         = var.gdrive_config.marketing_doc_id,
-    sheet_template_id       = var.gdrive_config.marketing_sheet_id,
+    drive_folder_id         = data.external.gdrive_pointers.result.folder_gdrive_id,
+    slides_template_id      = data.external.gdrive_pointers.result.slide_gdrive_id,
+    doc_template_id         = data.external.gdrive_pointers.result.doc_gdrive_id,
+    sheet_template_id       = data.external.gdrive_pointers.result.sheet_gdrive_id,
     domain                  = var.domain,
     gcs_assets_bucket       = module.gcs_assets_bucket.name,
     prompt_brand_overview   = var.prompt_brand_overview,
@@ -103,6 +103,9 @@ resource "local_file" "config_toml" {
     }
   )
   filename = "${path.module}/output_config/config.toml"
+  depends_on = [
+    data.external.gdrive_pointers,
+     ]
 }
 
 resource "local_file" "enviroments_ts" {
@@ -137,6 +140,16 @@ resource "local_file" "aux_data" {
   )
   filename = "${path.module}/scripts/aux_data/transactions_aux_data.py"
 }
+
+
+resource "local_file" "home_component_html" {
+  content = templatefile("${path.module}/templates/home.component.html.tftpl", {
+    showconsumerinsights        = var.showconsumerinsights
+    }
+  )
+  filename = "${path.module}/output_config/home.component.html"
+}
+
 
 
 resource "google_firestore_database" "database" {

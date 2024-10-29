@@ -19,27 +19,38 @@ terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = ">= 5.44"
+      version = "~> 5.44"
     }
     google-beta = {
       source  = "hashicorp/google-beta"
-      version = ">= 6.8"
+      version = "~> 6.8"
     }
     local = {
       source = "hashicorp/local"
-      version = ">= 2.5"
+      version = "~> 2.5"
     }
     null = {
       source = "hashicorp/null"
-      version = ">= 3.2"
+      version = "~> 3.2"
     }
     random = {
       source = "hashicorp/random"
-      version = ">= 3.6"
+      version = "~> 3.6"
+    }
+    external = {
+      source = "hashicorp/external"
+      version = "~> 2.3"
     }
   }
 
   provider_meta "google" {
     module_name = "cloud-solutions/genai-for-marketing-v2.0"
   }
+}
+
+provider "google" {
+      user_project_override = true
+}
+provider "google-beta" {
+      user_project_override = true
 }

@@ -18,6 +18,23 @@ variable "project_id" {
   type = string
 }
 
+variable "showconsumerinsights" {
+  type = bool
+  default = true
+}
+
+variable "datastore_uris" {
+  type    = list(string)
+  default = ["cloud.google.com/*"]
+}
+
+
+variable "gdrive_folder_name" {
+  default     = "genai-marketing-assets"
+  type        = string
+  description = "Name of the folder to create in Google Drive"
+}
+
 variable "location" {
   default     = "US"
   type        = string
@@ -83,26 +100,22 @@ variable "domain" {
   description = "Your company domain"
 
 }
-variable "gdrive_config" {
-  type = object({
-    gdrive_folder_id   = string,
-    marketing_slide_id = string,
-    marketing_doc_id   = string,
-    marketing_sheet_id = string
-  })
-  default = {
-    gdrive_folder_id   = "",
-    marketing_slide_id = "",
-    marketing_doc_id   = "",
-    marketing_sheet_id = ""
-  }
-  description = "Google drive settings"
-}
+# variable "gdrive_config" {
+#   type = object({
+#     gdrive_folder_id   = string,
+#     marketing_slide_id = string,
+#     marketing_doc_id   = string,
+#     marketing_sheet_id = string
+#   })
+#   default = {
+#     gdrive_folder_id   = "",
+#     marketing_slide_id = "",
+#     marketing_doc_id   = "",
+#     marketing_sheet_id = ""
+#   }
+#   description = "Google drive settings"
+# }
 
-variable "datastore_uris" {
-  type    = list(string)
-  default = ["cloud.google.com/*"]
-}
 
 variable "datastore_storage_folder" {
   type    = string

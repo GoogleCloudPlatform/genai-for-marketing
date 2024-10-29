@@ -31,6 +31,14 @@ gdrive_config = {
   "marketing_sheet_id" = "sheet_gdrive_id"
 }
 
+gdrive_folder_name = "genai-marketing-assets"
+
+showconsumerinsights = false // we don't have a customer site reference.
+
+// datastore_uris = ["cloud.google.com/*"] // we don't have a customer site reference.
+
+
+
 campaigns_themes = [
   "Launch of the new Cymbal electric SUV",
   "Pre-order campaign for the Cymbal Grand Tourer ",

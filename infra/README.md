@@ -14,20 +14,15 @@ Make sure you have sufficient free space in your terminal environment before you
 If you encounter problems during deployment see the [Known Issues](#known-issues) section for workarounds to common issues.
 
 ## Step 0 - Prerequisites:
-
+> [!CAUTION]
 Before executing Terraform, follow these steps to enable some services:
 
-### Get Allowlisted for Imagen
-Request access to Imagen through this [form](https://docs.google.com/forms/d/e/1FAIpQLSdMHAK_KJygnvV2Psga7FIzKAhAqIBS_bHYzfgf_Y2h7fsoGA/viewform). Note this can take up to a week. You can still use Generative AI for Marketing while awaiting allowlisting, but image generation capabilities will not work. Generative AI for Marketing currently uses Imagen 3.
-
-### Enable the Cloud Resource Manager API:
-1. Go to https://console.developers.google.com/apis/api/cloudresourcemanager.googleapis.com/overview and enable the API.
 
 ### Enable Firebase
 The frontend of Generative AI for Marketing is hosted on Firebase. Before beginning deployment, you need to enable Firebase.
 
 1. Go to https://console.firebase.google.com/.
-2. Select "Create a project" and enter the name of your Google Cloud Platform project, then click "Continue". 
+2. Select "Create a project" and enter the name of your Google Cloud Platform project, then click "Continue".
 3. If you're using Firebase for the first time, you'll have to add Firebase to one of yor existing Google Cloud projects and confirm the Firebase billing plan.
 4. When prompted to set up Google Analytics respond as you'd like.
 5. Continue and complete.
@@ -42,13 +37,15 @@ The chat agent and search features of Generative AI for Marketing require Vertex
 Cloud Shell is the recommend environment for running the deployment. If you are deploying from outside Cloud Shell, set up your Google Cloud SDK Credentials:
 
 ```shell
-gcloud config set project <your_project_id>
-gcloud auth application-default set-quota-project <your_project_id>
+PROJECT_ID=<your_project_id>
+gcloud config set project $PROJECT_ID
+gcloud auth application-default set-quota-project $PROJECT_ID --scopes='https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/drive'
 ```
 
 You'll also need to install [Terraform](https://developer.hashicorp.com/terraform/install) and the [`gcloud` CLI](https://cloud.google.com/sdk/docs/install).
 
-*Note*: The deployment requires Terraform 1.7 or higher.
+> [!IMPORTANT]
+>  The deployment requires Terraform 1.9 or higher.
 
 ### Ensure Workspace is Set Up and You Have Access
 
@@ -60,18 +57,29 @@ Generative AI for Marketing requires your organization has [Google Workspace](ht
 
 1. In [Cloud Shell](https://cloud.google.com/shell/docs/using-cloud-shell) navigate to the git repo root.
 
-1. Run `gcloud config set project YOUR_PROJECT_ID` to ensure you're installing into the expected project.
+1. Run `gcloud config set project <your_project_id>` to ensure you're installing into the expected project.
 
-1. In the cloned project root, run the following to start the Terraform deployment:
-```sh
-# Move to the infra folder.
+1. In the cloned project root, choose one of the provided variables sample. I.E. Automotive or Fashion. Copy the example in terraform.tfvars and adjust the needed variables.
+> [!IMPORTANT]
+You need at least to populate correctly the **project_id** variable
+
+> [!TIP]
+The file `terraform.tfvars` contains a lot of tweaks which  will make this demo more aderent to your needs.
+We suggest to not modify all the variables all at once.
+You can run this terraform and the following steps as many time as you need.
+
+```bash
 cd infra/
+cp terraform.tfvars.automotive.sample terraform.tfvars
+nano terraform.tfvars
+```
 
-export USER_PROJECT_OVERRIDE=true
-export GOOGLE_BILLING_PROJECT=$(gcloud config get project)
-
+1. run the following to start the Terraform deployment:
+```bash
+# Init plan and Apply your terraform.
 terraform init
-terraform apply -var=project_id=$(gcloud config get project)
+terraform plan
+terraform apply
 ```
 
 When `terraform apply` completes successfully, you'll see a message `Apply complete!` along with outputs specifying config values. Save this output somewhere, you'll need these values later.
@@ -79,6 +87,7 @@ When `terraform apply` completes successfully, you'll see a message `Apply compl
 ## Step 2 - Firebase Auth Provider
 
 After the Terraform deployment successfully completes, enable at least one authentication provider in Firebase. You can enable it using the following steps:
+
 1. Go to https://console.firebase.google.com/project/your_project_id/authentication/providers (change the `your_project_id` value in this URL to your project ID).
 2. Click on Get Started (if needed).
 3. Select Google and flip the enable switch on.
@@ -89,16 +98,6 @@ After the Terraform deployment successfully completes, enable at least one authe
 
 Generative AI for Marketing Uses Google Drive to store created marketing materials. This step creates a Google Drive folder, populates it with templates for the marketing materials, and then returns Google Drive IDs for these templates (you'll need these later). You'll then give the Generative AI for Marketing application access to the Google Drive folder.
 
-### Create Folder and Upload Files
-Execute the following script from the `infra` subfolder, substituting `<cloud_run_backend_sa>` for the `cloud_run_backend_sa` value output by `terraform apply` (without quotes) in step 1.
-
-**Note: if you already have a `genai-marketing-assets` folder in your top-level Google Drive you must use a different folder name.**
-
-
-```shell
-echo "{}" >> gdrive_folder_results.json
-python scripts/create_gdrive_folder.py --folder-name="genai-marketing-assets" --service-account-email=<cloud_run_backend_sa>
-```
 ### Grant Backend Service Account Google Drive Access
 
 In most Workspace setups, the Generative AI for Marketing application needs to be granted access to the Google Drive folder you just created. To do this,  [share the folder](https://support.google.com/drive/answer/7166529?hl=en&co=GENIE.Platform%3DDesktop#zippy=%2Cshare-with-specific-people) with the service account created for the application backend during the Terraform installation. This will allow the service account to access and manage files within the designated folder.
@@ -113,33 +112,16 @@ In most Workspace setups, the Generative AI for Marketing application needs to b
 
 ## Step 4 - Application Deployment
 
-### Update `config.toml`
+### Vertex AI Agent Builder Datastores.
+The automated deployment process created all resources to enable the use of Vertex AI Search service with a Dialogflow CX Agent. However, additional steps are required to complete the process of providing the chat agent with data to use on the Frontend:
 
-Terraform uses the template at `infra/templates/config.toml.tftpl` to generate `config.toml`. During deployment, key sections are replaced with actual infrastructure details, and the final `config.toml` is written to `infra/output_config/`.
+1. **Indexing Data:** Two data stores were created during the automation deployment; `Website` type for indexing information from your already existing website (if applicable) and `Unstructured data` type for indexing information from files like PDFs into Google Cloud Storage (GCS), this is what we'll be doing.  To learn more about Agent Builder data stores, see [here](https://console.cloud.google.com/gen-app-builder/data-stores).
 
-Next, we'll incorporate Google Drive details into this file. **Use your preferred text editor** (nano is shown here).
+    > **IMPORTANT:** Indexing data from a website requires domain verification of your website in order to use the advanced features. Domain verification is **out of scope for this demo** but you can find the steps [here](https://cloud.google.com/generative-ai-app-builder/docs/domain-verification).
 
-1. Open `gdrive_folder_results.json` in the `infra` directory. 
-1. Copy the values for `folder_gdrive_id`, `slide_gdrive_id`, `doc_gdrive_id`, and `sheet_gdrive_id`. Save these somewhere safe outside of Cloud Shell.
-1. In the `infra` directory, open `output_config/config.toml` (e.g., `nano output_config/config.toml`).
-1. Search for `drive_folder_id`. You'll see placeholders for the 4 values you copied. (In nano, use **Ctrl+w** to search)
-1. Replace the placeholders:
-   - `folder_gdrive_id`  ->  `drive_folder_id`
-   - `slide_gdrive_id`   ->  `slides_template_id`
-   - `doc_gdrive_id`     ->  `doc_template_id`
-   - `sheet_gdrive_id`   ->  `sheet_template_id`
-1. Save the file. (In nano, **Ctrl+x**, then **Y**, then Enter) 
-
-### Vertex AI Agent Builder Datastores. 
-The automated deployment process created all resources to enable the use of Vertex AI Search service with a Dialogflow CX Agent. However, additional steps are required to complete the process of providing the chat agent with data to use on the Frontend: 
-
-1. **Indexing Data:** Two data stores were created during the automation deployment; `Website` type for indexing information from your already existing website (if applicable) and `Unstructured data` type for indexing information from files like PDFs into Google Cloud Storage (GCS), this is what we'll be doing.  To learn more about Agent Builder data stores, see [here](https://console.cloud.google.com/gen-app-builder/data-stores). 
-
-    > **IMPORTANT:** Indexing data from a website requires domain verification of your website in order to use the advanced features. Domain verification is **out of scope for this demo** but you can find the steps [here](https://cloud.google.com/generative-ai-app-builder/docs/domain-verification).   
-    
    Follow steps below:
 
-    1.  **GCS Bucket Creation:** Create a GCS bucket if you don't have one already. The following steps create a GCS bucket with uniform level access. Change the value of `BUCKET_LOCATION` otherwise it will be deployed to `us-central1`. 
+    1.  **GCS Bucket Creation:** Create a GCS bucket if you don't have one already. The following steps create a GCS bucket with uniform level access. Change the value of `BUCKET_LOCATION` otherwise it will be deployed to `us-central1`.
 
         ```bash
         export PROJECT_ID=$(gcloud config get project)
@@ -149,31 +131,30 @@ The automated deployment process created all resources to enable the use of Vert
 
         gcloud config set project $PROJECT_ID
         gcloud storage buckets create gs://$BUCKET_NAME --project=$PROJECT_ID --default-storage-class=$STORAGE_CLASS --location=$BUCKET_LOCATION --uniform-bucket-level-access
+        ```
+
+    1.  **Copying Data:** We need to copy over some PDFs - Alphabet Earnings Reports from 2004 to 2023 -  into the newly created bucket using `gsutil`.
+
 
         ```
-    
-    1.  **Copying Data:** We need to copy over some PDFs - Alphabet Earnings Reports from 2004 to 2023 -  into the newly created bucket using `gsutil`.  
-    
-
+        gsutil -m cp -r "gs://cloud-samples-data-us-central1/gen-app-builder/search/alphabet-investor-pdfs" "gs://$BUCKET_NAME/data"
         ```
-        gsutil -m cp -r "gs://cloud-samples-data-us-central1/gen-app-builder/search/alphabet-investor-pdfs" "gs://$BUCKET_NAME/data" 
-        ```  
 
-        You can also download the folder manually and upload it to your storage account.     
-    
-    1.  **Indexing Data Store:** Follow instructions [here](https://cloud.google.com/dialogflow/vertex/docs/concept/data-store#cloud-storage) to index the data store with the PDF documents we just copied over. 
+        You can also download the folder manually and upload it to your storage account.
 
-2. **Add Datastore to Dialogflow CX:** Once the pdf documents are copied over to your GCS bucket and indexed, you need to connect Dialogflow CX agent to your data store. Follow the steps below to do that.  
-    - **Connect Agent to Data:** Go to your [Dialogflow CX agent](https://dialogflow.cloud.google.com/cx) and click on **Build > Default Start Flow > Start Page**.   
-    - Under **Data stores**, click on **Edit Data Store** and select your indexed data store from the drop down of type: **Unstructured documents**.  
-    - Click **Save**. 
-    - **Test your agent**, from Dialogflow CX UI, to make sure it responds with the right data. Otherwise, ensure you followed all steps above.  
+    1.  **Indexing Data Store:** Follow instructions [here](https://cloud.google.com/dialogflow/vertex/docs/concept/data-store#cloud-storage) to index the data store with the PDF documents we just copied over.
 
-3. **Publish Agent:** In order to access your chat agent from the GAIM Frontend, you will need to publish it. Follow steps below:  
+2. **Add Datastore to Dialogflow CX:** Once the pdf documents are copied over to your GCS bucket and indexed, you need to connect Dialogflow CX agent to your data store. Follow the steps below to do that.
+    - **Connect Agent to Data:** Go to your [Dialogflow CX agent](https://dialogflow.cloud.google.com/cx) and click on **Build > Default Start Flow > Start Page**.
+    - Under **Data stores**, click on **Edit Data Store** and select your indexed data store from the drop down of type: **Unstructured documents**.
+    - Click **Save**.
+    - **Test your agent**, from Dialogflow CX UI, to make sure it responds with the right data. Otherwise, ensure you followed all steps above.
+
+3. **Publish Agent:** In order to access your chat agent from the GAIM Frontend, you will need to publish it. Follow steps below:
     - Click on **Publish**.
-    - Under **Access**, ensure `Unauthenticated API (anonymous access)` is checked  
+    - Under **Access**, ensure `Unauthenticated API (anonymous access)` is checked
     - Set your UI style  as **Side Panel**.
-    - Finally, click on **Enable the Unauthenticated API**. This will generate some HTML code that can be added to your website to display your agent. You can ignore this as the provided Frontend already has the Chat UI done for you.  
+    - Finally, click on **Enable the Unauthenticated API**. This will generate some HTML code that can be added to your website to display your agent. You can ignore this as the provided Frontend already has the Chat UI done for you.
     - Now, click **Done** and exit.
 
 ### Backend Deployment
@@ -187,7 +168,7 @@ In a fresh project, you'll be asked to create an Artifact Registry Docker repoit
 The backend deployment pushes the backend APIs into a Cloud Run container that will be called by the frontend UI. The APIs are implemented in Python using [FastAPI](https://fastapi.tiangolo.com/).
 
 
-### Frontend Deployment 
+### Frontend Deployment
 
 The frontend is an Angular application deployed in Firebase.
 
@@ -210,9 +191,9 @@ Once this script completes, Generative AI for Marketing is Deployed!
 
 ### Review Your Enviroment
 
-When frontend deployment is complete, the 'Hosting URL' printed in the terminal is your link to the UI. You can also see this value in the `frontend_deployment` value output by `terraform apply`. 
+When frontend deployment is complete, the 'Hosting URL' printed in the terminal is your link to the UI. You can also see this value in the `frontend_deployment` value output by `terraform apply`.
 
-The backend is located at the address in the `backend_deployment` value in the `terraform apply` output. It should look something like "https://genai-for-marketing-xxxxxxxx.a.run.app". If you append `/marketing-api/docs` (i.e., "https://genai-for-marketing-xxxxxxxx.a.run.app/marketing-api/docs") to this URL you can access the FastAPI interface for exploring the backend APIs. 
+The backend is located at the address in the `backend_deployment` value in the `terraform apply` output. It should look something like "https://genai-for-marketing-xxxxxxxx.a.run.app". If you append `/marketing-api/docs` (i.e., "https://genai-for-marketing-xxxxxxxx.a.run.app/marketing-api/docs") to this URL you can access the FastAPI interface for exploring the backend APIs.
 
 ### Deployed Resources
 The deployment creates all the resources described in the main [README.md](../README.md) file, the following is a list of the created resources:
@@ -236,7 +217,7 @@ Note that some of the workarounds require modifying [organization policies](http
 #### `Error creating service account key`
 
 ```
-Error creating service account key: googleapi: Error 400: Key creation is not allowed on this service account. 
+Error creating service account key: googleapi: Error 400: Key creation is not allowed on this service account.
 ```
 
 **Resolution**: Disable the disableServiceAccountKeyCreation organization policy in your project.

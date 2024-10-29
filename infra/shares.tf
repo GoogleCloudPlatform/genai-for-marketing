@@ -14,27 +14,23 @@
  * limitations under the License.
  */
 
-module "project_services" {
-  source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 17.0"
-
-  project_id  = var.project_id
-  enable_apis = true
-
-  activate_apis               = local.services
-  disable_services_on_destroy = false
-}
-
-
-## Creating venv for python scripts
-resource "null_resource" "py_venv" {
-  triggers = {
-    bq_dataset = var.dataset_name
-  }
-
+resource "null_resource" "create_folder" {
   provisioner "local-exec" {
     working_dir = "scripts/"
-    command     = "[ ! -d \"venv\" ] && python3 -m venv venv && venv/bin/pip install -r requirements.txt"
+    command     = "venv/bin/python3 create_gdrive_folder.py  --folder-name=${var.gdrive_folder_name}"
   }
+  depends_on = [null_resource.py_venv]
+}
 
+data "external" "gdrive_pointers" {
+  program = ["cat", "${path.module}/output_config/gdrive_folder_results.json"]
+  depends_on = [null_resource.create_folder]
+}
+
+locals {
+  gdrive_pointers = data.external.gdrive_pointers.result
+}
+
+output "gdrive_pointers" {
+  value = local.gdrive_pointers
 }

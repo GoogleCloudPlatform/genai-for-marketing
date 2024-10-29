@@ -45,6 +45,7 @@ main(){
     echo "Copying environments.ts file"
     cp output_config/environments.ts ../frontend/src/environments
     cp output_config/campaign-form.component.html ../frontend/src/app/campaign-form
+    cp output_config/home.component.html ../frontend/src/app/home/home.component.html
     cd ../frontend
     echo "Deploying frontend to firebase"
     npm install -g @angular/cli
