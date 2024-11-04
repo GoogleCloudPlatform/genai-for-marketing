@@ -24,13 +24,6 @@ text_model_name = "gemini-1.5-pro"
 image_model_name = "imagen-3.0-generate-001"
 code_model_name = "gemini-1.5-pro"
 
-gdrive_config = {
-  "gdrive_folder_id"   = "folder_gdrive_id",
-  "marketing_slide_id" = "slide_gdrive_id",
-  "marketing_doc_id"   = "doc_gdrive_id",
-  "marketing_sheet_id" = "sheet_gdrive_id"
-}
-
 gdrive_folder_name = "genai-marketing-assets"
 
 showconsumerinsights = false // we don't have a customer site reference.
