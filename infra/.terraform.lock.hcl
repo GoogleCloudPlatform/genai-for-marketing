@@ -2,8 +2,10 @@
 # Manual edits may be lost in future updates.
 
 provider "registry.terraform.io/hashicorp/external" {
-  version = "2.3.4"
+  version     = "2.3.4"
+  constraints = "~> 2.3"
   hashes = [
+    "h1:XWkRZOLKMjci9/JAtE8X8fWOt7A4u+9mgXSUjc4Wuyo=",
     "h1:cCabxnWQ5fX1lS7ZqgUzsvWmKZw9FA7NRxAZ94vcTcc=",
     "zh:037fd82cd86227359bc010672cd174235e2d337601d4686f526d0f53c87447cb",
     "zh:0ea1db63d6173d01f2fa8eb8989f0809a55135a0d8d424b08ba5dabad73095fa",
@@ -22,7 +24,7 @@ provider "registry.terraform.io/hashicorp/external" {
 
 provider "registry.terraform.io/hashicorp/google" {
   version     = "5.44.2"
-  constraints = ">= 3.43.0, >= 3.53.0, >= 5.3.0, >= 5.43.0, < 6.0.0, < 7.0.0"
+  constraints = ">= 3.43.0, >= 3.53.0, >= 5.3.0, >= 5.43.0, ~> 5.44, < 6.0.0, < 7.0.0"
   hashes = [
     "h1:AHWv7kf8xXa3dfUq7OLZLG+jtXPEQ3qjNxzJX+GyvoQ=",
     "h1:ScKhMhplMe2aEJaew3ptqLc2w4J3AptAIktF+Bv9zIw=",
@@ -46,7 +48,7 @@ provider "registry.terraform.io/hashicorp/google" {
 
 provider "registry.terraform.io/hashicorp/google-beta" {
   version     = "6.8.0"
-  constraints = ">= 3.43.0, < 7.0.0"
+  constraints = ">= 3.43.0, ~> 6.8, < 7.0.0"
   hashes = [
     "h1:Lh45Orcz71ulq1bCD8QmE5JhDKLtQvpTWe5RoF1vsIk=",
     "h1:b5dxormQ4hdb5NHDPD+mJdgcsBcQAyq7s1p7XSTAeJU=",
@@ -69,7 +71,8 @@ provider "registry.terraform.io/hashicorp/google-beta" {
 }
 
 provider "registry.terraform.io/hashicorp/local" {
-  version = "2.5.2"
+  version     = "2.5.2"
+  constraints = "~> 2.5"
   hashes = [
     "h1:6NIiHWMbE9bFZaUiqC+OokdWSbW7g3+yQYnO4yvgtuY=",
     "h1:6XyefmvbkprppmYbGmMcQW5NB4w6C363SSShzuhF4R0=",
@@ -92,7 +95,8 @@ provider "registry.terraform.io/hashicorp/local" {
 }
 
 provider "registry.terraform.io/hashicorp/null" {
-  version = "3.2.3"
+  version     = "3.2.3"
+  constraints = "~> 3.2"
   hashes = [
     "h1:+AnORRgFbRO6qqcfaQyeX80W0eX3VmjadjnUFUJTiXo=",
     "h1:I0Um8UkrMUb81Fxq/dxbr3HLP2cecTH2WMJiwKSrwQY=",
@@ -116,7 +120,7 @@ provider "registry.terraform.io/hashicorp/null" {
 
 provider "registry.terraform.io/hashicorp/random" {
   version     = "3.6.3"
-  constraints = ">= 2.1.0"
+  constraints = ">= 2.1.0, ~> 3.6"
   hashes = [
     "h1:+UItZOLue/moJfnI3tqZBQbXUYR4ZnqPYfJDJPgLZy0=",
     "h1:Fnaec9vA8sZ8BXVlN3Xn9Jz3zghSETIKg7ch8oXhxno=",
