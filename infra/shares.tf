@@ -17,7 +17,7 @@
 resource "null_resource" "create_folder" {
   provisioner "local-exec" {
     working_dir = "scripts/"
-    command     = "venv/bin/python3 create_gdrive_folder.py  --folder-name=${var.gdrive_folder_name}"
+    command     = "venv/bin/python3 create_gdrive_folder.py  --folder-name=${var.gdrive_folder_name} --force --service-account-email ${module.genai_run_service_account.email}"
   }
   depends_on = [
     null_resource.py_venv,
