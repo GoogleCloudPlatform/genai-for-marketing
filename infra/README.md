@@ -39,8 +39,8 @@ Cloud Shell is the recommend environment for running the deployment. If you are 
 ```shell
 PROJECT_ID=<your_project_id>
 gcloud config set project $PROJECT_ID
-gcloud auth application-default login --scopes='https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/drive'
-gcloud auth application-default set-quota-project $PROJECT_ID 
+gcloud auth application-default login --scopes='https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/drive,openid,https://www.googleapis.com/auth/userinfo.email'
+gcloud auth application-default set-quota-project $PROJECT_ID
 ```
 
 You'll also need to install [Terraform](https://developer.hashicorp.com/terraform/install) and the [`gcloud` CLI](https://cloud.google.com/sdk/docs/install).
