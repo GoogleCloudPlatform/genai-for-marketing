@@ -34,7 +34,7 @@ resource "null_resource" "py_venv" {
 
   provisioner "local-exec" {
     working_dir = "scripts/"
-    command     = "if [ ! -d "venv" ]; then python3 -m venv venv;fi; venv/bin/pip install -r requirements.txt"
+    command     = "if [ ! -d 'venv' ]; then python3 -m venv venv;fi; venv/bin/pip install -r requirements.txt"
   }
 
 }
