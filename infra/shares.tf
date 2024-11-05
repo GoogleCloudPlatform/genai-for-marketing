@@ -19,7 +19,10 @@ resource "null_resource" "create_folder" {
     working_dir = "scripts/"
     command     = "venv/bin/python3 create_gdrive_folder.py  --folder-name=${var.gdrive_folder_name}"
   }
-  depends_on = [null_resource.py_venv]
+  depends_on = [
+    null_resource.py_venv,
+    local_file.genai_marketing_infra
+    ]
 }
 
 data "external" "gdrive_pointers" {
