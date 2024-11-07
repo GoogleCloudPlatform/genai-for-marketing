@@ -136,6 +136,28 @@ Google Workspace is designed for businesses, while Gmail is for personal use. If
     on darwin_amd64
     ```
 
+1. **(For Macbook users only)** If you're using an **Apple M1/M2/M3** chip machine to deploy this code repository, run these commands before the next step.
+   
+   Prepare the venv with rosetta:
+   ```bash
+   # Move to the infra/scripts folder.
+   SOURCE_ROOT=${HOME}/${REPO}
+   cd ${SOURCE_ROOT}/infra/scripts
+   cd infra/scripts
+   arch -x86_64 /usr/bin/python3 -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+   ```
+
+   Terraform template library does not exist for M1 (we should actually migrate from it as is not developed anymore).
+   ```bash
+   # init will fail. Do not panic
+   terraform init
+   brew install kreuzwerker/taps/m1-terraform-provider-helper
+   m1-terraform-provider-helper activate
+   m1-terraform-provider-helper install hashicorp/template -v v2.2.0
+   m1-terraform-provider-helper lockfile upgrade
+   ```
 
 1. In the cloned project root, run the following to start the Terraform deployment:
    ```bash
