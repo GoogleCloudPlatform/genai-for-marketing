@@ -85,7 +85,6 @@ Google Workspace is designed for businesses, while Gmail is for personal use. If
    ```bash
    export PROJECT_ID="Your_Google_Cloud_project_id"
    gcloud config set project $PROJECT_ID
-   gcloud auth application-default set-quota-project $PROJECT_ID
    ```
 
 1. Install or update Python3
@@ -101,10 +100,48 @@ Google Workspace is designed for businesses, while Gmail is for personal use. If
    CLOUDSDK_PYTHON=python3.10
    ```
 
+1. Authenticate with additional scopes
+
+   ```bash
+   gcloud auth login
+   gcloud auth application-default login --quiet --scopes="openid,https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/drive,https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/accounts.reauth"
+   gcloud auth application-default set-quota-project $PROJECT_ID
+   export GOOGLE_APPLICATION_CREDENTIALS=/tmp/tmp.<random_letters>/application_default_credentials.json
+   ```
+
+   **Note:** You may receive an error message informing the Cloud Resource Manager API has not been used/enabled for your project, similar to the following: 
+    
+   ERROR: (gcloud.auth.application-default.login) User [<ldap>@<company>.com] does not have permission to access projects instance [<gcp_project_ID>:testIamPermissions] (or it may not exist): Cloud Resource Manager API has not been used in project <gcp_project_id> before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudresourcemanager.googleapis.com/overview?project=<gcp_project_id> then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.
+
+1. Review your Terraform version
+
+    Make sure you have installed terraform version is 1.9.7. We recommend you to use [tfenv](https://github.com/tfutils/tfenv) to manage your terraform version.
+   `Tfenv` is a version manager inspired by rbenv, a Ruby programming language version manager.
+
+    To install `tfenv`, run the following commands:
+
+    ```shell
+    # Install via Homebrew or via Arch User Repository (AUR)
+    # Follow instructions on https://github.com/tfutils/tfenv
+
+    # Now, install the recommended terraform version 
+    tfenv install 1.9.7
+    tfenv use 1.9.7
+    terraform --version
+    ```
+
+    For instance, the output on MacOS should be like:
+    ```shell
+    Terraform v1.9.7
+    on darwin_amd64
+    ```
+
+
 1. In the cloned project root, run the following to start the Terraform deployment:
    ```bash
    # Move to the infra folder.
-   cd infra/
+   SOURCE_ROOT=${HOME}/${REPO}
+   cd ${SOURCE_ROOT}/infra/
    
    export USER_PROJECT_OVERRIDE=true
    export GOOGLE_BILLING_PROJECT=$(gcloud config get project)
