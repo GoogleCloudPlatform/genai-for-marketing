@@ -37,10 +37,9 @@ The chat agent and search features of Generative AI for Marketing require Vertex
 Cloud Shell is the recommend environment for running the deployment. If you are deploying from outside Cloud Shell, set up your Google Cloud SDK Credentials:
 
 ```shell
-PROJECT_ID=<your_project_id>
-gcloud config set project $PROJECT_ID
+gcloud config set project <your_project_id>
 gcloud auth application-default login --scopes='https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/drive,openid,https://www.googleapis.com/auth/userinfo.email'
-gcloud auth application-default set-quota-project $PROJECT_ID
+gcloud auth application-default set-quota-project $(gcloud config get project)
 ```
 
 You'll also need to install [Terraform](https://developer.hashicorp.com/terraform/install) and the [`gcloud` CLI](https://cloud.google.com/sdk/docs/install).
@@ -72,6 +71,7 @@ You can run this terraform and the following steps as many time as you need.
 ```bash
 cd infra/
 cp terraform.tfvars.automotive.sample terraform.tfvars
+# Fill out at least the project_id variable
 nano terraform.tfvars
 ```
 
