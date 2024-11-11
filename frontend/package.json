@@ -11,19 +11,19 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "^17.0.0",
+    "@angular/animations": "^18.2.11",
     "@angular/cdk": "^17.0.2",
-    "@angular/common": "^17.0.0",
-    "@angular/compiler": "^17.0.0",
-    "@angular/core": "^17.0.0",
+    "@angular/common": "^18.2.11",
+    "@angular/compiler": "^18.2.11",
+    "@angular/core": "^18.2.11",
     "@angular/fire": "^16.0.0",
-    "@angular/forms": "^17.0.0",
+    "@angular/forms": "^18.2.11",
     "@angular/material": "^17.0.2",
-    "@angular/platform-browser": "^17.0.0",
-    "@angular/platform-browser-dynamic": "^17.0.0",
-    "@angular/platform-server": "^17.0.0",
-    "@angular/router": "^17.0.0",
-    "@angular/ssr": "^17.0.3",
+    "@angular/platform-browser": "^18.2.11",
+    "@angular/platform-browser-dynamic": "^18.2.11",
+    "@angular/platform-server": "^18.2.11",
+    "@angular/router": "^18.2.11",
+    "@angular/ssr": "^18.2.11",
     "@fortawesome/fontawesome-free": "^6.5.1",
     "a": "^3.0.1",
     "angular-email-editor": "^0.9.0",
@@ -38,12 +38,12 @@
     "prismjs": "^1.29.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
-    "zone.js": "~0.14.2"
+    "zone.js": "~0.14.10"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^17.0.3",
-    "@angular/cli": "^17.0.3",
-    "@angular/compiler-cli": "^17.0.0",
+    "@angular-devkit/build-angular": "^18.2.11",
+    "@angular/cli": "^18.2.11",
+    "@angular/compiler-cli": "^18.2.11",
     "@types/express": "^4.17.17",
     "@types/jasmine": "~5.1.0",
     "@types/lodash": "^4.14.202",
@@ -54,6 +54,6 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
-    "typescript": "~5.2.2"
+    "typescript": "~5.5.4"
   }
 }
