@@ -138,15 +138,14 @@ const fireBaseConfig = environment.firebaseConfig
         ClipboardModule,
         MatExpansionModule,
         MatSelectModule], providers: [
-        // provideClientHydration(),
-        //   provideHttpClient()
-        importProvidersFrom([
+        provideFirebaseApp(() => initializeApp(fireBaseConfig)),
+        provideFirestore(() => getFirestore()),
+        provideAuth(() => getAuth()),
+        CustomerService,
+        DatePipe,
+        provideHttpClient(withInterceptorsFromDi()),
             provideFirebaseApp(() => initializeApp(fireBaseConfig)),
             provideFirestore(() => getFirestore()),
             provideAuth(() => getAuth()),
-        ]),
-        CustomerService,
-        DatePipe,
-        provideHttpClient(withInterceptorsFromDi())
     ] })
 export class AppModule { }
