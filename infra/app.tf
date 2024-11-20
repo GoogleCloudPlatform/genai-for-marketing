@@ -105,7 +105,7 @@ resource "local_file" "config_toml" {
   filename = "${path.module}/output_config/config.toml"
   depends_on = [
     data.external.gdrive_pointers,
-     ]
+  ]
 }
 
 resource "local_file" "enviroments_ts" {
@@ -124,13 +124,12 @@ resource "local_file" "enviroments_ts" {
   filename = "${path.module}/output_config/environments.ts"
 }
 
-resource "local_file" "campaign_form" {
-  content = templatefile("${path.module}/templates/campaign-form.component.html.tftpl", {
-    campaigns_themes        = var.campaigns_themes,
-    }
-  )
-  filename = "${path.module}/output_config/campaign-form.component.html"
-}
+# resource "local_file" "campaign_form" {
+#   content  = templatefile("${path.module}/templates/campaign-form.component.html.tftpl", {
+#     themes = var.campaigns_themes
+#   })
+#   filename = "../frontend/src/app/campaign-form/campaign-form.component.html"
+# }
 
 resource "local_file" "aux_data" {
   content = templatefile("${path.module}/templates/transactions_aux_data.py.tftpl", {
