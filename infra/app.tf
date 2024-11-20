@@ -140,16 +140,12 @@ resource "local_file" "aux_data" {
   filename = "${path.module}/scripts/aux_data/transactions_aux_data.py"
 }
 
-
-resource "local_file" "home_component_html" {
-  content = templatefile("${path.module}/templates/home.component.html.tftpl", {
-    showconsumerinsights        = var.showconsumerinsights
-    }
-  )
-  filename = "${path.module}/output_config/home.component.html"
-}
-
-
+# resource "local_file" "home_component" {
+#   content = templatefile("${path.module}/templates/home.component.html.tftpl", {
+#     showconsumerinsights = var.showconsumerinsights
+#   })
+#   filename = "../frontend/src/app/home/home.component.html"
+# }
 
 resource "google_firestore_database" "database" {
   project         = var.project_id

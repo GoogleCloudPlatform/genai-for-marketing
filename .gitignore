@@ -183,5 +183,5 @@ infra/gdrive_folder_results.json
 infra/scripts/test.py
 infra/scripts/create_env.sh
 infra/backend.tf
-infra/backend.tf
 frontend/src/environments/environments.ts
+
