@@ -184,3 +184,6 @@ infra/scripts/test.py
 infra/scripts/create_env.sh
 infra/backend.tf
 infra/backend.tf
+.trunk/**
+frontend/src/environments/environments.ts
+infra/package-lock.json
