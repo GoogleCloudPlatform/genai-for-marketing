@@ -1,0 +1,96 @@
+project_id = "your_project_id"
+
+text_model_name = "gemini-1.5-pro"
+image_model_name = "imagen-3.0-generate-001"
+code_model_name = "gemini-1.5-pro"
+
+gdrive_folder_name = "genai-marketing-assets"
+
+campaigns_themes = [
+  "Launch of Cymbal Luxury Eco-Resorts",
+  "Introducing Cymbal's Smart Hotel Experience",
+  "New Cymbal Adventure Travel Programs",
+  "Cymbal's Sustainable Tourism Initiative",
+  "Launch of Cymbal Travel App",
+  "Cymbal's Exclusive Destination Packages",
+  "Opening of Cymbal Urban Retreats",
+  "Cymbal's Business Travel Solutions",
+  "Partnership with Local Experience Providers",
+  "Cymbal's Digital Concierge Service"
+]
+
+transaction_types = [
+    "direct-booking",
+    "package-deal",
+    "membership-program",
+    "corporate-account",
+    "travel-insurance",
+    "experience-booking",
+    "loyalty-redemption"
+]
+
+product_names = [
+    "Luxury Resort",
+    "Smart Hotel",
+    "Adventure Tour",
+    "Business Suite",
+    "Travel App",
+    "Concierge Service",
+    "Travel Insurance",
+    "Corporate Travel",
+    "Destination Package",
+    "Local Experience"
+]
+
+prompt_brand_overview = <<EOF
+Cymbal brand information:
+1. Brand Name: Cymbal
+2. Vision: To orchestrate extraordinary travel experiences that blend luxury, technology, and sustainability.
+3. Mission: Creating memorable journeys through innovative hospitality solutions and personalized services.
+4. Products: Luxury accommodations, smart travel solutions, adventure packages, and digital travel services.
+5. USP: Cymbal harmonizes luxury travel with cutting-edge technology and sustainable practices.
+6. Target Audience: Modern travelers, business professionals, and adventure seekers aged 25-65 who value unique experiences and sustainable tourism.
+7. Brand Personality: Sophisticated, innovative, and committed to exceptional service.
+8. Core Values:
+   * Service Excellence: Delivering exceptional hospitality experiences
+   * Innovation: Integrating smart technology in travel
+   * Sustainability: Promoting responsible tourism
+   * Cultural Connection: Fostering authentic local experiences
+9. Brand Tagline: "Journey in Harmony"
+10. Competitive Landscape: Distinguished by our unique blend of luxury, technology, and sustainability in travel.
+11. Future Outlook: Expanding smart hotel solutions, developing sustainable tourism initiatives, and creating immersive travel experiences.
+EOF
+
+age_groups = [
+  "18-24",
+  "25-34",
+  "35-44",
+  "45-54",
+  "55-64",
+  "65+"
+]
+
+genders = [
+  "All",
+  "Male",
+  "Female"
+]
+
+goals = [
+  "Brand Awareness",
+  "Customer Experience",
+  "Sustainability",
+  "Market Expansion",
+  "Digital Innovation",
+  "Local Integration",
+  "Corporate Partnerships"
+]
+
+competitors = [
+  "Marriott",
+  "Hilton",
+  "Airbnb",
+  "Four Seasons",
+  "Expedia",
+  "Other"
+]

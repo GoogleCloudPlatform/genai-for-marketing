@@ -1,0 +1,101 @@
+/**
+ * Copyright 2024 Google LLC
+ * Licensed under the Apache License, Version 2.0
+ */
+
+project_id = "your_project_id"
+
+text_model_name = "gemini-1.5-pro"
+image_model_name = "imagen-3.0-generate-001"
+code_model_name = "gemini-1.5-pro"
+
+gdrive_folder_name = "genai-marketing-assets"
+
+campaigns_themes = [
+  "Launch of Cymbal's Digital Health Platform",
+  "Introducing Cymbal's Personalized Medicine Solutions",
+  "New Cymbal Research Innovation Center",
+  "Cymbal's Patient Support Program",
+  "Launch of Cymbal's Healthcare Analytics Suite",
+  "Cymbal's Global Health Initiative",
+  "Opening of Cymbal Biotech Labs",
+  "Cymbal's Clinical Trial Platform",
+  "Partnership with Leading Research Institutions",
+  "Cymbal's Healthcare Education Program"
+]
+
+transaction_types = [
+    "prescription-fulfillment",
+    "clinical-trial-enrollment",
+    "healthcare-subscription",
+    "research-partnership",
+    "diagnostic-service",
+    "patient-support-program",
+    "medical-device-purchase"
+]
+
+product_names = [
+    "Digital Health Platform",
+    "Clinical Analytics",
+    "Patient Care App",
+    "Research Tools",
+    "Diagnostic Solutions",
+    "Medical Devices",
+    "Healthcare API",
+    "Trial Management",
+    "Biotech Solutions",
+    "Health Education"
+]
+
+prompt_brand_overview = <<EOF
+Cymbal brand information:
+1. Brand Name: Cymbal
+2. Vision: To orchestrate healthcare innovation through cutting-edge research and patient-centered solutions.
+3. Mission: Creating harmonious healthcare experiences by combining scientific excellence with digital innovation.
+4. Products: Digital health platforms, research tools, diagnostic solutions, and patient care technologies.
+5. USP: Cymbal harmonizes advanced medical science with accessible healthcare technology.
+6. Target Audience: Healthcare professionals, research institutions, and patients aged 25+ who value innovation in healthcare.
+7. Brand Personality: Trustworthy, innovative, and compassionate.
+8. Core Values:
+   * Scientific Excellence: Commitment to rigorous research and development
+   * Patient Care: Prioritizing patient outcomes and experience
+   * Innovation: Advancing healthcare through technology
+   * Accessibility: Making healthcare solutions available to all
+9. Brand Tagline: "Healthcare in Harmony"
+10. Competitive Landscape: Distinguished by our unique blend of scientific expertise and digital healthcare innovation.
+11. Future Outlook: Expanding digital health solutions, advancing personalized medicine, and developing AI-driven healthcare tools.
+EOF
+
+age_groups = [
+  "18-24",
+  "25-34",
+  "35-44",
+  "45-54",
+  "55-64",
+  "65+"
+]
+
+genders = [
+  "All",
+  "Male",
+  "Female"
+]
+
+goals = [
+  "Research Excellence",
+  "Patient Outcomes",
+  "Digital Innovation",
+  "Market Access",
+  "Healthcare Education",
+  "Clinical Partnership",
+  "Regulatory Compliance"
+]
+
+competitors = [
+  "Pfizer",
+  "Roche",
+  "Novartis",
+  "Johnson & Johnson",
+  "GlaxoSmithKline",
+  "Other"
+]

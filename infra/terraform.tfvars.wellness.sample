@@ -1,0 +1,101 @@
+/**
+ * Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License")
+ */
+
+project_id = "your_project_id"
+
+text_model_name = "gemini-1.5-pro"
+image_model_name = "imagen-3.0-generate-001"
+code_model_name = "gemini-1.5-pro"
+
+gdrive_folder_name = "genai-marketing-assets"
+
+campaigns_themes = [
+  "Launch of Cymbal's Organic Skincare Line",
+  "Introducing Cymbal Wellness Centers",
+  "New Cymbal Plant-Based Supplements",
+  "Cymbal Mind-Body Balance Program",
+  "Cymbal's Sustainable Wellness Initiative",
+  "Launch of Cymbal Digital Wellness App",
+  "Cymbal Wellness Retreat Experience",
+  "Introducing Cymbal's Sleep Technology",
+  "Cymbal's Holistic Health Assessment Service",
+  "Partnership with Leading Wellness Experts"
+]
+
+transaction_types = [
+    "retail-purchase",
+    "subscription-service",
+    "wellness-membership",
+    "digital-program",
+    "consultation-service",
+    "retreat-booking"
+]
+
+product_names = [
+    "Organic Serum",
+    "Wellness App",
+    "Vitamin Complex",
+    "Sleep Monitor",
+    "Meditation Kit",
+    "Fitness Program",
+    "Beauty Essentials",
+    "Wellness Tea",
+    "Recovery Supplements",
+    "Digital Coach"
+]
+
+prompt_brand_overview = <<EOF
+Cymbal brand information:
+1. Brand Name: Cymbal
+2. Vision: To harmonize body, mind, and spirit through innovative wellness solutions.
+3. Mission: Cymbal creates holistic wellness experiences and products that enhance personal wellbeing through natural ingredients and scientific innovation.
+4. Products: Premium organic skincare, wellness technology, supplements, and integrated wellness programs.
+5. USP: Cymbal orchestrates a perfect balance between nature and science, creating wellness solutions that resonate with modern lifestyles.
+6. Target Audience: Health-conscious individuals aged 25-65 who prioritize wellness and seek premium, sustainable solutions for their wellbeing journey.
+7. Brand Personality: Nurturing, authentic, and innovative. Cymbal embodies the perfect harmony of traditional wisdom and modern science.
+8. Core Values:
+   * Natural Innovation: Combining nature's wisdom with scientific advancement
+   * Holistic Approach: Addressing wellness from multiple perspectives
+   * Sustainability: Commitment to eco-friendly practices and packaging
+   * Quality Assurance: Using premium, ethically sourced ingredients
+9. Brand Tagline: "Harmony in Wellness"
+10. Competitive Landscape: In the growing wellness sector, Cymbal stands out through its integrated approach to wellbeing and commitment to sustainability.
+11. Future Outlook: Cymbal aims to expand its wellness technology offerings, develop more personalized solutions, and create a global wellness community.
+EOF
+
+age_groups = [
+  "18-24",
+  "25-34",
+  "35-44",
+  "45-54",
+  "55-64",
+  "65+"
+]
+
+genders = [
+  "All",
+  "Male",
+  "Female"
+]
+
+goals = [
+  "Brand Awareness",
+  "Community Building",
+  "Sales Growth",
+  "Customer Education",
+  "Product Launch",
+  "Lifestyle Integration",
+  "Wellness Innovation"
+]
+
+competitors = [
+  "Goop",
+  "Ritual",
+  "WW",
+  "Peloton",
+  "Headspace",
+  "Other"
+]

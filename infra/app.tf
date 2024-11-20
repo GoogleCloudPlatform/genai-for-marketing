@@ -155,3 +155,14 @@ resource "google_firestore_database" "database" {
   deletion_policy = "DELETE"
   depends_on      = [module.project_services]
 }
+
+resource "local_file" "form_config_json" {
+  content = jsonencode({
+    themes = concat(var.campaigns_themes, ["Another theme..."]),
+    ageGroups = var.age_groups,
+    genders = var.genders,
+    goals = var.goals,
+    competitors = var.competitors
+  })
+  filename = "${path.module}/output_config/form-config.json"
+}

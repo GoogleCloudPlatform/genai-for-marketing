@@ -42,10 +42,10 @@ done
 
 # Deploys backend to Firebase
 main(){
-    echo "Copying environments.ts file"
+    echo "Copying configuration files"
     cp output_config/environments.ts ../frontend/src/environments
-    # cp output_config/campaign-form.component.html ../frontend/src/app/campaign-form
-    # cp output_config/home.component.html ../frontend/src/app/home/home.component.html
+    cp output_config/form-config.json ../frontend/src/assets/config/
+
     cd ../frontend
     echo "Deploying frontend to firebase"
     npm install -g @angular/cli

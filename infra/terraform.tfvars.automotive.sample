@@ -84,3 +84,35 @@ Cymbal brand information:
 
 Cymbal is not just an automotive brand; it's a commitment to a more sustainable and exhilarating future. By integrating cutting-edge technology, environmental responsibility, and luxurious design, Cymbal ensures every drive is a symphony of performance and sophistication. Every journey in a Cymbal vehicle is a step towards a greener, more electrifying tomorrow.
 EOF
+
+age_groups = [
+  "18-24",
+  "25-34",
+  "35-44",
+  "45-54",
+  "55-64",
+  "65+"
+]
+
+genders = [
+  "All",
+  "Male",
+  "Female"
+]
+
+goals = [
+  "Brand Awareness",
+  "Lead Generation",
+  "Sales",
+  "Customer Loyalty",
+  "Product Launch"
+]
+
+competitors = [
+  "Tesla",
+  "BMW",
+  "Mercedes",
+  "Audi",
+  "Porsche",
+  "Other"
+]

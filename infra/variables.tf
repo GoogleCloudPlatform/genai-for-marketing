@@ -181,3 +181,47 @@ variable "code_model_name" {
   type    = string
   default = "gemini-1.5-pro"
 }
+
+variable "age_groups" {
+  type = list(string)
+  default = [
+    "18-24",
+    "25-34",
+    "35-44",
+    "45-54",
+    "55-64",
+    "65+"
+  ]
+}
+
+variable "genders" {
+  type = list(string)
+  default = [
+    "All",
+    "Male",
+    "Female"
+  ]
+}
+
+variable "goals" {
+  type = list(string)
+  default = [
+    "Brand Awareness",
+    "Lead Generation",
+    "Sales",
+    "Customer Loyalty",
+    "Product Launch"
+  ]
+}
+
+variable "competitors" {
+  type = list(string)
+  default = [
+    "Tesla",
+    "BMW",
+    "Mercedes",
+    "Audi",
+    "Porsche",
+    "Other"
+  ]
+}

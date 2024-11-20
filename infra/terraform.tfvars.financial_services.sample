@@ -1,0 +1,96 @@
+project_id = "your_project_id"
+
+text_model_name = "gemini-1.5-pro"
+image_model_name = "imagen-3.0-generate-001"
+code_model_name = "gemini-1.5-pro"
+
+gdrive_folder_name = "genai-marketing-assets"
+
+campaigns_themes = [
+  "Launch of Cymbal Digital Banking Platform",
+  "Introducing Cymbal Investment App",
+  "New Cymbal Crypto Trading Service",
+  "Cymbal's Sustainable Investment Portfolio",
+  "Launch of Cymbal Business Banking",
+  "Cymbal's Financial Education Program",
+  "Release of Cymbal Payment Solutions",
+  "Cymbal's Wealth Management Services",
+  "Partnership with Fintech Innovators",
+  "Cymbal's Financial Inclusion Initiative"
+]
+
+transaction_types = [
+    "account-opening",
+    "investment-purchase",
+    "loan-application",
+    "insurance-policy",
+    "trading-transaction",
+    "subscription-service",
+    "advisory-service"
+]
+
+product_names = [
+    "Digital Banking",
+    "Investment App",
+    "Crypto Platform",
+    "Business Account",
+    "Payment Solution",
+    "Wealth Management",
+    "Insurance Product",
+    "Trading Platform",
+    "Financial Education",
+    "Advisory Service"
+]
+
+prompt_brand_overview = <<EOF
+Cymbal brand information:
+1. Brand Name: Cymbal
+2. Vision: To orchestrate financial success through innovative solutions and trusted partnerships.
+3. Mission: Creating accessible, secure, and innovative financial services that empower individuals and businesses.
+4. Products: Digital banking, investment platforms, payment solutions, and financial advisory services.
+5. USP: Cymbal harmonizes traditional banking stability with cutting-edge fintech innovation.
+6. Target Audience: Individual investors, businesses, and financial professionals aged 18-65 who value innovation and security in financial services.
+7. Brand Personality: Trustworthy, innovative, and client-focused.
+8. Core Values:
+   * Security: Maintaining highest standards of financial security
+   * Innovation: Pioneering financial technology solutions
+   * Accessibility: Making financial services available to all
+   * Transparency: Ensuring clear communication and fair practices
+9. Brand Tagline: "Your Financial Harmony"
+10. Competitive Landscape: Distinguished by our unique blend of traditional banking expertise and fintech innovation.
+11. Future Outlook: Expanding digital services, developing blockchain solutions, and promoting financial inclusion.
+EOF
+
+age_groups = [
+  "18-24",
+  "25-34",
+  "35-44",
+  "45-54",
+  "55-64",
+  "65+"
+]
+
+genders = [
+  "All",
+  "Male",
+  "Female"
+]
+
+goals = [
+  "Market Growth",
+  "Digital Transformation",
+  "Customer Trust",
+  "Product Innovation",
+  "Financial Education",
+  "Market Expansion",
+  "Regulatory Compliance"
+]
+
+competitors = [
+  "JPMorgan Chase",
+  "Bank of America",
+  "Revolut",
+  "Square",
+  "Robinhood",
+  "Other"
+]

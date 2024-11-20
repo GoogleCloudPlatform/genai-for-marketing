@@ -74,3 +74,35 @@ Echoing Sustainability: Cymbal strikes a chord with the environment, ensuring ec
 11. Future Outlook: Cymbal aspires to expand its resonance in the global market, infusing more sustainable materials into its products, and initiating special editions through designer partnerships, creating exclusive, melodious collections.
 Cymbal is not just a brand; it's an experience. Recognizing the rhythm of life and the melodies of fashion, we ensure every piece adds a note of sophistication to our customer's ensemble. Every choice at Cymbal is a step toward a more stylish tomorrow.
 EOF
+
+age_groups = [
+  "18-24",
+  "25-34",
+  "35-44",
+  "45-54",
+  "55-64",
+  "65+"
+]
+
+genders = [
+  "All",
+  "Male",
+  "Female"
+]
+
+goals = [
+  "Brand Awareness",
+  "Lead Generation",
+  "Sales",
+  "Customer Loyalty",
+  "Product Launch"
+]
+
+competitors = [
+  "Fashion Forward",
+  "Style Setter",
+  "Wardrobe Wonder",
+  "Trendy & Co",
+  "Fashion Elite",
+  "Other"
+]
