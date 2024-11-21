@@ -65,9 +65,8 @@ def _get_articles_info(
               'maxrecords': str(max_records),
               'startdatetime': start_date,
               'enddatetime': end_date}
-    headers = {'User-Agent': 'cloud-solutions/genai-for-marketing-backend-v2.0'}
 
-    response = requests.get(gdelt_api_url, params=params, headers=headers)
+    response = requests.get(gdelt_api_url, params=params)
     response.raise_for_status()
     return response.json()
 
