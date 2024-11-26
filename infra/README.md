@@ -18,40 +18,70 @@ If you encounter problems during deployment see the [Known Issues](#known-issues
 Before executing Terraform, follow these steps to enable some services:
 
 
+=======
+### Get Allowlisted for Imagen
+Request access to Imagen through this [form](https://docs.google.com/forms/d/e/1FAIpQLSdMHAK_KJygnvV2Psga7FIzKAhAqIBS_bHYzfgf_Y2h7fsoGA/viewform). Note this can take up to a week. You can still use Generative AI for Marketing while awaiting allowlisting, but image generation capabilities will not work. Generative AI for Marketing currently uses Imagen 3.
+
+### Enable Cloud Resource Manager API:
+1. Go to https://console.developers.google.com/apis/api/cloudresourcemanager.googleapis.com/overview and enable the API.
+
+
 ### Enable Firebase
 The frontend of Generative AI for Marketing is hosted on Firebase. Before beginning deployment, you need to enable Firebase.
+
+On a new Tab:
 
 1. Go to https://console.firebase.google.com/.
 2. Select "Create a project" and enter the name of your Google Cloud Platform project, then click "Continue".
 3. If you're using Firebase for the first time, you'll have to add Firebase to one of yor existing Google Cloud projects and confirm the Firebase billing plan.
-4. When prompted to set up Google Analytics respond as you'd like.
-5. Continue and complete.
+4. Keep the toogle button on to "Enable Google Analytics for this project".
+5. Create a new Google Analytics account or choose an existing one. Note, when creating a new Google Analytics account, choose the country where you want analytics data to be processed.
+7. Continue to create your Firebase project linked to Google Cloud project and a Google Analytics 4 account.
 
 ### Enable Vertex AI Agent Builder
 The chat agent and search features of Generative AI for Marketing require Vertex AI Agent Builder.
+
+On a new Tab:
+
 1. Go to https://console.cloud.google.com/gen-app-builder/start .
-2. Click the button to accept TOS and enable.
-
-### (Optional) Local Configuration
-
-Cloud Shell is the recommend environment for running the deployment. If you are deploying from outside Cloud Shell, set up your Google Cloud SDK Credentials:
+2. Click the checkbox to accept Terms of Service.
+3. Click on the button to "Continue and activate the API".
 
 ```shell
 gcloud config set project <your_project_id>
 gcloud auth application-default login --scopes='https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/drive,openid,https://www.googleapis.com/auth/userinfo.email'
 gcloud auth application-default set-quota-project $(gcloud config get project)
 ```
+=======
+### Ensure Google Workspace Business is set up
 
-You'll also need to install [Terraform](https://developer.hashicorp.com/terraform/install) and the [`gcloud` CLI](https://cloud.google.com/sdk/docs/install).
+
+Generative AI for Marketing requires your organization to have a [Google Workspace Business]([https://workspace.google.com/](https://workspace.google.com/business/)) account. 
 
 > [!IMPORTANT]
 >  The deployment requires Terraform 1.9 or higher.
+=======
+* To check if you have a Google Workspace business account, you can: 
+   1. Log in to the [Google Admin console](https://admin.google.com/) 
+   2. Check if your email address ends with your domain name instead of @gmail.com 
+* Find your current Google Workspace edition and payment plan by: 
+   1. Going to Menu 
+   2. Selecting Billing 
+   3. Selecting Subscriptions 
+   4. Clicking the subscription to find your payment plan 
+* Check who you're paying for your Google Workspace by: 
+   1. Opening the admin app 
+   2. Logging in with your password 
+   3. Clicking on Billing 
+   4. Clicking on Reseller pricing or whatever is under Payment plan 
 
-### Ensure Workspace is Set Up and You Have Access
 
-Generative AI for Marketing requires your organization has [Google Workspace](https://workspace.google.com/lp/business/) set up and you have an account before proceeding.
+Google Workspace is designed for businesses, while Gmail is for personal use. If you don't have an existing Google Workspace business account and a domain, such as "mybusiness.com", buy a new custom domain and set up Workspace following the [link](https://workspace.google.com/lp/business/).
+
+**Note:** If not sure how to properly setup a Google Workspace business account, follow this [guide](https://support.google.com/a/answer/6365252?hl=en&ref_topic=4388346&sjid=1632913257726367096-NC).
 
 ## Step 1 - Terraform Deployment
+
 
 1. Clone the GitHub repo.
 
@@ -82,6 +112,40 @@ terraform init
 terraform plan
 terraform apply
 ```
+=======
+### Initial Environment Setup
+
+1. Open [Cloud Shell](https://cloud.google.com/shell/docs/using-cloud-shell) in your Google Cloud project console.
+
+1. Clone the source code repository:
+   
+   ```bash
+   REPO="genai-for-marketing"
+   cd $HOME
+   git clone https://github.com/GoogleCloudPlatform/${REPO}.git
+   ```
+
+1. Export environment variables and set the default project.
+   
+   ```bash
+   export PROJECT_ID="Your_Google_Cloud_project_id"
+   gcloud config set project $PROJECT_ID
+   ```
+
+
+1. In the cloned project root, run the following to start the Terraform deployment:
+   ```bash
+   # Move to the infra folder.
+   SOURCE_ROOT=${HOME}/${REPO}
+   cd ${SOURCE_ROOT}/infra/
+   
+   export USER_PROJECT_OVERRIDE=true
+   export GOOGLE_BILLING_PROJECT=$(gcloud config get project)
+   
+   terraform init
+   terraform apply -var=project_id=$(gcloud config get project)
+   ```
+
 
 When `terraform apply` completes successfully, you'll see a message `Apply complete!` along with outputs specifying config values. Save this output somewhere, you'll need these values later.
 
