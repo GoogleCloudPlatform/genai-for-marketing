@@ -47,6 +47,12 @@ resource "google_discovery_engine_data_store" "search_datastore" {
   solution_types              = ["SOLUTION_TYPE_SEARCH"]
   create_advanced_site_search = false
   depends_on                  = [module.project_services]
+  document_processing_config {}
+  lifecycle {
+    ignore_changes = [
+      document_processing_config
+    ]
+  }
 }
 
 resource "google_discovery_engine_search_engine" "search_app" {
@@ -68,7 +74,7 @@ resource "null_resource" "genai_marketing_search_target_site" {
   }
   provisioner "local-exec" {
     working_dir = "scripts/"
-    command     = "source venv/bin/activate; python3 -c 'import search_app_creation; search_app_creation.create_target_site(\"${var.project_id}\",\"${var.genai_location}\",\"${google_discovery_engine_data_store.search_datastore.data_store_id}\",\"${join(",", var.datastore_uris)}\")'"
+    command     = "venv/bin/python3 -c 'import search_app_creation; search_app_creation.create_target_site(\"${var.project_id}\",\"${var.genai_location}\",\"${google_discovery_engine_data_store.search_datastore.data_store_id}\",\"${join(",", var.datastore_uris)}\")'"
   }
   depends_on = [null_resource.py_venv, google_discovery_engine_search_engine.search_app]
 }
@@ -93,6 +99,12 @@ resource "google_discovery_engine_data_store" "storage_datastore" {
   content_config    = "CONTENT_REQUIRED"
   solution_types    = ["SOLUTION_TYPE_CHAT"]
   depends_on        = [module.project_services]
+  document_processing_config {}
+  lifecycle {
+    ignore_changes = [
+      document_processing_config
+    ]
+  }
 }
 
 resource "google_discovery_engine_chat_engine" "chat_app" {

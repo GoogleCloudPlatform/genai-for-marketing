@@ -20,7 +20,7 @@ validate_param() {
 }
 
 # Check if enough arguments are provided
-if [[ $# -lt 2 ]]; then  
+if [[ $# -lt 2 ]]; then
     echo "Error: Insufficient arguments."
     usage
 fi
@@ -33,7 +33,7 @@ while [[ $# -gt 0 ]]; do
             project=$2
             shift 2  # Move to the next parameter
             ;;
-        *)  
+        *)
             echo "Error: Unknown parameter '$1'."
             usage
             ;;
@@ -42,8 +42,10 @@ done
 
 # Deploys backend to Firebase
 main(){
-    echo "Copying environments.ts file"
+    echo "Copying configuration files"
     cp output_config/environments.ts ../frontend/src/environments
+    cp output_config/form-config.json ../frontend/src/assets/config/
+
     cd ../frontend
     echo "Deploying frontend to firebase"
     npm install -g @angular/cli
@@ -55,4 +57,4 @@ main(){
 }
 
 # Deploy
-main 
+main

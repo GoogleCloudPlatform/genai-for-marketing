@@ -1,0 +1,102 @@
+/**
+ * Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License")
+ */
+
+project_id = "your_project_id"
+
+text_model_name = "gemini-1.5-pro"
+image_model_name = "imagen-3.0-generate-001"
+code_model_name = "gemini-1.5-pro"
+
+gdrive_folder_name = "genai-marketing-assets"
+
+campaigns_themes = [
+  "Launch of Cymbal's new AI-powered smartphone",
+  "Cymbal Smart Home ecosystem expansion",
+  "Pre-order campaign for Cymbal Pro Laptop series",
+  "Introducing Cymbal's Revolutionary Quantum Computing Platform",
+  "Cymbal's Augmented Reality Glasses Launch Event",
+  "Partnership with Major Gaming Studios for Cymbal VR",
+  "Cymbal Enterprise Cloud Solutions Global Release",
+  "New Cymbal Developer Platform and SDK Launch",
+  "Cymbal's Sustainable Tech Initiative",
+  "Introduction of Cymbal's 6G Research Program"
+]
+
+transaction_types = [
+    "direct-purchase",
+    "subscription",
+    "enterprise-contract",
+    "cloud-services",
+    "hardware-lease",
+    "software-license"
+]
+
+product_names = [
+    "Quantum Computer",
+    "Smart Phone",
+    "AR Glasses",
+    "Pro Laptop",
+    "Smart Watch",
+    "Cloud Platform",
+    "AI Assistant",
+    "Developer Tools",
+    "Enterprise Suite",
+    "IoT Platform"
+]
+
+prompt_brand_overview = <<EOF
+Cymbal brand information:
+1. Brand Name: Cymbal
+2. Vision: To pioneer technological innovations that enhance human potential and transform the digital landscape.
+3. Mission: Cymbal creates cutting-edge technology solutions that seamlessly integrate into people's lives, making the impossible possible through innovation and accessibility.
+4. Products: Advanced computing devices, AI-powered solutions, enterprise software, and revolutionary quantum computing platforms.
+5. USP: Cymbal orchestrates the perfect harmony between breakthrough technology and human-centric design, creating solutions that define the future of digital interaction.
+6. Target Audience: Tech-savvy professionals, enterprise clients, and forward-thinking consumers aged 25-65 who value innovation and digital transformation.
+7. Brand Personality: Innovative, trustworthy, and visionary. Cymbal represents the pinnacle of technological advancement while maintaining user accessibility.
+8. Core Values:
+   * Innovation Excellence: Pushing the boundaries of what's possible in technology
+   * User-Centric Design: Creating intuitive and accessible technology solutions
+   * Digital Ethics: Commitment to responsible AI and data privacy
+   * Sustainable Technology: Developing eco-friendly tech solutions
+9. Brand Tagline: "Tomorrow's Technology Today"
+10. Competitive Landscape: In the rapidly evolving tech sector, Cymbal distinguishes itself through groundbreaking innovation and exceptional user experience.
+11. Future Outlook: Cymbal aims to lead the quantum computing revolution, advance AI capabilities, and create more sustainable technology solutions.
+EOF
+
+age_groups = [
+  "18-24",
+  "25-34",
+  "35-44",
+  "45-54",
+  "55-64",
+  "65+"
+]
+
+genders = [
+  "All",
+  "Male",
+  "Female"
+]
+
+goals = [
+  "Innovation Leadership",
+  "Market Penetration",
+  "Brand Awareness",
+  "Customer Acquisition",
+  "Product Launch",
+  "Developer Adoption",
+  "Enterprise Solutions"
+]
+
+competitors = [
+  "Apple",
+  "Microsoft",
+  "Google",
+  "Amazon",
+  "Meta",
+  "IBM",
+  "Other"
+]

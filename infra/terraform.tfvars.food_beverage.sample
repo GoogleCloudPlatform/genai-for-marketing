@@ -1,0 +1,101 @@
+/**
+ * Copyright 2024 Google LLC
+ * Licensed under the Apache License, Version 2.0
+ */
+
+project_id = "your_project_id"
+
+text_model_name = "gemini-1.5-pro"
+image_model_name = "imagen-3.0-generate-001"
+code_model_name = "gemini-1.5-pro"
+
+gdrive_folder_name = "genai-marketing-assets"
+
+campaigns_themes = [
+  "Launch of Cymbal's Artisanal Coffee Collection",
+  "Introducing Cymbal's Farm-to-Table Restaurant Chain",
+  "New Cymbal Premium Wine Selection",
+  "Cymbal's Sustainable Food Packaging Initiative",
+  "Launch of Cymbal's Gourmet Meal Subscription Service",
+  "Cymbal's International Food Festival Series",
+  "Opening of Cymbal's Culinary Academy",
+  "Cymbal's Zero-Waste Kitchen Program",
+  "Partnership with Michelin-Star Chefs",
+  "Cymbal's Food Tech Innovation Lab"
+]
+
+transaction_types = [
+    "restaurant-dining",
+    "online-delivery",
+    "subscription-box",
+    "retail-purchase",
+    "catering-service",
+    "cooking-class",
+    "wine-club-membership"
+]
+
+product_names = [
+    "Artisanal Coffee",
+    "Organic Wine",
+    "Gourmet Meals",
+    "Cooking Kits",
+    "Premium Spirits",
+    "Specialty Teas",
+    "Food Tech",
+    "Kitchen Equipment",
+    "Culinary Courses",
+    "Gift Hampers"
+]
+
+prompt_brand_overview = <<EOF
+Cymbal brand information:
+1. Brand Name: Cymbal
+2. Vision: To orchestrate extraordinary culinary experiences that celebrate quality, sustainability, and innovation.
+3. Mission: Creating harmonious connections between food, technology, and community through exceptional products and dining experiences.
+4. Products: Premium beverages, gourmet foods, culinary education, and innovative food technology solutions.
+5. USP: Cymbal creates a symphony of flavors through the perfect blend of traditional culinary arts and modern food innovation.
+6. Target Audience: Food enthusiasts, wine connoisseurs, and conscious consumers aged 25-65 who value quality, sustainability, and culinary innovation.
+7. Brand Personality: Sophisticated, innovative, and passionate about food excellence.
+8. Core Values:
+   * Culinary Excellence: Commitment to exceptional quality and taste
+   * Sustainability: Farm-to-table approach and eco-friendly practices
+   * Innovation: Pioneering food technology and modern dining experiences
+   * Community: Building connections through shared culinary experiences
+9. Brand Tagline: "Taste the Extraordinary"
+10. Competitive Landscape: Distinguished by our unique blend of traditional culinary expertise and modern food innovation.
+11. Future Outlook: Expanding sustainable practices, developing food tech solutions, and creating immersive dining experiences.
+EOF
+
+age_groups = [
+  "18-24",
+  "25-34",
+  "35-44",
+  "45-54",
+  "55-64",
+  "65+"
+]
+
+genders = [
+  "All",
+  "Male",
+  "Female"
+]
+
+goals = [
+  "Brand Recognition",
+  "Customer Experience",
+  "Sustainability",
+  "Market Expansion",
+  "Product Innovation",
+  "Community Building",
+  "Digital Integration"
+]
+
+competitors = [
+  "Whole Foods",
+  "Blue Apron",
+  "Nespresso",
+  "Williams-Sonoma",
+  "Eataly",
+  "Other"
+]

@@ -1,0 +1,101 @@
+/**
+ * Copyright 2024 Google LLC
+ * Licensed under the Apache License, Version 2.0
+ */
+
+project_id = "your_project_id"
+
+text_model_name = "gemini-1.5-pro"
+image_model_name = "imagen-3.0-generate-001"
+code_model_name = "gemini-1.5-pro"
+
+gdrive_folder_name = "genai-marketing-assets"
+
+campaigns_themes = [
+  "Launch of Cymbal's Electric Scooter Sharing",
+  "Introducing Cymbal's Smart Bike Network",
+  "New Cymbal Car Sharing Fleet",
+  "Cymbal's Sustainable Urban Mobility Initiative",
+  "Launch of Cymbal Mobility App",
+  "Cymbal's Multi-Modal Transport Solution",
+  "Expansion of Cymbal Charging Network",
+  "Cymbal's Corporate Mobility Program",
+  "Partnership with City Transit Authorities",
+  "Cymbal's Green Commute Challenge"
+]
+
+transaction_types = [
+    "per-minute-rental",
+    "subscription-plan",
+    "day-pass",
+    "corporate-account",
+    "package-deal",
+    "membership-program",
+    "pay-as-you-go"
+]
+
+product_names = [
+    "E-Scooter",
+    "Smart Bike",
+    "Shared Car",
+    "Mobility App",
+    "Transit Pass",
+    "Corporate Plan",
+    "Charging Station",
+    "Multi-Modal Pass",
+    "Fleet Service",
+    "Urban Transport"
+]
+
+prompt_brand_overview = <<EOF
+Cymbal brand information:
+1. Brand Name: Cymbal
+2. Vision: To orchestrate sustainable urban mobility through innovative sharing solutions.
+3. Mission: Creating seamless mobility experiences that connect communities while reducing environmental impact.
+4. Products: Electric vehicle sharing, smart mobility platforms, and integrated transport solutions.
+5. USP: Cymbal harmonizes various transport modes into one accessible, sustainable mobility ecosystem.
+6. Target Audience: Urban commuters, environmentally conscious travelers, and businesses aged 18-65 who value convenient, sustainable transport.
+7. Brand Personality: Dynamic, eco-friendly, and user-focused.
+8. Core Values:
+   * Sustainability: Commitment to green transport solutions
+   * Accessibility: Making mobility available to everyone
+   * Innovation: Advancing smart transport technology
+   * Community: Building connected urban environments
+9. Brand Tagline: "Move in Harmony"
+10. Competitive Landscape: Distinguished by our integrated approach to sustainable urban mobility.
+11. Future Outlook: Expanding electric vehicle fleets, developing autonomous solutions, and creating seamless multi-modal networks.
+EOF
+
+age_groups = [
+  "18-24",
+  "25-34",
+  "35-44",
+  "45-54",
+  "55-64",
+  "65+"
+]
+
+genders = [
+  "All",
+  "Male",
+  "Female"
+]
+
+goals = [
+  "Urban Mobility",
+  "Sustainability",
+  "User Experience",
+  "Network Growth",
+  "Smart City Integration",
+  "Community Impact",
+  "Environmental Goals"
+]
+
+competitors = [
+  "Lime",
+  "Bird",
+  "Uber",
+  "Lyft",
+  "Zipcar",
+  "Other"
+]

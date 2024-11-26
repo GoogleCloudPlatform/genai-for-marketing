@@ -3,6 +3,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { CampaignService } from '../services/campaign.service';
 import { LoginService } from '../services/login.service';
 import { DomSanitizer } from '@angular/platform-browser';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-campaign-form',
@@ -15,14 +16,9 @@ export class CampaignFormComponent {
   showProgress: boolean = false;
   userLoggedIn: boolean = false;
   photoURL: any;
-  constructor(public campaignServ: CampaignService, public loginService: LoginService, private sanitizer: DomSanitizer) {
-    this.loginService.getUserDetails().subscribe(res => {
-      this.userId = res?.uid;
-      this.userLoggedIn = true;
-      this.photoURL = res?.photoURL;
-    });
-  }
-  docPreviewUrl: any = ''
+  formConfig: any;
+  docPreviewUrl: any = '';
+
   campaignForm = new FormGroup({
     name: new FormControl('',Validators.required),
     theme: new FormControl('',Validators.required),
@@ -32,6 +28,27 @@ export class CampaignFormComponent {
     goal: new FormControl('',Validators.required),
     competitor: new FormControl('',Validators.required)
   });
+
+  constructor(
+    public campaignServ: CampaignService,
+    public loginService: LoginService,
+    private sanitizer: DomSanitizer,
+    private http: HttpClient
+  ) {
+    this.loginService.getUserDetails().subscribe(res => {
+      this.userId = res?.uid;
+      this.userLoggedIn = true;
+      this.photoURL = res?.photoURL;
+    });
+  }
+
+  ngOnInit() {
+    // Load form configuration
+    this.http.get('assets/config/form-config.json')
+      .subscribe(config => {
+        this.formConfig = config;
+      });
+  }
 
   onSubmit() {
     let obj = {
@@ -71,9 +88,11 @@ export class CampaignFormComponent {
       });
     }
   }
+
   onClickMarketingAssi() {
     this.showchatbot = true
   }
+
   clear() {
     this.campaignForm.reset()
   }

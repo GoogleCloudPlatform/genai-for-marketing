@@ -14,123 +14,36 @@
  * limitations under the License.
  */
 
-variable "project_id" {
-  type = string
-}
+/*
+* You can use this to overwrite terraform default variables.
+*/
 
-variable "showconsumerinsights" {
-  type = bool
-  default = true
-}
+project_id = "your_project_id"
 
-variable "datastore_uris" {
-  type    = list(string)
-  default = ["cloud.google.com/*"]
-}
+text_model_name = "gemini-1.5-pro"
+image_model_name = "imagen-3.0-generate-001"
+code_model_name = "gemini-1.5-pro"
 
+gdrive_folder_name = "genai-marketing-assets"
 
-variable "gdrive_folder_name" {
-  default     = "genai-marketing-assets"
-  type        = string
-  description = "Name of the folder to create in Google Drive"
-}
-
-variable "location" {
-  default     = "US"
-  type        = string
-  description = "Location of the resources"
-}
-
-variable "genai_location" {
-  default     = "global"
-  type        = string
-  description = "Location of the resources"
-}
-
-variable "region" {
-  default     = "us-central1"
-  type        = string
-  description = "Location of the resources"
-}
-
-variable "dataset_name" {
-  type        = string
-  default     = "genai_marketing"
-  description = "BigQuery dataset name"
-}
-
-variable "dataset_tables_min_records" {
-  type        = number
-  default     = 5000
-  description = "Minimum records to generate when loading data into BQ tables"
-}
-
-variable "tag_template_id" {
-  type    = string
-  default = "llmcdptemplate"
-}
-
-variable "search_app_name" {
-  type        = string
-  default     = "genai_marketing"
-  description = "Vertex Search app name"
-}
-
-variable "chat_bot_name" {
-  type        = string
-  default     = "genai_marketing"
-  description = "Vertex Conversation app name"
-}
-
-variable "genai_marketing_service_account" {
-  type        = string
-  default     = "genai-marketing-sa"
-  description = "Service account name"
-
-}
-
-variable "company_name" {
-  type        = string
-  default     = "Google"
-  description = "Company name"
-}
-variable "domain" {
-  type        = string
-  default     = "google.com"
-  description = "Your company domain"
-
-}
-
-variable "datastore_storage_folder" {
-  type    = string
-  default = "gs://cloud-samples-data/gen-app-builder/search/alphabet-investor-pdfs/*"
-}
-
-variable "campaigns_themes" {
-  type    = list(string)
-  default = [
+campaigns_themes = [
   "Sales of new women's handbags at Cymbal",
   "Introducing a new line of men's leather shoes",
   "New opening of Cymbal concept shoe store in NYC",
   "Cymbal shoes retail brand in NYC",
   "Another theme"
   ]
-}
 
-variable "transaction_types" {
-  type    = list(string)
-  default = [
+transaction_types = [
     "in-app-purchase",
     "online-purchase",
     "in-store-purchase",
     "recurrent-customer",
     "thirdparty-purchase"
-  ]
-}
+]
 
-variable "product_names" {
-  type    = list(string)
-  default = [
+
+product_names = [
     "Coat",
     "misc",
     "Handbag",
@@ -139,13 +52,10 @@ variable "product_names" {
     "Flashlight",
     "Hiking Boots",
     "Running Shoes",
-  ]
-}
+]
 
 
-variable "prompt_brand_overview" {
-  type = string
-  default = <<EOF
+prompt_brand_overview = <<EOF
 Cymbal brand information:
 1. Brand Name:Cymbal
 2. Vision: Elevate every step and statement with our curated ensemble of footwear and handbags.
@@ -164,64 +74,35 @@ Echoing Sustainability: Cymbal strikes a chord with the environment, ensuring ec
 11. Future Outlook: Cymbal aspires to expand its resonance in the global market, infusing more sustainable materials into its products, and initiating special editions through designer partnerships, creating exclusive, melodious collections.
 Cymbal is not just a brand; it's an experience. Recognizing the rhythm of life and the melodies of fashion, we ensure every piece adds a note of sophistication to our customer's ensemble. Every choice at Cymbal is a step toward a more stylish tomorrow.
 EOF
-}
 
+age_groups = [
+  "18-24",
+  "25-34",
+  "35-44",
+  "45-54",
+  "55-64",
+  "65+"
+]
 
-variable "text_model_name" {
-  type    = string
-  default = "gemini-1.5-pro"
-}
+genders = [
+  "All",
+  "Male",
+  "Female"
+]
 
-variable "image_model_name" {
-  type    = string
-  default = "imagen-3.0-generate-001"
-}
+goals = [
+  "Brand Awareness",
+  "Lead Generation",
+  "Sales",
+  "Customer Loyalty",
+  "Product Launch"
+]
 
-variable "code_model_name" {
-  type    = string
-  default = "gemini-1.5-pro"
-}
-
-variable "age_groups" {
-  type = list(string)
-  default = [
-    "18-24",
-    "25-34",
-    "35-44",
-    "45-54",
-    "55-64",
-    "65+"
-  ]
-}
-
-variable "genders" {
-  type = list(string)
-  default = [
-    "All",
-    "Male",
-    "Female"
-  ]
-}
-
-variable "goals" {
-  type = list(string)
-  default = [
-    "Brand Awareness",
-    "Lead Generation",
-    "Sales",
-    "Customer Loyalty",
-    "Product Launch"
-  ]
-}
-
-variable "competitors" {
-  type = list(string)
-  default = [
-    "Tesla",
-    "BMW",
-    "Mercedes",
-    "Audi",
-    "Porsche",
-    "Other"
-  ]
-}
+competitors = [
+  "Fashion Forward",
+  "Style Setter",
+  "Wardrobe Wonder",
+  "Trendy & Co",
+  "Fashion Elite",
+  "Other"
+]

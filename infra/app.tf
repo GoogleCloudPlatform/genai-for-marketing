@@ -76,7 +76,7 @@ data "google_firebase_web_app_config" "app_front" {
 
 module "gcs_assets_bucket" {
   source     = "terraform-google-modules/cloud-storage/google"
-  version    = "~> 5.0"
+  version    = "~> 8.0"
   project_id = var.project_id
   names      = ["marketing"]
   prefix     = var.project_id
@@ -90,15 +90,22 @@ resource "local_file" "config_toml" {
     dataset_name            = var.dataset_name,
     search_datastore_id     = google_discovery_engine_data_store.search_datastore.data_store_id,
     tag_template_id         = var.tag_template_id,
-    drive_folder_id         = var.gdrive_config.gdrive_folder_id,
-    slides_template_id      = var.gdrive_config.marketing_slide_id,
-    doc_template_id         = var.gdrive_config.marketing_doc_id,
-    sheet_template_id       = var.gdrive_config.marketing_sheet_id,
+    drive_folder_id         = data.external.gdrive_pointers.result.folder_gdrive_id,
+    slides_template_id      = data.external.gdrive_pointers.result.slide_gdrive_id,
+    doc_template_id         = data.external.gdrive_pointers.result.doc_gdrive_id,
+    sheet_template_id       = data.external.gdrive_pointers.result.sheet_gdrive_id,
     domain                  = var.domain,
-    gcs_assets_bucket       = module.gcs_assets_bucket.name
+    gcs_assets_bucket       = module.gcs_assets_bucket.name,
+    prompt_brand_overview   = var.prompt_brand_overview,
+    text_model_name         = var.text_model_name,
+    image_model_name        = var.image_model_name,
+    code_model_name         = var.code_model_name
     }
   )
   filename = "${path.module}/output_config/config.toml"
+  depends_on = [
+    data.external.gdrive_pointers,
+  ]
 }
 
 resource "local_file" "enviroments_ts" {
@@ -117,6 +124,29 @@ resource "local_file" "enviroments_ts" {
   filename = "${path.module}/output_config/environments.ts"
 }
 
+# resource "local_file" "campaign_form" {
+#   content  = templatefile("${path.module}/templates/campaign-form.component.html.tftpl", {
+#     themes = var.campaigns_themes
+#   })
+#   filename = "../frontend/src/app/campaign-form/campaign-form.component.html"
+# }
+
+resource "local_file" "aux_data" {
+  content = templatefile("${path.module}/templates/transactions_aux_data.py.tftpl", {
+    product_names        = var.product_names,
+    transaction_types        = var.transaction_types,
+    }
+  )
+  filename = "${path.module}/scripts/aux_data/transactions_aux_data.py"
+}
+
+# resource "local_file" "home_component" {
+#   content = templatefile("${path.module}/templates/home.component.html.tftpl", {
+#     showconsumerinsights = var.showconsumerinsights
+#   })
+#   filename = "../frontend/src/app/home/home.component.html"
+# }
+
 resource "google_firestore_database" "database" {
   project         = var.project_id
   name            = "(default)"
@@ -124,4 +154,15 @@ resource "google_firestore_database" "database" {
   type            = "FIRESTORE_NATIVE"
   deletion_policy = "DELETE"
   depends_on      = [module.project_services]
+}
+
+resource "local_file" "form_config_json" {
+  content = jsonencode({
+    themes = concat(var.campaigns_themes, ["Another theme..."]),
+    ageGroups = var.age_groups,
+    genders = var.genders,
+    goals = var.goals,
+    competitors = var.competitors
+  })
+  filename = "${path.module}/output_config/form-config.json"
 }

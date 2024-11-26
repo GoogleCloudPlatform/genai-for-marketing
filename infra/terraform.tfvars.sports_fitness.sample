@@ -1,0 +1,96 @@
+project_id = "your_project_id"
+
+text_model_name = "gemini-1.5-pro"
+image_model_name = "imagen-3.0-generate-001"
+code_model_name = "gemini-1.5-pro"
+
+gdrive_folder_name = "genai-marketing-assets"
+
+campaigns_themes = [
+  "Launch of Cymbal Smart Fitness Equipment",
+  "Introducing Cymbal Virtual Training Platform",
+  "New Cymbal Sports Apparel Line",
+  "Cymbal's Professional Athletes Program",
+  "Launch of Cymbal Fitness App",
+  "Cymbal's Sports Performance Analytics",
+  "Opening of Cymbal Fitness Centers",
+  "Cymbal's Youth Sports Initiative",
+  "Partnership with Olympic Athletes",
+  "Cymbal's Wellness Competition Series"
+]
+
+transaction_types = [
+    "equipment-purchase",
+    "membership-subscription",
+    "apparel-sale",
+    "personal-training",
+    "digital-subscription",
+    "event-registration",
+    "coaching-service"
+]
+
+product_names = [
+    "Smart Equipment",
+    "Training Platform",
+    "Sports Apparel",
+    "Fitness App",
+    "Performance Gear",
+    "Nutrition Products",
+    "Coaching Program",
+    "Analytics Tool",
+    "Recovery System",
+    "Competition Gear"
+]
+
+prompt_brand_overview = <<EOF
+Cymbal brand information:
+1. Brand Name: Cymbal
+2. Vision: To orchestrate peak performance through innovative sports technology and fitness solutions.
+3. Mission: Creating comprehensive fitness experiences that combine cutting-edge technology with expert training methodology.
+4. Products: Smart fitness equipment, performance wear, training platforms, and analytics solutions.
+5. USP: Cymbal harmonizes advanced sports technology with personalized training experiences.
+6. Target Audience: Fitness enthusiasts, athletes, and health-conscious individuals aged 16-65 who value innovation in sports and fitness.
+7. Brand Personality: Dynamic, innovative, and performance-driven.
+8. Core Values:
+   * Innovation: Advancing sports technology
+   * Performance: Enabling peak athletic achievement
+   * Community: Building fitness communities
+   * Education: Promoting proper training methodology
+9. Brand Tagline: "Performance in Perfect Harmony"
+10. Competitive Landscape: Distinguished by our unique blend of technology and training expertise.
+11. Future Outlook: Expanding smart equipment offerings, developing AI training solutions, and creating global fitness communities.
+EOF
+
+age_groups = [
+  "16-24",
+  "25-34",
+  "35-44",
+  "45-54",
+  "55-64",
+  "65+"
+]
+
+genders = [
+  "All",
+  "Male",
+  "Female"
+]
+
+goals = [
+  "Brand Leadership",
+  "Community Building",
+  "Product Innovation",
+  "Market Expansion",
+  "Athletic Performance",
+  "Digital Integration",
+  "Education"
+]
+
+competitors = [
+  "Nike",
+  "Peloton",
+  "Under Armour",
+  "Garmin",
+  "Fitbit",
+  "Other"
+]

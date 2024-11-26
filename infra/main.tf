@@ -16,7 +16,7 @@
 
 module "project_services" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 14.5"
+  version = "~> 17.0"
 
   project_id  = var.project_id
   enable_apis = true
@@ -166,7 +166,7 @@ resource "null_resource" "py_venv" {
 
   provisioner "local-exec" {
     working_dir = "scripts/"
-    command     = "[ ! -d \"venv\" ] && python3 -m venv venv; source venv/bin/activate;pip install -r requirements.txt"
+    command     = "if [ ! -d 'venv' ]; then python3 -m venv venv;fi; venv/bin/pip install -r requirements.txt"
   }
 
 }

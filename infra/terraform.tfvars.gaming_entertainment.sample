@@ -1,0 +1,96 @@
+project_id = "your_project_id"
+
+text_model_name = "gemini-1.5-pro"
+image_model_name = "imagen-3.0-generate-001"
+code_model_name = "gemini-1.5-pro"
+
+gdrive_folder_name = "genai-marketing-assets"
+
+campaigns_themes = [
+  "Launch of Cymbal's Next-Gen Gaming Console",
+  "Introducing Cymbal Cloud Gaming Platform",
+  "New Cymbal VR Gaming Series",
+  "Cymbal's Esports Championship",
+  "Launch of Cymbal Game Studio",
+  "Cymbal's Gaming Community Platform",
+  "Release of Cymbal's Mobile Gaming Suite",
+  "Cymbal's Gaming Hardware Innovation",
+  "Partnership with Top Game Developers",
+  "Cymbal's Gaming Education Initiative"
+]
+
+transaction_types = [
+    "hardware-purchase",
+    "digital-download",
+    "subscription-service",
+    "in-game-purchase",
+    "tournament-entry",
+    "merchandise-sale",
+    "streaming-subscription"
+]
+
+product_names = [
+    "Gaming Console",
+    "VR Headset",
+    "Cloud Platform",
+    "Gaming PC",
+    "Mobile Games",
+    "Esports Gear",
+    "Streaming Service",
+    "Gaming Accessories",
+    "Digital Content",
+    "Educational Programs"
+]
+
+prompt_brand_overview = <<EOF
+Cymbal brand information:
+1. Brand Name: Cymbal
+2. Vision: To orchestrate revolutionary gaming experiences that push the boundaries of entertainment and technology.
+3. Mission: Creating immersive gaming solutions that connect players worldwide through innovative technology and engaging content.
+4. Products: Gaming hardware, software platforms, VR experiences, and esports solutions.
+5. USP: Cymbal harmonizes cutting-edge gaming technology with social connectivity and competitive gaming.
+6. Target Audience: Gamers, content creators, and entertainment enthusiasts aged 13-45 who value innovation and community in gaming.
+7. Brand Personality: Dynamic, innovative, and community-focused.
+8. Core Values:
+   * Innovation: Pushing gaming technology boundaries
+   * Community: Building global gaming connections
+   * Quality: Delivering premium gaming experiences
+   * Inclusivity: Making gaming accessible to all
+9. Brand Tagline: "Play in Perfect Harmony"
+10. Competitive Landscape: Distinguished by our unique blend of hardware innovation and community focus.
+11. Future Outlook: Advancing VR/AR gaming, expanding esports presence, and developing new gaming technologies.
+EOF
+
+age_groups = [
+  "13-17",
+  "18-24",
+  "25-34",
+  "35-44",
+  "45-54",
+  "55+"
+]
+
+genders = [
+  "All",
+  "Male",
+  "Female"
+]
+
+goals = [
+  "Market Leadership",
+  "Community Growth",
+  "Technical Innovation",
+  "Content Creation",
+  "Esports Development",
+  "Platform Expansion",
+  "Brand Recognition"
+]
+
+competitors = [
+  "Sony",
+  "Microsoft",
+  "Nintendo",
+  "Valve",
+  "Epic Games",
+  "Other"
+]

@@ -16,7 +16,7 @@
 
 module "bigquery" {
   source                      = "terraform-google-modules/bigquery/google"
-  version                     = "~> 7.0"
+  version                     = "~> 8.1"
   dataset_id                  = var.dataset_name
   dataset_name                = var.dataset_name
   project_id                  = var.project_id
@@ -35,7 +35,7 @@ resource "null_resource" "bq_tables_populate" {
 
   provisioner "local-exec" {
     working_dir = "scripts/"
-    command     = "source venv/bin/activate; python3 -c 'from aux_data import data_gen; data_gen.generate_and_populate_dataset(PROJECT_ID=\"${var.project_id}\",DATASET_ID=\"${var.dataset_name}\",create_tables=False, min_records=${var.dataset_tables_min_records})'"
+    command     = "venv/bin/python3 -c 'from aux_data import data_gen; data_gen.generate_and_populate_dataset(PROJECT_ID=\"${var.project_id}\",DATASET_ID=\"${var.dataset_name}\",create_tables=False, min_records=${var.dataset_tables_min_records})'"
   }
   depends_on = [null_resource.py_venv, module.bigquery]
 }
@@ -98,7 +98,7 @@ resource "null_resource" "bq_tagging" {
 
   provisioner "local-exec" {
     working_dir = "scripts/"
-    command     = "source venv/bin/activate; python3 -c 'from aux_data import bq_tag_generation; bq_tag_generation.tag_metadata_from_bq(\"${var.project_id}\",\"${var.dataset_name}\",\"${google_data_catalog_tag_template.tag_template.name}\",\"${google_data_catalog_tag_template.tag_template.tag_template_id}\")'"
+    command     = "venv/bin/python3 -c 'from aux_data import bq_tag_generation; bq_tag_generation.tag_metadata_from_bq(\"${var.project_id}\",\"${var.dataset_name}\",\"${google_data_catalog_tag_template.tag_template.name}\",\"${google_data_catalog_tag_template.tag_template.tag_template_id}\")'"
   }
   depends_on = [null_resource.py_venv, module.bigquery, google_data_catalog_tag_template.tag_template]
 

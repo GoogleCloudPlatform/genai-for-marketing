@@ -1,0 +1,118 @@
+/**
+ * Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+* You can use this to overwrite terraform default variables.
+*/
+
+project_id = "your_project_id"
+
+text_model_name = "gemini-1.5-pro"
+image_model_name = "imagen-3.0-generate-001"
+code_model_name = "gemini-1.5-pro"
+
+gdrive_folder_name = "genai-marketing-assets"
+
+showconsumerinsights = false // we don't have a customer site reference.
+
+// datastore_uris = ["cloud.google.com/*"] // we don't have a customer site reference.
+
+
+
+campaigns_themes = [
+  "Launch of the new Cymbal electric SUV",
+  "Pre-order campaign for the Cymbal Grand Tourer ",
+  "Announcing the Cymbal 'Electrify Your Drive' summer sales event",
+  "Showcase the Cymbal autonomous driving technology",
+  "Highlight Cymbal's commitment to sustainable manufacturing",
+  "Partnership with a luxury hotel chain for exclusive Cymbal charging stations",
+  "Cymbal performance test drive events across major cities",
+  "Introduce a new Cymbal vehicle subscription service",
+  "Sponsor an eco-conscious driving rally with Cymbal vehicles",
+  "Collaborate with a renowned artist on a limited-edition Cymbal vehicle"
+  ]
+
+
+transaction_types = [
+    "in-app-purchase",
+    "online-purchase",
+    "in-store-purchase",
+    "recurrent-customer",
+    "thirdparty-purchase"
+]
+
+product_names = [
+    "Sedan",
+    "Hatchback",
+    "SUV",
+    "Crossover",
+    "Coupe",
+    "Convertible",
+    "Sportsback",
+    "VAN",
+]
+
+prompt_brand_overview = <<EOF
+Cymbal brand information:
+1. Brand Name: Cymbal
+2. Vision: To empower drivers with vehicles that seamlessly integrate cutting-edge technology, exhilarating performance, and sustainable luxury.
+3. Mission: Cymbal crafts premium electric vehicles that redefine the driving experience, offering a harmonious blend of innovation, responsibility, and refined elegance.
+4. Products: High-performance electric sedans, SUVs, and grand tourers, each meticulously engineered to deliver an unparalleled symphony of power, comfort, and connectivity.
+5. Unique Selling Proposition (USP):  Cymbal orchestrates a driving experience where exhilarating performance meets sustainable innovation without compromising luxury or comfort.
+6. Target Audience: Discerning individuals aged 30-60 who value sustainability, innovation, and performance, seeking a vehicle that reflects their sophisticated lifestyle and commitment to a greener future.
+7. Brand Personality:  Progressive, sophisticated, and exhilarating. Cymbal embodies the spirit of innovation while maintaining an unwavering commitment to environmental responsibility.
+8. Core Values:
+   * Performance Driven: Cymbal vehicles deliver exhilarating performance without compromising efficiency or sustainability.
+   * Technological Innovation:  Cymbal is committed to pushing the boundaries of automotive technology, integrating cutting-edge advancements in each vehicle.
+   * Sustainable Luxury: Cymbal prioritizes the use of sustainable materials and manufacturing processes, minimizing its environmental impact.
+9. Brand Tagline: "Drive the Future. Today."
+10. Competitive Landscape: The automotive industry is evolving rapidly, but Cymbal distinguishes itself through its unwavering commitment to sustainable performance and technological innovation within the luxury segment.
+11. Future Outlook: Cymbal aims to lead the transition to sustainable mobility by expanding its range of electric vehicles, investing in advanced autonomous driving technologies, and creating a global network of charging infrastructure.
+
+Cymbal is not just an automotive brand; it's a commitment to a more sustainable and exhilarating future. By integrating cutting-edge technology, environmental responsibility, and luxurious design, Cymbal ensures every drive is a symphony of performance and sophistication. Every journey in a Cymbal vehicle is a step towards a greener, more electrifying tomorrow.
+EOF
+
+age_groups = [
+  "18-24",
+  "25-34",
+  "35-44",
+  "45-54",
+  "55-64",
+  "65+"
+]
+
+genders = [
+  "All",
+  "Male",
+  "Female"
+]
+
+goals = [
+  "Brand Awareness",
+  "Lead Generation",
+  "Sales",
+  "Customer Loyalty",
+  "Product Launch"
+]
+
+competitors = [
+  "Tesla",
+  "BMW",
+  "Mercedes",
+  "Audi",
+  "Porsche",
+  "Other"
+]
