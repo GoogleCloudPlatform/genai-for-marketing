@@ -35,7 +35,7 @@
     "ngx-simple-text-editor": "^4.0.3",
     "primeicons": "^6.0.1",
     "primeng": "^17.0.0",
-    "prismjs": "^1.29.0",
+    "prismjs": "^1.30.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.2"
